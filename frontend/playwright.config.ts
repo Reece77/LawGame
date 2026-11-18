@@ -34,12 +34,14 @@ export default defineConfig({
       url: `http://127.0.0.1:${API_PORT}/api/meta`,
       env: { PTK_SAVE_DIR: saveDir, PTK_LLM_ADAPTER: 'mock', PTK_SQLITE_SYNC: 'OFF' },
       reuseExistingServer: false,
+      timeout: 120_000,
     },
     {
-      command: `pnpm exec vite --port ${WEB_PORT} --strictPort`,
+      command: `pnpm exec vite --port ${WEB_PORT} --strictPort --host 127.0.0.1`,
       url: `http://127.0.0.1:${WEB_PORT}`,
       env: { PTK_API_URL: `http://127.0.0.1:${API_PORT}` },
       reuseExistingServer: false,
+      timeout: 120_000,
     },
   ],
 });

@@ -1,0 +1,6 @@
+# Tunables (ADR-0008). Every number has a unit and an intent.
+campaign:
+  standard_turns: 360  # months; January 2005 to December 2034 (ADR PT-0002)
+backups:
+  every_turns: 12  # months between periodic backups (ADR-0004 section 5)
+  keep_periodic: 10  # periodic backups kept per save

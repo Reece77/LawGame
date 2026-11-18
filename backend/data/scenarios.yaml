@@ -1,0 +1,24 @@
+# Scenarios (spec 2.1, ADR PT-0002). start_ym is turn 0. Money in integer cents (2005 USD).
+scenarios:
+  - id: biglaw_spinout
+    name: BigLaw spin-out
+    description: >-
+      An M&A partner and a litigator leave a large New York firm with two associates and
+      their clients. $600,000 of partners' capital and a $1M revolver.
+    start_ym: [2005, 1]
+    home_city: new_york
+    partners_capital_cents: 60000000
+    revolver_limit_cents: 100000000
+  - id: solo_founder
+    name: Solo founder
+    description: >-
+      One partner, one paralegal and a modest book. $150,000 of savings as capital.
+    start_ym: [2005, 1]
+    home_city: new_york
+    partners_capital_cents: 15000000
+    revolver_limit_cents: 25000000
+difficulties:
+  - { id: easy, name: Easy, capital_mult_bp: 15000 }
+  - { id: standard, name: Standard, capital_mult_bp: 10000 }
+  - { id: hard, name: Hard, capital_mult_bp: 6000 }
+  - { id: ironman, name: Ironman, capital_mult_bp: 10000 }  # difficulty from no reloads

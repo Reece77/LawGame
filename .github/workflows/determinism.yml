@@ -1,0 +1,23 @@
+# The golden seeds on two Python processes must agree (ADR-0002): run them twice on main.
+name: determinism
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  golden:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --project backend --locked
+      - run: cd backend && uv run pytest tests/golden -q && uv run pytest tests/golden -q 

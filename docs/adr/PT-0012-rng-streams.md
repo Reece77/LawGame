@@ -1,0 +1,29 @@
+# ADR PT-0012: Partner Track's stream table, with kernel ids reserved
+
+- Status: **Accepted** (Reece, 2026-11-17)
+- Date: 2026-11-17
+- Inherits: TST ADR-0002 and ADR-0013 in full
+
+## Decision
+
+`STREAM_IDS` is a new append-only table in `ptk/kernel/rng.py`. Ids **1–19** keep TST's names and meanings for kernel and people systems that are ported (people_gen 1, hiring 2, morale 3, events 6, founder 7, growth 8, reveal 9, tags 10, resign 11, retire 12, actions 13, delegate 14, board → `partnership` 17, poach 19), so that a future shared `sim-core` can adopt either game's numbering without renumbering. Ids **20–99** are Partner Track's (v1 below); 99 stays `misc` for tests.
+
+| Name | Id | Key | Used for | Milestone |
+| --- | --- | --- | --- | --- |
+| `demand` | 20 | `(region, practice)` | Monthly legal demand noise | PT-M3 |
+| `intake` | 21 | `(client_id,)` | New instructions from a client | PT-M3 |
+| `matter` | 22 | `(matter_id,)` | Progress noise, events and the outcome | PT-M3 |
+| `billing` | 23 | `(matter_id,)` or `(client_id, month)` | Bill disputes, write-downs, collection delays | PT-M3 |
+| `conflict` | 24 | `(matter_id,)` | A hidden conflict surfacing | PT-M3 |
+| `rfp` | 25 | `(rfp_id,)` | Panel and RFP awards | PT-M5 |
+| `rival_firm` | 26 | `(*rival_key,)` | A rival firm's monthly decision noise | PT-M5 |
+| `lateral` | 27 | `(person_id,)` | A partner's portability realised at a move | PT-M4 |
+| `vote` | 28 | `(vote_id, person_id)` | Each partner's vote noise | PT-M4 |
+| `strain` | 29 | `(person_id,)` | Burnout events | PT-M1 |
+| `campus` | 30 | `(year, school_index)` | Campus candidate pools | PT-M1 |
+| `client_gen` | 31 | `(client_index,)` | Generated clients and their GCs | PT-M3 |
+| `macro_law` | 32 | `(indicator_index,)` | Seeded legal indices after 2025 | PT-M10 |
+
+## Consequences
+
+- A test enumerates every `stream(` call site, as in TST.

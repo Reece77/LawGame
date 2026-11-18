@@ -1,0 +1,17 @@
+{
+  "balances": [
+    [
+      1,
+      "1000_cash",
+      60000000
+    ],
+    [
+      1,
+      "3000_partners_capital",
+      -60000000
+    ]
+  ],
+  "final_turn": 360,
+  "game_state": "campaign_complete",
+  "sha256": "147d3886d6de9e0b511a9cd69dd031cb87c6f61853ebe2d3f4bb011aec8c8efd"
+}

@@ -39,4 +39,18 @@ Start the game with the launcher, create a firm, press Continue a few times, clo
 
 ## Decisions made
 
+- **Upstream commit.** Everything vendored comes from TST `02fba2aae1be2e43b179d3b6c1794d48e5dcdf56`.
+- **What is AS IS.** `money`, `dmath`, `scale`, `decisions`, `db/session`, `db/backup`, `db/migrate`, the four `llm/` modules, `config.py`, the Alembic env and template, the OpenAPI export and codegen scripts, and the front-end lint and TypeScript configs are identical after the rename. `ledger.py` and `log.py` carry TST's account and link constants, so they are **ported** (the mechanism unchanged; PT's chart and link kinds), as are `rng.py` (PT's table), `calendar.py`, `errors.py`, `snapshot.py`, the two guard tests and `main.tsx`.
+- **Drift check without network.** `VENDORED.md` records the SHA-256 of each upstream AS IS file after the rename; `tools/check_vendored.py` compares, and `--record <tst clone>` refreshes after a re-copy.
+- **Calendar.** Functions take `start` (default 2005-01) and the save stores `start_year`/`start_month`, so the 2010 pack needs no code change.
+- **Ledger naming.** `firm_id` replaces TST's `company_id`; reporting dimensions are `practice` and `office_id` (TST's `division_id` dropped). Accounts beginning `C` (client book) or `9` (personal book) are refused in a firm entry.
+- **Seed storage.** SQLite integers are signed 64-bit, so the seed is stored minus 2^63 (tested at 0, 2^63 and 2^64 − 1).
+- **Campaign end.** After turn 359 the save becomes `campaign_complete` (ended turn 359); further turns raise `GameOverError` (HTTP 409).
+- **Front end.** TST's shell components are coupled to its screens and glossary, so M0 copies the tokens, fonts, theme, format helpers, configs and codegen, and writes a small shell (Mantine `AppShell`) with the five screens. TST's DataTable, command palette and Explain arrive with the first screens that need them (PT-M1a onward).
+- **Not yet copied** (deferred to the milestone that uses them): `holiday.py`, `ui_settings.py`, `mods/` and the state-cache framework; each depends on TST state that PT does not have yet.
+
 ## Follow-ups
+
+- Holiday, saved column views and the data editor: port with PT-M7 (Holiday) and the first table screen (column views).
+- A launcher (TST M29) for double-click start.
+- Set branch protection on `main` (required checks `check` and `e2e`) in the repository settings: Reece.

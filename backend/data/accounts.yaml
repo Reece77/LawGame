@@ -1,0 +1,46 @@
+# Chart of accounts (ADR PT-0003 section 1). Codes are stable: never renumber. Each later
+# milestone appends the accounts it posts to. book: firm (default) or client (the separate
+# client-money book, C-prefixed, ADR PT-0003 section 7).
+accounts:
+  - { code: 1000_cash, name: "Cash (operating)", type: asset }
+  - { code: 1100_unbilled_wip, name: "Unbilled work in progress", type: asset }
+  - { code: 1110_wip_provision, name: "WIP provision", type: asset }
+  - { code: 1200_receivables, name: "Receivables", type: asset }
+  - { code: 1210_bad_debt_provision, name: "Bad-debt provision", type: asset }
+  - { code: 1300_disbursements, name: "Disbursements recoverable", type: asset }
+  - { code: 1400_prepaid, name: "Prepaid expenses", type: asset }
+  - { code: 1500_ppe, name: "Property, equipment and fit-out", type: asset }
+  - { code: 2000_payables, name: "Payables", type: liability }
+  - { code: 2100_accrued_comp, name: "Accrued salaries and bonuses", type: liability }
+  - { code: 2200_deferred_fees, name: "Deferred fee income (retainers)", type: liability }
+  - { code: 2300_revolver, name: "Bank revolver", type: liability }
+  - { code: 2400_term_debt, name: "Term debt and private placements", type: liability }
+  - { code: 2500_leases, name: "Lease liabilities", type: liability }
+  - { code: 2600_retired_partner_annuities, name: "Retired-partner annuities", type: liability }
+  - { code: 2700_partner_current_accounts, name: "Partner current accounts", type: liability }
+  - { code: 3000_partners_capital, name: "Partners' capital", type: equity }
+  - { code: 3100_undistributed_profit, name: "Undistributed profit", type: equity }
+  - { code: 3200_drawings, name: "Drawings", type: equity }
+  - { code: 4000_fees, name: "Fees", type: income }
+  - { code: 4100_success_fees, name: "Success and contingency fees", type: income }
+  - { code: 4200_disbursement_recoveries, name: "Disbursement recoveries", type: income }
+  - { code: 4300_interest_income, name: "Interest income", type: income }
+  - { code: 5000_associate_salaries, name: "Associate and counsel salaries", type: expense }
+  - { code: 5010_bonuses, name: "Bonuses", type: expense }
+  - { code: 5020_income_partner_salaries, name: "Income-partner salaries", type: expense }
+  - { code: 5100_staff_salaries, name: "Staff salaries", type: expense }
+  - { code: 5200_benefits, name: "Benefits", type: expense }
+  - { code: 6000_rent, name: "Rent", type: expense }
+  - { code: 6100_technology, name: "Technology and AI", type: expense }
+  - { code: 6200_recruiting, name: "Recruiting and lateral fees", type: expense }
+  - { code: 6300_insurance, name: "Malpractice insurance", type: expense }
+  - { code: 6400_marketing, name: "Marketing and business development", type: expense }
+  - { code: 6500_knowledge, name: "Knowledge and research subscriptions", type: expense }
+  - { code: 6600_professional_fees, name: "Professional fees", type: expense }
+  - { code: 6700_write_offs, name: "Write-offs", type: expense }
+  - { code: 6800_interest, name: "Interest expense", type: expense }
+  - { code: 6900_general_admin, name: "General and administrative", type: expense }
+  - { code: 6950_lobbying, name: "Lobbying and bar politics", type: expense }
+  - { code: 6970_fines, name: "Fines and sanctions", type: expense }
+  - { code: C1000_client_bank, name: "Client bank account", type: asset, book: client }
+  - { code: C2000_owed_to_clients, name: "Owed to clients", type: liability, book: client }

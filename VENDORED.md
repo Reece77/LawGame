@@ -44,6 +44,7 @@ Files copied or ported from Tech Startup Tycoon (`Reece77/Tech_Executive_Tycoon`
 | `backend/ptk/sim/people/generator.py` | `backend/tst/sim/people/generator.py` | ported | — |
 | `backend/ptk/sim/people/reveal.py` | `backend/tst/sim/people/reveal.py` | ported | — |
 | `backend/ptk/sim/people/founder.py` | `backend/tst/sim/people/founder.py` | ported | — |
+| `backend/ptk/sim/people/growth.py` | `backend/tst/sim/people/growth.py` | ported | — |
 | `backend/data/tags.yaml` | `backend/data/tags.yaml` | ported | — |
 | `backend/data/names.yaml` | `backend/data/names.yaml` | ported | — |
 | `backend/data/backgrounds.yaml` | `backend/data/backgrounds.yaml` | ported | — |
@@ -64,6 +65,7 @@ Changes in ported files:
 - `backend/ptk/sim/people/generator.py` (PT-M1a): school tier first; familiarity and portability draws last; one US pool; no cities or salary.
 - `backend/ptk/sim/people/reveal.py` (PT-M1a): firm observers; familiarity records (narrow); TST's first six actions.
 - `backend/ptk/sim/people/founder.py` (PT-M1a): the founding partner build: home practice role at equity partner, familiarity, book, bar admissions, age 34-52; stream keyed by founder index.
+- `backend/ptk/sim/people/growth.py` (PT-M1a): growth times `learn(h)` from a month of work; familiarity growth and decay; growth in the person's own role.
 - `backend/data/tags.yaml` (PT-M1a): PT's seven new tags appended; the `negative` flag (ADR PT-0013).
 - `backend/data/names.yaml` (PT-M1a): one `us` pool (TST's north_america list); rival names dropped.
 - `backend/data/backgrounds.yaml` (PT-M1a): PT's five founding-partner backgrounds; TST's presets as is.

@@ -26,6 +26,7 @@ PA_KEY: Final = "potential_ability"  # reveal record key for potential ability
 FAM_PREFIX: Final = "fam:"  # reveal record keys for familiarity: "fam:<practice>"
 
 type EmploymentStatus = Literal["active", "notice", "ended"]
+type Rest = Literal["none", "holiday", "sabbatical"]
 type EndReason = Literal["resigned", "fired", "retired", "firm_dissolved", "poached"]
 
 
@@ -174,6 +175,30 @@ class Employment:
     def counts_as_staff(self) -> bool:
         """Active and notice employments are on the books (headcount, growth)."""
         return self.status != "ended"
+
+
+@dataclass(frozen=True, slots=True)
+class WorkMonth:
+    """One person's month of work (ADR PT-0005: hours in integer tenths).
+
+    Until PT-M3a staffs matters, this is a test input (the brief): hours worked in each
+    practice, how many of all hours were substantive work at or slightly above the person's
+    level (learn(h), ADR PT-0006 section 4), hours outside any practice (business
+    development, management) and whether the month was a holiday or a sabbatical.
+    """
+
+    person_id: int
+    practice_tenths: tuple[tuple[str, int], ...] = ()  # (practice, tenths), practices order
+    substantive_tenths: int = 0
+    other_tenths: int = 0
+    rest: Rest = "none"
+
+    @property
+    def total_tenths(self) -> int:
+        return sum(t for _, t in self.practice_tenths) + self.other_tenths
+
+    def tenths_in(self, practice: str) -> int:
+        return sum(t for p, t in self.practice_tenths if p == practice)
 
 
 # --- Current ability ------------------------------------------------------------------------

@@ -1,7 +1,8 @@
-# Inbox wording (PT-M1b; TST's inbox_templates.yaml pattern). The sim emits a template key
+# Inbox wording (PT-M1b). Ported from backend/data/inbox_templates.yaml @ 02fba2aa (Tech Startup
+# Tycoon); changed: Partner Track's hiring templates only, with law-firm wording. The sim emits a template key
 # plus parameters; persistence renders the title and body for the player's firm. Parameters
 # ending in _cents are shown as money; "{role:a}" adds the indefinite article.
-# Every key the engine uses must exist here (checked at load and by a test).
+# Every key the engine uses must exist here (a test checks).
 templates:
   candidates_arrived:
     title: "{count} candidates for {role}"

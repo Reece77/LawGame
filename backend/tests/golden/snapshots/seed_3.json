@@ -3,12 +3,32 @@
     [
       1,
       "1000_cash",
-      60000000
+      -493764570
     ],
     [
       1,
       "3000_partners_capital",
       -60000000
+    ],
+    [
+      1,
+      "5000_associate_salaries",
+      209291660
+    ],
+    [
+      1,
+      "5010_bonuses",
+      40750000
+    ],
+    [
+      1,
+      "5200_benefits",
+      52322910
+    ],
+    [
+      1,
+      "6000_rent",
+      251400000
     ]
   ],
   "final_turn": 360,
@@ -19,6 +39,6 @@
     "Megan Brown",
     "Hannah Allen"
   ],
-  "people": "19fde8aac23838e1190ed682e56813d0ab065540cec1e23c77ab6c0eddc8cac6",
-  "sha256": "147d3886d6de9e0b511a9cd69dd031cb87c6f61853ebe2d3f4bb011aec8c8efd"
+  "people": "0341502f6b0c03a84fd287d99f2ccc8355517b435f030689affe2eaa940dcfb9",
+  "sha256": "df5a2ab8f9723c22975d33578d3bf07538af652bd00519e65436f686f526ca1d"
 }

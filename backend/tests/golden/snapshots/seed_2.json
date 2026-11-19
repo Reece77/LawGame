@@ -3,12 +3,32 @@
     [
       1,
       "1000_cash",
-      60000000
+      -1118901964
     ],
     [
       1,
       "3000_partners_capital",
       -60000000
+    ],
+    [
+      1,
+      "5000_associate_salaries",
+      578041607
+    ],
+    [
+      1,
+      "5010_bonuses",
+      157250000
+    ],
+    [
+      1,
+      "5200_benefits",
+      144510357
+    ],
+    [
+      1,
+      "6000_rent",
+      299100000
     ]
   ],
   "final_turn": 360,
@@ -19,6 +39,6 @@
     "Luis Allen",
     "Logan Robinson"
   ],
-  "people": "cfdda17dcce4840116e46b862127d7be092ae427a719f506db9d37c38be86283",
-  "sha256": "147d3886d6de9e0b511a9cd69dd031cb87c6f61853ebe2d3f4bb011aec8c8efd"
+  "people": "d50479b61f62eead9e70ccf8040b271c0d80a1fa8a1dbc493b01fbc0d876c0c0",
+  "sha256": "af4ba9ba4a4a3b70bbe65773c47e1c8e5cffc4e044f1fb25e9f801adb761825d"
 }

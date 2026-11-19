@@ -1,11 +1,12 @@
-import { Card, Group, Text, Title } from '@mantine/core';
+import { Card, Group, Table, Text, Title } from '@mantine/core';
 import { useParams } from 'react-router';
-import { useGame } from '../lib/api';
+import { useGame, usePayroll } from '../lib/api';
 import { formatMoney } from '../lib/format';
 
 export function OverviewScreen() {
   const { slug = '' } = useParams();
   const game = useGame(slug);
+  const payroll = usePayroll(slug);
   if (!game.data) return <Text c="dimmed">Loading…</Text>;
   const g = game.data;
   return (
@@ -32,6 +33,37 @@ export function OverviewScreen() {
           </Text>
         </Card>
       </Group>
+      {payroll.data && (
+        <Card withBorder mt="md" maw={560} data-testid="payroll">
+          <Title order={4}>Payroll and costs this month</Title>
+          <Text size="sm" c="dimmed" mb="xs">
+            {payroll.data.headcount} people on the books; salaries{' '}
+            {formatMoney(payroll.data.annual_salaries_cents)} a year. Year-end bonuses are paid in{' '}
+            {payroll.data.bonus_month_label} (about {formatMoney(payroll.data.bonus_estimate_cents)}{' '}
+            at today&apos;s staff).
+          </Text>
+          <Table>
+            <Table.Tbody>
+              {payroll.data.lines
+                .filter((line) => line.amount_cents !== 0)
+                .map((line) => (
+                  <Table.Tr key={line.label}>
+                    <Table.Td>{line.label}</Table.Td>
+                    <Table.Td className="tst-num" ta="right">
+                      {formatMoney(line.amount_cents)}
+                    </Table.Td>
+                  </Table.Tr>
+                ))}
+              <Table.Tr>
+                <Table.Td fw={600}>Total</Table.Td>
+                <Table.Td className="tst-num" ta="right" fw={600} data-testid="payroll-total">
+                  {formatMoney(payroll.data.total_cents)}
+                </Table.Td>
+              </Table.Tr>
+            </Table.Tbody>
+          </Table>
+        </Card>
+      )}
     </>
   );
 }

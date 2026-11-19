@@ -3,12 +3,32 @@
     [
       1,
       "1000_cash",
-      60000000
+      -246164586
     ],
     [
       1,
       "3000_partners_capital",
       -60000000
+    ],
+    [
+      1,
+      "5000_associate_salaries",
+      56291668
+    ],
+    [
+      1,
+      "5010_bonuses",
+      7500000
+    ],
+    [
+      1,
+      "5200_benefits",
+      14072918
+    ],
+    [
+      1,
+      "6000_rent",
+      228300000
     ]
   ],
   "final_turn": 360,
@@ -19,6 +39,6 @@
     "Ashley Cook",
     "Whitney Brown"
   ],
-  "people": "e14095e46518809fbd7c6f8f06bda1fc39e46f1155862722fa7599801c429871",
-  "sha256": "147d3886d6de9e0b511a9cd69dd031cb87c6f61853ebe2d3f4bb011aec8c8efd"
+  "people": "e5f6beeefe475f49ae942f7a0cfbb57c573a9e2dfaee8db6d89291fa7891839b",
+  "sha256": "7edb3d98c12042bc52a572140392d0f1f8dc886afd9c07b880f41dcb3871f2ec"
 }

@@ -22,10 +22,16 @@ from ptk.sim.errors import InvalidSeedError, UnknownStreamError
 STREAM_IDS: Final = MappingProxyType(
     {
         "people_gen": 1,  # (search_id, n): generated people; search 0 = a scenario's staff
+        "hiring": 2,  # (offer_id,): an offer's acceptance draw (PT-M1b)
+        "morale": 3,  # (person_id,): monthly morale noise (PT-M1b)
         "founder": 7,  # (founder_index,): a founding partner's build; 0 = the player's
         "growth": 8,  # (person_id,): monthly growth noise
         "reveal": 9,  # (observer_firm_id, person_id): reveal record offsets
+        "tags": 10,  # (person_id,): monthly tag reveals of employees (PT-M1b)
+        "resign": 11,  # (person_id,): the monthly resignation roll (PT-M1b)
+        "actions": 13,  # (seq,): randomness inside a player action (ADR-0014; PT-M1b)
         "strain": 29,  # (person_id,): a generated person's starting strain (PT-M1a)
+        "campus": 30,  # (year, school_tier_index, search_id): a campus pool (PT-M1b)
         "misc": 99,  # tests only
     }
 )

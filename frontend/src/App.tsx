@@ -1,10 +1,12 @@
 import { BrowserRouter, Route, Routes } from 'react-router';
 import { GameLayout } from './screens/GameLayout';
+import { InboxScreen } from './screens/InboxScreen';
 import { MainMenu } from './screens/MainMenu';
 import { NewGameScreen } from './screens/NewGameScreen';
 import { OverviewScreen } from './screens/OverviewScreen';
 import { PeopleScreen } from './screens/PeopleScreen';
 import { PersonScreen } from './screens/PersonScreen';
+import { RecruitmentScreen } from './screens/RecruitmentScreen';
 import { SavesScreen } from './screens/SavesScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 
@@ -20,6 +22,8 @@ export default function App() {
           <Route index element={<OverviewScreen />} />
           <Route path="people" element={<PeopleScreen />} />
           <Route path="people/:personId" element={<PersonScreen />} />
+          <Route path="recruitment" element={<RecruitmentScreen />} />
+          <Route path="inbox" element={<InboxScreen />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -8,16 +8,28 @@ import secrets
 from dataclasses import dataclass
 from pathlib import Path
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from ptk.db import backup, migrate
-from ptk.db.models import FirmRow, SaveMetaRow, TurnSnapshotRow
+from ptk.db.models import DecisionLogRow, FirmRow, SaveMetaRow, TurnSnapshotRow
 from ptk.db.session import make_sessionmaker, shared_engine
-from ptk.db.state_io import META_ID, insert_new, ledger_balances, load_state, write_turn
+from ptk.db.state_io import (
+    META_ID,
+    insert_new,
+    ledger_balances,
+    load_state,
+    write_entries,
+    write_firms,
+    write_log,
+    write_people,
+    write_turn,
+)
+from ptk.sim.actions import Action, action_payload, apply_action
 from ptk.sim.calendar import format_turn
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
 from ptk.sim.errors import InvalidSaveNameError, SaveExistsError, SaveNotFoundError
+from ptk.sim.hiring.actions import Outcome
 from ptk.sim.people.founder import FounderSpec
 from ptk.sim.rng import MAX_SEED, RngFactory
 from ptk.sim.setup import new_game
@@ -108,13 +120,52 @@ def run_turn(path: Path, balance: Balance, data: GameData) -> TurnResult:
             ledger_balances(session),
         )
         write_turn(
-            session, result.new_state, result.ledger_entries, result.log_items, result.snapshot
+            session,
+            result.new_state,
+            result.ledger_entries,
+            result.log_items,
+            result.snapshot,
+            data.inbox_templates,
         )
     if result.new_state.turn % balance.backups.every_turns == 0:
         backup.periodic_backup_in_background(
             path, result.new_state.turn, balance.backups.keep_periodic
         )
     return result
+
+
+def run_action(path: Path, action: Action, balance: Balance, data: GameData) -> Outcome:
+    """Apply one player action in its own short transaction (ADR-0014): load, apply, persist,
+    append a decision_log row with the next seq of the turn. A domain error writes nothing."""
+    sessions = make_sessionmaker(shared_engine(path))
+    with sessions() as session, session.begin():
+        state = load_state(session)
+        last = session.scalar(
+            select(func.max(DecisionLogRow.seq)).where(DecisionLogRow.turn == state.turn)
+        )
+        seq = (last or 0) + 1
+        outcome = apply_action(
+            state,
+            action,
+            seq=seq,
+            rng=RngFactory(state.save_meta.master_seed),
+            balance=balance,
+            data=data,
+            ledger_balances=ledger_balances(session),
+        )
+        write_entries(session, outcome.entries)
+        write_log(session, outcome.state, outcome.log, data.inbox_templates)
+        write_firms(session, outcome.state)
+        write_people(session, outcome.state)
+        session.add(
+            DecisionLogRow(
+                turn=state.turn,
+                seq=seq,
+                source="player",
+                payload_json=json.dumps(action_payload(action), sort_keys=True),
+            )
+        )
+    return outcome
 
 
 def list_saves(save_dir: Path) -> list[SaveSummary]:

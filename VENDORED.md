@@ -50,6 +50,14 @@ Files copied or ported from Tech Startup Tycoon (`Reece77/Tech_Executive_Tycoon`
 | `backend/data/tags.yaml` | `backend/data/tags.yaml` | ported | — |
 | `backend/data/names.yaml` | `backend/data/names.yaml` | ported | — |
 | `backend/data/backgrounds.yaml` | `backend/data/backgrounds.yaml` | ported | — |
+| `backend/ptk/sim/hiring/models.py` | `backend/tst/sim/hiring/models.py` | ported | — |
+| `backend/ptk/sim/hiring/formulas.py` | `backend/tst/sim/hiring/formulas.py` | ported | — |
+| `backend/ptk/sim/hiring/rules.py` | `backend/tst/sim/hiring/rules.py` | ported | — |
+| `backend/ptk/sim/hiring/phases.py` | `backend/tst/sim/hiring/phases.py` | ported | — |
+| `backend/ptk/sim/hiring/actions.py` | `backend/tst/sim/actions/hiring.py` | ported | — |
+| `backend/ptk/sim/actions/__init__.py` | `backend/tst/sim/actions/__init__.py` | ported | — |
+| `backend/ptk/db/inbox.py` | `backend/tst/db/inbox.py` | ported | — |
+| `backend/data/inbox_templates.yaml` | `backend/data/inbox_templates.yaml` | ported | — |
 
 Changes in ported files:
 
@@ -73,3 +81,13 @@ Changes in ported files:
 - `backend/data/tags.yaml` (PT-M1a): PT's seven new tags appended; the `negative` flag (ADR PT-0013).
 - `backend/data/names.yaml` (PT-M1a): one `us` pool (TST's north_america list); rival names dropped.
 - `backend/data/backgrounds.yaml` (PT-M1a): PT's five founding-partner backgrounds; TST's presets as is.
+- `backend/ptk/sim/hiring/models.py` (PT-M1b): firms; campus, recruiter, job post and referral channels; tier filters and a target level on a search; the ask on the candidate; campus offers signed a year ahead; per-person energy and morale; the firm's pay policy; no equity, NextIds, rival, exec or city searches.
+- `backend/ptk/sim/hiring/formulas.py` (PT-M1b): no equity or stage terms, a prestige term instead; fit counts interests the practice favours; recruiter fee 20% or 25%; no runway term; PT's hours, interesting-work, prospects and bonus-fairness morale terms; resignation with lifer, burnout, bonus timing and lateral heat; no retirement.
+- `backend/ptk/sim/hiring/rules.py` (PT-M1b): no option pool or mission; the campus calendar; the hint from revealed ranges with prestige.
+- `backend/ptk/sim/hiring/phases.py` (PT-M1b): campus pools, summer months and a September start; payroll to PT's accounts with December bonuses; the scale raises associates in phase 9; PT's morale terms and bonus timing; no rivals, options, offices, divisions, free agents, relocation or retirement.
+- `backend/ptk/sim/hiring/actions.py` (PT-M1b): PT's channels and campus months; scouting and the pay policy as actions; no firing, equity, poach, exec, interest or city searches.
+- `backend/ptk/sim/actions/__init__.py` (PT-M1b): hiring actions only; decision_log payloads.
+- `backend/ptk/db/inbox.py` (PT-M1b): firms; no archive, bookmarks, digest or event links.
+- `backend/data/inbox_templates.yaml` (PT-M1b): PT's hiring templates only.
+- `backend/ptk/sim/people/generator.py` (PT-M1b): a fixed school tier for tier-filtered searches and campus visits (drawn first all the same); `weighted_pick` public.
+- `backend/ptk/sim/people/models.py` (PT-M1b): an employment's salary.

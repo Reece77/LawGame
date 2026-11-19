@@ -42,6 +42,9 @@ def people_month(
 ) -> GameState:
     turn, start = state.turn, state.save_meta.start_ym
     employer = {e.person_id: e.firm_id for e in state.employments if e.counts_as_staff}
+    # PT-M1b: a September class joins in phase 1 of its start month; it does not also
+    # step up a class year on its first day.
+    joined = {e.person_id for e in state.employments if e.start_turn == turn and turn > 0}
     updated: dict[int, Person] = {}
     for person in state.people:  # sorted by id
         if person.id not in employer:
@@ -49,7 +52,7 @@ def people_month(
         month = work.get(person.id, WorkMonth(person_id=person.id))
         p = grow_person(person, turn, rng, data, balance, month)
         p = strain_month(p, turn, month, balance)
-        updated[p.id] = advance_class_year(p, turn, start, balance)
+        updated[p.id] = p if p.id in joined else advance_class_year(p, turn, start, balance)
     people = tuple(updated.get(p.id, p) for p in state.people)
 
     scouts: dict[int, float] = {}

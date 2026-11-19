@@ -42,7 +42,9 @@ def test_full_campaign_ends_in_december_2034(
     state, balances = saves.read_state(path)
     assert state.save_meta.game_state == "campaign_complete"
     assert state.save_meta.ended_turn == 359
-    assert balances[(1, CASH)] == 60_000_000
+    # PT-M1b: payroll and rent now spend the founders' capital; the books still balance.
+    assert sum(balances.values()) == 0
+    assert balances[(1, CASH)] < 60_000_000
     with pytest.raises(GameOverError):
         saves.run_turn(path, balance, data)
     backup.wait(path)
@@ -101,3 +103,47 @@ def test_people_round_trip_through_the_save(save_dir: Path, data: GameData) -> N
     assert state.people == fresh.people
     assert state.employments == fresh.employments
     assert state.reveals == fresh.reveals
+
+
+def test_hiring_round_trips_and_replays(save_dir: Path, data: GameData, balance: Balance) -> None:
+    """PT-M1b: actions in their own transactions plus turns, reloaded cold each time, give
+    the same state as the same actions and turns played in memory (ADR-0014 replay)."""
+    from ptk.db.models import DecisionLogRow, InboxItemRow
+    from ptk.db.session import make_sessionmaker, shared_engine
+    from ptk.sim.hiring.actions import Interview, MakeOffer, OpenSearch
+    from tests.hiring_helpers import start
+
+    path = _new(save_dir, data, slug="h", seed=19)
+    game = start(data, balance, seed=19)
+    fid = game.founder_id
+
+    def both(action) -> None:  # type: ignore[no-untyped-def]
+        saves.run_action(path, action, balance, data)
+        game.act(action)
+
+    both(OpenSearch(fid, "corporate_ma", "campus"))
+    both(OpenSearch(fid, "ip", "recruiter"))
+    for _ in range(8):
+        saves.run_turn(path, balance, data)
+        game.advance()
+        state, _ = saves.read_state(path)
+        game.seq = 0
+        for c in [c for c in state.candidates if c.status == "open"][:2]:
+            if state.pending_offer_for(c.person_id) is None and (
+                c.channel != "campus" or state.turn == c.expires_turn
+            ):
+                both(Interview(fid, c.person_id))
+                both(MakeOffer(fid, c.person_id, int(c.ask_cents * 1.05)))
+    state, balances = saves.read_state(path)
+    from dataclasses import replace
+
+    assert state == replace(game.state, save_meta=replace(game.state.save_meta, name="h"))
+    assert balances == {k: v for k, v in game.balances.items() if v != 0} | {
+        k: v for k, v in balances.items() if v == 0
+    }
+    sessions = make_sessionmaker(shared_engine(path))
+    with sessions() as session:
+        logged = session.query(DecisionLogRow).count()
+        inbox = session.query(InboxItemRow).count()
+    assert logged >= 4
+    assert inbox > 0

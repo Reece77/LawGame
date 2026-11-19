@@ -44,6 +44,8 @@ def load_game_data(data_dir: Path) -> GameData:
             backgrounds=tuple(backgrounds["backgrounds"]),
             personality_presets=tuple(backgrounds["personality_presets"]),
             names=_read(data_dir / "names.yaml")["names"],
+            salary_scale=_read(data_dir / "salary_scale.yaml"),
+            inbox_templates=_read(data_dir / "inbox_templates.yaml")["templates"],
         )
     except (ValidationError, KeyError, FileNotFoundError) as exc:
         raise InvalidDataError(f"invalid seed data: {exc}") from exc

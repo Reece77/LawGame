@@ -72,6 +72,8 @@ class PersonRowOut(BaseModel):
     familiarity: list[FamiliarityOut]
     strain: float | None  # own firm only (ADR PT-0006 section 3)
     burnt_out: bool | None  # own firm only
+    morale: float | None  # own firm only, founding partners none (PT-M1b)
+    salary_cents: int | None  # own firm only (PT-M1b)
 
 
 class PersonOut(PersonRowOut):
@@ -146,7 +148,19 @@ def _row_fields(
         "familiarity": _familiarity(person, reveal, data),
         "strain": round(person.strain, 1) if own else None,
         "burnt_out": person.burnt_out if own else None,
+        "morale": _morale(state, person.id) if own else None,
+        "salary_cents": _salary(state, person.id) if own else None,
     }
+
+
+def _morale(state: GameState, person_id: int) -> float | None:
+    morale = state.person_state(person_id).morale
+    return None if morale is None else round(morale, 1)
+
+
+def _salary(state: GameState, person_id: int) -> int | None:
+    employment = state.employment_of(person_id)
+    return None if employment is None else employment.salary_cents
 
 
 def _visible(state: GameState) -> list[tuple[Person, RevealState, bool]]:
@@ -161,9 +175,12 @@ def _visible(state: GameState) -> list[tuple[Person, RevealState, bool]]:
 
 
 def people_rows(state: GameState, data: GameData, balance: Balance) -> list[PersonRowOut]:
+    """People on a firm's books (candidates are on the Recruitment screen, PT-M1b)."""
+    employed = {e.person_id for e in state.employments if e.counts_as_staff}
     return [
         PersonRowOut.model_validate(_row_fields(p, rv, state, data, balance, own))
         for p, rv, own in _visible(state)
+        if p.id in employed
     ]
 
 

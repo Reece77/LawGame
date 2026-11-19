@@ -49,6 +49,7 @@ def test_golden_seed(
         scenario_id="biglaw_spinout",
         difficulty="standard",
         data=data,
+        balance=balance,
         seed=seed,
     )
     got = _fingerprint(saves.open_save(save_dir, f"g{seed}"), balance, data)

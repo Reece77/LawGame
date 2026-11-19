@@ -29,6 +29,7 @@ def new_game_cmd(
         scenario_id=scenario,
         difficulty=difficulty,
         data=loader.game_data(),
+        balance=loader.balance(),
         seed=seed,
     )
     typer.echo(f"Created {name}: {state.player.name}, {format_turn(0, state.save_meta.start_ym)}")

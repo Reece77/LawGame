@@ -9,9 +9,12 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from ptk.db.models import (
+    EmploymentRow,
     FirmRow,
     LedgerEntryRow,
     LedgerLineRow,
+    PersonRow,
+    RevealRow,
     SaveMetaRow,
     TurnLogRow,
     TurnSnapshotRow,
@@ -19,6 +22,17 @@ from ptk.db.models import (
 from ptk.sim.ledger import LedgerEntry
 from ptk.sim.log import LogItem
 from ptk.sim.money import Cents
+from ptk.sim.people.models import (
+    AttrSet,
+    Employment,
+    Familiarity,
+    HiddenTraits,
+    Person,
+    Personality,
+    RevealRecord,
+    RevealState,
+    Skills,
+)
 from ptk.sim.snapshot import TurnSnapshot
 from ptk.sim.state import FirmState, GameState, SaveMeta
 
@@ -62,6 +76,7 @@ def insert_new(session: Session, state: GameState, entries: tuple[LedgerEntry, .
             )
         )
     session.flush()
+    write_people(session, state)
     write_entries(session, entries)
 
 
@@ -89,7 +104,149 @@ def load_state(session: Session) -> GameState:
         )
         for f in session.scalars(select(FirmRow).order_by(FirmRow.id))
     )
-    return GameState(save_meta=meta, turn=row.current_turn, firms=firms)
+    return GameState(
+        save_meta=meta,
+        turn=row.current_turn,
+        firms=firms,
+        people=tuple(_person(r) for r in session.scalars(select(PersonRow).order_by(PersonRow.id))),
+        employments=tuple(
+            Employment(
+                id=e.id,
+                person_id=e.person_id,
+                firm_id=e.firm_id,
+                start_turn=e.start_turn,
+                end_turn=e.end_turn,
+                status=e.status,  # type: ignore[arg-type]
+                end_reason=e.end_reason,  # type: ignore[arg-type]
+            )
+            for e in session.scalars(select(EmploymentRow).order_by(EmploymentRow.id))
+        ),
+        reveals=tuple(
+            _reveal(r)
+            for r in session.scalars(
+                select(RevealRow).order_by(RevealRow.observer_firm_id, RevealRow.person_id)
+            )
+        ),
+    )
+
+
+# --- People -----------------------------------------------------------------------------------
+
+
+def _attrs(values: AttrSet) -> str:
+    return json.dumps([[k, v] for k, v in values.items])
+
+
+def _items(text: str) -> tuple[tuple[str, float], ...]:
+    return tuple((str(k), float(v)) for k, v in json.loads(text))
+
+
+def _person(r: PersonRow) -> Person:
+    return Person(
+        id=r.id,
+        first_name=r.first_name,
+        last_name=r.last_name,
+        birth_turn=r.birth_turn,
+        role=r.role,
+        level=r.level,
+        skills=Skills(_items(r.skills_json)),
+        personality=Personality(_items(r.personality_json)),
+        hidden=HiddenTraits(_items(r.hidden_json)),
+        potential_ability=r.potential_ability,
+        familiarity=Familiarity(_items(r.familiarity_json)),
+        familiarity_peak=Familiarity(_items(r.familiarity_peak_json)),
+        interests=tuple(json.loads(r.interests_json)),
+        work_style=r.work_style,
+        tags=tuple(json.loads(r.tags_json)),
+        school_tier=r.school_tier,
+        bar_admissions=tuple(json.loads(r.bar_admissions_json)),
+        city=r.city,
+        strain=r.strain,
+        burnout_since=r.burnout_since,
+        last_burnout_turn=r.last_burnout_turn,
+        book_cents=r.book_cents,
+        portability_bp=r.portability_bp,
+        is_founder=r.is_founder,
+        founding_partner=r.founding_partner,
+        background=r.background,
+        real=r.real,
+    )
+
+
+def _person_row(p: Person) -> PersonRow:
+    return PersonRow(
+        id=p.id,
+        first_name=p.first_name,
+        last_name=p.last_name,
+        birth_turn=p.birth_turn,
+        role=p.role,
+        level=p.level,
+        skills_json=_attrs(p.skills),
+        personality_json=_attrs(p.personality),
+        hidden_json=_attrs(p.hidden),
+        potential_ability=p.potential_ability,
+        familiarity_json=_attrs(p.familiarity),
+        familiarity_peak_json=_attrs(p.familiarity_peak),
+        interests_json=json.dumps(list(p.interests)),
+        work_style=p.work_style,
+        tags_json=json.dumps(list(p.tags)),
+        school_tier=p.school_tier,
+        bar_admissions_json=json.dumps(list(p.bar_admissions)),
+        city=p.city,
+        strain=p.strain,
+        burnout_since=p.burnout_since,
+        last_burnout_turn=p.last_burnout_turn,
+        book_cents=p.book_cents,
+        portability_bp=p.portability_bp,
+        is_founder=p.is_founder,
+        founding_partner=p.founding_partner,
+        background=p.background,
+        real=p.real,
+    )
+
+
+def _reveal(r: RevealRow) -> RevealState:
+    return RevealState(
+        observer_firm_id=r.observer_firm_id,
+        person_id=r.person_id,
+        attributes=tuple(
+            (str(k), RevealRecord(hw=float(hw), offset=float(o), last_updated_turn=int(t)))
+            for k, hw, o, t in json.loads(r.attributes_json)
+        ),
+        profile_revealed_turn=r.profile_revealed_turn,
+        revealed_tags=tuple((str(k), int(t)) for k, t in json.loads(r.revealed_tags_json)),
+    )
+
+
+def write_people(session: Session, state: GameState) -> None:
+    """Upsert every person, employment and reveal record (current-state tables)."""
+    for person in state.people:
+        session.merge(_person_row(person))
+    session.flush()
+    for e in state.employments:
+        session.merge(
+            EmploymentRow(
+                id=e.id,
+                person_id=e.person_id,
+                firm_id=e.firm_id,
+                start_turn=e.start_turn,
+                end_turn=e.end_turn,
+                status=e.status,
+                end_reason=e.end_reason,
+            )
+        )
+    for rv in state.reveals:
+        session.merge(
+            RevealRow(
+                observer_firm_id=rv.observer_firm_id,
+                person_id=rv.person_id,
+                attributes_json=json.dumps(
+                    [[k, r.hw, r.offset, r.last_updated_turn] for k, r in rv.attributes]
+                ),
+                profile_revealed_turn=rv.profile_revealed_turn,
+                revealed_tags_json=json.dumps([[k, t] for k, t in rv.revealed_tags]),
+            )
+        )
 
 
 def ledger_balances(session: Session) -> dict[tuple[int, str], Cents]:
@@ -143,6 +300,7 @@ def write_turn(
         row = session.get(FirmRow, firm.id)
         assert row is not None
         row.name, row.stage = firm.name, firm.stage
+    write_people(session, new_state)
 
 
 def with_turn(state: GameState, turn: int) -> GameState:

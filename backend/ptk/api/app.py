@@ -145,6 +145,7 @@ def create_app() -> FastAPI:
             scenario_id=body.scenario_id,
             difficulty=body.difficulty,
             data=loader.game_data(),
+            balance=loader.balance(),
             seed=body.seed,
         )
         return _game(body.slug)

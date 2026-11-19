@@ -12,6 +12,7 @@ from dataclasses import dataclass, replace
 
 from ptk.sim.data_models import Balance, GameData, Scenario
 from ptk.sim.errors import UnknownDifficultyError, UnknownScenarioError
+from ptk.sim.hiring.phases import starting_pay
 from ptk.sim.ledger import CASH, PARTNERS_CAPITAL, LedgerEntry
 from ptk.sim.money import pct_of
 from ptk.sim.people.founder import FounderSpec, build_founder
@@ -76,6 +77,7 @@ def new_game(
         employments=employments,
         reveals=reveals,
     )
+    state = starting_pay(state, balance, data)  # PT-M1b: salaries, morale, energy
     capital = pct_of(scenario.partners_capital_cents, level.capital_mult_bp)
     entries: tuple[LedgerEntry, ...] = ()
     if capital:

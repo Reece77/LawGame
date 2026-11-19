@@ -42,7 +42,9 @@ def test_full_campaign_ends_in_december_2034(
     state, balances = saves.read_state(path)
     assert state.save_meta.game_state == "campaign_complete"
     assert state.save_meta.ended_turn == 359
-    assert balances[(1, CASH)] == 60_000_000
+    # PT-M1b: payroll and rent now spend the founders' capital; the books still balance.
+    assert sum(balances.values()) == 0
+    assert balances[(1, CASH)] < 60_000_000
     with pytest.raises(GameOverError):
         saves.run_turn(path, balance, data)
     backup.wait(path)

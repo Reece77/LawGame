@@ -91,3 +91,56 @@ class InvalidPersonError(SimError):
 
 class UnknownKnowledgeActionError(SimError):
     code = "unknown_knowledge_action"
+
+
+# --- Hiring and actions (PT-M1b; TST's names) ---------------------------------------------
+
+
+class InvalidActionError(SimError):
+    """An immediate action breaks a rule (ADR-0014)."""
+
+    code = "invalid_action"
+
+
+class InsufficientEnergyError(SimError):
+    code = "insufficient_energy"
+
+
+class InsufficientCashError(SimError):
+    code = "insufficient_cash"
+
+
+class InterviewRequiredError(SimError):
+    """An offer needs an interview first (ADR-0016)."""
+
+    code = "interview_required"
+
+
+class OfferExistsError(SimError):
+    code = "offer_exists"
+
+
+class CampusSeasonError(SimError):
+    """A campus step outside its months (spec 5.7, ADR PT-0002 section 3)."""
+
+    code = "campus_season"
+
+
+class UnknownPersonError(NotFoundError):
+    code = "unknown_person"
+
+
+class UnknownRoleError(SimError):
+    code = "unknown_role"
+
+
+class UnknownSearchError(NotFoundError):
+    code = "unknown_search"
+
+
+class UnknownCandidateError(NotFoundError):
+    code = "unknown_candidate"
+
+
+class UnknownOfferError(NotFoundError):
+    code = "unknown_offer"

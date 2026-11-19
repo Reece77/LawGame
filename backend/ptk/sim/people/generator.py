@@ -66,6 +66,13 @@ def _weighted_pick(
     return keys[int(gen.choice(len(keys), p=w / w.sum()))]
 
 
+def weighted_pick(
+    gen: np.random.Generator, weights: Mapping[str, float], keys: Sequence[str]
+) -> str:
+    """One key, drawn with the given relative weights (PT-M1b's hiring uses it)."""
+    return _weighted_pick(gen, weights, keys)
+
+
 def draw_school_tier(gen: np.random.Generator, balance: Balance) -> str:
     weights = balance.people.school_tier_weights
     return _weighted_pick(gen, weights, list(weights))  # in balance.yaml order
@@ -220,10 +227,12 @@ def generate_person(
     city: str,
     jurisdiction: str,
     practice: str | None = None,
+    school_tier: str | None = None,
 ) -> Person:
     """One generated person of `role` at `level`. A lawyer's home practice is their role's;
     a paralegal's is `practice` (or none). Lawyers past trainee are admitted in
-    `jurisdiction`."""
+    `jurisdiction`. `school_tier` (PT-M1b: a search's tier filter or a campus visit) fixes a
+    lawyer's tier; the tier is still drawn first, so the later draws do not move."""
     people = balance.people
     level_def = people.levels.get(level)
     if level_def is None or level_def.kind != role.kind:
@@ -232,6 +241,8 @@ def generate_person(
     home = role.practice if is_lawyer else practice
 
     tier = draw_school_tier(gen, balance) if is_lawyer else None
+    if is_lawyer and school_tier is not None:
+        tier = school_tier
     ca_shift = data.school_tier(tier).ca_shift if tier else 0.0
     pa_shift = data.school_tier(tier).pa_shift if tier else 0.0
     target = float(gen.normal(level_def.ca.mean + ca_shift, level_def.ca.sd))

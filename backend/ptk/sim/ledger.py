@@ -31,6 +31,14 @@ UNDISTRIBUTED_PROFIT: Final = "3100_undistributed_profit"
 DRAWINGS: Final = "3200_drawings"
 FEES: Final = "4000_fees"
 GENERAL_ADMIN: Final = "6900_general_admin"
+# PT-M1b: payroll and operating costs (ADR PT-0003 section 1).
+SALARIES: Final = "5000_associate_salaries"
+BONUSES: Final = "5010_bonuses"
+INCOME_PARTNER_SALARIES: Final = "5020_income_partner_salaries"
+STAFF_SALARIES: Final = "5100_staff_salaries"
+BENEFITS: Final = "5200_benefits"
+RENT: Final = "6000_rent"
+RECRUITING: Final = "6200_recruiting"
 ENGINE_ACCOUNTS: Final = (
     CASH,
     WIP,
@@ -40,6 +48,13 @@ ENGINE_ACCOUNTS: Final = (
     DRAWINGS,
     FEES,
     GENERAL_ADMIN,
+    SALARIES,
+    BONUSES,
+    INCOME_PARTNER_SALARIES,
+    STAFF_SALARIES,
+    BENEFITS,
+    RENT,
+    RECRUITING,
 )
 
 

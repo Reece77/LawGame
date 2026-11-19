@@ -11,6 +11,8 @@ from typing import Literal
 type LinkKind = Literal[
     "person",
     "finance",
+    "candidate",  # PT-M1b: the Recruitment screen's candidate
+    "search",  # PT-M1b
 ]  # appended by each milestone that links a new screen
 type ParamValue = str | int
 

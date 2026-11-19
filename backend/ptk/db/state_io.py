@@ -3,22 +3,30 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from dataclasses import replace
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from ptk.db.inbox import inbox_rows
 from ptk.db.models import (
+    CandidateRow,
     EmploymentRow,
     FirmRow,
     LedgerEntryRow,
     LedgerLineRow,
+    OfferRow,
     PersonRow,
+    PersonStateRow,
     RevealRow,
     SaveMetaRow,
+    SearchRow,
     TurnLogRow,
     TurnSnapshotRow,
 )
+from ptk.sim.data_models import InboxTemplate
+from ptk.sim.hiring.models import Candidate, Offer, PayPolicy, PersonState, Search
 from ptk.sim.ledger import LedgerEntry
 from ptk.sim.log import LogItem
 from ptk.sim.money import Cents
@@ -73,6 +81,8 @@ def insert_new(session: Session, state: GameState, entries: tuple[LedgerEntry, .
                 stage=firm.stage,
                 founded_turn=firm.founded_turn,
                 home_city=firm.home_city,
+                pay_policy_mode=firm.pay_policy.mode,
+                pay_policy_bp=firm.pay_policy.pct_bp,
             )
         )
     session.flush()
@@ -101,6 +111,7 @@ def load_state(session: Session) -> GameState:
             stage=f.stage,
             founded_turn=f.founded_turn,
             home_city=f.home_city,
+            pay_policy=PayPolicy(mode=f.pay_policy_mode, pct_bp=f.pay_policy_bp),  # type: ignore[arg-type]
         )
         for f in session.scalars(select(FirmRow).order_by(FirmRow.id))
     )
@@ -118,6 +129,7 @@ def load_state(session: Session) -> GameState:
                 end_turn=e.end_turn,
                 status=e.status,  # type: ignore[arg-type]
                 end_reason=e.end_reason,  # type: ignore[arg-type]
+                salary_cents=e.salary_cents,
             )
             for e in session.scalars(select(EmploymentRow).order_by(EmploymentRow.id))
         ),
@@ -127,7 +139,123 @@ def load_state(session: Session) -> GameState:
                 select(RevealRow).order_by(RevealRow.observer_firm_id, RevealRow.person_id)
             )
         ),
+        searches=tuple(
+            _search(r) for r in session.scalars(select(SearchRow).order_by(SearchRow.id))
+        ),
+        candidates=tuple(
+            _candidate(r)
+            for r in session.scalars(select(CandidateRow).order_by(CandidateRow.person_id))
+        ),
+        offers=tuple(_offer(r) for r in session.scalars(select(OfferRow).order_by(OfferRow.id))),
+        person_states=tuple(
+            PersonState(person_id=r.person_id, energy=r.energy, morale=r.morale)
+            for r in session.scalars(select(PersonStateRow).order_by(PersonStateRow.person_id))
+        ),
     )
+
+
+# --- Hiring (PT-M1b) ------------------------------------------------------------------------
+
+
+def _search(r: SearchRow) -> Search:
+    return Search(
+        id=r.id,
+        firm_id=r.firm_id,
+        role=r.role,
+        channel=r.channel,  # type: ignore[arg-type]
+        actor_id=r.actor_id,
+        opened_turn=r.opened_turn,
+        status=r.status,  # type: ignore[arg-type]
+        closed_turn=r.closed_turn,
+        level=r.level,
+        school_tiers=tuple(json.loads(r.school_tiers_json)),
+        plan_id=r.plan_id,
+    )
+
+
+def _candidate(r: CandidateRow) -> Candidate:
+    return Candidate(
+        person_id=r.person_id,
+        firm_id=r.firm_id,
+        search_id=r.search_id,
+        channel=r.channel,  # type: ignore[arg-type]
+        ask_cents=r.ask_cents,
+        created_turn=r.created_turn,
+        expires_turn=r.expires_turn,
+        status=r.status,  # type: ignore[arg-type]
+        resolved_turn=r.resolved_turn,
+        interviewed_turn=r.interviewed_turn,
+    )
+
+
+def _offer(r: OfferRow) -> Offer:
+    return Offer(
+        id=r.id,
+        firm_id=r.firm_id,
+        candidate_id=r.candidate_id,
+        actor_id=r.actor_id,
+        salary_cents=r.salary_cents,
+        made_turn=r.made_turn,
+        start_turn=r.start_turn,
+        status=r.status,  # type: ignore[arg-type]
+        resolved_turn=r.resolved_turn,
+        plan_id=r.plan_id,
+        unit_id=r.unit_id,
+    )
+
+
+def write_hiring(session: Session, state: GameState) -> None:
+    """Upsert searches, candidates, offers and person state (current-state tables)."""
+    for s in state.searches:
+        session.merge(
+            SearchRow(
+                id=s.id,
+                firm_id=s.firm_id,
+                role=s.role,
+                channel=s.channel,
+                actor_id=s.actor_id,
+                opened_turn=s.opened_turn,
+                status=s.status,
+                closed_turn=s.closed_turn,
+                level=s.level,
+                school_tiers_json=json.dumps(list(s.school_tiers)),
+                plan_id=s.plan_id,
+            )
+        )
+    session.flush()
+    for c in state.candidates:
+        session.merge(
+            CandidateRow(
+                person_id=c.person_id,
+                firm_id=c.firm_id,
+                search_id=c.search_id,
+                channel=c.channel,
+                ask_cents=c.ask_cents,
+                created_turn=c.created_turn,
+                expires_turn=c.expires_turn,
+                status=c.status,
+                resolved_turn=c.resolved_turn,
+                interviewed_turn=c.interviewed_turn,
+            )
+        )
+    for o in state.offers:
+        session.merge(
+            OfferRow(
+                id=o.id,
+                firm_id=o.firm_id,
+                candidate_id=o.candidate_id,
+                actor_id=o.actor_id,
+                salary_cents=o.salary_cents,
+                made_turn=o.made_turn,
+                start_turn=o.start_turn,
+                status=o.status,
+                resolved_turn=o.resolved_turn,
+                plan_id=o.plan_id,
+                unit_id=o.unit_id,
+            )
+        )
+    for ps in state.person_states:
+        session.merge(PersonStateRow(person_id=ps.person_id, energy=ps.energy, morale=ps.morale))
 
 
 # --- People -----------------------------------------------------------------------------------
@@ -233,6 +361,7 @@ def write_people(session: Session, state: GameState) -> None:
                 end_turn=e.end_turn,
                 status=e.status,
                 end_reason=e.end_reason,
+                salary_cents=e.salary_cents,
             )
         )
     for rv in state.reveals:
@@ -247,6 +376,7 @@ def write_people(session: Session, state: GameState) -> None:
                 revealed_tags_json=json.dumps([[k, t] for k, t in rv.revealed_tags]),
             )
         )
+    write_hiring(session, state)
 
 
 def ledger_balances(session: Session) -> dict[tuple[int, str], Cents]:
@@ -275,18 +405,31 @@ def write_entries(session: Session, entries: tuple[LedgerEntry, ...]) -> None:
         )
 
 
+def write_log(
+    session: Session,
+    state: GameState,
+    log_items: tuple[LogItem, ...],
+    templates: Mapping[str, InboxTemplate] | None,
+) -> None:
+    """The turn log, and the player firm's templated items as inbox rows."""
+    session.add_all(
+        TurnLogRow(turn=i.turn, firm_id=i.firm_id, kind=i.kind, message=i.message)
+        for i in log_items
+    )
+    if templates is not None:
+        session.add_all(inbox_rows(log_items, state.player.id, templates))
+
+
 def write_turn(
     session: Session,
     new_state: GameState,
     entries: tuple[LedgerEntry, ...],
     log_items: tuple[LogItem, ...],
     snapshot: TurnSnapshot,
+    templates: Mapping[str, InboxTemplate] | None = None,
 ) -> None:
     write_entries(session, entries)
-    session.add_all(
-        TurnLogRow(turn=i.turn, firm_id=i.firm_id, kind=i.kind, message=i.message)
-        for i in log_items
-    )
+    write_log(session, new_state, log_items, templates)
     session.add_all(
         TurnSnapshotRow(turn=snapshot.turn, firm_id=f.firm_id, kpis_json=json.dumps(f.kpis()))
         for f in snapshot.firms
@@ -296,11 +439,16 @@ def write_turn(
     meta.current_turn = new_state.turn
     meta.game_state = new_state.save_meta.game_state
     meta.ended_turn = new_state.save_meta.ended_turn
-    for firm in new_state.firms:
+    write_firms(session, new_state)
+    write_people(session, new_state)
+
+
+def write_firms(session: Session, state: GameState) -> None:
+    for firm in state.firms:
         row = session.get(FirmRow, firm.id)
         assert row is not None
         row.name, row.stage = firm.name, firm.stage
-    write_people(session, new_state)
+        row.pay_policy_mode, row.pay_policy_bp = firm.pay_policy.mode, firm.pay_policy.pct_bp
 
 
 def with_turn(state: GameState, turn: int) -> GameState:

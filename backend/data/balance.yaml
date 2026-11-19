@@ -120,3 +120,99 @@ founder: # founding partner build (spec 2.1; formulas.md 5)
   age_range: [34, 52] # years (spec 2.1)
   familiar_range: [15, 17] # 1-20: familiarity in the background's listed practices, uniform
   book_round_to_cents: 5000000 # a book of business is drawn in $50,000 steps
+energy: # the founding partner's monthly energy (TST formulas.md 6, M4c values; ADR-0014)
+  per_month: 60 # energy points a month for the player's founding partner; none carries over
+  cost: # energy points each action spends at once
+    interview: 8
+    reference_check: 4
+    scout: 20 # a month of scouting on one search's open candidates (TST 11.12)
+    referral: 10 # open a referral search (TST's network search)
+    job_post: 5 # open a job post
+    recruiter: 5 # engage a recruiter
+    campus: 5 # register a campus search for the season
+    offer: 0
+    withdraw_offer: 0
+    close_search: 0
+    pay_policy: 2 # change the firm's pay policy
+hiring: # searches and offers (TST formulas.md 7; spec 5.7)
+  candidate_shelf_turns: 3 # months a lateral candidate stays open unless hired
+  lowball_ratio: 0.85 # offers below this share of the ask are always declined
+  hint_bands: { lo: -0.3, hi: 0.3 } # offer-hint score bands: unlikely / uncertain / likely
+  offer: # acceptance logistic: p = 1 / (1 + exp(-k (score - threshold)))
+    w_salary: 4.5 # score per unit of (offer / ask - 1); TST 4.0, raised so 1.10x vs 0.95x clears 30 points measured
+    w_fit: 0.25 # score per interest matching the role's practice (interesting work)
+    w_risk: 1.0 # score lost at risk appetite 0 (none at the neutral 10)
+    k: 3.0 # logistic steepness
+    threshold: 0.1 # score at which acceptance is 50%
+  pitch_per_recruiting: 0.03 # score per recruiting point above 10 of whoever offers (TST 7 M2)
+  prestige_term: 0.0 # score; the firm's prestige (0 until PT-M5 and PT-M16 supply it)
+  ask: # a candidate's salary expectation (shown exactly)
+    noise_sd: 0.04 # relative sd of the ask around their market pay
+    round_to_cents: 100000 # asks are whole $1,000s
+    tier_bp: { t14: 10000, national: 9600, regional: 9000, oxbridge: 10000, russell_group: 9600, other_uk: 9000 } # bp of the market pay a lawyer asks, by school tier
+  recruiter_fee_bp: { junior: 2000, senior: 2500 } # of first-year salary, charged on hire (6200)
+  recruiter_senior_from: associate_5 # this class year and above pay the senior fee
+  job_post_cost_cents: 100000 # $1,000 a month while a job post is open (6200)
+  channels: # size: candidates per batch [min, max]; knowledge: what the firm learns at once
+    referral: { size: [2, 4], sociability_threshold: 15, sociability_bonus: 1, knowledge: [network_intro] }
+    job_post: { size: [4, 8], knowledge: [job_post_screen] }
+    recruiter: { size: [3, 5], knowledge: [job_post_screen, job_post_screen] }
+  level_mix: # relative weights of a lateral candidate's level, by the role's kind
+    lawyer: { associate_2: 15, associate_3: 20, associate_4: 20, associate_5: 15, associate_6: 12, associate_7: 8, associate_8: 4, counsel: 6 }
+    paralegal: { paralegal: 1 }
+    business_services: { staff: 50, manager: 35, director: 12, chief: 3 }
+campus: # the US campus cycle (spec 5.7; ADR PT-0002 section 3)
+  register_months: [1, 4] # calendar months in which a firm can open a campus search
+  pool_month: 4 # summer associates are chosen in phase 12 of this month and arrive in May
+  summer_months: [5, 7] # the summer programme: a scouting month each, and summer pay
+  offer_month: 8 # campus offers may be made only in this month; they resolve in September
+  start_month: 9 # the class starts in this month of the following year
+  level: associate_1 # a campus hire's level
+  per_tier: { t14: 3, national: 4, regional: 4 } # summer associates per tier per campus search
+  knowledge: [job_post_screen] # what the firm knows of a summer associate on arrival (the CV)
+  summer_pay_bp: 8000 # bp of a first-year's monthly scale salary per summer associate a month (6200)
+pay: # salaries, bonuses and costs per head (spec 5.4, 8.3; TST formulas.md 8)
+  benefits_bp: 2500 # benefits as bp of salary (5200)
+  rent_per_head_cents: 300000 # $3,000 a month per person on the books in New York (6000)
+  city_bp: { new_york: 10000, washington_dc: 9000, chicago: 8500, boston: 9000, los_angeles: 9500, san_francisco: 9500, houston: 8000 } # pay bands and rent by city
+  policy: # the firm's choice against the market scale (spec 5.4)
+    min_bp: 5000 # the deepest lag: 50% of the market scale (regional firms run 50-80%)
+    max_bp: 12000 # the boldest lead: 120% of the market scale
+  bonus_month: 12 # year-end bonuses are paid in this calendar month (5010)
+  discretionary_bonus_bp: { counsel: 1000, income_partner: 1500, paralegal: 500, trainee: 0, staff: 500, manager: 800, director: 1000, chief: 1500 } # bp of salary, off-scale levels
+morale: # morale 0-100 (TST formulas.md 9; spec 5.3)
+  new_hire: 65 # a hire's morale on joining
+  start: 65 # morale of a scenario's starting staff
+  target_base: 56 # TST M10d's base
+  rate: 0.3 # share of the gap to target closed each month
+  noise_scale: 2.0 # sd of monthly noise at temperament 1 (x (21 - temperament) / 20)
+  pay_slope: 60 # P = clamp(pay_slope x (pay / market - 1), pay_min, pay_max)
+  pay_min: -20
+  pay_max: 15
+  interest_per_match: 3 # interesting work: points per interest the person's practice favours
+  interest_weight_from: 2 # an interest counts when the home role weighs it at least this
+  hours_over_from: 1.1 # W_hours = hours_over_slope x max(0, hours / target - hours_over_from)
+  hours_over_slope: -10
+  hours_idle_below: 0.6 # below this hours / target, idle associates fear for their jobs
+  hours_idle: -5
+  prospects_levels: [associate_6, associate_7, associate_8] # partnership prospects apply here
+  prospects_no_sponsor: -3 # without a sponsor (sponsors arrive with PT-M4)
+  prospects_sponsor: 4 # with a revealed sponsor and a realistic business case (PT-M4)
+  bonus_slope: 30 # December shock: clamp(bonus_slope x (bonus / market bonus - 1), min, max)
+  bonus_min: -10
+  bonus_max: 6
+resign: # resignation chance per month in bp (TST formulas.md 10; spec 5.3)
+  base_bp: 170 # bp a month; TST M7a had 80 (10-25% a year); raised so associate attrition is about 18% a year (balance-targets T6)
+  morale_floor: 50 # TST M10d's floor: below it the chance rises
+  morale_divisor: 20
+  loyalty_divisor: 10
+  job_hopper_mult: 2
+  burnout_mult: 2 # within strain.burnout_effect_months of a burnout (spec 5.6)
+  lifer_loyalty_floor: 14 # the lifer tag's loyalty floor (spec 5.1)
+  cap_bp: 2000
+  lateral_market_heat: 1.0 # multiplier; a constant until PT-M7's macro index
+  associate_months: { 1: 2.0, 2: 1.3, 10: 0.7, 11: 0.5, 12: 0.5 } # bonus timing by calendar month (others 1)
+  partner_months: { 4: 2.0, 1: 0.7, 2: 0.7, 3: 0.7 } # income partners leave after the April true-up
+tags: # behaviour tag reveals (TST formulas.md 10)
+  reveal_bp_per_month: 500 # each hidden tag of an employee, each month
+  reveal_bp_on_check: 1500 # each hidden tag, at an interview or reference check

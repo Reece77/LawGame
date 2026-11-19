@@ -9,12 +9,15 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from ptk import loader
+from ptk.api.people import make_router
 from ptk.config import get_settings
 from ptk.db import saves
 from ptk.sim.calendar import format_turn
 from ptk.sim.errors import (
     GameOverError,
+    InvalidFounderError,
     InvalidSaveNameError,
+    NotFoundError,
     SaveExistsError,
     SaveNotFoundError,
     SimError,
@@ -22,9 +25,12 @@ from ptk.sim.errors import (
     UnknownScenarioError,
 )
 from ptk.sim.ledger import CASH
+from ptk.sim.people.founder import FounderSpec
 
 _STATUS: dict[type[SimError], int] = {
     SaveNotFoundError: 404,
+    NotFoundError: 404,
+    InvalidFounderError: 400,
     SaveExistsError: 409,
     GameOverError: 409,
     InvalidSaveNameError: 400,
@@ -49,9 +55,16 @@ class DifficultyOut(BaseModel):
     name: str
 
 
+class BackgroundOut(BaseModel):
+    key: str
+    label: str
+    description: str
+
+
 class MetaOut(BaseModel):
     scenarios: list[ScenarioOut]
     difficulties: list[DifficultyOut]
+    backgrounds: list[BackgroundOut]  # the founding partner's (spec 2.1)
 
 
 class SaveOut(BaseModel):
@@ -69,6 +82,7 @@ class NewGameIn(BaseModel):
     scenario_id: str = "biglaw_spinout"
     difficulty: str = "standard"
     seed: int | None = Field(default=None, ge=0, le=2**64 - 1)
+    background: str | None = None  # the founding partner's; None = the scenario's default
 
 
 class GameOut(BaseModel):
@@ -120,6 +134,11 @@ def create_app() -> FastAPI:
                 if s.available
             ],
             difficulties=[DifficultyOut(id=d.id, name=d.name) for d in data.difficulties],
+            backgrounds=[
+                BackgroundOut(key=b.key, label=b.label, description=b.description)
+                for b in data.backgrounds
+                if b.selectable
+            ],
         )
 
     @app.get("/api/saves", response_model=list[SaveOut], operation_id="listSaves")
@@ -147,6 +166,7 @@ def create_app() -> FastAPI:
             data=loader.game_data(),
             balance=loader.balance(),
             seed=body.seed,
+            founder=FounderSpec(background=body.background) if body.background else None,
         )
         return _game(body.slug)
 
@@ -167,6 +187,7 @@ def create_app() -> FastAPI:
         saves.run_turn(path, loader.balance(), loader.game_data())
         return _game(slug)
 
+    app.include_router(make_router(errors))
     return app
 
 

@@ -6,6 +6,8 @@ export type Game = Schemas['GameOut'];
 export type SaveSummary = Schemas['SaveOut'];
 export type Meta = Schemas['MetaOut'];
 export type NewGameBody = Schemas['NewGameIn'];
+export type PersonRow = Schemas['PersonRowOut'];
+export type PersonProfile = Schemas['PersonOut'];
 
 export class ApiError extends Error {
   code: string;
@@ -37,6 +39,25 @@ export const useGame = (slug: string) =>
       unwrap(await api.GET('/api/saves/{slug}/game', { params: { path: { slug } } })),
   });
 
+// Refetched after every Continue (the advance mutation invalidates ['people', slug]).
+export const usePeople = (slug: string) =>
+  useQuery({
+    queryKey: ['people', slug],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/saves/{slug}/people', { params: { path: { slug } } })),
+  });
+
+export const usePerson = (slug: string, personId: number) =>
+  useQuery({
+    queryKey: ['people', slug, personId],
+    queryFn: async () =>
+      unwrap(
+        await api.GET('/api/saves/{slug}/people/{person_id}', {
+          params: { path: { slug, person_id: personId } },
+        }),
+      ),
+  });
+
 export function useNewGame() {
   const client = useQueryClient();
   return useMutation({
@@ -50,6 +71,9 @@ export function useAdvance(slug: string) {
   return useMutation({
     mutationFn: async () =>
       unwrap(await api.POST('/api/saves/{slug}/advance', { params: { path: { slug } } })),
-    onSuccess: (game) => client.setQueryData(['game', slug], game),
+    onSuccess: (game) => {
+      client.setQueryData(['game', slug], game);
+      void client.invalidateQueries({ queryKey: ['people', slug] });
+    },
   });
 }

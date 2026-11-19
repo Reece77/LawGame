@@ -10,6 +10,7 @@ from ptk.db import saves
 from ptk.sim.calendar import format_turn
 from ptk.sim.ledger import CASH
 from ptk.sim.money import format_money
+from ptk.sim.people.founder import FounderSpec
 
 app = typer.Typer(no_args_is_help=True, add_completion=False)
 
@@ -21,6 +22,9 @@ def new_game_cmd(
     scenario: str = typer.Option("biglaw_spinout"),
     difficulty: str = typer.Option("standard"),
     seed: int | None = typer.Option(None, help="Master seed; random if omitted"),
+    background: str | None = typer.Option(
+        None, help="The founding partner's background (backgrounds.yaml); scenario default"
+    ),
 ) -> None:
     state = saves.create_save(
         get_settings().resolved_save_dir(),
@@ -31,6 +35,7 @@ def new_game_cmd(
         data=loader.game_data(),
         balance=loader.balance(),
         seed=seed,
+        founder=FounderSpec(background=background) if background else None,
     )
     typer.echo(f"Created {name}: {state.player.name}, {format_turn(0, state.save_meta.start_ym)}")
 
@@ -60,6 +65,21 @@ def inspect(save: str = typer.Option(...)) -> None:
     typer.echo(f"Date: {format_turn(state.turn, state.save_meta.start_ym)}")
     typer.echo(f"Cash: {format_money(balances.get((firm.id, CASH), 0))}")
     typer.echo(f"State: {state.save_meta.game_state}")
+
+
+@app.command()
+def people(save: str = typer.Option(...)) -> None:
+    """The firm's people as the firm sees them (revealed ranges only)."""
+    from ptk.api.people import people_rows
+
+    path = saves.open_save(get_settings().resolved_save_dir(), save)
+    state, _ = saves.read_state(path)
+    for row in people_rows(state, loader.game_data(), loader.balance()):
+        strain = "" if row.strain is None else f"\tstrain {row.strain:.0f}"
+        typer.echo(
+            f"{row.id}\t{row.name}\t{row.level}\t{row.role_label}\tage {row.age}"
+            f"\tCA {row.ability.lo}-{row.ability.hi}\t{row.potential}{strain}"
+        )
 
 
 @app.command("saves")

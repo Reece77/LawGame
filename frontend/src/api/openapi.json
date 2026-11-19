@@ -400,6 +400,1004 @@
         }
       }
     },
+    "/api/saves/{slug}/recruitment": {
+      "get": {
+        "summary": "Get Recruitment",
+        "operationId": "getRecruitment",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecruitmentOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/recruitment/searches": {
+      "post": {
+        "summary": "Open Search",
+        "operationId": "openSearch",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OpenSearchIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecruitmentOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/recruitment/searches/{search_id}/close": {
+      "post": {
+        "summary": "Close Search",
+        "operationId": "closeSearch",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "search_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Search Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecruitmentOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/recruitment/searches/{search_id}/scout": {
+      "post": {
+        "summary": "Scout Search",
+        "operationId": "scoutSearch",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "search_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Search Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecruitmentOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/recruitment/candidates/{candidate_id}/interview": {
+      "post": {
+        "summary": "Interview",
+        "operationId": "interviewCandidate",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "candidate_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Candidate Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecruitmentOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/recruitment/candidates/{candidate_id}/reference": {
+      "post": {
+        "summary": "Reference",
+        "operationId": "checkReferences",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "candidate_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Candidate Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecruitmentOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/recruitment/candidates/{candidate_id}/offer-preview": {
+      "get": {
+        "summary": "Preview",
+        "operationId": "previewOffer",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "candidate_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Candidate Id"
+            }
+          },
+          {
+            "name": "salary_cents",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Salary Cents"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfferPreviewOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/recruitment/offers": {
+      "post": {
+        "summary": "Make Offer",
+        "operationId": "makeOffer",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OfferIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecruitmentOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/recruitment/offers/{offer_id}/withdraw": {
+      "post": {
+        "summary": "Withdraw",
+        "operationId": "withdrawOffer",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "offer_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Offer Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecruitmentOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/recruitment/pay-policy": {
+      "put": {
+        "summary": "Pay Policy",
+        "operationId": "setPayPolicy",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PayPolicyIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecruitmentOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/inbox": {
+      "get": {
+        "summary": "List Inbox",
+        "operationId": "listInbox",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InboxItemOut"
+                  },
+                  "title": "Response Listinbox"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/inbox/read": {
+      "post": {
+        "summary": "Mark Read",
+        "operationId": "markInboxRead",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InboxItemOut"
+                  },
+                  "title": "Response Markinboxread"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/payroll": {
+      "get": {
+        "summary": "Get Payroll",
+        "operationId": "getPayroll",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayrollOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/saves/{slug}/org": {
       "get": {
         "summary": "Get Org",
@@ -1524,6 +2522,233 @@
         ],
         "title": "BackgroundOut"
       },
+      "CampusOut": {
+        "properties": {
+          "registration_open": {
+            "type": "boolean",
+            "title": "Registration Open"
+          },
+          "registration_label": {
+            "type": "string",
+            "title": "Registration Label"
+          },
+          "summer_label": {
+            "type": "string",
+            "title": "Summer Label"
+          },
+          "offer_label": {
+            "type": "string",
+            "title": "Offer Label"
+          },
+          "start_label": {
+            "type": "string",
+            "title": "Start Label"
+          },
+          "in_summer": {
+            "type": "boolean",
+            "title": "In Summer"
+          },
+          "offers_open": {
+            "type": "boolean",
+            "title": "Offers Open"
+          },
+          "registered_roles": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Registered Roles"
+          },
+          "summer_associates": {
+            "type": "integer",
+            "title": "Summer Associates"
+          },
+          "signed": {
+            "items": {
+              "$ref": "#/components/schemas/SignedOut"
+            },
+            "type": "array",
+            "title": "Signed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "registration_open",
+          "registration_label",
+          "summer_label",
+          "offer_label",
+          "start_label",
+          "in_summer",
+          "offers_open",
+          "registered_roles",
+          "summer_associates",
+          "signed"
+        ],
+        "title": "CampusOut"
+      },
+      "CandidateOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "role_label": {
+            "type": "string",
+            "title": "Role Label"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "age": {
+            "type": "integer",
+            "title": "Age"
+          },
+          "school_tier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "School Tier"
+          },
+          "channel": {
+            "type": "string",
+            "title": "Channel"
+          },
+          "search_id": {
+            "type": "integer",
+            "title": "Search Id"
+          },
+          "ask_cents": {
+            "type": "integer",
+            "title": "Ask Cents"
+          },
+          "ability": {
+            "$ref": "#/components/schemas/RangeOut"
+          },
+          "potential": {
+            "type": "string",
+            "title": "Potential"
+          },
+          "interviewed": {
+            "type": "boolean",
+            "title": "Interviewed"
+          },
+          "offer_allowed": {
+            "type": "boolean",
+            "title": "Offer Allowed"
+          },
+          "offer_blocked_reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "interview_required",
+                  "campus_offer_month"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Offer Blocked Reason"
+          },
+          "pending_offer_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pending Offer Id"
+          },
+          "expires_label": {
+            "type": "string",
+            "title": "Expires Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "role_label",
+          "level",
+          "age",
+          "school_tier",
+          "channel",
+          "search_id",
+          "ask_cents",
+          "ability",
+          "potential",
+          "interviewed",
+          "offer_allowed",
+          "offer_blocked_reason",
+          "pending_offer_id",
+          "expires_label"
+        ],
+        "title": "CandidateOut"
+      },
+      "ChannelOptionOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "energy": {
+            "type": "integer",
+            "title": "Energy"
+          },
+          "fee_note": {
+            "type": "string",
+            "title": "Fee Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "energy",
+          "fee_note"
+        ],
+        "title": "ChannelOptionOut"
+      },
+      "CostLineOut": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "account": {
+            "type": "string",
+            "title": "Account"
+          },
+          "amount_cents": {
+            "type": "integer",
+            "title": "Amount Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "account",
+          "amount_cents"
+        ],
+        "title": "CostLineOut"
+      },
       "CreateUnitIn": {
         "properties": {
           "kind": {
@@ -1704,6 +2929,82 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
+      "HiringChannel": {
+        "type": "string",
+        "enum": [
+          "campus",
+          "recruiter",
+          "job_post",
+          "referral"
+        ]
+      },
+      "InboxItemOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "turn": {
+            "type": "integer",
+            "title": "Turn"
+          },
+          "date_label": {
+            "type": "string",
+            "title": "Date Label"
+          },
+          "template": {
+            "type": "string",
+            "title": "Template"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "link_kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link Kind"
+          },
+          "link_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link Id"
+          },
+          "read": {
+            "type": "boolean",
+            "title": "Read"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "turn",
+          "date_label",
+          "template",
+          "title",
+          "body",
+          "link_kind",
+          "link_id",
+          "read"
+        ],
+        "title": "InboxItemOut"
+      },
       "LeaderIn": {
         "properties": {
           "person_id": {
@@ -1831,6 +3132,154 @@
           "firm_name"
         ],
         "title": "NewGameIn"
+      },
+      "OfferIn": {
+        "properties": {
+          "candidate_id": {
+            "type": "integer",
+            "title": "Candidate Id"
+          },
+          "salary_cents": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Salary Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "candidate_id",
+          "salary_cents"
+        ],
+        "title": "OfferIn"
+      },
+      "OfferOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "candidate_id": {
+            "type": "integer",
+            "title": "Candidate Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "salary_cents": {
+            "type": "integer",
+            "title": "Salary Cents"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "made_label": {
+            "type": "string",
+            "title": "Made Label"
+          },
+          "start_label": {
+            "type": "string",
+            "title": "Start Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "candidate_id",
+          "name",
+          "salary_cents",
+          "status",
+          "made_label",
+          "start_label"
+        ],
+        "title": "OfferOut"
+      },
+      "OfferPreviewOut": {
+        "properties": {
+          "hint": {
+            "type": "string",
+            "enum": [
+              "likely",
+              "uncertain",
+              "unlikely"
+            ],
+            "title": "Hint"
+          },
+          "ratio": {
+            "type": "number",
+            "title": "Ratio"
+          },
+          "floor_cents": {
+            "type": "integer",
+            "title": "Floor Cents"
+          },
+          "ask_cents": {
+            "type": "integer",
+            "title": "Ask Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "hint",
+          "ratio",
+          "floor_cents",
+          "ask_cents"
+        ],
+        "title": "OfferPreviewOut"
+      },
+      "OpenSearchIn": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "channel": {
+            "$ref": "#/components/schemas/HiringChannel"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "school_tiers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "School Tiers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "role",
+          "channel"
+        ],
+        "title": "OpenSearchIn"
+      },
+      "OptionOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label"
+        ],
+        "title": "OptionOut"
       },
       "OrgMemberOut": {
         "properties": {
@@ -2066,6 +3515,109 @@
         ],
         "title": "OrgUnitOut"
       },
+      "PayPolicyIn": {
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "match",
+              "lag",
+              "lead"
+            ],
+            "title": "Mode"
+          },
+          "pct_bp": {
+            "type": "integer",
+            "title": "Pct Bp",
+            "default": 10000
+          }
+        },
+        "type": "object",
+        "required": [
+          "mode"
+        ],
+        "title": "PayPolicyIn"
+      },
+      "PayPolicyOut": {
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "match",
+              "lag",
+              "lead"
+            ],
+            "title": "Mode"
+          },
+          "pct_bp": {
+            "type": "integer",
+            "title": "Pct Bp"
+          },
+          "min_bp": {
+            "type": "integer",
+            "title": "Min Bp"
+          },
+          "max_bp": {
+            "type": "integer",
+            "title": "Max Bp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mode",
+          "pct_bp",
+          "min_bp",
+          "max_bp"
+        ],
+        "title": "PayPolicyOut"
+      },
+      "PayrollOut": {
+        "properties": {
+          "date_label": {
+            "type": "string",
+            "title": "Date Label"
+          },
+          "headcount": {
+            "type": "integer",
+            "title": "Headcount"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/CostLineOut"
+            },
+            "type": "array",
+            "title": "Lines"
+          },
+          "total_cents": {
+            "type": "integer",
+            "title": "Total Cents"
+          },
+          "annual_salaries_cents": {
+            "type": "integer",
+            "title": "Annual Salaries Cents"
+          },
+          "bonus_month_label": {
+            "type": "string",
+            "title": "Bonus Month Label"
+          },
+          "bonus_estimate_cents": {
+            "type": "integer",
+            "title": "Bonus Estimate Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date_label",
+          "headcount",
+          "lines",
+          "total_cents",
+          "annual_salaries_cents",
+          "bonus_month_label",
+          "bonus_estimate_cents"
+        ],
+        "title": "PayrollOut",
+        "description": "This month's phase-6 costs as they stand (the Overview's payroll panel)."
+      },
       "PersonOrgOut": {
         "properties": {
           "unit_id": {
@@ -2249,6 +3801,28 @@
             ],
             "title": "Burnt Out"
           },
+          "morale": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Morale"
+          },
+          "salary_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Salary Cents"
+          },
           "first_name": {
             "type": "string",
             "title": "First Name"
@@ -2385,6 +3959,8 @@
           "familiarity",
           "strain",
           "burnt_out",
+          "morale",
+          "salary_cents",
           "first_name",
           "last_name",
           "city",
@@ -2510,6 +4086,28 @@
               }
             ],
             "title": "Burnt Out"
+          },
+          "morale": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Morale"
+          },
+          "salary_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Salary Cents"
           }
         },
         "type": "object",
@@ -2529,7 +4127,9 @@
           "potential",
           "familiarity",
           "strain",
-          "burnt_out"
+          "burnt_out",
+          "morale",
+          "salary_cents"
         ],
         "title": "PersonRowOut",
         "description": "One row of the People screen."
@@ -2785,6 +4385,109 @@
         ],
         "title": "RangeOut"
       },
+      "RecruitmentOut": {
+        "properties": {
+          "date_label": {
+            "type": "string",
+            "title": "Date Label"
+          },
+          "actor_id": {
+            "type": "integer",
+            "title": "Actor Id"
+          },
+          "energy": {
+            "type": "integer",
+            "title": "Energy"
+          },
+          "energy_per_month": {
+            "type": "integer",
+            "title": "Energy Per Month"
+          },
+          "campus": {
+            "$ref": "#/components/schemas/CampusOut"
+          },
+          "searches": {
+            "items": {
+              "$ref": "#/components/schemas/SearchOut"
+            },
+            "type": "array",
+            "title": "Searches"
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/CandidateOut"
+            },
+            "type": "array",
+            "title": "Candidates"
+          },
+          "offers": {
+            "items": {
+              "$ref": "#/components/schemas/OfferOut"
+            },
+            "type": "array",
+            "title": "Offers"
+          },
+          "pay_policy": {
+            "$ref": "#/components/schemas/PayPolicyOut"
+          },
+          "scale": {
+            "items": {
+              "$ref": "#/components/schemas/ScaleRowOut"
+            },
+            "type": "array",
+            "title": "Scale"
+          },
+          "roles": {
+            "items": {
+              "$ref": "#/components/schemas/RoleOptionOut"
+            },
+            "type": "array",
+            "title": "Roles"
+          },
+          "channels": {
+            "items": {
+              "$ref": "#/components/schemas/ChannelOptionOut"
+            },
+            "type": "array",
+            "title": "Channels"
+          },
+          "levels": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "type": "object",
+            "title": "Levels"
+          },
+          "school_tiers": {
+            "items": {
+              "$ref": "#/components/schemas/OptionOut"
+            },
+            "type": "array",
+            "title": "School Tiers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date_label",
+          "actor_id",
+          "energy",
+          "energy_per_month",
+          "campus",
+          "searches",
+          "candidates",
+          "offers",
+          "pay_policy",
+          "scale",
+          "roles",
+          "channels",
+          "levels",
+          "school_tiers"
+        ],
+        "title": "RecruitmentOut"
+      },
       "RenameUnitIn": {
         "properties": {
           "name": {
@@ -2797,6 +4500,29 @@
           "name"
         ],
         "title": "RenameUnitIn"
+      },
+      "RoleOptionOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "kind"
+        ],
+        "title": "RoleOptionOut"
       },
       "RoleOut": {
         "properties": {
@@ -2866,6 +4592,39 @@
         ],
         "title": "SaveOut"
       },
+      "ScaleRowOut": {
+        "properties": {
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "class_year": {
+            "type": "integer",
+            "title": "Class Year"
+          },
+          "market_cents": {
+            "type": "integer",
+            "title": "Market Cents"
+          },
+          "firm_cents": {
+            "type": "integer",
+            "title": "Firm Cents"
+          },
+          "market_bonus_cents": {
+            "type": "integer",
+            "title": "Market Bonus Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level",
+          "class_year",
+          "market_cents",
+          "firm_cents",
+          "market_bonus_cents"
+        ],
+        "title": "ScaleRowOut"
+      },
       "ScenarioOut": {
         "properties": {
           "id": {
@@ -2888,6 +4647,107 @@
           "description"
         ],
         "title": "ScenarioOut"
+      },
+      "SearchOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "role_label": {
+            "type": "string",
+            "title": "Role Label"
+          },
+          "channel": {
+            "type": "string",
+            "title": "Channel"
+          },
+          "channel_label": {
+            "type": "string",
+            "title": "Channel Label"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "school_tiers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "School Tiers"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "opened_label": {
+            "type": "string",
+            "title": "Opened Label"
+          },
+          "open_candidates": {
+            "type": "integer",
+            "title": "Open Candidates"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "role",
+          "role_label",
+          "channel",
+          "channel_label",
+          "level",
+          "school_tiers",
+          "status",
+          "opened_label",
+          "open_candidates"
+        ],
+        "title": "SearchOut"
+      },
+      "SignedOut": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "role_label": {
+            "type": "string",
+            "title": "Role Label"
+          },
+          "salary_cents": {
+            "type": "integer",
+            "title": "Salary Cents"
+          },
+          "start_label": {
+            "type": "string",
+            "title": "Start Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "name",
+          "role_label",
+          "salary_cents",
+          "start_label"
+        ],
+        "title": "SignedOut"
       },
       "SupervisorLabel": {
         "type": "string",

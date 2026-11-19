@@ -8,7 +8,6 @@ from dataclasses import replace
 import pytest
 
 from ptk.sim.data_models import Balance, GameData
-from ptk.sim.decisions import Decisions
 from ptk.sim.errors import OrgRuleError
 from ptk.sim.interfaces import InterviewRequest, OfferRequest, OpenSearchRequest, ScoutRequest
 from ptk.sim.org.actions import ClosePlan, CreatePlan, CreateUnit, MovePerson, SetLeader
@@ -16,7 +15,6 @@ from ptk.sim.org.delegates import activity_text, available_hook, plan_offer_sala
 from ptk.sim.org.models import PlanActivity
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
-from ptk.sim.turn import advance_turn
 from tests.org_fake_hiring import FakeHiring
 from tests.org_support import FIRM, act, founder, game, staff
 
@@ -115,19 +113,22 @@ def test_offers_go_to_the_best_known_and_at_the_plan_ratio(
 
 
 def test_hires_join_the_unit_and_fill_the_plan(data: GameData, balance: Balance) -> None:
+    """Phase 2 month by month (no other phases, so nobody resigns): offers made one month are
+    answered the next; an accepted hire joins the plan's unit and fills it."""
     state, gid, _ = _group_with_leader(data, balance)
     state = _plan(state, data, balance, target=1)
     fake = FakeHiring(seed=state.save_meta.master_seed)
     rng = RngFactory(state.save_meta.master_seed)
     for _ in range(6):
-        state = advance_turn(state, Decisions(), rng, balance, data, {}, hiring_hook=fake).new_state
+        state = run_delegates(state, rng, balance, data, {}, fake)[0]
         if state.org.firm_plans(FIRM)[0].status == "filled":
             break
+        state = replace(state, turn=state.turn + 1)
     plan = state.org.firm_plans(FIRM)[0]
     assert plan.status == "filled" and plan.hired == 1 and len(plan.hires) == 1
     assert state.org.unit_of(plan.hires[0]) == gid
     # The filled plan's delegate closes its search the next month.
-    state = advance_turn(state, Decisions(), rng, balance, data, {}, hiring_hook=fake).new_state
+    state = run_delegates(replace(state, turn=state.turn + 1), rng, balance, data, {}, fake)[0]
     assert fake.searches(state, FIRM) == ()
 
 

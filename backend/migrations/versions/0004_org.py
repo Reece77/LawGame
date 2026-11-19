@@ -1,7 +1,7 @@
-"""Schema v3 (PT-M2): org units, membership, hiring plans, delegates and one-off morale.
+"""Schema v4 (PT-M2): org units, membership, hiring plans, delegates and one-off morale.
 
-Revision ID: 0003_org
-Revises: 0002_people
+Revision ID: 0004_org
+Revises: 0003_hiring
 Create Date: 2026-11-19
 """
 
@@ -10,8 +10,8 @@ from __future__ import annotations
 import sqlalchemy as sa
 from alembic import op
 
-revision = "0003_org"
-down_revision = "0002_people"
+revision = "0004_org"
+down_revision = "0003_hiring"
 branch_labels = None
 depends_on = None
 

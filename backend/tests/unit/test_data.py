@@ -192,3 +192,27 @@ def test_invalid_balance_fails_at_load(
     _edit(data_dir / "balance.yaml", change)
     with pytest.raises(InvalidDataError):
         load_balance(data_dir)
+
+
+# --- PT-M1b --------------------------------------------------------------------------------
+
+
+def test_inbox_templates_cover_every_engine_template(data: GameData) -> None:
+    import re
+
+    sim = Path(__file__).resolve().parents[2] / "ptk" / "sim"
+    used: set[str] = set()
+    for path in sim.rglob("*.py"):
+        used |= set(re.findall(r'inbox_item\(\s*[^,]+,\s*[^,]+,\s*"([a-z_]+)"', path.read_text()))
+    assert used, "no templates found"
+    assert used <= set(data.inbox_templates), sorted(used - set(data.inbox_templates))
+
+
+def test_pay_data_covers_every_level(data: GameData, balance: Balance) -> None:
+    from ptk.sim.data_models import LEVELS, OFF_SCALE_LEVELS, SCALE_LEVELS
+
+    assert set(SCALE_LEVELS) | set(OFF_SCALE_LEVELS) | {"equity_partner"} == set(LEVELS)
+    assert set(OFF_SCALE_LEVELS) <= set(balance.pay.discretionary_bonus_bp)
+    assert set(balance.hiring.ask.tier_bp) == {t.key for t in data.school_tiers}
+    assert set(balance.campus.per_tier) <= {t.key for t in data.school_tiers}
+    assert data.salary_scale.scale[0].from_ym == (2005, 1)

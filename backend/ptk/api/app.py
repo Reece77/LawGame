@@ -9,16 +9,23 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from ptk import loader
+from ptk.api import recruitment
 from ptk.api.org import make_org_router
 from ptk.api.people import make_router
 from ptk.config import get_settings
 from ptk.db import saves
 from ptk.sim.calendar import format_turn
 from ptk.sim.errors import (
+    CampusSeasonError,
     GameOverError,
+    InsufficientCashError,
+    InsufficientEnergyError,
+    InterviewRequiredError,
+    InvalidActionError,
     InvalidFounderError,
     InvalidSaveNameError,
     NotFoundError,
+    OfferExistsError,
     SaveExistsError,
     SaveNotFoundError,
     SimError,
@@ -37,6 +44,13 @@ _STATUS: dict[type[SimError], int] = {
     InvalidSaveNameError: 400,
     UnknownScenarioError: 400,
     UnknownDifficultyError: 400,
+    # PT-M1b: actions (ADR-0014, ADR-0016)
+    InvalidActionError: 400,
+    InsufficientEnergyError: 409,
+    InsufficientCashError: 409,
+    InterviewRequiredError: 409,
+    OfferExistsError: 409,
+    CampusSeasonError: 409,
 }
 
 
@@ -189,6 +203,7 @@ def create_app() -> FastAPI:
         return _game(slug)
 
     app.include_router(make_router(errors))
+    app.include_router(recruitment.make_router(errors))
     app.include_router(make_org_router(errors))
     return app
 

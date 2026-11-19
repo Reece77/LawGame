@@ -34,6 +34,29 @@ LEVELS: Final = (
     "chief",
 )
 PARTNER_LEVELS: Final = frozenset({"income_partner", "equity_partner"})
+# PT-M1b: associates are paid on the class-year scale (senior associates as class 8); equity
+# partners take profit, not salary (spec 5.4); everyone else is paid from a band.
+SCALE_LEVELS: Final = (
+    "associate_1",
+    "associate_2",
+    "associate_3",
+    "associate_4",
+    "associate_5",
+    "associate_6",
+    "associate_7",
+    "associate_8",
+    "senior_associate",
+)
+OFF_SCALE_LEVELS: Final = (
+    "paralegal",
+    "trainee",
+    "counsel",
+    "income_partner",
+    "staff",
+    "manager",
+    "director",
+    "chief",
+)
 # Knowledge actions that narrow revealed ranges (formulas.md 4; PT keeps TST's first six).
 REVEAL_ACTIONS: Final = (
     "job_post_screen",
@@ -323,6 +346,190 @@ class FounderBalance(_Strict):
         return self
 
 
+# --- Hiring, pay, morale and resignations (PT-M1b) -----------------------------------------
+
+ENERGY_ACTIONS: Final = (
+    "interview",
+    "reference_check",
+    "scout",
+    "referral",
+    "job_post",
+    "recruiter",
+    "campus",
+    "offer",
+    "withdraw_offer",
+    "close_search",
+    "pay_policy",
+)
+LATERAL_CHANNELS: Final = ("referral", "job_post", "recruiter")
+
+
+class EnergyBalance(_Strict):
+    per_month: int = Field(ge=0)
+    cost: dict[str, int]
+
+    @model_validator(mode="after")
+    def _check(self) -> EnergyBalance:
+        if sorted(self.cost) != sorted(ENERGY_ACTIONS):
+            raise ValueError(f"energy.cost must define exactly {list(ENERGY_ACTIONS)}")
+        if any(c < 0 for c in self.cost.values()):
+            raise ValueError("energy costs must not be negative")
+        return self
+
+
+class HintBands(_Strict):
+    lo: float
+    hi: float
+
+
+class OfferBalance(_Strict):
+    w_salary: float
+    w_fit: float
+    w_risk: float
+    k: float = Field(gt=0)
+    threshold: float
+
+
+class AskBalance(_Strict):
+    noise_sd: float = Field(ge=0)
+    round_to_cents: int = Field(gt=0)
+    tier_bp: dict[str, int]
+
+
+class RecruiterFeeBalance(_Strict):
+    junior: int = Field(ge=0)
+    senior: int = Field(ge=0)
+
+
+class ChannelBalance(_Strict):
+    size: Span
+    knowledge: tuple[str, ...] = ()
+    sociability_threshold: float | None = None
+    sociability_bonus: int = Field(default=0, ge=0)
+
+    @model_validator(mode="after")
+    def _check(self) -> ChannelBalance:
+        if bad := sorted(set(self.knowledge) - set(REVEAL_ACTIONS)):
+            raise ValueError(f"unknown knowledge actions {bad}")
+        return self
+
+
+class HiringBalance(_Strict):
+    candidate_shelf_turns: int = Field(gt=0)
+    lowball_ratio: float = Field(gt=0)
+    hint_bands: HintBands
+    offer: OfferBalance
+    pitch_per_recruiting: float
+    prestige_term: float
+    ask: AskBalance
+    recruiter_fee_bp: RecruiterFeeBalance
+    recruiter_senior_from: str
+    job_post_cost_cents: int = Field(ge=0)
+    channels: dict[str, ChannelBalance]
+    level_mix: dict[PersonKind, dict[str, float]]
+
+    @model_validator(mode="after")
+    def _check(self) -> HiringBalance:
+        if sorted(self.channels) != sorted(LATERAL_CHANNELS):
+            raise ValueError(f"hiring.channels must define exactly {list(LATERAL_CHANNELS)}")
+        for kind in ("lawyer", "paralegal", "business_services"):
+            mix = self.level_mix.get(kind)
+            if not mix or any(w < 0 for w in mix.values()) or not any(mix.values()):
+                raise ValueError(f"hiring.level_mix.{kind} needs positive weights")
+            if bad := sorted(set(mix) - set(LEVELS)):
+                raise ValueError(f"hiring.level_mix.{kind}: unknown levels {bad}")
+        if self.recruiter_senior_from not in LEVELS:
+            raise ValueError("hiring.recruiter_senior_from must be a level")
+        return self
+
+
+class CampusBalance(_Strict):
+    register_months: Span
+    pool_month: int = Field(ge=1, le=12)
+    summer_months: Span
+    offer_month: int = Field(ge=1, le=12)
+    start_month: int = Field(ge=1, le=12)
+    level: str
+    per_tier: dict[str, int]
+    knowledge: tuple[str, ...]
+    summer_pay_bp: int = Field(ge=0)
+
+    @model_validator(mode="after")
+    def _check(self) -> CampusBalance:
+        if not (
+            self.register_months.hi <= self.pool_month < self.summer_months.lo
+            and self.summer_months.hi < self.offer_month < 12  # tunable-exempt: December
+        ):
+            raise ValueError("campus months must run register <= pool < summer < offer")
+        if self.level not in LEVELS:
+            raise ValueError("campus.level must be a level")
+        if any(n < 0 for n in self.per_tier.values()):
+            raise ValueError("campus.per_tier counts must not be negative")
+        if bad := sorted(set(self.knowledge) - set(REVEAL_ACTIONS)):
+            raise ValueError(f"campus.knowledge: unknown actions {bad}")
+        return self
+
+
+class PayPolicyLimits(_Strict):
+    min_bp: int = Field(gt=0)
+    max_bp: int = Field(gt=0)
+
+
+class PayBalance(_Strict):
+    benefits_bp: int = Field(ge=0)
+    rent_per_head_cents: int = Field(ge=0)
+    city_bp: dict[str, int]
+    policy: PayPolicyLimits
+    bonus_month: int = Field(ge=1, le=12)
+    discretionary_bonus_bp: dict[str, int]
+
+    def city(self, city: str) -> int:
+        """A city's pay and rent multiplier in bp (10000 where none is listed)."""
+        return self.city_bp.get(city, 10_000)  # tunable-exempt: 100% in bp
+
+
+class MoraleBalance(_Strict):
+    new_hire: float = Field(ge=0, le=100)
+    start: float = Field(ge=0, le=100)
+    target_base: float
+    rate: float = Field(ge=0, le=1)
+    noise_scale: float = Field(ge=0)
+    pay_slope: float
+    pay_min: float
+    pay_max: float
+    interest_per_match: float
+    interest_weight_from: float
+    hours_over_from: float
+    hours_over_slope: float
+    hours_idle_below: float
+    hours_idle: float
+    prospects_levels: tuple[str, ...]
+    prospects_no_sponsor: float
+    prospects_sponsor: float
+    bonus_slope: float
+    bonus_min: float
+    bonus_max: float
+
+
+class ResignBalance(_Strict):
+    base_bp: float = Field(ge=0)
+    morale_floor: float
+    morale_divisor: float = Field(gt=0)
+    loyalty_divisor: float = Field(gt=0)
+    job_hopper_mult: float = Field(ge=0)
+    burnout_mult: float = Field(ge=0)
+    lifer_loyalty_floor: float
+    cap_bp: float = Field(ge=0)
+    lateral_market_heat: float = Field(ge=0)
+    associate_months: dict[int, float]
+    partner_months: dict[int, float]
+
+
+class TagRevealBalance(_Strict):
+    reveal_bp_per_month: float = Field(ge=0)
+    reveal_bp_on_check: float = Field(ge=0)
+
+
 # --- Org (PT-M2; TST formulas.md 13) --------------------------------------------------------
 
 
@@ -388,6 +595,13 @@ class Balance(_Strict):
     strain: StrainBalance
     reveal: RevealBalance
     founder: FounderBalance
+    energy: EnergyBalance
+    hiring: HiringBalance
+    campus: CampusBalance
+    pay: PayBalance
+    morale: MoraleBalance
+    resign: ResignBalance
+    tags: TagRevealBalance
     org: OrgBalance
 
 
@@ -522,6 +736,62 @@ class NamePool(_Strict):
     last: tuple[str, ...] = Field(min_length=1)
 
 
+class ScaleRow(_Strict):
+    """The market associate scale from a month on (spec 5.4)."""
+
+    from_ym: tuple[int, int] = Field(alias="from")
+    salaries: tuple[int, ...] = Field(min_length=8, max_length=8)  # class years 1-8, cents
+
+
+class BonusRow(_Strict):
+    year: int
+    amounts: tuple[int, ...] = Field(min_length=8, max_length=8)  # class years 1-8, cents
+
+
+class SalaryScale(_Strict):
+    scale: tuple[ScaleRow, ...] = Field(min_length=1)
+    bonuses: tuple[BonusRow, ...] = Field(min_length=1)
+    bands: dict[str, int]  # off-scale levels: a New York salary a year, cents
+
+    @model_validator(mode="after")
+    def _check(self) -> SalaryScale:
+        froms = [r.from_ym for r in self.scale]
+        if froms != sorted(set(froms)):
+            raise ValueError("salary scale rows must be in strictly increasing date order")
+        years = [b.year for b in self.bonuses]
+        if years != sorted(set(years)):
+            raise ValueError("bonus rows must be in strictly increasing year order")
+        for row in self.scale:
+            if list(row.salaries) != sorted(row.salaries) or row.salaries[0] <= 0:
+                raise ValueError(f"scale from {row.from_ym}: salaries must rise by class year")
+        for brow in self.bonuses:
+            if any(a < 0 for a in brow.amounts):
+                raise ValueError(f"bonuses {brow.year}: amounts must not be negative")
+        if any(v <= 0 for v in self.bands.values()):
+            raise ValueError("salary bands must be positive")
+        return self
+
+    def market_salaries(self, ym: tuple[int, int]) -> tuple[int, ...]:
+        """The market scale in force in month `ym` (the first row before 2005)."""
+        current = self.scale[0].salaries
+        for row in self.scale:
+            if row.from_ym <= ym:
+                current = row.salaries
+        return current
+
+    def market_bonuses(self, year: int) -> tuple[int, ...]:
+        current = self.bonuses[0].amounts
+        for row in self.bonuses:
+            if row.year <= year:
+                current = row.amounts
+        return current
+
+
+class InboxTemplate(_Strict):
+    title: str = Field(min_length=1)
+    body: str = Field(min_length=1)
+
+
 class GameData(_Strict):
     accounts: tuple[Account, ...]
     scenarios: tuple[Scenario, ...]
@@ -539,6 +809,8 @@ class GameData(_Strict):
     backgrounds: tuple[Background, ...] = Field(min_length=1)
     personality_presets: tuple[PersonalityPreset, ...]
     names: dict[str, NamePool]
+    salary_scale: SalaryScale
+    inbox_templates: dict[str, InboxTemplate]
 
     @model_validator(mode="after")
     def _unique(self) -> GameData:
@@ -600,6 +872,8 @@ class GameData(_Strict):
                 raise ValueError(f"preset {preset.key!r}: must set every personality trait")
         if "us" not in self.names:
             raise ValueError("names.yaml needs the `us` pool")
+        if missing := sorted(set(OFF_SCALE_LEVELS) - set(self.salary_scale.bands)):
+            raise ValueError(f"salary_scale.yaml bands must cover {missing}")
         backgrounds = {b.key for b in self.backgrounds}
         for sc in self.scenarios:
             if sc.home_jurisdiction not in jurisdictions:

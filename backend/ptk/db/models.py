@@ -36,6 +36,8 @@ class FirmRow(Base):
     stage: Mapped[int] = mapped_column(Integer)
     founded_turn: Mapped[int] = mapped_column(Integer)
     home_city: Mapped[str] = mapped_column(String(40))
+    pay_policy_mode: Mapped[str] = mapped_column(String(10))  # PT-M1b: match, lag, lead
+    pay_policy_bp: Mapped[int] = mapped_column(Integer)  # bp of the market scale
 
 
 class LedgerEntryRow(Base):
@@ -127,6 +129,7 @@ class EmploymentRow(Base):
     end_turn: Mapped[int | None] = mapped_column(Integer, nullable=True)
     status: Mapped[str] = mapped_column(String(20))
     end_reason: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    salary_cents: Mapped[int] = mapped_column(BigInteger)  # PT-M1b: a year
 
 
 class RevealRow(Base):
@@ -138,7 +141,76 @@ class RevealRow(Base):
     revealed_tags_json: Mapped[str] = mapped_column(Text)  # [[tag, turn], ...]
 
 
-# --- Org (schema v3, PT-M2). Current state, rewritten each turn and after each org action. ---
+# --- Hiring, pay and the inbox (schema v3, PT-M1b) ------------------------------------------
+
+
+class SearchRow(Base):
+    __tablename__ = "search"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    firm_id: Mapped[int] = mapped_column(ForeignKey("firm.id"), index=True)
+    role: Mapped[str] = mapped_column(String(40))
+    channel: Mapped[str] = mapped_column(String(20))
+    actor_id: Mapped[int] = mapped_column(Integer)
+    opened_turn: Mapped[int] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(String(20))
+    closed_turn: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    level: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    school_tiers_json: Mapped[str] = mapped_column(Text)
+    plan_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
+
+
+class CandidateRow(Base):
+    __tablename__ = "candidate"
+    person_id: Mapped[int] = mapped_column(ForeignKey("person.id"), primary_key=True)
+    firm_id: Mapped[int] = mapped_column(ForeignKey("firm.id"), index=True)
+    search_id: Mapped[int] = mapped_column(ForeignKey("search.id"), index=True)
+    channel: Mapped[str] = mapped_column(String(20))
+    ask_cents: Mapped[int] = mapped_column(BigInteger)
+    created_turn: Mapped[int] = mapped_column(Integer)
+    expires_turn: Mapped[int] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(String(20))
+    resolved_turn: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    interviewed_turn: Mapped[int | None] = mapped_column(Integer, nullable=True)
+
+
+class OfferRow(Base):
+    __tablename__ = "offer"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    firm_id: Mapped[int] = mapped_column(ForeignKey("firm.id"), index=True)
+    candidate_id: Mapped[int] = mapped_column(ForeignKey("person.id"), index=True)
+    actor_id: Mapped[int] = mapped_column(Integer)
+    salary_cents: Mapped[int] = mapped_column(BigInteger)
+    made_turn: Mapped[int] = mapped_column(Integer)
+    start_turn: Mapped[int] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(String(20))
+    resolved_turn: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    plan_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    unit_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
+
+
+class PersonStateRow(Base):
+    __tablename__ = "person_state"
+    person_id: Mapped[int] = mapped_column(ForeignKey("person.id"), primary_key=True)
+    energy: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    morale: Mapped[float | None] = mapped_column(Float, nullable=True)
+
+
+class InboxItemRow(Base):
+    """Rendered inbox entries for the player's firm (append-only, except `read`)."""
+
+    __tablename__ = "inbox_item"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    turn: Mapped[int] = mapped_column(Integer, index=True)
+    firm_id: Mapped[int] = mapped_column(Integer, index=True)
+    template: Mapped[str] = mapped_column(String(60))
+    title: Mapped[str] = mapped_column(Text)
+    body: Mapped[str] = mapped_column(Text)
+    link_kind: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    link_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    read: Mapped[bool]
+
+
+# --- Org (schema v4, PT-M2). Current state, rewritten each turn and after each org action. ---
 
 
 class OrgUnitRow(Base):

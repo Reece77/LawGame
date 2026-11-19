@@ -222,21 +222,29 @@ def manager_morale_term(
 
 def org_morale_changes(state: GameState, person_id: int) -> float:
     """One-off morale points from this turn's org actions (TST 13.7 reorganising, 13.8
-    raises, pay cuts and promotions), to add once to the person's current morale. PT-M1b's
-    morale calls this in phase 8; the org clears the changes at the end of phase 8, so each is
-    applied exactly once. 0 for the founding partner (who has no morale in TST)."""
+    raises, pay cuts and promotions), not yet applied. The org adds them to each person's
+    current morale (`PersonState.morale`) at the end of phase 8, after PT-M1b's morale step,
+    and then clears them, so each counts exactly once. 0 for the founding partner."""
     return sum(n.points for n in state.org.nudges if n.person_id == person_id)
 
 
 def salary_cents(state: GameState, person_id: int) -> int | None:
-    """An employee's annual salary; None while the firm has no payroll. A raise (TST 13.8)
-    reads it. PT-M1b replaces this body with its payroll's."""
+    """An employee's annual salary (PT-M1b's `Employment.salary_cents`); None if they are
+    not on a firm's books. A raise (TST 13.8) reads it."""
+    for e in state.employments:
+        if e.person_id == person_id and e.counts_as_staff:
+            return e.salary_cents
     return None
 
 
 def set_salary(state: GameState, person_id: int, salary: int) -> GameState:
-    """The state with an employee's annual salary changed, from the next payroll (TST 13.8).
-    PT-M1b replaces this body with its payroll's."""
-    from ptk.sim.errors import OrgRuleError
+    """The state with an employee's annual salary changed, from the next payroll (TST 13.8)."""
+    from dataclasses import replace
 
-    raise OrgRuleError("salaries arrive with payroll (PT-M1b)")
+    from ptk.sim.errors import OrgRuleError
+    from ptk.sim.state import with_employment
+
+    for e in state.employments:
+        if e.person_id == person_id and e.counts_as_staff:
+            return with_employment(state, replace(e, salary_cents=salary))
+    raise OrgRuleError(f"person {person_id} is not on a firm's books")

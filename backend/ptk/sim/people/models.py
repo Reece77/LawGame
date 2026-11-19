@@ -5,7 +5,7 @@ levels are class years and titles (ADR PT-0006 section 1); a person carries prac
 familiarity and its peak, law school tier, bar admissions, strain and burnout, and a
 partner's book and hidden portability; every person has a role (a founding partner's is
 their home practice, not TST's best fit); employment is with a firm; reveal records also
-cover familiarity. Salary expectations and employment pay arrive with PT-M1b.
+cover familiarity. PT-M1b adds an employment's salary (asks live on hiring candidates).
 
 True values live here and are used by the sim. What an observer firm knows is a separate
 `RevealState` per (observer, person); the API only ever sees ranges built from it.
@@ -170,6 +170,7 @@ class Employment:
     end_turn: int | None = None
     status: EmploymentStatus = "active"
     end_reason: EndReason | None = None
+    salary_cents: int = 0  # a year (PT-M1b); 0 for equity partners, who take profit
 
     @property
     def counts_as_staff(self) -> bool:

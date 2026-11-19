@@ -58,10 +58,16 @@ def test_give_raise(data: GameData, balance: Balance, payroll: dict[int, int]) -
         act(state, GiveRaise(fid, fid, 50_000_000), data, balance)
 
 
-def test_raise_waits_for_payroll(data: GameData, balance: Balance) -> None:
+def test_raise_through_payroll(data: GameData, balance: Balance) -> None:
+    """The pay seam reads and sets PT-M1b's employment salary."""
     state = game(data, balance)
-    with pytest.raises(OrgRuleError, match="payroll"):
-        act(state, GiveRaise(founder(state), staff(state)[0].id, 11_000_000), data, balance)
+    pid = staff(state)[0].id
+    assert interfaces.salary_cents(state, pid) is not None
+    state = interfaces.set_salary(state, pid, 10_000_000)
+    state = act(state, GiveRaise(founder(state), pid, 11_000_000), data, balance)
+    assert interfaces.salary_cents(state, pid) == 11_000_000
+    assert [(n.points, n.reason) for n in state.org.nudges] == [(3, "raise")]
+    assert interfaces.salary_cents(state, 9999) is None
 
 
 def _person(state: GameState, level: str) -> int:
@@ -105,3 +111,19 @@ def test_promote_to_never_reaches_partnership(balance: Balance) -> None:
     assert not {"income_partner", "equity_partner"} & set(balance.org.promote_to.values())
     assert balance.org.promote_to["staff"] == "manager"
     assert "director" not in balance.org.promote_to  # chief is not reachable (TST: no exec)
+
+
+def test_one_off_morale_reaches_current_morale(data: GameData, balance: Balance) -> None:
+    """Phase 8: the org adds this turn's one-off changes to PT-M1b's current morale, once."""
+    from ptk.sim.hiring.models import PersonState
+    from ptk.sim.org.phase import clear_nudges
+    from ptk.sim.state import with_person_states
+
+    state = game(data, balance)
+    pid = _person(state, "associate_3")
+    state = with_person_states(state, [PersonState(person_id=pid, morale=50.0)])
+    state = act(state, Promote(founder(state), pid), data, balance)
+    after = clear_nudges(state)
+    assert after.person_state(pid).morale == 55.0
+    assert after.org.nudges == ()
+    assert clear_nudges(after).person_state(pid).morale == 55.0

@@ -1,0 +1,36 @@
+# Inbox wording (PT-M1b). Ported from backend/data/inbox_templates.yaml @ 02fba2aa (Tech Startup
+# Tycoon); changed: Partner Track's hiring templates only, with law-firm wording. The sim emits a template key
+# plus parameters; persistence renders the title and body for the player's firm. Parameters
+# ending in _cents are shown as money; "{role:a}" adds the indefinite article.
+# Every key the engine uses must exist here (a test checks).
+templates:
+  candidates_arrived:
+    title: "{count} candidates for {role}"
+    body: "Your {channel} search for {role:a} turned up {count} candidates. They will consider offers for the next {shelf} months."
+  summer_programme:
+    title: "{count} summer associates arrive for {role}"
+    body: "Your summer programme runs from May to July. Interview the summer associates you want; offers go out in August for a start next September."
+  offer_accepted:
+    title: "{name} accepted your offer"
+    body: "{name} joins as {level:a} {role} on {salary_cents} a year."
+  campus_offer_accepted:
+    title: "{name} accepted a place in the class of {class_year}"
+    body: "{name} will start as a first-year {role} in {start_label}, on the scale's salary for that year."
+  offer_declined:
+    title: "{name} declined your offer"
+    body: "{name} has turned down the {role} role and is no longer a candidate."
+  class_started:
+    title: "{name} starts today"
+    body: "{name} joins the firm as a first-year {role} on {salary_cents} a year."
+  resigned:
+    title: "{name} has resigned"
+    body: "{name} has handed in their notice and will leave at the start of next month."
+  employee_left:
+    title: "{name} has left"
+    body: "{name} has left the firm ({reason})."
+  tag_revealed:
+    title: "You noticed something about {name}"
+    body: "You have noticed that {name} {reveal_text}."
+  bonuses_paid:
+    title: "Year-end bonuses: {total_cents}"
+    body: "The firm paid {count} year-end bonuses, {total_cents} in all, {policy} the market."

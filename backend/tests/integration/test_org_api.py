@@ -70,12 +70,9 @@ def test_reorganise_through_the_api(save_dir: Path) -> None:
     bad = client.post("/api/saves/org/org/units", json={"kind": "team", "name": "   "})
     assert bad.status_code == 400 and bad.json()["code"] == "org_rule"
     assert client.delete("/api/saves/org/org/plans/77").status_code == 404
-    assert (
-        client.post(
-            f"/api/saves/org/org/people/{lit['id']}/raise", json={"salary_cents": 1}
-        ).status_code
-        == 400
-    )
+    founder = org["founder"]["id"]
+    raise_ = client.post(f"/api/saves/org/org/people/{founder}/raise", json={"salary_cents": 1})
+    assert raise_.status_code == 400 and raise_.json()["code"] == "org_rule"
 
     org = client.post(f"/api/saves/org/org/people/{lit['id']}/promote").json()
     org = client.delete(f"/api/saves/org/org/plans/{plan['id']}").json()

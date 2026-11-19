@@ -14,6 +14,7 @@ from dataclasses import dataclass, field, replace
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
 from ptk.sim.errors import GameOverError
+from ptk.sim.hiring import phases as hiring
 from ptk.sim.interfaces import DelegateHiringHook, delegate_hiring
 from ptk.sim.ledger import CASH, AccountCode, LedgerBalances, LedgerEntry, apply_entries
 from ptk.sim.log import LogItem
@@ -80,8 +81,12 @@ type Phase = Callable[[TurnContext], TurnContext]
 
 
 def apply_player_decisions(ctx: TurnContext) -> TurnContext:
-    """1. Offers and laterals resolve; votes held this month count (PT-M1b, PT-M4)."""
-    return ctx
+    """1. Notices end; offers resolve; a signed campus class starts (PT-M1b); votes held
+    this month count (PT-M4)."""
+    state, left = hiring.end_notices(ctx.state)
+    state, entries, resolved = hiring.resolve_offers(state, ctx.rng, ctx.balance, ctx.data)
+    state, started = hiring.start_signed(state, ctx.balance, ctx.data)
+    return replace(ctx, state=state).post(*entries).log(*left, *resolved, *started)
 
 
 def delegate_and_rival_decisions(ctx: TurnContext) -> TurnContext:
@@ -110,8 +115,10 @@ def work_and_billing(ctx: TurnContext) -> TurnContext:
 
 
 def payroll_and_operating_costs(ctx: TurnContext) -> TurnContext:
-    """6. Salaries, bonuses, rent, insurance (PT-M1b)."""
-    return ctx
+    """6. Salaries, benefits, rent per head, recruiting; December bonuses (PT-M1b); insurance
+    and technology arrive later."""
+    entries, logs = hiring.payroll(ctx.state, ctx.balance, ctx.data)
+    return ctx.post(*entries).log(*logs)
 
 
 def financing(ctx: TurnContext) -> TurnContext:
@@ -121,16 +128,20 @@ def financing(ctx: TurnContext) -> TurnContext:
 
 def people_updates(ctx: TurnContext) -> TurnContext:
     """8. Strain, growth (times the supervising partner's mentoring, PT-M2), familiarity,
-    class years, reveals (PT-M1a); morale and departures (PT-M1b); the org's one-off morale
-    changes are cleared last (PT-M2)."""
+    class years, reveals (PT-M1a); morale, resignations and tag reveals (PT-M1b); the org's
+    one-off morale changes are cleared last (PT-M2)."""
     mentoring = growth_multipliers(ctx.state, ctx.balance)  # TST 13.5, before anyone grows
     state = people_month(ctx.state, ctx.rng, ctx.data, ctx.balance, ctx.work, mentoring)
-    return replace(ctx, state=clear_nudges(state))
+    state, departures = hiring.morale_and_departures(
+        state, ctx.rng, ctx.balance, ctx.data, ctx.work
+    )
+    state, tags = hiring.monthly_tag_reveals(state, ctx.rng, ctx.balance, ctx.data)
+    return replace(ctx, state=clear_nudges(state)).log(*departures, *tags)
 
 
 def market_and_macro_update(ctx: TurnContext) -> TurnContext:
-    """9. Legal demand indices, rates, salary scale (PT-M7)."""
-    return ctx
+    """9. The salary scale moves (PT-M1b: history to 2015); legal demand and rates (PT-M7)."""
+    return replace(ctx, state=hiring.apply_scale(ctx.state, ctx.data))
 
 
 def stage_checks(ctx: TurnContext) -> TurnContext:
@@ -148,8 +159,13 @@ def snapshot_and_month_end_report(ctx: TurnContext) -> TurnContext:
 
 
 def event_director_requests(ctx: TurnContext) -> TurnContext:
-    """12. Events for next month; candidate pools (PT-M1b, PT-M6)."""
-    return ctx
+    """12. Candidates leave; lateral batches, the campus pools and the summer programme
+    (PT-M1b); events for next month (PT-M6)."""
+    state = hiring.expire_candidates(ctx.state)
+    state, batches = hiring.lateral_batches(state, ctx.rng, ctx.balance, ctx.data)
+    state, pools = hiring.campus_pools(state, ctx.rng, ctx.balance, ctx.data)
+    state = hiring.summer_month(state, ctx.balance, ctx.data)
+    return replace(ctx, state=state).log(*batches, *pools)
 
 
 PHASES: tuple[tuple[str, Phase], ...] = (
@@ -208,7 +224,9 @@ def advance_turn(
         ctx = phase(ctx)
     if ctx.snapshot is None:
         raise RuntimeError("snapshot phase did not run")
-    next_state = close_at_campaign_end(replace(ctx.state, turn=state.turn + 1), balance)
+    # The founding partner's energy resets after phase 12 for the new month (ADR-0014).
+    next_state = hiring.reset_energy(replace(ctx.state, turn=state.turn + 1), balance)
+    next_state = close_at_campaign_end(next_state, balance)
     return TurnResult(
         new_state=next_state,
         ledger_entries=ctx.entries,

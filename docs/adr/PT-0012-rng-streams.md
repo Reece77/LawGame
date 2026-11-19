@@ -10,10 +10,15 @@
 
 | Name | Id | Key | Used for | Milestone |
 | --- | --- | --- | --- | --- |
-| `people_gen` | 1 | `(search_id, n)` | Generated people; search 0 is a scenario's starting staff | PT-M1a |
+| `people_gen` | 1 | `(search_id, n)` | Generated people; search 0 is a scenario's starting staff; for a lateral search n = 0 draws the batch size and n ≥ 1 the n-th candidate (PT-M1b) | PT-M1a |
+| `hiring` | 2 | `(offer_id,)` | An offer's acceptance draw | PT-M1b |
+| `morale` | 3 | `(person_id,)` | Monthly morale noise | PT-M1b |
 | `founder` | 7 | `(founder_index,)` | A founding partner's build; index 0 is the player's | PT-M1a |
 | `growth` | 8 | `(person_id,)` | Monthly growth noise | PT-M1a |
 | `reveal` | 9 | `(observer_firm_id, person_id)` | Reveal record offsets | PT-M1a |
+| `tags` | 10 | `(person_id,)` | Monthly tag reveals of employees | PT-M1b |
+| `resign` | 11 | `(person_id,)` | The monthly resignation roll | PT-M1b |
+| `actions` | 13 | `(seq,)` | Randomness inside a player action (tag rolls at an interview or reference check; ADR-0014) | PT-M1b |
 | `delegate` | 14 | `(person_id, n)` | A delegate's nth hiring request in a turn, through PT-M1b's hook (TST ADR-0015) | PT-M2 |
 | `demand` | 20 | `(region, practice)` | Monthly legal demand noise | PT-M3 |
 | `intake` | 21 | `(client_id,)` | New instructions from a client | PT-M3 |
@@ -25,7 +30,7 @@
 | `lateral` | 27 | `(person_id,)` | A partner's portability realised at a move | PT-M4 |
 | `vote` | 28 | `(vote_id, person_id)` | Each partner's vote noise | PT-M4 |
 | `strain` | 29 | `(person_id,)` | A generated person's starting strain (PT-M1a); burnout events (PT-M6) | PT-M1a |
-| `campus` | 30 | `(year, school_index)` | Campus candidate pools | PT-M1 |
+| `campus` | 30 | `(year, school_index, search_id)` | Campus candidate pools: one generator per school tier visited by each campus search (PT-M1b added `search_id`, so two practices' searches do not draw the same people) | PT-M1b |
 | `client_gen` | 31 | `(client_index,)` | Generated clients and their GCs | PT-M3 |
 | `macro_law` | 32 | `(indicator_index,)` | Seeded legal indices after 2025 | PT-M10 |
 

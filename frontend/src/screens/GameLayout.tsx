@@ -1,11 +1,13 @@
 import { AppShell, Button, Group, NavLink, Text } from '@mantine/core';
 import { Link, Outlet, useParams } from 'react-router';
-import { useAdvance, useGame } from '../lib/api';
+import { useAdvance, useGame, useInbox } from '../lib/api';
 
 export function GameLayout() {
   const { slug = '' } = useParams();
   const game = useGame(slug);
   const advance = useAdvance(slug);
+  const inbox = useInbox(slug);
+  const unread = (inbox.data ?? []).filter((i) => !i.read).length;
   const ended = game.data !== undefined && game.data.game_state !== 'active';
 
   return (
@@ -27,7 +29,13 @@ export function GameLayout() {
       </AppShell.Header>
       <AppShell.Navbar p="xs">
         <NavLink component={Link} to={`/game/${slug}`} label="Overview" />
+        <NavLink
+          component={Link}
+          to={`/game/${slug}/inbox`}
+          label={unread ? `Inbox (${unread})` : 'Inbox'}
+        />
         <NavLink component={Link} to={`/game/${slug}/people`} label="People" />
+        <NavLink component={Link} to={`/game/${slug}/recruitment`} label="Recruitment" />
         <NavLink component={Link} to={`/game/${slug}/org`} label="Org" />
         <NavLink component={Link} to="/" label="Main menu" />
       </AppShell.Navbar>

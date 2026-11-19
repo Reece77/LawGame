@@ -5,7 +5,8 @@ People are processed in ascending id order (formulas.md 0). Each person on a fir
 (spec 5.3), strain and burnout (spec 5.6), the September class-year step (ADR PT-0006 1),
 then one `employed_month` of reveal for the firm that employs them, with the firm's best
 true judgment of talent as scout (formulas.md 4). A person with no `WorkMonth` worked no
-hours that month.
+hours that month. Growth is multiplied by the supervising partner's mentoring term
+`M_growth` (TST 13.5, PT-M2), passed in by person id (1 for anyone not listed).
 """
 
 from __future__ import annotations
@@ -39,6 +40,7 @@ def people_month(
     data: GameData,
     balance: Balance,
     work: Mapping[int, WorkMonth],
+    mentoring: Mapping[int, float] | None = None,
 ) -> GameState:
     turn, start = state.turn, state.save_meta.start_ym
     employer = {e.person_id: e.firm_id for e in state.employments if e.counts_as_staff}
@@ -50,7 +52,8 @@ def people_month(
         if person.id not in employer:
             continue
         month = work.get(person.id, WorkMonth(person_id=person.id))
-        p = grow_person(person, turn, rng, data, balance, month)
+        m_growth = 1.0 if mentoring is None else mentoring.get(person.id, 1.0)
+        p = grow_person(person, turn, rng, data, balance, month, m_growth)
         p = strain_month(p, turn, month, balance)
         updated[p.id] = p if p.id in joined else advance_class_year(p, turn, start, balance)
     people = tuple(updated.get(p.id, p) for p in state.people)

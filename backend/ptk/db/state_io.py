@@ -25,6 +25,7 @@ from ptk.db.models import (
     TurnLogRow,
     TurnSnapshotRow,
 )
+from ptk.db.org_io import load_org, write_org
 from ptk.sim.data_models import InboxTemplate
 from ptk.sim.hiring.models import Candidate, Offer, PayPolicy, PersonState, Search
 from ptk.sim.ledger import LedgerEntry
@@ -87,6 +88,7 @@ def insert_new(session: Session, state: GameState, entries: tuple[LedgerEntry, .
         )
     session.flush()
     write_people(session, state)
+    write_org(session, state)
     write_entries(session, entries)
 
 
@@ -139,6 +141,7 @@ def load_state(session: Session) -> GameState:
                 select(RevealRow).order_by(RevealRow.observer_firm_id, RevealRow.person_id)
             )
         ),
+        org=load_org(session),
         searches=tuple(
             _search(r) for r in session.scalars(select(SearchRow).order_by(SearchRow.id))
         ),
@@ -441,6 +444,7 @@ def write_turn(
     meta.ended_turn = new_state.save_meta.ended_turn
     write_firms(session, new_state)
     write_people(session, new_state)
+    write_org(session, new_state)
 
 
 def write_firms(session: Session, state: GameState) -> None:

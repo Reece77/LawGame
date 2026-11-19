@@ -26,6 +26,10 @@ the firm can see (the ask is shown exactly, TST 7).
 
 This module holds types only and imports no lane's package at import time; the hiring
 implementation is loaded on first use.
+
+PT-M2 (org) adds, at the end: the body of `manager_morale_term`, `org_morale_changes` (the
+one-off morale of reorganising, raises and promotions, TST 13.7-13.8) and the pay seam a
+raise uses (`salary_cents`, `set_salary`).
 """
 
 from __future__ import annotations
@@ -205,6 +209,42 @@ def manager_morale_term(
     state: GameState, person_id: int, balance: Balance, data: GameData
 ) -> float:
     """TST 13.4's manager term in a person's morale target (spec 5.3). PT-M1b's morale calls
-    this for every person it updates; it is 0 until PT-M2 supplies supervising partners
-    (PT-M2 may replace this body)."""
-    return 0.0
+    this for every person it updates. PT-M2: W_mgr from the person's supervising partner's
+    true leadership, communication and mentoring and their span (0 for the founding partner
+    and anyone not on a firm's books)."""
+    from ptk.sim.org.rules import supervisor_morale
+
+    return supervisor_morale(state, person_id, balance)
+
+
+# --- PT-M2 (org): one-off morale changes and pay --------------------------------------------
+
+
+def org_morale_changes(state: GameState, person_id: int) -> float:
+    """One-off morale points from this turn's org actions (TST 13.7 reorganising, 13.8
+    raises, pay cuts and promotions), not yet applied. The org adds them to each person's
+    current morale (`PersonState.morale`) at the end of phase 8, after PT-M1b's morale step,
+    and then clears them, so each counts exactly once. 0 for the founding partner."""
+    return sum(n.points for n in state.org.nudges if n.person_id == person_id)
+
+
+def salary_cents(state: GameState, person_id: int) -> int | None:
+    """An employee's annual salary (PT-M1b's `Employment.salary_cents`); None if they are
+    not on a firm's books. A raise (TST 13.8) reads it."""
+    for e in state.employments:
+        if e.person_id == person_id and e.counts_as_staff:
+            return e.salary_cents
+    return None
+
+
+def set_salary(state: GameState, person_id: int, salary: int) -> GameState:
+    """The state with an employee's annual salary changed, from the next payroll (TST 13.8)."""
+    from dataclasses import replace
+
+    from ptk.sim.errors import OrgRuleError
+    from ptk.sim.state import with_employment
+
+    for e in state.employments:
+        if e.person_id == person_id and e.counts_as_staff:
+            return with_employment(state, replace(e, salary_cents=salary))
+    raise OrgRuleError(f"person {person_id} is not on a firm's books")

@@ -208,3 +208,63 @@ class InboxItemRow(Base):
     link_kind: Mapped[str | None] = mapped_column(String(20), nullable=True)
     link_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
     read: Mapped[bool]
+
+
+# --- Org (schema v4, PT-M2). Current state, rewritten each turn and after each org action. ---
+
+
+class OrgUnitRow(Base):
+    __tablename__ = "org_unit"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    firm_id: Mapped[int] = mapped_column(ForeignKey("firm.id"), index=True)
+    kind: Mapped[str] = mapped_column(String(20))  # practice_group, team
+    name: Mapped[str] = mapped_column(String(64))
+    parent_id: Mapped[int | None] = mapped_column(Integer, nullable=True)  # None: firm root
+    leader_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    practice: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    created_turn: Mapped[int] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(String(20))  # active, dissolved
+    dissolved_turn: Mapped[int | None] = mapped_column(Integer, nullable=True)
+
+
+class OrgMemberRow(Base):
+    __tablename__ = "org_member"
+    person_id: Mapped[int] = mapped_column(ForeignKey("person.id"), primary_key=True)
+    unit_id: Mapped[int] = mapped_column(ForeignKey("org_unit.id"), index=True)
+
+
+class HiringPlanRow(Base):
+    __tablename__ = "hiring_plan"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    firm_id: Mapped[int] = mapped_column(ForeignKey("firm.id"), index=True)
+    owner_id: Mapped[int] = mapped_column(ForeignKey("person.id"))
+    unit_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    role: Mapped[str] = mapped_column(String(40))
+    target: Mapped[int] = mapped_column(Integer)
+    channel: Mapped[str] = mapped_column(String(20))
+    ratio_bp: Mapped[int] = mapped_column(Integer)
+    created_turn: Mapped[int] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(String(20))
+    hired: Mapped[int] = mapped_column(Integer)
+    closed_turn: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    focus: Mapped[str] = mapped_column(String(20))
+    level: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    hires_json: Mapped[str] = mapped_column(Text)  # [person_id, ...]
+    activity_json: Mapped[str | None] = mapped_column(Text, nullable=True)  # last activity
+
+
+class OrgPersonRow(Base):
+    __tablename__ = "org_person"
+    person_id: Mapped[int] = mapped_column(ForeignKey("person.id"), primary_key=True)
+    last_raise_turn: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    accelerated_years: Mapped[int] = mapped_column(Integer)
+    last_promoted_turn: Mapped[int | None] = mapped_column(Integer, nullable=True)
+
+
+class OrgMoraleNudgeRow(Base):
+    __tablename__ = "org_morale_nudge"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)  # recording order
+    person_id: Mapped[int] = mapped_column(ForeignKey("person.id"))
+    turn: Mapped[int] = mapped_column(Integer)
+    points: Mapped[float] = mapped_column(Float)
+    reason: Mapped[str] = mapped_column(String(40))

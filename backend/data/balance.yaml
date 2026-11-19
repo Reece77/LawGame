@@ -216,3 +216,45 @@ resign: # resignation chance per month in bp (TST formulas.md 10; spec 5.3)
 tags: # behaviour tag reveals (TST formulas.md 10)
   reveal_bp_per_month: 500 # each hidden tag of an employee, each month
   reveal_bp_on_check: 1500 # each hidden tag, at an interview or reference check
+org: # practice groups, teams and supervision (PT-M2; TST formulas.md 13, ported)
+  practice_group_unlock_lawyers: 10 # lawyers on staff (founding partners included) before practice groups unlock (spec 3)
+  span_base: 5 # reports; span limit L = span_base + floor(leadership / span_per_leadership) (13.2)
+  span_per_leadership: 4 # attribute points of leadership per extra report in L (13.2)
+  manager_morale_slope: 0.8 # morale points per point of supervising-partner quality above 10 (13.4)
+  manager_morale_cap: 8 # morale points; W_mgr is clamped to [-cap, +cap] (13.4)
+  manager_label_bands: [-2, 2] # morale points of W_mgr; at or below: "stretched", at or above: "strong", between: "fine"
+  mentoring_neutral: 5 # attribute points; mentoring x S + bonus at which growth is unchanged (13.5)
+  mentoring_divisor: 20 # attribute points per +100% growth in M_growth (13.5)
+  mentor_tag_bonus: 3 # attribute points added when another member of the unit has the mentor tag (13.5)
+  growth_mult_min: 0.75 # multiplier; floor of M_growth (13.5)
+  growth_mult_max: 1.5 # multiplier; ceiling of M_growth (13.5)
+  reorg: # one-off morale points (13.7)
+    move: -2 # the person moved to another unit
+    new_leader_members: -1 # each other member when a unit's leader is set or replaced
+    replaced_leader: -5 # a replaced or removed leader who stays in the unit
+    dissolve_members: -2 # each member of a dissolved unit
+  raise_morale: 3 # morale points, once, for a raise of at least raise_threshold_bp (13.8)
+  raise_threshold_bp: 500 # bp; a raise this large or larger earns raise_morale (13.8)
+  raise_cooldown_turns: 12 # turns; raise_morale is given at most once in this many turns per person (13.8)
+  pay_cut_morale: -10 # morale points, once, for any pay cut (13.8)
+  promote_morale: 5 # morale points, once, for a promotion (13.8)
+  promote_to: # level -> the level one promotion reaches (ADR PT-0006 1); a class-year step is "accelerated"; partnership is the vote (PT-M4)
+    trainee: associate_1
+    associate_1: associate_2
+    associate_2: associate_3
+    associate_3: associate_4
+    associate_4: associate_5
+    associate_5: associate_6
+    associate_6: associate_7
+    associate_7: associate_8
+    associate_8: counsel
+    senior_associate: counsel
+    staff: manager
+    manager: director
+  pitch_per_recruiting: 0.3 # acceptance-logit points per 10 recruiting above pitch_neutral, from whoever makes the offer (TST 7, 13.12)
+  pitch_neutral: 10 # attribute points of recruiting at which the offer pitch is 0
+  delegates: # delegated hiring (13.10, ADR-0015); each step's energy cost is hiring's (balance energy.cost, PT-M1b)
+    energy_per_month: 100 # energy; each delegate's own monthly budget, given in phase 2; never the founder's
+    reserve: 20 # energy kept back while interviewing, for a scouting pass (TST: the scout cost)
+    max_ratio_bp: 12000 # bp of the ask; highest salary ratio a plan may offer (1.2x)
+    plan_owner_roles: [human_resources] # roles that may own a plan without leading a unit (a recruiting manager)

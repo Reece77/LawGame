@@ -19,6 +19,7 @@
 | `tags` | 10 | `(person_id,)` | Monthly tag reveals of employees | PT-M1b |
 | `resign` | 11 | `(person_id,)` | The monthly resignation roll | PT-M1b |
 | `actions` | 13 | `(seq,)` | Randomness inside a player action (tag rolls at an interview or reference check; ADR-0014) | PT-M1b |
+| `delegate` | 14 | `(person_id, n)` | A delegate's nth hiring request in a turn, through PT-M1b's hook (TST ADR-0015) | PT-M2 |
 | `demand` | 20 | `(region, practice)` | Monthly legal demand noise | PT-M3 |
 | `intake` | 21 | `(client_id,)` | New instructions from a client | PT-M3 |
 | `matter` | 22 | `(matter_id,)` | Progress noise, events and the outcome | PT-M3 |

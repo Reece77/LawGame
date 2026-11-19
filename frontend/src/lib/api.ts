@@ -18,7 +18,7 @@ export class ApiError extends Error {
   }
 }
 
-function unwrap<T>(result: { data?: T; error?: unknown }): T {
+export function unwrap<T>(result: { data?: T; error?: unknown }): T {
   if (result.error !== undefined || result.data === undefined) {
     const body = (result.error ?? {}) as { code?: string; message?: string };
     throw new ApiError(body.code ?? 'error', body.message ?? 'The request failed');
@@ -73,7 +73,7 @@ export function useAdvance(slug: string) {
       unwrap(await api.POST('/api/saves/{slug}/advance', { params: { path: { slug } } })),
     onSuccess: (game) => {
       client.setQueryData(['game', slug], game);
-      for (const key of ['people', 'recruitment', 'inbox', 'payroll']) {
+      for (const key of ['people', 'recruitment', 'inbox', 'payroll', 'org']) {
         void client.invalidateQueries({ queryKey: [key, slug] });
       }
     },

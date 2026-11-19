@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 
 from ptk import loader
 from ptk.api import recruitment
+from ptk.api.org import make_org_router
 from ptk.api.people import make_router
 from ptk.config import get_settings
 from ptk.db import saves
@@ -203,6 +204,7 @@ def create_app() -> FastAPI:
 
     app.include_router(make_router(errors))
     app.include_router(recruitment.make_router(errors))
+    app.include_router(make_org_router(errors))
     return app
 
 

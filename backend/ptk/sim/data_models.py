@@ -530,6 +530,62 @@ class TagRevealBalance(_Strict):
     reveal_bp_on_check: float = Field(ge=0)
 
 
+# --- Org (PT-M2; TST formulas.md 13) --------------------------------------------------------
+
+
+class ReorgMorale(_Strict):
+    """One-off morale points for reorganising (TST 13.7)."""
+
+    move: float
+    new_leader_members: float
+    replaced_leader: float
+    dissolve_members: float
+
+
+class DelegatesBalance(_Strict):
+    """Delegated hiring (TST 13.10, ADR-0015): each delegate's own energy and its costs."""
+
+    energy_per_month: int = Field(gt=0)
+    reserve: int = Field(ge=0)  # kept back while interviewing, for a scouting pass
+    max_ratio_bp: int = Field(gt=0)
+    plan_owner_roles: tuple[str, ...]  # roles that may own a plan without leading a unit
+
+
+class OrgBalance(_Strict):
+    practice_group_unlock_lawyers: int = Field(gt=0)
+    span_base: int = Field(ge=0)
+    span_per_leadership: float = Field(gt=0)
+    manager_morale_slope: float
+    manager_morale_cap: float = Field(ge=0)
+    manager_label_bands: Span
+    mentoring_neutral: float
+    mentoring_divisor: float = Field(gt=0)
+    mentor_tag_bonus: float
+    growth_mult_min: float = Field(gt=0)
+    growth_mult_max: float = Field(gt=0)
+    reorg: ReorgMorale
+    raise_morale: float
+    raise_threshold_bp: int = Field(ge=0)
+    raise_cooldown_turns: int = Field(ge=0)
+    pay_cut_morale: float
+    promote_morale: float
+    promote_to: dict[str, str]  # level -> the level one promotion reaches (ADR PT-0006 1)
+    pitch_per_recruiting: float
+    pitch_neutral: float
+    delegates: DelegatesBalance
+
+    @model_validator(mode="after")
+    def _check(self) -> OrgBalance:
+        if self.growth_mult_min > self.growth_mult_max:
+            raise ValueError("growth_mult_min must not exceed growth_mult_max")
+        unknown = (set(self.promote_to) | set(self.promote_to.values())) - set(LEVELS)
+        if unknown:
+            raise ValueError(f"promote_to names unknown levels {sorted(unknown)}")
+        if set(self.promote_to.values()) & PARTNER_LEVELS:
+            raise ValueError("a promotion never makes a partner (the partnership vote, PT-M4)")
+        return self
+
+
 class Balance(_Strict):
     campaign: CampaignBalance
     backups: BackupBalance
@@ -546,6 +602,7 @@ class Balance(_Strict):
     morale: MoraleBalance
     resign: ResignBalance
     tags: TagRevealBalance
+    org: OrgBalance
 
 
 # --- People seed data (PT-M1a) ------------------------------------------------------------

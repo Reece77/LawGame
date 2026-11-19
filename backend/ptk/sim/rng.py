@@ -30,6 +30,7 @@ STREAM_IDS: Final = MappingProxyType(
         "tags": 10,  # (person_id,): monthly tag reveals of employees (PT-M1b)
         "resign": 11,  # (person_id,): the monthly resignation roll (PT-M1b)
         "actions": 13,  # (seq,): randomness inside a player action (ADR-0014; PT-M1b)
+        "delegate": 14,  # (person_id, n): a delegate's nth hiring request this turn (PT-M2)
         "strain": 29,  # (person_id,): a generated person's starting strain (PT-M1a)
         "campus": 30,  # (year, school_tier_index, search_id): a campus pool (PT-M1b)
         "misc": 99,  # tests only

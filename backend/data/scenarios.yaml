@@ -29,6 +29,30 @@ scenarios:
     co_founders: []
     starting_staff:
       - { role: paralegal, level: paralegal, practice: corporate_ma }
+  - id: group_lift
+    name: Group lift
+    description: >-
+      Three partners lift out of a failing firm with seven associates and their clients: ten
+      lawyers, enough for practice groups from the first month. $1.2M of partners' capital
+      and a $2M revolver.
+    start_ym: [2005, 1]
+    home_city: new_york
+    partners_capital_cents: 120000000
+    revolver_limit_cents: 200000000
+    home_jurisdiction: us_ny
+    default_background: biglaw_ma_partner
+    co_founders:
+      - { background: trial_lawyer, age: 48 }
+      - { background: government_lawyer, age: 44 }
+    starting_staff:
+      - { role: corporate_ma, level: associate_5 }
+      - { role: corporate_ma, level: associate_3 }
+      - { role: corporate_ma, level: associate_1 }
+      - { role: commercial_litigation, level: associate_6 }
+      - { role: commercial_litigation, level: associate_2 }
+      - { role: white_collar, level: associate_4 }
+      - { role: white_collar, level: associate_1 }
+      - { role: paralegal, level: paralegal, practice: commercial_litigation }
 # Bar admissions (spec 2.1). v1 has one country; foreign and state rules arrive in v2.
 jurisdictions:
   - { key: us_ny, label: New York }

@@ -91,3 +91,30 @@ Searches, candidates, offers and person state are current-state tables, updated 
 | | `read` | bool | UI state only; not in `decision_log` |
 
 `decision_log` is used from PT-M1b: one row per player action, `seq` 1, 2, 3… within a turn, `source` `player`, and `payload_json` the action's fields (replayed in `seq` order before `advance_turn`, ADR-0014).
+## Schema v4 (`0004_org`, PT-M2)
+
+Current-state tables for the org (TST formulas.md §13), written after every turn and every org action. The firm root is implicit: a person with no `org_member` row, and a unit or plan with a null `unit_id` or `parent_id`, belong to it; its leader is the player's founding partner.
+
+| Table | Column | Type | Meaning |
+| --- | --- | --- | --- |
+| `org_unit` | `id`, `firm_id` | int | Unit id (never reused) and its firm |
+| | `kind` | str | `practice_group` (one per practice, from 10 lawyers) or `team` |
+| | `name` | str | Unique among the firm's active units (case-insensitive), at most 64 characters |
+| | `parent_id` | int, null | A team's practice group; null = the firm root (practice groups always) |
+| | `leader_id` | int, null | A member of the unit who leads it; leads at most one unit |
+| | `practice` | str, null | A practice group's practice (`practices.yaml` key) |
+| | `created_turn`, `status`, `dissolved_turn` | int, str, int | `active` or `dissolved` (kept for history) |
+| `org_member` | `person_id`, `unit_id` | int | A person's unit (rewritten each write) |
+| `hiring_plan` | `id`, `firm_id`, `owner_id` | int | A delegated hiring plan (TST §13.10) and its delegate (a unit leader or a recruiting manager) |
+| | `unit_id` | int, null | Where hires join; null = the firm root |
+| | `role`, `level` | str, str null | What it hires; `level` filters searches (a campus plan's is `associate_1`) |
+| | `target`, `hired`, `hires_json` | int, int, text | Hires wanted; accepted so far; their person ids |
+| | `channel`, `focus`, `ratio_bp` | str, str, int | `job_post`, `recruiter`, `referral`, `campus` (a practice group's campus target) or `any`; `current` or `potential`; offered salary in bp of the ask (at most `org.delegates.max_ratio_bp`) |
+| | `created_turn`, `status`, `closed_turn` | int, str, int | `active`, `paused` (owner left or no longer qualifies), `filled` or `closed` |
+| | `activity_json` | text, null | What the delegate did in its last active turn (searches, interviews, scouted, offers) |
+| `org_person` | `person_id` | int | Org facts about one person |
+| | `last_raise_turn` | int, null | Turn of the last raise that earned the morale bonus (TST §13.8 cooldown) |
+| | `accelerated_years`, `last_promoted_turn` | int, int null | Class years promoted ahead of September; the latest promotion |
+| `org_morale_nudge` | `id`, `person_id`, `turn`, `points`, `reason` | int, int, int, float, str | One-off morale changes from org actions (TST §13.7, §13.8), applied by morale in phase 8 of their turn and then cleared |
+
+`decision_log` is written from PT-M2: one row per org action (`source` `player`, payload the action as JSON with its `kind`) and per delegate step (`source` `delegate`).

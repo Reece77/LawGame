@@ -106,6 +106,14 @@ def test_a_delegate_hires_through_the_hook(data: GameData, balance: Balance) -> 
     assert apply_entries({}, game.entries)  # entries still post
 
 
-def test_manager_term_is_zero_until_pt_m2(data: GameData, balance: Balance) -> None:
+def test_manager_term_comes_from_the_supervising_partner(data: GameData, balance: Balance) -> None:
+    """PT-M2 filled the body: W_mgr from the supervisor (TST 13.4); 0 for the founder."""
+    from ptk.sim.org.rules import supervisor_morale
+
     game = start(data, balance)
-    assert manager_morale_term(game.state, 3, balance, data) == 0.0
+    founder = game.state.founder_of(1)
+    assert founder is not None
+    assert manager_morale_term(game.state, 3, balance, data) == supervisor_morale(
+        game.state, 3, balance
+    )
+    assert manager_morale_term(game.state, founder, balance, data) == 0.0

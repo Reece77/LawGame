@@ -15,9 +15,13 @@ from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
 from ptk.sim.errors import GameOverError
 from ptk.sim.hiring import phases as hiring
+from ptk.sim.interfaces import DelegateHiringHook, delegate_hiring
 from ptk.sim.ledger import CASH, AccountCode, LedgerBalances, LedgerEntry, apply_entries
 from ptk.sim.log import LogItem
 from ptk.sim.money import Cents
+from ptk.sim.org.delegates import DelegateAction, available_hook, run_delegates
+from ptk.sim.org.phase import clear_nudges
+from ptk.sim.org.rules import growth_multipliers
 from ptk.sim.people.models import WorkMonth
 from ptk.sim.people.phase import people_month
 from ptk.sim.rng import RngFactory
@@ -37,6 +41,7 @@ class TurnResult:
     log_items: tuple[LogItem, ...]
     snapshot: TurnSnapshot
     event_requests: tuple[EventRequest, ...]
+    delegate_actions: tuple[DelegateAction, ...] = ()  # recomputed on replay (ADR-0015)
 
 
 @dataclass(frozen=True, slots=True)
@@ -53,6 +58,8 @@ class TurnContext:
     snapshot: TurnSnapshot | None = None
     event_requests: tuple[EventRequest, ...] = ()
     work: Mapping[int, WorkMonth] = field(default_factory=dict)  # person id -> month (PT-M1a)
+    hiring_hook: DelegateHiringHook | None = None  # PT-M1b's, for delegates (PT-M2)
+    delegate_actions: tuple[DelegateAction, ...] = ()
 
     @property
     def turn(self) -> int:
@@ -83,8 +90,13 @@ def apply_player_decisions(ctx: TurnContext) -> TurnContext:
 
 
 def delegate_and_rival_decisions(ctx: TurnContext) -> TurnContext:
-    """2. Delegates and automated areas act (ADR-0015); rival firms decide (PT-M5)."""
-    return ctx
+    """2. Delegates run their hiring plans (ADR-0015, PT-M2); automated areas (v2) and rival
+    firms (PT-M5) decide."""
+    state, entries, logs, taken = run_delegates(
+        ctx.state, ctx.rng, ctx.balance, ctx.data, ctx.balances, ctx.hiring_hook
+    )
+    ctx = replace(ctx, state=state, delegate_actions=ctx.delegate_actions + taken)
+    return ctx.post(*entries).log(*logs)
 
 
 def knowledge_progress(ctx: TurnContext) -> TurnContext:
@@ -115,14 +127,16 @@ def financing(ctx: TurnContext) -> TurnContext:
 
 
 def people_updates(ctx: TurnContext) -> TurnContext:
-    """8. Strain, growth, familiarity, class years, reveals (PT-M1a); morale, resignations
-    and tag reveals (PT-M1b)."""
-    state = people_month(ctx.state, ctx.rng, ctx.data, ctx.balance, ctx.work)
+    """8. Strain, growth (times the supervising partner's mentoring, PT-M2), familiarity,
+    class years, reveals (PT-M1a); morale, resignations and tag reveals (PT-M1b); the org's
+    one-off morale changes are cleared last (PT-M2)."""
+    mentoring = growth_multipliers(ctx.state, ctx.balance)  # TST 13.5, before anyone grows
+    state = people_month(ctx.state, ctx.rng, ctx.data, ctx.balance, ctx.work, mentoring)
     state, departures = hiring.morale_and_departures(
         state, ctx.rng, ctx.balance, ctx.data, ctx.work
     )
     state, tags = hiring.monthly_tag_reveals(state, ctx.rng, ctx.balance, ctx.data)
-    return replace(ctx, state=state).log(*departures, *tags)
+    return replace(ctx, state=clear_nudges(state)).log(*departures, *tags)
 
 
 def market_and_macro_update(ctx: TurnContext) -> TurnContext:
@@ -186,11 +200,13 @@ def advance_turn(
     data: GameData,
     ledger_balances: LedgerBalances,
     work: tuple[WorkMonth, ...] = (),
+    hiring_hook: DelegateHiringHook | None = None,
 ) -> TurnResult:
     """Resolve turn `state.turn` and return the next state plus everything to persist.
 
     `work` (PT-M1a): each person's month of hours, a test input until PT-M3a staffs matters
-    (the brief); a person without one worked no hours."""
+    (the brief); a person without one worked no hours. `hiring_hook` (PT-M2): the hiring
+    system delegates drive; by default PT-M1b's (`interfaces.delegate_hiring`), if built."""
     if state.ended:
         raise GameOverError(f"the game is over ({state.save_meta.game_state.replace('_', ' ')})")
     ctx = TurnContext(
@@ -202,6 +218,7 @@ def advance_turn(
         opening_balances=ledger_balances,
         balances=dict(ledger_balances),
         work={w.person_id: w for w in work},
+        hiring_hook=hiring_hook or available_hook(delegate_hiring),
     )
     for _name, phase in PHASES:
         ctx = phase(ctx)
@@ -216,4 +233,5 @@ def advance_turn(
         log_items=ctx.log_items,
         snapshot=ctx.snapshot,
         event_requests=ctx.event_requests,
+        delegate_actions=ctx.delegate_actions,
     )

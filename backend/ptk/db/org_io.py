@@ -21,6 +21,7 @@ from ptk.db.session import make_sessionmaker, shared_engine
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import GameOverError
 from ptk.sim.org.actions import ACTION_TYPES, OrgAction, OrgOutcome, apply_org_action
+from ptk.sim.org.delegates import DelegateAction
 from ptk.sim.org.models import (
     HiringPlan,
     Membership,
@@ -189,3 +190,11 @@ def run_org_action(path: Path, action: OrgAction, balance: Balance, data: GameDa
         write_org(session, outcome.state)
         log_decision(session, state.turn, "player", action_payload(action))
     return outcome
+
+
+def write_delegate_actions(
+    session: Session, turn: int, actions: tuple[DelegateAction, ...]
+) -> None:
+    """Delegate steps go to the decision log for history (ADR-0015 5); replay recomputes them."""
+    for action in actions:
+        log_decision(session, turn, "delegate", json.dumps(action.payload(), sort_keys=True))

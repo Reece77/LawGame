@@ -181,3 +181,21 @@ def test_practice_groups_unlock_at_ten_lawyers(data: GameData, balance: Balance)
     lift = game(data, balance)
     assert lawyer_count(lift, FIRM, data) == 10  # the paralegal does not count
     assert practice_groups_unlocked(lift, FIRM, data, balance)
+
+
+def test_morale_seams_for_pt_m1b(data: GameData, balance: Balance) -> None:
+    """interfaces.manager_morale_term gives W_mgr; org_morale_changes this turn's one-offs."""
+    from ptk.sim import interfaces
+
+    state = _firm_of_thirteen(data, balance)
+    fid, some = founder(state), staff(state)[0].id
+    assert interfaces.manager_morale_term(state, some, balance, data) == pytest.approx(
+        -3.68, abs=1e-2
+    )
+    assert interfaces.manager_morale_term(state, fid, balance, data) == 0.0
+    assert interfaces.manager_morale_term(state, 9999, balance, data) == 0.0
+    state = act(state, CreateUnit(fid, "team", "A"), data, balance)
+    team = state.org.firm_units(FIRM)[0].id
+    state = act(state, MovePerson(fid, some, team), data, balance)
+    assert interfaces.org_morale_changes(state, some) == -2
+    assert interfaces.org_morale_changes(state, fid) == 0

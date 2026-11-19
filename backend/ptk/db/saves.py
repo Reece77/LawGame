@@ -12,6 +12,7 @@ from sqlalchemy import select
 
 from ptk.db import backup, migrate
 from ptk.db.models import FirmRow, SaveMetaRow, TurnSnapshotRow
+from ptk.db.org_io import write_delegate_actions
 from ptk.db.session import make_sessionmaker, shared_engine
 from ptk.db.state_io import META_ID, insert_new, ledger_balances, load_state, write_turn
 from ptk.sim.calendar import format_turn
@@ -110,6 +111,7 @@ def run_turn(path: Path, balance: Balance, data: GameData) -> TurnResult:
         write_turn(
             session, result.new_state, result.ledger_entries, result.log_items, result.snapshot
         )
+        write_delegate_actions(session, state.turn, result.delegate_actions)
     if result.new_state.turn % balance.backups.every_turns == 0:
         backup.periodic_backup_in_background(
             path, result.new_state.turn, balance.backups.keep_periodic

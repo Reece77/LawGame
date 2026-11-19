@@ -14,6 +14,7 @@
 | `founder` | 7 | `(founder_index,)` | A founding partner's build; index 0 is the player's | PT-M1a |
 | `growth` | 8 | `(person_id,)` | Monthly growth noise | PT-M1a |
 | `reveal` | 9 | `(observer_firm_id, person_id)` | Reveal record offsets | PT-M1a |
+| `delegate` | 14 | `(person_id, n)` | A delegate's nth hiring request in a turn, through PT-M1b's hook (TST ADR-0015) | PT-M2 |
 | `demand` | 20 | `(region, practice)` | Monthly legal demand noise | PT-M3 |
 | `intake` | 21 | `(client_id,)` | New instructions from a client | PT-M3 |
 | `matter` | 22 | `(matter_id,)` | Progress noise, events and the outcome | PT-M3 |

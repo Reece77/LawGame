@@ -25,6 +25,7 @@ STREAM_IDS: Final = MappingProxyType(
         "founder": 7,  # (founder_index,): a founding partner's build; 0 = the player's
         "growth": 8,  # (person_id,): monthly growth noise
         "reveal": 9,  # (observer_firm_id, person_id): reveal record offsets
+        "delegate": 14,  # (person_id, n): a delegate's nth hiring request this turn (PT-M2)
         "strain": 29,  # (person_id,): a generated person's starting strain (PT-M1a)
         "misc": 99,  # tests only
     }

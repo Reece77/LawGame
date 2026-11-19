@@ -5,7 +5,6 @@ from __future__ import annotations
 from dataclasses import replace
 
 from ptk.sim.data_models import Balance, GameData
-from ptk.sim.interfaces import PAY
 from ptk.sim.org.actions import OrgAction, apply_org_action
 from ptk.sim.people.models import Employment, Person
 from ptk.sim.setup import new_game
@@ -71,4 +70,4 @@ def with_tags(state: GameState, person_id: int, *tags: str) -> GameState:
 
 
 def act(state: GameState, action: OrgAction, data: GameData, balance: Balance) -> GameState:
-    return apply_org_action(state, action, balance, data, PAY).state
+    return apply_org_action(state, action, balance, data).state

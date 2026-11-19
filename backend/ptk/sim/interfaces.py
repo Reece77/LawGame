@@ -26,6 +26,10 @@ the firm can see (the ask is shown exactly, TST 7).
 
 This module holds types only and imports no lane's package at import time; the hiring
 implementation is loaded on first use.
+
+PT-M2 (org) adds, at the end: the body of `manager_morale_term`, `org_morale_changes` (the
+one-off morale of reorganising, raises and promotions, TST 13.7-13.8) and the pay seam a
+raise uses (`salary_cents`, `set_salary`).
 """
 
 from __future__ import annotations
@@ -205,6 +209,34 @@ def manager_morale_term(
     state: GameState, person_id: int, balance: Balance, data: GameData
 ) -> float:
     """TST 13.4's manager term in a person's morale target (spec 5.3). PT-M1b's morale calls
-    this for every person it updates; it is 0 until PT-M2 supplies supervising partners
-    (PT-M2 may replace this body)."""
-    return 0.0
+    this for every person it updates. PT-M2: W_mgr from the person's supervising partner's
+    true leadership, communication and mentoring and their span (0 for the founding partner
+    and anyone not on a firm's books)."""
+    from ptk.sim.org.rules import supervisor_morale
+
+    return supervisor_morale(state, person_id, balance)
+
+
+# --- PT-M2 (org): one-off morale changes and pay --------------------------------------------
+
+
+def org_morale_changes(state: GameState, person_id: int) -> float:
+    """One-off morale points from this turn's org actions (TST 13.7 reorganising, 13.8
+    raises, pay cuts and promotions), to add once to the person's current morale. PT-M1b's
+    morale calls this in phase 8; the org clears the changes at the end of phase 8, so each is
+    applied exactly once. 0 for the founding partner (who has no morale in TST)."""
+    return sum(n.points for n in state.org.nudges if n.person_id == person_id)
+
+
+def salary_cents(state: GameState, person_id: int) -> int | None:
+    """An employee's annual salary; None while the firm has no payroll. A raise (TST 13.8)
+    reads it. PT-M1b replaces this body with its payroll's."""
+    return None
+
+
+def set_salary(state: GameState, person_id: int, salary: int) -> GameState:
+    """The state with an employee's annual salary changed, from the next payroll (TST 13.8).
+    PT-M1b replaces this body with its payroll's."""
+    from ptk.sim.errors import OrgRuleError
+
+    raise OrgRuleError("salaries arrive with payroll (PT-M1b)")

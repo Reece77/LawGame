@@ -14,7 +14,6 @@ from ptk.db.org_io import action_from_payload, run_org_action
 from ptk.db.session import make_sessionmaker, shared_engine
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import OrgRuleError, SimError
-from ptk.sim.interfaces import PAY
 from ptk.sim.org.actions import CreateUnit, MovePerson, Promote, SetLeader
 
 
@@ -39,13 +38,13 @@ def test_org_round_trips_through_the_save(save_dir: Path, data: GameData, balanc
     assert fid is not None
     a = next(p.id for p in state.people if not p.is_founder and p.level == "associate_5")
     out = run_org_action(
-        path, CreateUnit(fid, "practice_group", practice="corporate_ma"), balance, data, PAY
+        path, CreateUnit(fid, "practice_group", practice="corporate_ma"), balance, data
     )
     gid = out.unit_id
     assert gid is not None
-    run_org_action(path, MovePerson(fid, a, gid), balance, data, PAY)
-    run_org_action(path, SetLeader(fid, gid, a), balance, data, PAY)
-    run_org_action(path, Promote(fid, a), balance, data, PAY)
+    run_org_action(path, MovePerson(fid, a, gid), balance, data)
+    run_org_action(path, SetLeader(fid, gid, a), balance, data)
+    run_org_action(path, Promote(fid, a), balance, data)
     loaded, _ = saves.read_state(path)
     assert loaded.org.unit(gid).leader_id == a  # type: ignore[union-attr]
     assert loaded.org.unit_of(a) == gid
@@ -71,9 +70,9 @@ def test_a_refused_action_writes_nothing(save_dir: Path, data: GameData, balance
     fid = state.founder_of(1)
     assert fid is not None
     with pytest.raises(SimError):
-        run_org_action(path, SetLeader(fid, 1, fid), balance, data, PAY)
+        run_org_action(path, SetLeader(fid, 1, fid), balance, data)
     with pytest.raises(OrgRuleError):
-        run_org_action(path, MovePerson(fid, fid, None), balance, data, PAY)
+        run_org_action(path, MovePerson(fid, fid, None), balance, data)
     after, _ = saves.read_state(path)
     assert after.org == state.org
     with make_sessionmaker(shared_engine(path))() as session:

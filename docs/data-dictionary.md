@@ -77,7 +77,6 @@ Current-state tables for the org (TST formulas.md §13), written after every tur
 | | `created_turn`, `status`, `closed_turn` | int, str, int | `active`, `paused` (owner left or no longer qualifies), `filled` or `closed` |
 | | `activity_json` | text, null | What the delegate did in its last active turn (searches, interviews, scouted, offers) |
 | `org_person` | `person_id` | int | Org facts about one person |
-| | `energy` | int, null | A delegate's **own** energy (null: not a delegate); reset to `org.delegates.energy_per_month` after phase 12 (ADR-0015) |
 | | `last_raise_turn` | int, null | Turn of the last raise that earned the morale bonus (TST §13.8 cooldown) |
 | | `accelerated_years`, `last_promoted_turn` | int, int null | Class years promoted ahead of September; the latest promotion |
 | `org_morale_nudge` | `id`, `person_id`, `turn`, `points`, `reason` | int, int, int, float, str | One-off morale changes from org actions (TST §13.7, §13.8), applied by morale in phase 8 of their turn and then cleared |

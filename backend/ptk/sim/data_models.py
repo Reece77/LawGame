@@ -339,10 +339,7 @@ class DelegatesBalance(_Strict):
     """Delegated hiring (TST 13.10, ADR-0015): each delegate's own energy and its costs."""
 
     energy_per_month: int = Field(gt=0)
-    search_cost: int = Field(ge=0)
-    interview_cost: int = Field(ge=0)
-    offer_cost: int = Field(ge=0)
-    scout_cost: int = Field(ge=0)  # also the reserve kept back while interviewing
+    reserve: int = Field(ge=0)  # kept back while interviewing, for a scouting pass
     max_ratio_bp: int = Field(gt=0)
     plan_owner_roles: tuple[str, ...]  # roles that may own a plan without leading a unit
 

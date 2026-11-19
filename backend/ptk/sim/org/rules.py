@@ -192,3 +192,11 @@ def practice_groups_unlocked(
 ) -> bool:
     """Practice groups unlock at 10 lawyers (spec 3, stage 1)."""
     return lawyer_count(state, firm_id, data) >= balance.org.practice_group_unlock_lawyers
+
+
+def supervisor_morale(state: GameState, person_id: int, balance: Balance) -> float:
+    """W_mgr for one person (13.4): 0 for the founding partner and anyone off the books."""
+    firm = state.employer_of(person_id)
+    if firm is None:
+        return 0.0
+    return manager_terms(state, org_view(state, firm), person_id, balance).morale

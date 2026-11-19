@@ -184,7 +184,6 @@ class HiringPlanRow(Base):
 class OrgPersonRow(Base):
     __tablename__ = "org_person"
     person_id: Mapped[int] = mapped_column(ForeignKey("person.id"), primary_key=True)
-    energy: Mapped[int | None] = mapped_column(Integer, nullable=True)  # a delegate's own
     last_raise_turn: Mapped[int | None] = mapped_column(Integer, nullable=True)
     accelerated_years: Mapped[int] = mapped_column(Integer)
     last_promoted_turn: Mapped[int | None] = mapped_column(Integer, nullable=True)

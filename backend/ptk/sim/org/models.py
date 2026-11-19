@@ -4,7 +4,7 @@ Ported from backend/tst/sim/org/models.py @ 02fba2aa (Tech Startup Tycoon); chan
 kinds are the practice group (one per practice) and the team, not TST's division and
 department; no seats, authority, proposals or pitches (v2); work-location policy, product and
 office links dropped; plans have PT's channels (campus, referral) and no equity; who belongs
-to which unit, delegate energy, raise history and one-off morale changes live in one
+to which unit, raise history and one-off morale changes live in one
 `OrgState` on the game state, so the org's tables are its own (lane B beside PT-M1b).
 
 The firm root is implicit: it has no row, `parent_id` and a member's unit are None for it,
@@ -99,12 +99,11 @@ class HiringPlan:
 
 @dataclass(frozen=True, slots=True)
 class OrgPerson:
-    """Org facts about one person: a delegate's own energy (13.10, ADR-0015), the turn of the
-    last raise that earned the morale bonus (13.8), and accelerated promotions (class years
-    skipped ahead of September)."""
+    """Org facts about one person: the turn of the last raise that earned the morale bonus
+    (13.8) and accelerated promotions (class years skipped ahead of September). A delegate's
+    own energy is hiring's (PT-M1b's hook, `interfaces.DelegateHiringHook`)."""
 
     person_id: int
-    energy: int | None = None  # None: not a delegate (no energy tracked)
     last_raise_turn: int | None = None
     accelerated_years: int = 0
     last_promoted_turn: int | None = None

@@ -5,7 +5,8 @@ Ported from backend/tst/sim/actions/org.py @ 02fba2aa (Tech Startup Tycoon); cha
 kinds are practice groups (one per practice, from 10 lawyers) and teams; a co-founding
 partner may lead and be moved (only the player's own founding partner sits at the root);
 promotions follow ADR PT-0006's levels (`org.promote_to`), a class-year step is
-"accelerated" and partnership is the vote (PT-M4); raises go through `interfaces.PAY`;
+"accelerated" and partnership is the vote (PT-M4); raises go through
+`interfaces.salary_cents` and `set_salary`;
 plans have PT's channels, no equity, an owner who leads a unit or is a recruiting manager,
 and campus plans are a practice group's campus target. Divisions, policies, seats and
 founder energy are not ported (founder energy arrives with PT-M1b's actions; org actions cost
@@ -19,6 +20,7 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 from typing import Final, Literal
 
+from ptk.sim import interfaces
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import (
     NotFoundError,
@@ -27,7 +29,6 @@ from ptk.sim.errors import (
     UnknownPlanError,
     UnknownUnitError,
 )
-from ptk.sim.interfaces import PayAccess
 from ptk.sim.log import LogItem
 from ptk.sim.org.formulas import is_raise_bonus
 from ptk.sim.org.models import (
@@ -425,13 +426,13 @@ def raise_morale_change(
     return 0.0
 
 
-def give_raise(state: GameState, action: GiveRaise, balance: Balance, pay: PayAccess) -> OrgOutcome:
+def give_raise(state: GameState, action: GiveRaise, balance: Balance) -> OrgOutcome:
     """The new salary applies from the next payroll (phase 6)."""
     firm = acting_firm(state, action.actor_id)
     employee(state, firm, action.person_id, "be given a raise")
     if action.salary_cents <= 0:
         raise OrgActionError("salary must be positive")
-    old = pay.salary_cents(state, action.person_id)
+    old = interfaces.salary_cents(state, action.person_id)
     if old is None:
         raise OrgRuleError("salaries arrive with payroll (PT-M1b)")
     if action.salary_cents == old:
@@ -440,7 +441,7 @@ def give_raise(state: GameState, action: GiveRaise, balance: Balance, pay: PayAc
     change = raise_morale_change(
         old, action.salary_cents, record.last_raise_turn, state.turn, balance
     )
-    state = pay.set_salary(state, action.person_id, action.salary_cents)
+    state = interfaces.set_salary(state, action.person_id, action.salary_cents)
     last = state.turn if change > 0 else record.last_raise_turn
     state = with_org_person(state, replace(record, last_raise_turn=last))
     reason = "pay cut" if change < 0 else "raise"
@@ -537,14 +538,6 @@ def _check_plan(
     return CAMPUS_LEVEL
 
 
-def with_delegate_energy(state: GameState, owner_id: int, balance: Balance) -> GameState:
-    """A new delegate starts tracking their own energy (13.10)."""
-    record = state.org.person(owner_id)
-    if record.energy is not None:
-        return state
-    return with_org_person(state, replace(record, energy=balance.org.delegates.energy_per_month))
-
-
 def create_plan(
     state: GameState, action: CreatePlan, balance: Balance, data: GameData
 ) -> OrgOutcome:
@@ -553,7 +546,6 @@ def create_plan(
         state, firm, action.owner_id, action.role, action.target, action.channel,
         action.ratio_bp, action.unit_id, action.focus, action.level, balance, data,
     )  # fmt: skip
-    state = with_delegate_energy(state, action.owner_id, balance)
     plan = HiringPlan(
         id=state.org.next_plan_id,
         firm_id=firm,
@@ -588,7 +580,6 @@ def update_plan(
         state, firm, action.owner_id, action.role, action.target, action.channel,
         action.ratio_bp, action.unit_id, action.focus, action.level, balance, data, plan.id,
     )  # fmt: skip
-    state = with_delegate_energy(state, action.owner_id, balance)
     status: PlanStatus = "active" if plan.hired < action.target else "filled"
     updated = replace(
         plan,
@@ -607,7 +598,7 @@ def update_plan(
 
 def close_plan(state: GameState, action: ClosePlan) -> OrgOutcome:
     """Free. Offers already made still resolve; the delegate closes the plan's searches in
-    phase 2 (`interfaces.DelegateHiring.close_plan_searches`)."""
+    phase 2 (TST 13.10)."""
     firm = acting_firm(state, action.actor_id)
     plan = live_plan(state, firm, action.plan_id)
     return OrgOutcome(with_plan(state, replace(plan, status="closed", closed_turn=state.turn)))
@@ -628,7 +619,7 @@ def pause_unqualified_plans(state: GameState, balance: Balance) -> GameState:
 
 
 def apply_org_action(
-    state: GameState, action: OrgAction, balance: Balance, data: GameData, pay: PayAccess
+    state: GameState, action: OrgAction, balance: Balance, data: GameData
 ) -> OrgOutcome:
     """Apply one org action at once (ADR-0014). Pure: no randomness, no clock."""
     match action:
@@ -645,7 +636,7 @@ def apply_org_action(
         case MovePerson():
             return move_person(state, action, balance)
         case GiveRaise():
-            return give_raise(state, action, balance, pay)
+            return give_raise(state, action, balance)
         case Promote():
             return promote(state, action, balance)
         case CreatePlan():

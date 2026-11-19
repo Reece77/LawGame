@@ -20,7 +20,6 @@ from ptk.db.models import (
 from ptk.db.session import make_sessionmaker, shared_engine
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import GameOverError
-from ptk.sim.interfaces import PayAccess
 from ptk.sim.org.actions import ACTION_TYPES, OrgAction, OrgOutcome, apply_org_action
 from ptk.sim.org.models import (
     HiringPlan,
@@ -63,7 +62,6 @@ def load_org(session: Session) -> OrgState:
         people=tuple(
             OrgPerson(
                 person_id=r.person_id,
-                energy=r.energy,
                 last_raise_turn=r.last_raise_turn,
                 accelerated_years=r.accelerated_years,
                 last_promoted_turn=r.last_promoted_turn,
@@ -147,7 +145,6 @@ def write_org(session: Session, state: GameState) -> None:
         session.merge(
             OrgPersonRow(
                 person_id=op.person_id,
-                energy=op.energy,
                 last_raise_turn=op.last_raise_turn,
                 accelerated_years=op.accelerated_years,
                 last_promoted_turn=op.last_promoted_turn,
@@ -178,9 +175,7 @@ def log_decision(session: Session, turn: int, source: str, payload: str) -> None
     session.add(DecisionLogRow(turn=turn, seq=(last or 0) + 1, source=source, payload_json=payload))
 
 
-def run_org_action(
-    path: Path, action: OrgAction, balance: Balance, data: GameData, pay: PayAccess
-) -> OrgOutcome:
+def run_org_action(path: Path, action: OrgAction, balance: Balance, data: GameData) -> OrgOutcome:
     """Load, apply one org action, write the state and the decision log: one transaction."""
     from ptk.db.state_io import load_state, write_people
 
@@ -189,7 +184,7 @@ def run_org_action(
         state = load_state(session)
         if state.ended:
             raise GameOverError("the game is over")
-        outcome = apply_org_action(state, action, balance, data, pay)
+        outcome = apply_org_action(state, action, balance, data)
         write_people(session, outcome.state)
         write_org(session, outcome.state)
         log_decision(session, state.turn, "player", action_payload(action))

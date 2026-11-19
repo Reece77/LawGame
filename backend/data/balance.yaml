@@ -157,11 +157,8 @@ org: # practice groups, teams and supervision (PT-M2; TST formulas.md 13, ported
     manager: director
   pitch_per_recruiting: 0.3 # acceptance-logit points per 10 recruiting above pitch_neutral, from whoever makes the offer (TST 7, 13.12)
   pitch_neutral: 10 # attribute points of recruiting at which the offer pitch is 0
-  delegates: # delegated hiring (13.10, ADR-0015)
-    energy_per_month: 100 # energy; each delegate's own monthly budget, reset after phase 12; never the founder's
-    search_cost: 10 # energy; a delegate opening a search for a plan
-    interview_cost: 6 # energy; one interview (TST founder.energy_cost.interview)
-    offer_cost: 0 # energy; making an offer
-    scout_cost: 20 # energy; one scouting pass over a plan's candidates; also the reserve kept back while interviewing
+  delegates: # delegated hiring (13.10, ADR-0015); each step's energy cost is hiring's (balance energy.cost, PT-M1b)
+    energy_per_month: 100 # energy; each delegate's own monthly budget, given in phase 2; never the founder's
+    reserve: 20 # energy kept back while interviewing, for a scouting pass (TST: the scout cost)
     max_ratio_bp: 12000 # bp of the ask; highest salary ratio a plan may offer (1.2x)
     plan_owner_roles: [human_resources] # roles that may own a plan without leading a unit (a recruiting manager)

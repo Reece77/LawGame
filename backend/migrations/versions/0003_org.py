@@ -59,7 +59,6 @@ def upgrade() -> None:
     op.create_table(
         "org_person",
         sa.Column("person_id", sa.Integer, sa.ForeignKey("person.id"), primary_key=True),
-        sa.Column("energy", sa.Integer, nullable=True),
         sa.Column("last_raise_turn", sa.Integer, nullable=True),
         sa.Column("accelerated_years", sa.Integer, nullable=False),
         sa.Column("last_promoted_turn", sa.Integer, nullable=True),

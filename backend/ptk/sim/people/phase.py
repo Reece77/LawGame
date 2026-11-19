@@ -18,6 +18,7 @@ from ptk.sim.data_models import Balance, GameData
 from ptk.sim.people.growth import grow_person
 from ptk.sim.people.models import Person, RevealState, WorkMonth
 from ptk.sim.people.reveal import apply_knowledge_action
+from ptk.sim.people.strain import strain_month
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
 
@@ -47,6 +48,7 @@ def people_month(
             continue
         month = work.get(person.id, WorkMonth(person_id=person.id))
         p = grow_person(person, turn, rng, data, balance, month)
+        p = strain_month(p, turn, month, balance)
         updated[p.id] = advance_class_year(p, turn, start, balance)
     people = tuple(updated.get(p.id, p) for p in state.people)
 

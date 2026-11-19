@@ -9,6 +9,7 @@ from hypothesis import strategies as st
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.people.growth import grow_person
 from ptk.sim.people.models import WorkMonth
+from ptk.sim.people.strain import strain_month
 from ptk.sim.rng import RngFactory
 from tests.conftest import DATA_DIR
 from tests.unit.test_people_generation import make
@@ -41,6 +42,9 @@ def _check(
         )
         before = person
         person = grow_person(person, turn, RngFactory(seed), data, balance, work)
+        person = strain_month(person, turn, work, balance)
+        assert 0.0 <= person.strain <= 100.0
+        assert (person.burnout_since is not None) <= (person.last_burnout_turn is not None)
         values = [*person.skills.as_dict().values(), *person.familiarity.as_dict().values()]
         assert all(1.0 <= v <= 20.0 for v in values)
         for key in data.practice_keys:

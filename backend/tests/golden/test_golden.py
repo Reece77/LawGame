@@ -30,7 +30,30 @@ def _fingerprint(path: Path, balance: Balance, data: GameData) -> dict[str, obje
         }
         digest.update(json.dumps(payload, sort_keys=True).encode())
     state, balances = saves.read_state(path)
+    people = [
+        [
+            p.id,
+            p.first_name,
+            p.last_name,
+            p.role,
+            p.level,
+            p.birth_turn,
+            p.potential_ability,
+            p.skills.items,
+            p.personality.items,
+            p.hidden.items,
+            p.familiarity.items,
+            p.tags,
+            p.interests,
+            p.school_tier,
+            p.strain,
+            p.book_cents,
+        ]
+        for p in state.people
+    ]
     return {
+        "people": hashlib.sha256(json.dumps(people).encode()).hexdigest(),
+        "names": [f"{p.first_name} {p.last_name}" for p in state.people],
         "final_turn": state.turn,
         "game_state": state.save_meta.game_state,
         "balances": sorted([f, a, v] for (f, a), v in balances.items()),

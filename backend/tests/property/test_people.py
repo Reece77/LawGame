@@ -66,3 +66,33 @@ def test_growth_keeps_attributes_in_range(role: str, seed: int, draw: st.DataObj
     data, balance = load_game_data(DATA_DIR), load_balance(DATA_DIR)
     plan = draw.draw(months(data.practice_keys))
     _check(data, balance, role, seed, plan)
+
+
+# --- PT-M2: the mentoring multiplier (TST formulas.md 13.5) ----------------------------------
+
+
+@settings(max_examples=200, deadline=None)
+@given(
+    leadership=st.floats(1, 20),
+    communication=st.floats(1, 20),
+    mentoring=st.floats(1, 20),
+    reports=st.integers(0, 40),
+    mentor=st.booleans(),
+)
+def test_org_terms_stay_in_bounds(
+    leadership: float, communication: float, mentoring: float, reports: int, mentor: bool
+) -> None:
+    from ptk.loader import load_balance
+    from ptk.sim.org.formulas import (
+        growth_multiplier,
+        manager_morale_term,
+        manager_quality,
+        span_factor,
+    )
+
+    org = load_balance(DATA_DIR).org
+    s = span_factor(leadership, reports, org)
+    assert 0 < s <= 1
+    q = manager_quality(leadership, communication, mentoring, s)
+    assert -8 <= manager_morale_term(q, org) <= 8
+    assert 0.75 <= growth_multiplier(mentoring, s, mentor, org) <= 1.5

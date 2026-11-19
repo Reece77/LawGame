@@ -17,6 +17,7 @@ from ptk.sim.errors import GameOverError
 from ptk.sim.ledger import CASH, AccountCode, LedgerBalances, LedgerEntry, apply_entries
 from ptk.sim.log import LogItem
 from ptk.sim.money import Cents
+from ptk.sim.org.phase import clear_nudges
 from ptk.sim.people.models import WorkMonth
 from ptk.sim.people.phase import people_month
 from ptk.sim.rng import RngFactory
@@ -111,7 +112,7 @@ def people_updates(ctx: TurnContext) -> TurnContext:
     """8. Strain, growth, familiarity, class years, reveals (PT-M1a); morale and departures
     (PT-M1b)."""
     state = people_month(ctx.state, ctx.rng, ctx.data, ctx.balance, ctx.work)
-    return replace(ctx, state=state)
+    return replace(ctx, state=clear_nudges(state))
 
 
 def market_and_macro_update(ctx: TurnContext) -> TurnContext:

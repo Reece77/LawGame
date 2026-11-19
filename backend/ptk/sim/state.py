@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from typing import Literal
 
 from ptk.sim.calendar import YearMonth
+from ptk.sim.org.models import EMPTY_ORG, OrgState
 from ptk.sim.people.models import Employment, Person, RevealState
 
 # ADR PT-0007 section 4: a game ends when the campaign completes or the firm dissolves.
@@ -46,6 +47,7 @@ class GameState:
     people: tuple[Person, ...] = ()  # sorted by id (PT-M1a)
     employments: tuple[Employment, ...] = ()  # sorted by id
     reveals: tuple[RevealState, ...] = ()  # sorted by (observer_firm_id, person_id)
+    org: OrgState = EMPTY_ORG  # units, membership, plans, delegates (PT-M2)
 
     @property
     def ended(self) -> bool:
@@ -64,6 +66,21 @@ class GameState:
                 e.person_id for e in self.employments if e.firm_id == firm_id and e.counts_as_staff
             )
         )
+
+    def founder_of(self, firm_id: int) -> int | None:
+        """The firm's own founding partner played by the player (the org root's leader)."""
+        staff = set(self.staff_ids(firm_id))
+        for person in self.people:
+            if person.is_founder and person.id in staff:
+                return person.id
+        return None
+
+    def employer_of(self, person_id: int) -> int | None:
+        """The firm whose books the person is on (active or notice), if any."""
+        for e in self.employments:
+            if e.person_id == person_id and e.counts_as_staff:
+                return e.firm_id
+        return None
 
     def reveal(self, observer_firm_id: int, person_id: int) -> RevealState | None:
         for state in self.reveals:

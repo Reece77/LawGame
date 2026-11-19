@@ -91,3 +91,32 @@ class InvalidPersonError(SimError):
 
 class UnknownKnowledgeActionError(SimError):
     code = "unknown_knowledge_action"
+
+
+# --- Org (PT-M2) -------------------------------------------------------------------------------
+
+
+class OrgRuleError(SimError):
+    """An org action would break a rule of TST formulas.md 13.1 (or 13.7-13.10)."""
+
+    code = "org_rule"
+
+
+class UnknownUnitError(SimError):
+    code = "unknown_unit"
+
+
+class UnknownPlanError(SimError):
+    code = "unknown_plan"
+
+
+class OrgActionError(SimError):
+    """An org action's values are invalid (an unknown role, a target below one, ...)."""
+
+    code = "invalid_org_action"
+
+
+class DelegateRefusedError(SimError):
+    """A delegate's hiring step was refused (no hiring system, no candidate, ...)."""
+
+    code = "delegate_refused"

@@ -3,15 +3,42 @@
     [
       1,
       "1000_cash",
-      60000000
+      -493764570
     ],
     [
       1,
       "3000_partners_capital",
       -60000000
+    ],
+    [
+      1,
+      "5000_associate_salaries",
+      209291660
+    ],
+    [
+      1,
+      "5010_bonuses",
+      40750000
+    ],
+    [
+      1,
+      "5200_benefits",
+      52322910
+    ],
+    [
+      1,
+      "6000_rent",
+      251400000
     ]
   ],
   "final_turn": 360,
   "game_state": "campaign_complete",
-  "sha256": "147d3886d6de9e0b511a9cd69dd031cb87c6f61853ebe2d3f4bb011aec8c8efd"
+  "names": [
+    "James Jackson",
+    "Michael Garcia",
+    "Megan Brown",
+    "Hannah Allen"
+  ],
+  "people": "d3772fd0520985366986a7f6a4c67dac332c5a68a33d867b7fec7e9087e3788c",
+  "sha256": "df5a2ab8f9723c22975d33578d3bf07538af652bd00519e65436f686f526ca1d"
 }

@@ -75,3 +75,101 @@ class GameOverError(SimError):
 
 class InvalidDataError(SimError):
     code = "invalid_data"
+
+
+class InvalidFounderError(SimError):
+    """A founding partner build breaks a rule (formulas.md 5; spec 2.1)."""
+
+    code = "invalid_founder"
+
+
+class InvalidPersonError(SimError):
+    """A person was asked for with a role and level that do not fit."""
+
+    code = "invalid_person"
+
+
+class UnknownKnowledgeActionError(SimError):
+    code = "unknown_knowledge_action"
+
+
+# --- Hiring and actions (PT-M1b; TST's names) ---------------------------------------------
+
+
+class InvalidActionError(SimError):
+    """An immediate action breaks a rule (ADR-0014)."""
+
+    code = "invalid_action"
+
+
+class InsufficientEnergyError(SimError):
+    code = "insufficient_energy"
+
+
+class InsufficientCashError(SimError):
+    code = "insufficient_cash"
+
+
+class InterviewRequiredError(SimError):
+    """An offer needs an interview first (ADR-0016)."""
+
+    code = "interview_required"
+
+
+class OfferExistsError(SimError):
+    code = "offer_exists"
+
+
+class CampusSeasonError(SimError):
+    """A campus step outside its months (spec 5.7, ADR PT-0002 section 3)."""
+
+    code = "campus_season"
+
+
+class UnknownPersonError(NotFoundError):
+    code = "unknown_person"
+
+
+class UnknownRoleError(SimError):
+    code = "unknown_role"
+
+
+class UnknownSearchError(NotFoundError):
+    code = "unknown_search"
+
+
+class UnknownCandidateError(NotFoundError):
+    code = "unknown_candidate"
+
+
+class UnknownOfferError(NotFoundError):
+    code = "unknown_offer"
+
+
+# --- Org (PT-M2) -------------------------------------------------------------------------------
+
+
+class OrgRuleError(SimError):
+    """An org action would break a rule of TST formulas.md 13.1 (or 13.7-13.10)."""
+
+    code = "org_rule"
+
+
+class UnknownUnitError(NotFoundError):
+    code = "unknown_unit"
+
+
+class UnknownPlanError(NotFoundError):
+    code = "unknown_plan"
+
+
+class OrgActionError(SimError):
+    """An org action's values are invalid (an unknown role, a target below one, ...)."""
+
+    code = "invalid_org_action"
+
+
+class DelegateRefusedError(SimError):
+    """A delegate's hiring step was refused (no hiring system, no candidate, ...)."""
+
+    code = "delegate_refused"

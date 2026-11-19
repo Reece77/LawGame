@@ -9,14 +9,21 @@ guards. Phases not yet built are no-ops so the order never changes.
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
 from ptk.sim.errors import GameOverError
+from ptk.sim.hiring import phases as hiring
+from ptk.sim.interfaces import DelegateHiringHook, delegate_hiring
 from ptk.sim.ledger import CASH, AccountCode, LedgerBalances, LedgerEntry, apply_entries
 from ptk.sim.log import LogItem
 from ptk.sim.money import Cents
+from ptk.sim.org.delegates import DelegateAction, available_hook, run_delegates
+from ptk.sim.org.phase import clear_nudges
+from ptk.sim.org.rules import growth_multipliers
+from ptk.sim.people.models import WorkMonth
+from ptk.sim.people.phase import people_month
 from ptk.sim.rng import RngFactory
 from ptk.sim.snapshot import FirmSnapshot, TurnSnapshot
 from ptk.sim.state import GameState
@@ -34,6 +41,7 @@ class TurnResult:
     log_items: tuple[LogItem, ...]
     snapshot: TurnSnapshot
     event_requests: tuple[EventRequest, ...]
+    delegate_actions: tuple[DelegateAction, ...] = ()  # recomputed on replay (ADR-0015)
 
 
 @dataclass(frozen=True, slots=True)
@@ -49,6 +57,9 @@ class TurnContext:
     log_items: tuple[LogItem, ...] = ()
     snapshot: TurnSnapshot | None = None
     event_requests: tuple[EventRequest, ...] = ()
+    work: Mapping[int, WorkMonth] = field(default_factory=dict)  # person id -> month (PT-M1a)
+    hiring_hook: DelegateHiringHook | None = None  # PT-M1b's, for delegates (PT-M2)
+    delegate_actions: tuple[DelegateAction, ...] = ()
 
     @property
     def turn(self) -> int:
@@ -70,13 +81,22 @@ type Phase = Callable[[TurnContext], TurnContext]
 
 
 def apply_player_decisions(ctx: TurnContext) -> TurnContext:
-    """1. Offers and laterals resolve; votes held this month count (PT-M1b, PT-M4)."""
-    return ctx
+    """1. Notices end; offers resolve; a signed campus class starts (PT-M1b); votes held
+    this month count (PT-M4)."""
+    state, left = hiring.end_notices(ctx.state)
+    state, entries, resolved = hiring.resolve_offers(state, ctx.rng, ctx.balance, ctx.data)
+    state, started = hiring.start_signed(state, ctx.balance, ctx.data)
+    return replace(ctx, state=state).post(*entries).log(*left, *resolved, *started)
 
 
 def delegate_and_rival_decisions(ctx: TurnContext) -> TurnContext:
-    """2. Delegates and automated areas act (ADR-0015); rival firms decide (PT-M5)."""
-    return ctx
+    """2. Delegates run their hiring plans (ADR-0015, PT-M2); automated areas (v2) and rival
+    firms (PT-M5) decide."""
+    state, entries, logs, taken = run_delegates(
+        ctx.state, ctx.rng, ctx.balance, ctx.data, ctx.balances, ctx.hiring_hook
+    )
+    ctx = replace(ctx, state=state, delegate_actions=ctx.delegate_actions + taken)
+    return ctx.post(*entries).log(*logs)
 
 
 def knowledge_progress(ctx: TurnContext) -> TurnContext:
@@ -95,8 +115,10 @@ def work_and_billing(ctx: TurnContext) -> TurnContext:
 
 
 def payroll_and_operating_costs(ctx: TurnContext) -> TurnContext:
-    """6. Salaries, bonuses, rent, insurance (PT-M1b)."""
-    return ctx
+    """6. Salaries, benefits, rent per head, recruiting; December bonuses (PT-M1b); insurance
+    and technology arrive later."""
+    entries, logs = hiring.payroll(ctx.state, ctx.balance, ctx.data)
+    return ctx.post(*entries).log(*logs)
 
 
 def financing(ctx: TurnContext) -> TurnContext:
@@ -105,13 +127,21 @@ def financing(ctx: TurnContext) -> TurnContext:
 
 
 def people_updates(ctx: TurnContext) -> TurnContext:
-    """8. Strain, morale, growth, reveals, departures (PT-M1a, PT-M1b)."""
-    return ctx
+    """8. Strain, growth (times the supervising partner's mentoring, PT-M2), familiarity,
+    class years, reveals (PT-M1a); morale, resignations and tag reveals (PT-M1b); the org's
+    one-off morale changes are cleared last (PT-M2)."""
+    mentoring = growth_multipliers(ctx.state, ctx.balance)  # TST 13.5, before anyone grows
+    state = people_month(ctx.state, ctx.rng, ctx.data, ctx.balance, ctx.work, mentoring)
+    state, departures = hiring.morale_and_departures(
+        state, ctx.rng, ctx.balance, ctx.data, ctx.work
+    )
+    state, tags = hiring.monthly_tag_reveals(state, ctx.rng, ctx.balance, ctx.data)
+    return replace(ctx, state=clear_nudges(state)).log(*departures, *tags)
 
 
 def market_and_macro_update(ctx: TurnContext) -> TurnContext:
-    """9. Legal demand indices, rates, salary scale (PT-M7)."""
-    return ctx
+    """9. The salary scale moves (PT-M1b: history to 2015); legal demand and rates (PT-M7)."""
+    return replace(ctx, state=hiring.apply_scale(ctx.state, ctx.data))
 
 
 def stage_checks(ctx: TurnContext) -> TurnContext:
@@ -129,8 +159,13 @@ def snapshot_and_month_end_report(ctx: TurnContext) -> TurnContext:
 
 
 def event_director_requests(ctx: TurnContext) -> TurnContext:
-    """12. Events for next month; candidate pools (PT-M1b, PT-M6)."""
-    return ctx
+    """12. Candidates leave; lateral batches, the campus pools and the summer programme
+    (PT-M1b); events for next month (PT-M6)."""
+    state = hiring.expire_candidates(ctx.state)
+    state, batches = hiring.lateral_batches(state, ctx.rng, ctx.balance, ctx.data)
+    state, pools = hiring.campus_pools(state, ctx.rng, ctx.balance, ctx.data)
+    state = hiring.summer_month(state, ctx.balance, ctx.data)
+    return replace(ctx, state=state).log(*batches, *pools)
 
 
 PHASES: tuple[tuple[str, Phase], ...] = (
@@ -164,8 +199,14 @@ def advance_turn(
     balance: Balance,
     data: GameData,
     ledger_balances: LedgerBalances,
+    work: tuple[WorkMonth, ...] = (),
+    hiring_hook: DelegateHiringHook | None = None,
 ) -> TurnResult:
-    """Resolve turn `state.turn` and return the next state plus everything to persist."""
+    """Resolve turn `state.turn` and return the next state plus everything to persist.
+
+    `work` (PT-M1a): each person's month of hours, a test input until PT-M3a staffs matters
+    (the brief); a person without one worked no hours. `hiring_hook` (PT-M2): the hiring
+    system delegates drive; by default PT-M1b's (`interfaces.delegate_hiring`), if built."""
     if state.ended:
         raise GameOverError(f"the game is over ({state.save_meta.game_state.replace('_', ' ')})")
     ctx = TurnContext(
@@ -176,16 +217,21 @@ def advance_turn(
         data=data,
         opening_balances=ledger_balances,
         balances=dict(ledger_balances),
+        work={w.person_id: w for w in work},
+        hiring_hook=hiring_hook or available_hook(delegate_hiring),
     )
     for _name, phase in PHASES:
         ctx = phase(ctx)
     if ctx.snapshot is None:
         raise RuntimeError("snapshot phase did not run")
-    next_state = close_at_campaign_end(replace(ctx.state, turn=state.turn + 1), balance)
+    # The founding partner's energy resets after phase 12 for the new month (ADR-0014).
+    next_state = hiring.reset_energy(replace(ctx.state, turn=state.turn + 1), balance)
+    next_state = close_at_campaign_end(next_state, balance)
     return TurnResult(
         new_state=next_state,
         ledger_entries=ctx.entries,
         log_items=ctx.log_items,
         snapshot=ctx.snapshot,
         event_requests=ctx.event_requests,
+        delegate_actions=ctx.delegate_actions,
     )

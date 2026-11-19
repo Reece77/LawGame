@@ -3,15 +3,42 @@
     [
       1,
       "1000_cash",
-      60000000
+      -1118901964
     ],
     [
       1,
       "3000_partners_capital",
       -60000000
+    ],
+    [
+      1,
+      "5000_associate_salaries",
+      578041607
+    ],
+    [
+      1,
+      "5010_bonuses",
+      157250000
+    ],
+    [
+      1,
+      "5200_benefits",
+      144510357
+    ],
+    [
+      1,
+      "6000_rent",
+      299100000
     ]
   ],
   "final_turn": 360,
   "game_state": "campaign_complete",
-  "sha256": "147d3886d6de9e0b511a9cd69dd031cb87c6f61853ebe2d3f4bb011aec8c8efd"
+  "names": [
+    "Sarah Williams",
+    "Kevin Stewart",
+    "Luis Allen",
+    "Logan Robinson"
+  ],
+  "people": "323398cca035787f064e00675a391f68906f94aa2fd05f974e898a40f3de5ea9",
+  "sha256": "af4ba9ba4a4a3b70bbe65773c47e1c8e5cffc4e044f1fb25e9f801adb761825d"
 }

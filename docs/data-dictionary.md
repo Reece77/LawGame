@@ -21,3 +21,100 @@ Column-level reference for a save file (`saves/<slug>.ptk.sqlite`). Kept current
 | `turn_snapshot` | `turn`, `firm_id`, `kpis_json` | | Append-only month-end KPIs per firm |
 | `turn_log` | `turn`, `firm_id`, `kind`, `message` | | Append-only turn log |
 | `decision_log` | `turn`, `seq`, `source`, `payload_json` | | Append-only player, delegate and rival actions (ADR-0014; used from PT-M1b) |
+
+## Schema v2 (`0002_people`, PT-M1a)
+
+Current-state tables, updated in place each turn. Attribute sets are JSON lists of `[key, value]` pairs in data-file order (`skills.yaml`, `personality.yaml`, `practices.yaml`); floats round-trip exactly.
+
+| Table | Column | Type | Meaning |
+| --- | --- | --- | --- |
+| `person` | `id` | int | Person id (ascending; founders first) |
+| | `first_name`, `last_name` | str | Name |
+| | `birth_turn` | int | Turn of birth (negative before the start); age = `(turn − birth_turn) // 12` |
+| | `role`, `level` | str | `roles.yaml` key (a lawyer's home practice) and level (ADR PT-0006 §1) |
+| | `skills_json`, `personality_json` | text | True 1–20 values; the API shows only revealed ranges |
+| | `hidden_json` | text | **Hidden** traits (consistency, burnout risk, big moments, poachability): never in the API |
+| | `potential_ability` | float | **Hidden** PA 10–200; the API shows a phrase from the revealed range |
+| | `familiarity_json`, `familiarity_peak_json` | text | Practice familiarity 1–20, and the highest reached (decay floor = peak − 3) |
+| | `interests_json`, `work_style` | text, str | Shown once the profile is revealed |
+| | `tags_json` | text | True behaviour tags; shown only when revealed |
+| | `school_tier` | str, null | `schools.yaml` key (lawyers) |
+| | `bar_admissions_json` | text | Jurisdiction keys (`scenarios.yaml` `jurisdictions`) |
+| | `city` | str | Home city |
+| | `strain` | float | 0–100 (spec §5.6); shown for the player's own firm only |
+| | `burnout_since`, `last_burnout_turn` | int, null | Turn the current burnout began (null if none); start of the latest burnout |
+| | `book_cents` | bigint | A partner's book of business a year (integer cents, 2005 USD) |
+| | `portability_bp` | int, null | **Hidden**: share of the book that would follow a partner (bp) |
+| | `is_founder`, `founding_partner`, `background` | bool, bool, str | The player's founding partner; any founding partner; their background |
+| | `real` | bool | A real lawyer (ADR PT-0013; from PT-M5) |
+| `employment` | `id`, `person_id`, `firm_id` | int | A person's employment with a firm |
+| | `start_turn`, `end_turn` | int, null | |
+| | `status`, `end_reason` | str | `active`, `notice` or `ended`; why it ended |
+| `reveal_state` | `observer_firm_id`, `person_id` | int | Primary key: what one firm knows of one person (ADR-0007) |
+| | `attributes_json` | text | `[[key, hw, offset, last_updated_turn], ...]`: skills, personality, `potential_ability`, then `fam:<practice>` |
+| | `profile_revealed_turn` | int, null | Interests and work style shown from this turn |
+| | `revealed_tags_json` | text | `[[tag, turn], ...]` |
+
+## Schema v3 (`0003_hiring`, PT-M1b)
+
+Searches, candidates, offers and person state are current-state tables, updated in place; no record is ever deleted, so ids are `max(id) + 1` and never reused. Money is integer cents (ADR-0003).
+
+| Table | Column | Type | Meaning |
+| --- | --- | --- | --- |
+| `firm` | `pay_policy_mode` | str | `match`, `lag` or `lead` against the market associate scale (spec 5.4) |
+| | `pay_policy_bp` | int | Basis points of the market scale the firm pays (10000 = match) |
+| `employment` | `salary_cents` | bigint | Salary a year; 0 for equity partners (profit, not salary). Associates are raised to the firm's scale each month (never cut) |
+| `search` | `id`, `firm_id`, `role` | | A search for one `roles.yaml` role |
+| | `channel` | str | `campus`, `recruiter`, `job_post` or `referral` |
+| | `actor_id` | int | Who opened it (their judgment of talent scouts the batch) |
+| | `opened_turn`, `status`, `closed_turn` | | `open` or `closed`; campus, recruiter and referral searches close after one batch |
+| | `level` | str, null | A lateral search's target level; null = the channel's level mix |
+| | `school_tiers_json` | text | Law school tier filter (JSON list); `[]` = any |
+| | `plan_id` | int, null | The PT-M2 hiring plan it serves |
+| `candidate` | `person_id` | int | The generated person (in `person`) |
+| | `firm_id`, `search_id`, `channel` | | Who may hire them, and how they were found |
+| | `ask_cents` | bigint | Their salary expectation a year (shown exactly) |
+| | `created_turn`, `expires_turn` | int | Phase 12 of `expires_turn` they leave unless an offer is pending; a campus candidate's is the offer month |
+| | `status` | str | `open`, `signed` (a campus hire waiting for September), `hired`, `declined`, `expired` |
+| | `resolved_turn`, `interviewed_turn` | int, null | When resolved; the firm's first interview (ADR-0016) |
+| `offer` | `id`, `firm_id`, `candidate_id`, `actor_id` | | One pending offer per candidate |
+| | `salary_cents` | bigint | Annual salary offered |
+| | `made_turn`, `start_turn` | int | The hire joins at `start_turn`: the resolving turn, or the September after (campus) |
+| | `status`, `resolved_turn` | | `pending`, `accepted`, `declined`, `withdrawn` |
+| | `plan_id`, `unit_id` | int, null | PT-M2's plan and the unit the hire joins |
+| `person_state` | `person_id` | int | One row per person tracked |
+| | `energy` | int, null | This month's energy: the player's founding partner (and PT-M2's delegates) |
+| | `morale` | float, null | 0–100; everyone on the books but founding partners |
+| `inbox_item` | `id`, `turn`, `firm_id`, `template` | | Append-only; the player firm's templated log items (`inbox_templates.yaml`) |
+| | `title`, `body` | text | Rendered text (money formatted) |
+| | `link_kind`, `link_id` | str, int, null | `person`, `candidate`, `search` or `finance` and its id |
+| | `read` | bool | UI state only; not in `decision_log` |
+
+`decision_log` is used from PT-M1b: one row per player action, `seq` 1, 2, 3… within a turn, `source` `player`, and `payload_json` the action's fields (replayed in `seq` order before `advance_turn`, ADR-0014).
+## Schema v4 (`0004_org`, PT-M2)
+
+Current-state tables for the org (TST formulas.md §13), written after every turn and every org action. The firm root is implicit: a person with no `org_member` row, and a unit or plan with a null `unit_id` or `parent_id`, belong to it; its leader is the player's founding partner.
+
+| Table | Column | Type | Meaning |
+| --- | --- | --- | --- |
+| `org_unit` | `id`, `firm_id` | int | Unit id (never reused) and its firm |
+| | `kind` | str | `practice_group` (one per practice, from 10 lawyers) or `team` |
+| | `name` | str | Unique among the firm's active units (case-insensitive), at most 64 characters |
+| | `parent_id` | int, null | A team's practice group; null = the firm root (practice groups always) |
+| | `leader_id` | int, null | A member of the unit who leads it; leads at most one unit |
+| | `practice` | str, null | A practice group's practice (`practices.yaml` key) |
+| | `created_turn`, `status`, `dissolved_turn` | int, str, int | `active` or `dissolved` (kept for history) |
+| `org_member` | `person_id`, `unit_id` | int | A person's unit (rewritten each write) |
+| `hiring_plan` | `id`, `firm_id`, `owner_id` | int | A delegated hiring plan (TST §13.10) and its delegate (a unit leader or a recruiting manager) |
+| | `unit_id` | int, null | Where hires join; null = the firm root |
+| | `role`, `level` | str, str null | What it hires; `level` filters searches (a campus plan's is `associate_1`) |
+| | `target`, `hired`, `hires_json` | int, int, text | Hires wanted; accepted so far; their person ids |
+| | `channel`, `focus`, `ratio_bp` | str, str, int | `job_post`, `recruiter`, `referral`, `campus` (a practice group's campus target) or `any`; `current` or `potential`; offered salary in bp of the ask (at most `org.delegates.max_ratio_bp`) |
+| | `created_turn`, `status`, `closed_turn` | int, str, int | `active`, `paused` (owner left or no longer qualifies), `filled` or `closed` |
+| | `activity_json` | text, null | What the delegate did in its last active turn (searches, interviews, scouted, offers) |
+| `org_person` | `person_id` | int | Org facts about one person |
+| | `last_raise_turn` | int, null | Turn of the last raise that earned the morale bonus (TST §13.8 cooldown) |
+| | `accelerated_years`, `last_promoted_turn` | int, int null | Class years promoted ahead of September; the latest promotion |
+| `org_morale_nudge` | `id`, `person_id`, `turn`, `points`, `reason` | int, int, int, float, str | One-off morale changes from org actions (TST §13.7, §13.8), applied by morale in phase 8 of their turn and then cleared |
+
+`decision_log` is written from PT-M2: one row per org action (`source` `player`, payload the action as JSON with its `kind`) and per delegate step (`source` `delegate`).

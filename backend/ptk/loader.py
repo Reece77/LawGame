@@ -23,14 +23,31 @@ def _read(path: Path) -> dict[str, Any]:
 
 
 def load_game_data(data_dir: Path) -> GameData:
-    scenarios = _read(data_dir / "scenarios.yaml")
     try:
+        scenarios = _read(data_dir / "scenarios.yaml")
+        personality = _read(data_dir / "personality.yaml")
+        backgrounds = _read(data_dir / "backgrounds.yaml")
         return GameData(
             accounts=tuple(_read(data_dir / "accounts.yaml")["accounts"]),
             scenarios=tuple(scenarios["scenarios"]),
             difficulties=tuple(scenarios["difficulties"]),
+            jurisdictions=tuple(scenarios["jurisdictions"]),
+            skills=tuple(_read(data_dir / "skills.yaml")["skills"]),
+            personality=tuple(personality["personality"]),
+            hidden=tuple(personality["hidden"]),
+            work_styles=tuple(personality["work_styles"]),
+            interests=tuple(_read(data_dir / "interests.yaml")["interests"]),
+            practices=tuple(_read(data_dir / "practices.yaml")["practices"]),
+            school_tiers=tuple(_read(data_dir / "schools.yaml")["school_tiers"]),
+            roles=tuple(_read(data_dir / "roles.yaml")["roles"]),
+            tags=tuple(_read(data_dir / "tags.yaml")["tags"]),
+            backgrounds=tuple(backgrounds["backgrounds"]),
+            personality_presets=tuple(backgrounds["personality_presets"]),
+            names=_read(data_dir / "names.yaml")["names"],
+            salary_scale=_read(data_dir / "salary_scale.yaml"),
+            inbox_templates=_read(data_dir / "inbox_templates.yaml")["templates"],
         )
-    except (ValidationError, KeyError) as exc:
+    except (ValidationError, KeyError, FileNotFoundError) as exc:
         raise InvalidDataError(f"invalid seed data: {exc}") from exc
 
 

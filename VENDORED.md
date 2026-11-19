@@ -28,6 +28,8 @@ Files copied or ported from Tech Startup Tycoon (`Reece77/Tech_Executive_Tycoon`
 | `frontend/tsconfig.app.json` | `frontend/tsconfig.app.json` | AS IS | 82a5db4f3335b292a2080cc9b9981e7ddf06cab32089a7096282e3949fe75d28 |
 | `frontend/tsconfig.node.json` | `frontend/tsconfig.node.json` | AS IS | bdc4ff59093bf9a08d6117c6bae4823201bbb1e6bbd4ef1fe70acc6b28035db6 |
 | `frontend/.prettierrc.json` | `frontend/.prettierrc.json` | AS IS | 85378d4d734cb7d35641c44ffdf322fe0bc76a3b12841927f20aa5f0eba12695 |
+| `backend/data/personality.yaml` | `backend/data/personality.yaml` | AS IS | 9086d8dd35efdb93894aa85dbb880d42f120d080a6bcc43980ad00d4e5972ad8 |
+| `backend/data/interests.yaml` | `backend/data/interests.yaml` | AS IS | b3be7dd7e48fe844b67f57e27ab8f6556d194c529658d9417ae96b862bd111ff |
 | `backend/ptk/sim/rng.py` | `backend/tst/sim/rng.py` | ported | — |
 | `backend/ptk/sim/calendar.py` | `backend/tst/sim/calendar.py` | ported | — |
 | `backend/ptk/sim/errors.py` | `backend/tst/sim/errors.py` | ported | — |
@@ -37,6 +39,30 @@ Files copied or ported from Tech Startup Tycoon (`Reece77/Tech_Executive_Tycoon`
 | `backend/tests/unit/test_sim_purity.py` | `backend/tests/unit/test_sim_purity.py` | ported | — |
 | `backend/tests/unit/test_rng_call_sites.py` | `backend/tests/unit/test_rng_call_sites.py` | ported | — |
 | `frontend/src/main.tsx` | `frontend/src/main.tsx` | ported | — |
+| `backend/ptk/sim/people/models.py` | `backend/tst/sim/people/models.py` | ported | — |
+| `backend/ptk/sim/people/formulas.py` | `backend/tst/sim/people/formulas.py` | ported | — |
+| `backend/ptk/sim/people/generator.py` | `backend/tst/sim/people/generator.py` | ported | — |
+| `backend/ptk/sim/people/reveal.py` | `backend/tst/sim/people/reveal.py` | ported | — |
+| `backend/ptk/sim/people/founder.py` | `backend/tst/sim/people/founder.py` | ported | — |
+| `backend/ptk/sim/people/growth.py` | `backend/tst/sim/people/growth.py` | ported | — |
+| `frontend/src/lib/attr.ts` | `frontend/src/lib/attr.ts` | ported | — |
+| `frontend/src/components/AttributeRange.tsx` | `frontend/src/components/AttributeRange.tsx` | ported | — |
+| `backend/data/tags.yaml` | `backend/data/tags.yaml` | ported | — |
+| `backend/data/names.yaml` | `backend/data/names.yaml` | ported | — |
+| `backend/data/backgrounds.yaml` | `backend/data/backgrounds.yaml` | ported | — |
+| `backend/ptk/sim/hiring/models.py` | `backend/tst/sim/hiring/models.py` | ported | — |
+| `backend/ptk/sim/hiring/formulas.py` | `backend/tst/sim/hiring/formulas.py` | ported | — |
+| `backend/ptk/sim/hiring/rules.py` | `backend/tst/sim/hiring/rules.py` | ported | — |
+| `backend/ptk/sim/hiring/phases.py` | `backend/tst/sim/hiring/phases.py` | ported | — |
+| `backend/ptk/sim/hiring/actions.py` | `backend/tst/sim/actions/hiring.py` | ported | — |
+| `backend/ptk/sim/actions/__init__.py` | `backend/tst/sim/actions/__init__.py` | ported | — |
+| `backend/ptk/db/inbox.py` | `backend/tst/db/inbox.py` | ported | — |
+| `backend/data/inbox_templates.yaml` | `backend/data/inbox_templates.yaml` | ported | — |
+| `backend/ptk/sim/org/models.py` | `backend/tst/sim/org/models.py` | ported | — |
+| `backend/ptk/sim/org/formulas.py` | `backend/tst/sim/org/formulas.py` | ported | — |
+| `backend/ptk/sim/org/rules.py` | `backend/tst/sim/org/rules.py` | ported | — |
+| `backend/ptk/sim/org/actions.py` | `backend/tst/sim/actions/org.py` | ported | — |
+| `backend/ptk/sim/org/delegates.py` | `backend/tst/sim/org/delegates.py` | ported | — |
 
 Changes in ported files:
 
@@ -49,3 +75,29 @@ Changes in ported files:
 - `backend/tests/unit/test_sim_purity.py`: package rename.
 - `backend/tests/unit/test_rng_call_sites.py`: known names a parameter.
 - `frontend/src/main.tsx`: no glossary or busy retry yet.
+- `backend/ptk/sim/people/models.py` (PT-M1a): class-year levels; familiarity, school tier, bar, strain, book and portability on a person; every person has a role; employment with a firm.
+- `backend/ptk/sim/people/formulas.py` (PT-M1a): growth times `learn(h)`; familiarity and strain formulas; no salary expectation yet.
+- `backend/ptk/sim/people/generator.py` (PT-M1a): school tier first; familiarity and portability draws last; one US pool; no cities or salary.
+- `backend/ptk/sim/people/reveal.py` (PT-M1a): firm observers; familiarity records (narrow); TST's first six actions.
+- `backend/ptk/sim/people/founder.py` (PT-M1a): the founding partner build: home practice role at equity partner, familiarity, book, bar admissions, age 34-52; stream keyed by founder index.
+- `backend/ptk/sim/people/growth.py` (PT-M1a): growth times `learn(h)` from a month of work; familiarity growth and decay; growth in the person's own role.
+- `frontend/src/lib/attr.ts` (PT-M1a): ranges as `{lo, hi}`; a strain band; no morale band yet.
+- `frontend/src/components/AttributeRange.tsx` (PT-M1a): ranges as `{lo, hi}`.
+- `backend/data/tags.yaml` (PT-M1a): PT's seven new tags appended; the `negative` flag (ADR PT-0013).
+- `backend/data/names.yaml` (PT-M1a): one `us` pool (TST's north_america list); rival names dropped.
+- `backend/data/backgrounds.yaml` (PT-M1a): PT's five founding-partner backgrounds; TST's presets as is.
+- `backend/ptk/sim/hiring/models.py` (PT-M1b): firms; campus, recruiter, job post and referral channels; tier filters and a target level on a search; the ask on the candidate; campus offers signed a year ahead; per-person energy and morale; the firm's pay policy; no equity, NextIds, rival, exec or city searches.
+- `backend/ptk/sim/hiring/formulas.py` (PT-M1b): no equity or stage terms, a prestige term instead; fit counts interests the practice favours; recruiter fee 20% or 25%; no runway term; PT's hours, interesting-work, prospects and bonus-fairness morale terms; resignation with lifer, burnout, bonus timing and lateral heat; no retirement.
+- `backend/ptk/sim/hiring/rules.py` (PT-M1b): no option pool or mission; the campus calendar; the hint from revealed ranges with prestige.
+- `backend/ptk/sim/hiring/phases.py` (PT-M1b): campus pools, summer months and a September start; payroll to PT's accounts with December bonuses; the scale raises associates in phase 9; PT's morale terms and bonus timing; no rivals, options, offices, divisions, free agents, relocation or retirement.
+- `backend/ptk/sim/hiring/actions.py` (PT-M1b): PT's channels and campus months; scouting and the pay policy as actions; no firing, equity, poach, exec, interest or city searches.
+- `backend/ptk/sim/actions/__init__.py` (PT-M1b): hiring actions only; decision_log payloads.
+- `backend/ptk/db/inbox.py` (PT-M1b): firms; no archive, bookmarks, digest or event links.
+- `backend/data/inbox_templates.yaml` (PT-M1b): PT's hiring templates only.
+- `backend/ptk/sim/people/generator.py` (PT-M1b): a fixed school tier for tier-filtered searches and campus visits (drawn first all the same); `weighted_pick` public.
+- `backend/ptk/sim/people/models.py` (PT-M1b): an employment's salary.
+- `backend/ptk/sim/org/models.py` (PT-M2): unit kinds are practice groups and teams; membership, raise history and one-off morale in an `OrgState` on the game state; PT's plan channels (campus, referral), no equity; no seats, authority, proposals, pitches, policies or offices.
+- `backend/ptk/sim/org/formulas.py` (PT-M2): span, supervisor quality, W_mgr and its label, M_growth, the offer pitch and the raise test only; `OrgBalance` keys.
+- `backend/ptk/sim/org/rules.py` (PT-M2): units and membership from `GameState.org`; the root's leader is the player's founding partner; no teammate-tag morale, work policy or memo cache; growth multipliers and the practice-group gate added.
+- `backend/ptk/sim/org/actions.py` (PT-M2, from `actions/org.py`): practice groups (one per practice, from 10 lawyers) and teams; co-founding partners may lead; ADR PT-0006 promotions (accelerated class years, no partnership); raises through `interfaces.salary_cents`/`set_salary`; plan owners lead a unit or are recruiting managers; campus targets per group; no founder energy, divisions or policies; one-off morale as nudges.
+- `backend/ptk/sim/org/delegates.py` (PT-M2): every step is a request through PT-M1b's delegate hook (`ptk.sim.interfaces`); energy given and spent through the hook; hires placed from accepted offers; per-search scouting; campus plans; no executives' reuse.

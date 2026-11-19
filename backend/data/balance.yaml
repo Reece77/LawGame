@@ -4,3 +4,257 @@ campaign:
 backups:
   every_turns: 12  # months between periodic backups (ADR-0004 section 5)
   keep_periodic: 10  # periodic backups kept per save
+people: # generation (spec 5.1-5.2; formulas.md 2 adapted; ADR PT-0006)
+  # Levels (ADR PT-0006 section 1). ca: target current ability mean and sd (10-200 scale);
+  # age: years, inclusive; capacity_hours and billable_target_hours: hours a year (spec 5.2;
+  # held by the engine as integer tenths, ADR PT-0005); home_familiarity: the 1-20 range a
+  # generated lawyer's or paralegal's home practice is drawn in; next_level: the class year
+  # reached each September (people.class_year_month).
+  levels:
+    paralegal: { kind: paralegal, ca: { mean: 70, sd: 12 }, age: [22, 55], capacity_hours: 1950, billable_target_hours: 1500, home_familiarity: [10, 12] }
+    trainee: { kind: lawyer, ca: { mean: 65, sd: 10 }, age: [23, 27], capacity_hours: 1950, billable_target_hours: 1200, home_familiarity: [10, 11] }
+    associate_1: { kind: lawyer, ca: { mean: 80, sd: 12 }, age: [24, 29], capacity_hours: 2300, billable_target_hours: 1900, home_familiarity: [10, 11], next_level: associate_2 }
+    associate_2: { kind: lawyer, ca: { mean: 90, sd: 12 }, age: [25, 30], capacity_hours: 2300, billable_target_hours: 1950, home_familiarity: [10, 12], next_level: associate_3 }
+    associate_3: { kind: lawyer, ca: { mean: 100, sd: 12 }, age: [26, 31], capacity_hours: 2300, billable_target_hours: 2000, home_familiarity: [11, 12], next_level: associate_4 }
+    associate_4: { kind: lawyer, ca: { mean: 105, sd: 12 }, age: [27, 33], capacity_hours: 2300, billable_target_hours: 2000, home_familiarity: [11, 13], next_level: associate_5 }
+    associate_5: { kind: lawyer, ca: { mean: 112.5, sd: 12 }, age: [28, 34], capacity_hours: 2300, billable_target_hours: 2000, home_familiarity: [12, 13], next_level: associate_6 }
+    associate_6: { kind: lawyer, ca: { mean: 120, sd: 12 }, age: [29, 35], capacity_hours: 2300, billable_target_hours: 2000, home_familiarity: [12, 14], next_level: associate_7 }
+    associate_7: { kind: lawyer, ca: { mean: 125, sd: 12 }, age: [30, 37], capacity_hours: 2300, billable_target_hours: 2000, home_familiarity: [13, 15], next_level: associate_8 }
+    associate_8: { kind: lawyer, ca: { mean: 125, sd: 12 }, age: [31, 38], capacity_hours: 2300, billable_target_hours: 2000, home_familiarity: [13, 15] }
+    senior_associate: { kind: lawyer, ca: { mean: 125, sd: 12 }, age: [30, 38], capacity_hours: 2300, billable_target_hours: 2000, home_familiarity: [13, 15] }
+    counsel: { kind: lawyer, ca: { mean: 130, sd: 12 }, age: [34, 60], capacity_hours: 2100, billable_target_hours: 1700, home_familiarity: [14, 16] }
+    income_partner: { kind: lawyer, ca: { mean: 135, sd: 12 }, age: [33, 58], capacity_hours: 2200, billable_target_hours: 1800, home_familiarity: [14, 16] }
+    equity_partner: { kind: lawyer, ca: { mean: 150, sd: 15 }, age: [36, 64], capacity_hours: 2200, billable_target_hours: 1700, home_familiarity: [14, 16] }
+    staff: { kind: business_services, ca: { mean: 70, sd: 12 }, age: [22, 50], capacity_hours: 1950, billable_target_hours: 0 }
+    manager: { kind: business_services, ca: { mean: 100, sd: 12 }, age: [27, 55], capacity_hours: 1950, billable_target_hours: 0 }
+    director: { kind: business_services, ca: { mean: 125, sd: 12 }, age: [32, 60], capacity_hours: 1950, billable_target_hours: 0 }
+    chief: { kind: business_services, ca: { mean: 145, sd: 12 }, age: [38, 62], capacity_hours: 1950, billable_target_hours: 0 }
+  ca_clip: [30, 190] # ability points: a target CA is clipped to this range
+  skill_noise_sd: { primary: 1.5, secondary: 2.0 } # attribute points around target / 10
+  secondary_offset: 3.0 # attribute points: secondaries start this far below the primaries
+  other_skill_range: [1, 8] # attribute points: skills outside the role, uniform
+  ca_tolerance: 2 # ability points: rescale the primaries if CA misses the target by more
+  pa_gap_mean: # ability points of headroom above CA, by age (years)
+    - { from_age: 0, value: 45 }
+    - { from_age: 25, value: 30 }
+    - { from_age: 30, value: 18 }
+    - { from_age: 35, value: 8 }
+    - { from_age: 45, value: 2 }
+  pa_gap_sd: 15 # ability points
+  personality_mean: 10.5 # attribute points, personality and hidden traits
+  personality_sd: 3.5
+  interest_count: [2, 4] # interests per person, uniform
+  max_tags: 2 # behavior tags per person at most
+  school_tier_weights: { t14: 25, national: 45, regional: 30 } # relative weights, lawyers only
+  other_familiarity: [1, 6] # 1-20: familiarity with practices other than the home one
+  portability_bp: [2000, 8000] # bp of a partner's book that would follow them (hidden; PT-M4)
+  class_year_month: 9 # calendar month in which associates advance one class year
+  initial_strain: [10, 30] # 0-100: a generated person's strain when created, uniform
+growth: # monthly skill growth and decline (formulas.md 3), times learn(h) (spec 5.3)
+  rate: 0.12 # attribute points a month at full headroom, age factor 1, professionalism 10
+  age_factor:
+    - { from_age: 0, value: 1.3 }
+    - { from_age: 25, value: 1.0 }
+    - { from_age: 30, value: 0.7 }
+    - { from_age: 35, value: 0.4 }
+    - { from_age: 45, value: 0.1 }
+    - { from_age: 55, value: 0.0 }
+  decline: # attribute points lost a month, every skill, by age
+    - { from_age: 0, value: 0.0 }
+    - { from_age: 50, value: 0.005 }
+    - { from_age: 55, value: 0.015 }
+  noise_rel_sd: 0.25 # relative sd of the multiplicative growth noise
+  learn: # learn(h) (ADR PT-0006 section 4)
+    reference_share: 0.6 # substantive share of hours that gives learn = 1
+    clamp: [0.5, 1.4] # learn(h) bounds; a month with no hours gives the lower bound
+familiarity: # practice familiarity (spec 5.1, 5.3; ADR PT-0006 section 2)
+  per_100h: 0.4 # familiarity points gained per 100 hours worked in a practice
+  taper_from: 15 # above this, gains shrink linearly to nothing at 20 (diminishing returns)
+  decay_per_month: 0.05 # familiarity points lost in a month with no hours in a practice
+  floor_below_peak: 3 # decay stops this far below the highest familiarity reached
+  factor_at_one: 0.70 # fam_factor(1): effective-skill multiplier at familiarity 1
+  full_at: 15 # fam_factor reaches 1.0 at this familiarity
+strain: # strain and burnout (spec 5.6; ADR PT-0006 section 3)
+  load: 60 # strain points a month per unit of hours / capacity above comfort
+  comfort_base: 1.0 # hours / capacity tolerated at stamina 10
+  comfort_per_stamina: 0.01 # comfort added per stamina point above stamina_neutral
+  stamina_neutral: 10 # stamina at which comfort = comfort_base
+  risk_base: 0.5 # load multiplier = risk_base + burnout_risk / risk_divisor
+  risk_divisor: 20
+  grinder_load: 0.7 # load multiplier for the grinder tag
+  recover: 8 # strain points lost in a month at or under comfort
+  holiday: 25 # strain points lost in a two-week holiday month (instead of recover)
+  sabbatical: 40 # strain points lost in a sabbatical month (instead of recover)
+  burnout_at: 80 # strain at or above which burnout starts
+  burnout_exit: 40 # burnout ends when strain falls below this
+  burnout_capacity: 0.7 # capacity multiplier while burnt out
+  burnout_effect_months: 6 # months from burnout's start that error and resignation are x2
+  founder_start: 20 # a founding partner's strain at the start (TST 32.1's stress start)
+reveal: # revealed ranges (formulas.md 4, ADR-0007); familiarity is narrow (ADR PT-0006 2)
+  initial_hw: { skill: 5.0, personality: 7.0, pa: 66.0, familiarity: 1.5 } # half-widths
+  strength: # share of hw removed per action at scout factor 1 (all but PA)
+    job_post_screen: 0.2
+    network_intro: 0.3
+    interview: 0.35
+    reference_check: 0.3
+    scouting_month: 0.25
+    employed_month: 0.08
+  pa_strength: # the same for potential
+    job_post_screen: 0.05
+    network_intro: 0.3
+    interview: 0.2
+    reference_check: 0.3
+    scouting_month: 0.6
+    employed_month: 0.08
+  scout_base: 0.5 # scout_factor = scout_base + judgment_of_talent / scout_divisor
+  scout_divisor: 40
+  pa_scout_divisor: 16 # PA scout factor = clamp(judgment / pa_scout_divisor, pa_scout_clamp)
+  pa_scout_clamp: [0.1, 1.0]
+  founder_pa_hw: 40 # PA half-width a firm starts with for its own founding partners
+  pa_phrase_bounds: [70, 100, 130, 160] # lower edges of decent, good, excellent, outstanding
+founder: # founding partner build (spec 2.1; formulas.md 5)
+  skill_base: 5 # attribute points every skill starts at
+  skill_points: 110 # points the build spends, exactly
+  skill_cap: 18 # no skill above this after background bonuses
+  default_age: 42 # years
+  age_range: [34, 52] # years (spec 2.1)
+  familiar_range: [15, 17] # 1-20: familiarity in the background's listed practices, uniform
+  book_round_to_cents: 5000000 # a book of business is drawn in $50,000 steps
+energy: # the founding partner's monthly energy (TST formulas.md 6, M4c values; ADR-0014)
+  per_month: 60 # energy points a month for the player's founding partner; none carries over
+  cost: # energy points each action spends at once
+    interview: 8
+    reference_check: 4
+    scout: 20 # a month of scouting on one search's open candidates (TST 11.12)
+    referral: 10 # open a referral search (TST's network search)
+    job_post: 5 # open a job post
+    recruiter: 5 # engage a recruiter
+    campus: 5 # register a campus search for the season
+    offer: 0
+    withdraw_offer: 0
+    close_search: 0
+    pay_policy: 2 # change the firm's pay policy
+hiring: # searches and offers (TST formulas.md 7; spec 5.7)
+  candidate_shelf_turns: 3 # months a lateral candidate stays open unless hired
+  lowball_ratio: 0.85 # offers below this share of the ask are always declined
+  hint_bands: { lo: -0.3, hi: 0.3 } # offer-hint score bands: unlikely / uncertain / likely
+  offer: # acceptance logistic: p = 1 / (1 + exp(-k (score - threshold)))
+    w_salary: 4.5 # score per unit of (offer / ask - 1); TST 4.0, raised so 1.10x vs 0.95x clears 30 points measured
+    w_fit: 0.25 # score per interest matching the role's practice (interesting work)
+    w_risk: 1.0 # score lost at risk appetite 0 (none at the neutral 10)
+    k: 3.0 # logistic steepness
+    threshold: 0.1 # score at which acceptance is 50%
+  pitch_per_recruiting: 0.03 # score per recruiting point above 10 of whoever offers (TST 7 M2)
+  prestige_term: 0.0 # score; the firm's prestige (0 until PT-M5 and PT-M16 supply it)
+  ask: # a candidate's salary expectation (shown exactly)
+    noise_sd: 0.04 # relative sd of the ask around their market pay
+    round_to_cents: 100000 # asks are whole $1,000s
+    tier_bp: { t14: 10000, national: 9600, regional: 9000, oxbridge: 10000, russell_group: 9600, other_uk: 9000 } # bp of the market pay a lawyer asks, by school tier
+  recruiter_fee_bp: { junior: 2000, senior: 2500 } # of first-year salary, charged on hire (6200)
+  recruiter_senior_from: associate_5 # this class year and above pay the senior fee
+  job_post_cost_cents: 100000 # $1,000 a month while a job post is open (6200)
+  channels: # size: candidates per batch [min, max]; knowledge: what the firm learns at once
+    referral: { size: [2, 4], sociability_threshold: 15, sociability_bonus: 1, knowledge: [network_intro] }
+    job_post: { size: [4, 8], knowledge: [job_post_screen] }
+    recruiter: { size: [3, 5], knowledge: [job_post_screen, job_post_screen] }
+  level_mix: # relative weights of a lateral candidate's level, by the role's kind
+    lawyer: { associate_2: 15, associate_3: 20, associate_4: 20, associate_5: 15, associate_6: 12, associate_7: 8, associate_8: 4, counsel: 6 }
+    paralegal: { paralegal: 1 }
+    business_services: { staff: 50, manager: 35, director: 12, chief: 3 }
+campus: # the US campus cycle (spec 5.7; ADR PT-0002 section 3)
+  register_months: [1, 4] # calendar months in which a firm can open a campus search
+  pool_month: 4 # summer associates are chosen in phase 12 of this month and arrive in May
+  summer_months: [5, 7] # the summer programme: a scouting month each, and summer pay
+  offer_month: 8 # campus offers may be made only in this month; they resolve in September
+  start_month: 9 # the class starts in this month of the following year
+  level: associate_1 # a campus hire's level
+  per_tier: { t14: 3, national: 4, regional: 4 } # summer associates per tier per campus search
+  knowledge: [job_post_screen] # what the firm knows of a summer associate on arrival (the CV)
+  summer_pay_bp: 8000 # bp of a first-year's monthly scale salary per summer associate a month (6200)
+pay: # salaries, bonuses and costs per head (spec 5.4, 8.3; TST formulas.md 8)
+  benefits_bp: 2500 # benefits as bp of salary (5200)
+  rent_per_head_cents: 300000 # $3,000 a month per person on the books in New York (6000)
+  city_bp: { new_york: 10000, washington_dc: 9000, chicago: 8500, boston: 9000, los_angeles: 9500, san_francisco: 9500, houston: 8000 } # pay bands and rent by city
+  policy: # the firm's choice against the market scale (spec 5.4)
+    min_bp: 5000 # the deepest lag: 50% of the market scale (regional firms run 50-80%)
+    max_bp: 12000 # the boldest lead: 120% of the market scale
+  bonus_month: 12 # year-end bonuses are paid in this calendar month (5010)
+  discretionary_bonus_bp: { counsel: 1000, income_partner: 1500, paralegal: 500, trainee: 0, staff: 500, manager: 800, director: 1000, chief: 1500 } # bp of salary, off-scale levels
+morale: # morale 0-100 (TST formulas.md 9; spec 5.3)
+  new_hire: 65 # a hire's morale on joining
+  start: 65 # morale of a scenario's starting staff
+  target_base: 56 # TST M10d's base
+  rate: 0.3 # share of the gap to target closed each month
+  noise_scale: 2.0 # sd of monthly noise at temperament 1 (x (21 - temperament) / 20)
+  pay_slope: 60 # P = clamp(pay_slope x (pay / market - 1), pay_min, pay_max)
+  pay_min: -20
+  pay_max: 15
+  interest_per_match: 3 # interesting work: points per interest the person's practice favours
+  interest_weight_from: 2 # an interest counts when the home role weighs it at least this
+  hours_over_from: 1.1 # W_hours = hours_over_slope x max(0, hours / target - hours_over_from)
+  hours_over_slope: -10
+  hours_idle_below: 0.6 # below this hours / target, idle associates fear for their jobs
+  hours_idle: -5
+  prospects_levels: [associate_6, associate_7, associate_8] # partnership prospects apply here
+  prospects_no_sponsor: -3 # without a sponsor (sponsors arrive with PT-M4)
+  prospects_sponsor: 4 # with a revealed sponsor and a realistic business case (PT-M4)
+  bonus_slope: 30 # December shock: clamp(bonus_slope x (bonus / market bonus - 1), min, max)
+  bonus_min: -10
+  bonus_max: 6
+resign: # resignation chance per month in bp (TST formulas.md 10; spec 5.3)
+  base_bp: 170 # bp a month; TST M7a had 80 (10-25% a year); raised so associate attrition is about 18% a year (balance-targets T6)
+  morale_floor: 50 # TST M10d's floor: below it the chance rises
+  morale_divisor: 20
+  loyalty_divisor: 10
+  job_hopper_mult: 2
+  burnout_mult: 2 # within strain.burnout_effect_months of a burnout (spec 5.6)
+  lifer_loyalty_floor: 14 # the lifer tag's loyalty floor (spec 5.1)
+  cap_bp: 2000
+  lateral_market_heat: 1.0 # multiplier; a constant until PT-M7's macro index
+  associate_months: { 1: 2.0, 2: 1.3, 10: 0.7, 11: 0.5, 12: 0.5 } # bonus timing by calendar month (others 1)
+  partner_months: { 4: 2.0, 1: 0.7, 2: 0.7, 3: 0.7 } # income partners leave after the April true-up
+tags: # behaviour tag reveals (TST formulas.md 10)
+  reveal_bp_per_month: 500 # each hidden tag of an employee, each month
+  reveal_bp_on_check: 1500 # each hidden tag, at an interview or reference check
+org: # practice groups, teams and supervision (PT-M2; TST formulas.md 13, ported)
+  practice_group_unlock_lawyers: 10 # lawyers on staff (founding partners included) before practice groups unlock (spec 3)
+  span_base: 5 # reports; span limit L = span_base + floor(leadership / span_per_leadership) (13.2)
+  span_per_leadership: 4 # attribute points of leadership per extra report in L (13.2)
+  manager_morale_slope: 0.8 # morale points per point of supervising-partner quality above 10 (13.4)
+  manager_morale_cap: 8 # morale points; W_mgr is clamped to [-cap, +cap] (13.4)
+  manager_label_bands: [-2, 2] # morale points of W_mgr; at or below: "stretched", at or above: "strong", between: "fine"
+  mentoring_neutral: 5 # attribute points; mentoring x S + bonus at which growth is unchanged (13.5)
+  mentoring_divisor: 20 # attribute points per +100% growth in M_growth (13.5)
+  mentor_tag_bonus: 3 # attribute points added when another member of the unit has the mentor tag (13.5)
+  growth_mult_min: 0.75 # multiplier; floor of M_growth (13.5)
+  growth_mult_max: 1.5 # multiplier; ceiling of M_growth (13.5)
+  reorg: # one-off morale points (13.7)
+    move: -2 # the person moved to another unit
+    new_leader_members: -1 # each other member when a unit's leader is set or replaced
+    replaced_leader: -5 # a replaced or removed leader who stays in the unit
+    dissolve_members: -2 # each member of a dissolved unit
+  raise_morale: 3 # morale points, once, for a raise of at least raise_threshold_bp (13.8)
+  raise_threshold_bp: 500 # bp; a raise this large or larger earns raise_morale (13.8)
+  raise_cooldown_turns: 12 # turns; raise_morale is given at most once in this many turns per person (13.8)
+  pay_cut_morale: -10 # morale points, once, for any pay cut (13.8)
+  promote_morale: 5 # morale points, once, for a promotion (13.8)
+  promote_to: # level -> the level one promotion reaches (ADR PT-0006 1); a class-year step is "accelerated"; partnership is the vote (PT-M4)
+    trainee: associate_1
+    associate_1: associate_2
+    associate_2: associate_3
+    associate_3: associate_4
+    associate_4: associate_5
+    associate_5: associate_6
+    associate_6: associate_7
+    associate_7: associate_8
+    associate_8: counsel
+    senior_associate: counsel
+    staff: manager
+    manager: director
+  pitch_per_recruiting: 0.3 # acceptance-logit points per 10 recruiting above pitch_neutral, from whoever makes the offer (TST 7, 13.12)
+  pitch_neutral: 10 # attribute points of recruiting at which the offer pitch is 0
+  delegates: # delegated hiring (13.10, ADR-0015); each step's energy cost is hiring's (balance energy.cost, PT-M1b)
+    energy_per_month: 100 # energy; each delegate's own monthly budget, given in phase 2; never the founder's
+    reserve: 20 # energy kept back while interviewing, for a scouting pass (TST: the scout cost)
+    max_ratio_bp: 12000 # bp of the ask; highest salary ratio a plan may offer (1.2x)
+    plan_owner_roles: [human_resources] # roles that may own a plan without leading a unit (a recruiting manager)

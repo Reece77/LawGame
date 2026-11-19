@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router';
 import { GameLayout } from './screens/GameLayout';
 import { MainMenu } from './screens/MainMenu';
 import { NewGameScreen } from './screens/NewGameScreen';
+import { OrgScreen } from './screens/OrgScreen';
 import { OverviewScreen } from './screens/OverviewScreen';
 import { PeopleScreen } from './screens/PeopleScreen';
 import { PersonScreen } from './screens/PersonScreen';
@@ -20,6 +21,7 @@ export default function App() {
           <Route index element={<OverviewScreen />} />
           <Route path="people" element={<PeopleScreen />} />
           <Route path="people/:personId" element={<PersonScreen />} />
+          <Route path="org" element={<OrgScreen />} />
         </Route>
       </Routes>
     </BrowserRouter>

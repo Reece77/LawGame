@@ -103,6 +103,211 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/saves/{slug}/org": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Org */
+        get: operations["getOrg"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/org/people/{person_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Person Org */
+        get: operations["getPersonOrg"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/org/units": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Unit */
+        post: operations["createUnit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/org/units/{unit_id}/rename": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Rename Unit */
+        post: operations["renameUnit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/org/units/{unit_id}/move": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Move Unit */
+        post: operations["moveUnit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/org/units/{unit_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Dissolve Unit */
+        delete: operations["dissolveUnit"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/org/units/{unit_id}/leader": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Set Leader */
+        put: operations["setLeader"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/org/people/{person_id}/unit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Move Person */
+        put: operations["movePerson"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/org/people/{person_id}/promote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Promote */
+        post: operations["promote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/org/people/{person_id}/raise": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Give Raise */
+        post: operations["giveRaise"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/org/plans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Plan */
+        post: operations["createPlan"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/org/plans/{plan_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update Plan */
+        put: operations["updatePlan"];
+        post?: never;
+        /** Close Plan */
+        delete: operations["closePlan"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -128,6 +333,20 @@ export interface components {
             label: string;
             /** Description */
             description: string;
+        };
+        /** CreateUnitIn */
+        CreateUnitIn: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "practice_group" | "team";
+            /** Name */
+            name?: string | null;
+            /** Parent Id */
+            parent_id?: number | null;
+            /** Practice */
+            practice?: string | null;
         };
         /** DifficultyOut */
         DifficultyOut: {
@@ -181,6 +400,11 @@ export interface components {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
+        /** LeaderIn */
+        LeaderIn: {
+            /** Person Id */
+            person_id: number | null;
+        };
         /** MetaOut */
         MetaOut: {
             /** Scenarios */
@@ -189,6 +413,11 @@ export interface components {
             difficulties: components["schemas"]["DifficultyOut"][];
             /** Backgrounds */
             backgrounds: components["schemas"]["BackgroundOut"][];
+        };
+        /** MoveUnitIn */
+        MoveUnitIn: {
+            /** Parent Id */
+            parent_id: number | null;
         };
         /** NewGameIn */
         NewGameIn: {
@@ -210,6 +439,93 @@ export interface components {
             seed?: number | null;
             /** Background */
             background?: string | null;
+        };
+        /** OrgMemberOut */
+        OrgMemberOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Level */
+            level: string;
+            /** Role Label */
+            role_label: string;
+            /** Supervisor Id */
+            supervisor_id: number | null;
+            /** Leads Unit Id */
+            leads_unit_id: number | null;
+        };
+        /** OrgOut */
+        OrgOut: {
+            /** Firm Name */
+            firm_name: string;
+            founder: components["schemas"]["PersonRefOut"] | null;
+            /** Practice Groups Unlocked */
+            practice_groups_unlocked: boolean;
+            /** Lawyers */
+            lawyers: number;
+            /** Unlock At */
+            unlock_at: number;
+            /** Root Members */
+            root_members: components["schemas"]["OrgMemberOut"][];
+            /** Units */
+            units: components["schemas"]["OrgUnitOut"][];
+            /** Supervisors */
+            supervisors: components["schemas"]["SupervisorOut"][];
+            /** Plans */
+            plans: components["schemas"]["PlanOut"][];
+            /** Open Practices */
+            open_practices: components["schemas"]["PracticeOut"][];
+            /** Roles */
+            roles: components["schemas"]["RoleOut"][];
+            /** Plan Owners */
+            plan_owners: components["schemas"]["PersonRefOut"][];
+            /** Delegates Ready */
+            delegates_ready: boolean;
+        };
+        /** OrgUnitOut */
+        OrgUnitOut: {
+            /** Id */
+            id: number;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "practice_group" | "team";
+            /** Name */
+            name: string;
+            /** Parent Id */
+            parent_id: number | null;
+            /** Practice */
+            practice: string | null;
+            leader: components["schemas"]["PersonRefOut"] | null;
+            /** Members */
+            members: components["schemas"]["OrgMemberOut"][];
+            /** Campus Target */
+            campus_target: number | null;
+        };
+        /**
+         * PersonOrgOut
+         * @description The org panel on a Person profile (own firm only).
+         */
+        PersonOrgOut: {
+            /** Unit Id */
+            unit_id: number | null;
+            /** Unit Name */
+            unit_name: string;
+            supervisor: components["schemas"]["PersonRefOut"] | null;
+            supervisor_label: components["schemas"]["SupervisorLabel"] | null;
+            /** Reports */
+            reports: components["schemas"]["PersonRefOut"][];
+            leads: components["schemas"]["PersonRefOut"] | null;
+            /** Accelerated Years */
+            accelerated_years: number;
+            /** Promote To */
+            promote_to: string | null;
+            /** Promotion Accelerated */
+            promotion_accelerated: boolean;
+            /** Plans Owned */
+            plans_owned: number;
         };
         /**
          * PersonOut
@@ -278,6 +594,13 @@ export interface components {
             /** Burnout Since Turn */
             burnout_since_turn: number | null;
         };
+        /** PersonRefOut */
+        PersonRefOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+        };
         /**
          * PersonRowOut
          * @description One row of the People screen.
@@ -315,12 +638,101 @@ export interface components {
             /** Burnt Out */
             burnt_out: boolean | null;
         };
+        /** PersonUnitIn */
+        PersonUnitIn: {
+            /** Unit Id */
+            unit_id: number | null;
+        };
+        /** @enum {string} */
+        PlanChannel: "job_post" | "recruiter" | "referral" | "campus" | "any";
+        /** @enum {string} */
+        PlanFocus: "current" | "potential";
+        /** PlanIn */
+        PlanIn: {
+            /** Owner Id */
+            owner_id: number;
+            /** Role */
+            role: string;
+            /** Target */
+            target: number;
+            channel: components["schemas"]["PlanChannel"];
+            /**
+             * Ratio Bp
+             * @default 10000
+             */
+            ratio_bp?: number;
+            /** Unit Id */
+            unit_id?: number | null;
+            /** @default current */
+            focus?: components["schemas"]["PlanFocus"];
+            /** Level */
+            level?: string | null;
+        };
+        /** PlanOut */
+        PlanOut: {
+            /** Id */
+            id: number;
+            owner: components["schemas"]["PersonRefOut"];
+            /** Unit Id */
+            unit_id: number | null;
+            /** Unit Name */
+            unit_name: string;
+            /** Role */
+            role: string;
+            /** Role Label */
+            role_label: string;
+            /** Target */
+            target: number;
+            /** Hired */
+            hired: number;
+            channel: components["schemas"]["PlanChannel"];
+            focus: components["schemas"]["PlanFocus"];
+            /** Level */
+            level: string | null;
+            /** Ratio Bp */
+            ratio_bp: number;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "active" | "paused" | "filled" | "closed";
+            /** Campus */
+            campus: boolean;
+            /** Last Activity */
+            last_activity: string | null;
+        };
+        /** PracticeOut */
+        PracticeOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+        };
+        /** RaiseIn */
+        RaiseIn: {
+            /** Salary Cents */
+            salary_cents: number;
+        };
         /** RangeOut */
         RangeOut: {
             /** Lo */
             lo: number;
             /** Hi */
             hi: number;
+        };
+        /** RenameUnitIn */
+        RenameUnitIn: {
+            /** Name */
+            name: string;
+        };
+        /** RoleOut */
+        RoleOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Practice */
+            practice: string | null;
         };
         /** SaveOut */
         SaveOut: {
@@ -345,6 +757,20 @@ export interface components {
             name: string;
             /** Description */
             description: string;
+        };
+        /** @enum {string} */
+        SupervisorLabel: "strong" | "fine" | "stretched";
+        /**
+         * SupervisorOut
+         * @description A supervising partner's load (TST 13.2-13.4), shown coarsely.
+         */
+        SupervisorOut: {
+            person: components["schemas"]["PersonRefOut"];
+            /** Reports */
+            reports: number;
+            /** Over Span */
+            over_span: boolean;
+            label: components["schemas"]["SupervisorLabel"];
         };
         /** TagOut */
         TagOut: {
@@ -670,6 +1096,802 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PersonOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getOrg: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrgOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getPersonOrg: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                person_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PersonOrgOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    createUnit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateUnitIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrgOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    renameUnit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                unit_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RenameUnitIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrgOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    moveUnit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                unit_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MoveUnitIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrgOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    dissolveUnit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                unit_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrgOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    setLeader: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                unit_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LeaderIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrgOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    movePerson: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                person_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PersonUnitIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrgOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    promote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                person_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrgOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    giveRaise: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                person_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RaiseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrgOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    createPlan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlanIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrgOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    updatePlan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                plan_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlanIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrgOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    closePlan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                plan_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrgOut"];
                 };
             };
             /** @description Bad Request */

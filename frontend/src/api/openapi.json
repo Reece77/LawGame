@@ -399,6 +399,1071 @@
           }
         }
       }
+    },
+    "/api/saves/{slug}/org": {
+      "get": {
+        "summary": "Get Org",
+        "operationId": "getOrg",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/org/people/{person_id}": {
+      "get": {
+        "summary": "Get Person Org",
+        "operationId": "getPersonOrg",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Person Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonOrgOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/org/units": {
+      "post": {
+        "summary": "Create Unit",
+        "operationId": "createUnit",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUnitIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/org/units/{unit_id}/rename": {
+      "post": {
+        "summary": "Rename Unit",
+        "operationId": "renameUnit",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "unit_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Unit Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RenameUnitIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/org/units/{unit_id}/move": {
+      "post": {
+        "summary": "Move Unit",
+        "operationId": "moveUnit",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "unit_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Unit Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MoveUnitIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/org/units/{unit_id}": {
+      "delete": {
+        "summary": "Dissolve Unit",
+        "operationId": "dissolveUnit",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "unit_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Unit Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/org/units/{unit_id}/leader": {
+      "put": {
+        "summary": "Set Leader",
+        "operationId": "setLeader",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "unit_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Unit Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeaderIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/org/people/{person_id}/unit": {
+      "put": {
+        "summary": "Move Person",
+        "operationId": "movePerson",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Person Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PersonUnitIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/org/people/{person_id}/promote": {
+      "post": {
+        "summary": "Promote",
+        "operationId": "promote",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Person Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/org/people/{person_id}/raise": {
+      "post": {
+        "summary": "Give Raise",
+        "operationId": "giveRaise",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Person Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RaiseIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/org/plans": {
+      "post": {
+        "summary": "Create Plan",
+        "operationId": "createPlan",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/org/plans/{plan_id}": {
+      "put": {
+        "summary": "Update Plan",
+        "operationId": "updatePlan",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Close Plan",
+        "operationId": "closePlan",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -458,6 +1523,56 @@
           "description"
         ],
         "title": "BackgroundOut"
+      },
+      "CreateUnitIn": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "practice_group",
+              "team"
+            ],
+            "title": "Kind"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "parent_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Id"
+          },
+          "practice": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Practice"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind"
+        ],
+        "title": "CreateUnitIn"
       },
       "DifficultyOut": {
         "properties": {
@@ -589,6 +1704,26 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
+      "LeaderIn": {
+        "properties": {
+          "person_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Person Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id"
+        ],
+        "title": "LeaderIn"
+      },
       "MetaOut": {
         "properties": {
           "scenarios": {
@@ -620,6 +1755,26 @@
           "backgrounds"
         ],
         "title": "MetaOut"
+      },
+      "MoveUnitIn": {
+        "properties": {
+          "parent_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "parent_id"
+        ],
+        "title": "MoveUnitIn"
       },
       "NewGameIn": {
         "properties": {
@@ -676,6 +1831,334 @@
           "firm_name"
         ],
         "title": "NewGameIn"
+      },
+      "OrgMemberOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "role_label": {
+            "type": "string",
+            "title": "Role Label"
+          },
+          "supervisor_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Supervisor Id"
+          },
+          "leads_unit_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Leads Unit Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "level",
+          "role_label",
+          "supervisor_id",
+          "leads_unit_id"
+        ],
+        "title": "OrgMemberOut"
+      },
+      "OrgOut": {
+        "properties": {
+          "firm_name": {
+            "type": "string",
+            "title": "Firm Name"
+          },
+          "founder": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PersonRefOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "practice_groups_unlocked": {
+            "type": "boolean",
+            "title": "Practice Groups Unlocked"
+          },
+          "lawyers": {
+            "type": "integer",
+            "title": "Lawyers"
+          },
+          "unlock_at": {
+            "type": "integer",
+            "title": "Unlock At"
+          },
+          "root_members": {
+            "items": {
+              "$ref": "#/components/schemas/OrgMemberOut"
+            },
+            "type": "array",
+            "title": "Root Members"
+          },
+          "units": {
+            "items": {
+              "$ref": "#/components/schemas/OrgUnitOut"
+            },
+            "type": "array",
+            "title": "Units"
+          },
+          "supervisors": {
+            "items": {
+              "$ref": "#/components/schemas/SupervisorOut"
+            },
+            "type": "array",
+            "title": "Supervisors"
+          },
+          "plans": {
+            "items": {
+              "$ref": "#/components/schemas/PlanOut"
+            },
+            "type": "array",
+            "title": "Plans"
+          },
+          "open_practices": {
+            "items": {
+              "$ref": "#/components/schemas/PracticeOut"
+            },
+            "type": "array",
+            "title": "Open Practices"
+          },
+          "roles": {
+            "items": {
+              "$ref": "#/components/schemas/RoleOut"
+            },
+            "type": "array",
+            "title": "Roles"
+          },
+          "plan_owners": {
+            "items": {
+              "$ref": "#/components/schemas/PersonRefOut"
+            },
+            "type": "array",
+            "title": "Plan Owners"
+          },
+          "delegates_ready": {
+            "type": "boolean",
+            "title": "Delegates Ready"
+          }
+        },
+        "type": "object",
+        "required": [
+          "firm_name",
+          "founder",
+          "practice_groups_unlocked",
+          "lawyers",
+          "unlock_at",
+          "root_members",
+          "units",
+          "supervisors",
+          "plans",
+          "open_practices",
+          "roles",
+          "plan_owners",
+          "delegates_ready"
+        ],
+        "title": "OrgOut"
+      },
+      "OrgUnitOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "practice_group",
+              "team"
+            ],
+            "title": "Kind"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "parent_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Id"
+          },
+          "practice": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Practice"
+          },
+          "leader": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PersonRefOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "members": {
+            "items": {
+              "$ref": "#/components/schemas/OrgMemberOut"
+            },
+            "type": "array",
+            "title": "Members"
+          },
+          "campus_target": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Campus Target"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "name",
+          "parent_id",
+          "practice",
+          "leader",
+          "members",
+          "campus_target"
+        ],
+        "title": "OrgUnitOut"
+      },
+      "PersonOrgOut": {
+        "properties": {
+          "unit_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit Id"
+          },
+          "unit_name": {
+            "type": "string",
+            "title": "Unit Name"
+          },
+          "supervisor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PersonRefOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "supervisor_label": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SupervisorLabel"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reports": {
+            "items": {
+              "$ref": "#/components/schemas/PersonRefOut"
+            },
+            "type": "array",
+            "title": "Reports"
+          },
+          "leads": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PersonRefOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "accelerated_years": {
+            "type": "integer",
+            "title": "Accelerated Years"
+          },
+          "promote_to": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Promote To"
+          },
+          "promotion_accelerated": {
+            "type": "boolean",
+            "title": "Promotion Accelerated"
+          },
+          "plans_owned": {
+            "type": "integer",
+            "title": "Plans Owned"
+          }
+        },
+        "type": "object",
+        "required": [
+          "unit_id",
+          "unit_name",
+          "supervisor",
+          "supervisor_label",
+          "reports",
+          "leads",
+          "accelerated_years",
+          "promote_to",
+          "promotion_accelerated",
+          "plans_owned"
+        ],
+        "title": "PersonOrgOut",
+        "description": "The org panel on a Person profile (own firm only)."
       },
       "PersonOut": {
         "properties": {
@@ -921,6 +2404,24 @@
         "title": "PersonOut",
         "description": "The Person profile."
       },
+      "PersonRefOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "PersonRefOut"
+      },
       "PersonRowOut": {
         "properties": {
           "id": {
@@ -1033,6 +2534,239 @@
         "title": "PersonRowOut",
         "description": "One row of the People screen."
       },
+      "PersonUnitIn": {
+        "properties": {
+          "unit_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "unit_id"
+        ],
+        "title": "PersonUnitIn"
+      },
+      "PlanChannel": {
+        "type": "string",
+        "enum": [
+          "job_post",
+          "recruiter",
+          "referral",
+          "campus",
+          "any"
+        ]
+      },
+      "PlanFocus": {
+        "type": "string",
+        "enum": [
+          "current",
+          "potential"
+        ]
+      },
+      "PlanIn": {
+        "properties": {
+          "owner_id": {
+            "type": "integer",
+            "title": "Owner Id"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "target": {
+            "type": "integer",
+            "title": "Target"
+          },
+          "channel": {
+            "$ref": "#/components/schemas/PlanChannel"
+          },
+          "ratio_bp": {
+            "type": "integer",
+            "title": "Ratio Bp",
+            "default": 10000
+          },
+          "unit_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit Id"
+          },
+          "focus": {
+            "$ref": "#/components/schemas/PlanFocus",
+            "default": "current"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          }
+        },
+        "type": "object",
+        "required": [
+          "owner_id",
+          "role",
+          "target",
+          "channel"
+        ],
+        "title": "PlanIn"
+      },
+      "PlanOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/PersonRefOut"
+          },
+          "unit_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit Id"
+          },
+          "unit_name": {
+            "type": "string",
+            "title": "Unit Name"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "role_label": {
+            "type": "string",
+            "title": "Role Label"
+          },
+          "target": {
+            "type": "integer",
+            "title": "Target"
+          },
+          "hired": {
+            "type": "integer",
+            "title": "Hired"
+          },
+          "channel": {
+            "$ref": "#/components/schemas/PlanChannel"
+          },
+          "focus": {
+            "$ref": "#/components/schemas/PlanFocus"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "ratio_bp": {
+            "type": "integer",
+            "title": "Ratio Bp"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "paused",
+              "filled",
+              "closed"
+            ],
+            "title": "Status"
+          },
+          "campus": {
+            "type": "boolean",
+            "title": "Campus"
+          },
+          "last_activity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Activity"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "owner",
+          "unit_id",
+          "unit_name",
+          "role",
+          "role_label",
+          "target",
+          "hired",
+          "channel",
+          "focus",
+          "level",
+          "ratio_bp",
+          "status",
+          "campus",
+          "last_activity"
+        ],
+        "title": "PlanOut"
+      },
+      "PracticeOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label"
+        ],
+        "title": "PracticeOut"
+      },
+      "RaiseIn": {
+        "properties": {
+          "salary_cents": {
+            "type": "integer",
+            "title": "Salary Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "salary_cents"
+        ],
+        "title": "RaiseIn"
+      },
       "RangeOut": {
         "properties": {
           "lo": {
@@ -1050,6 +2784,49 @@
           "hi"
         ],
         "title": "RangeOut"
+      },
+      "RenameUnitIn": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "RenameUnitIn"
+      },
+      "RoleOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "practice": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Practice"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "practice"
+        ],
+        "title": "RoleOut"
       },
       "SaveOut": {
         "properties": {
@@ -1111,6 +2888,41 @@
           "description"
         ],
         "title": "ScenarioOut"
+      },
+      "SupervisorLabel": {
+        "type": "string",
+        "enum": [
+          "strong",
+          "fine",
+          "stretched"
+        ]
+      },
+      "SupervisorOut": {
+        "properties": {
+          "person": {
+            "$ref": "#/components/schemas/PersonRefOut"
+          },
+          "reports": {
+            "type": "integer",
+            "title": "Reports"
+          },
+          "over_span": {
+            "type": "boolean",
+            "title": "Over Span"
+          },
+          "label": {
+            "$ref": "#/components/schemas/SupervisorLabel"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person",
+          "reports",
+          "over_span",
+          "label"
+        ],
+        "title": "SupervisorOut",
+        "description": "A supervising partner's load (TST 13.2-13.4), shown coarsely."
       },
       "TagOut": {
         "properties": {

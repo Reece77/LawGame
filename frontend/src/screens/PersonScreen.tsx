@@ -1,6 +1,7 @@
 import { Badge, Group, SimpleGrid, Stack, Table, Text, Title } from '@mantine/core';
 import { Link, useParams } from 'react-router';
 import { AttributeRange } from '../components/AttributeRange';
+import { PersonOrgPanel } from '../components/PersonOrgPanel';
 import { rangeText } from '../lib/attr';
 import { StrainBar } from '../components/StrainBar';
 import { usePerson, type PersonProfile } from '../lib/api';
@@ -138,6 +139,8 @@ export function PersonScreen() {
           <Rows items={p.personality} />
         </Panel>
       </SimpleGrid>
+
+      {p.own_firm && <PersonOrgPanel slug={slug} personId={p.id} />}
 
       <SimpleGrid cols={{ base: 1, md: 3 }} data-testid="skills">
         {GROUPS.map((g) => (

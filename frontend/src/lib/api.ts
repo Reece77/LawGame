@@ -18,7 +18,7 @@ export class ApiError extends Error {
   }
 }
 
-function unwrap<T>(result: { data?: T; error?: unknown }): T {
+export function unwrap<T>(result: { data?: T; error?: unknown }): T {
   if (result.error !== undefined || result.data === undefined) {
     const body = (result.error ?? {}) as { code?: string; message?: string };
     throw new ApiError(body.code ?? 'error', body.message ?? 'The request failed');
@@ -74,6 +74,7 @@ export function useAdvance(slug: string) {
     onSuccess: (game) => {
       client.setQueryData(['game', slug], game);
       void client.invalidateQueries({ queryKey: ['people', slug] });
+      void client.invalidateQueries({ queryKey: ['org', slug] });
     },
   });
 }

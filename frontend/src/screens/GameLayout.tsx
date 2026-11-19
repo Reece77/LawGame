@@ -28,6 +28,7 @@ export function GameLayout() {
       <AppShell.Navbar p="xs">
         <NavLink component={Link} to={`/game/${slug}`} label="Overview" />
         <NavLink component={Link} to={`/game/${slug}/people`} label="People" />
+        <NavLink component={Link} to={`/game/${slug}/org`} label="Org" />
         <NavLink component={Link} to="/" label="Main menu" />
       </AppShell.Navbar>
       <AppShell.Main>

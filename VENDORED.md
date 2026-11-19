@@ -50,6 +50,11 @@ Files copied or ported from Tech Startup Tycoon (`Reece77/Tech_Executive_Tycoon`
 | `backend/data/tags.yaml` | `backend/data/tags.yaml` | ported | — |
 | `backend/data/names.yaml` | `backend/data/names.yaml` | ported | — |
 | `backend/data/backgrounds.yaml` | `backend/data/backgrounds.yaml` | ported | — |
+| `backend/ptk/sim/org/models.py` | `backend/tst/sim/org/models.py` | ported | — |
+| `backend/ptk/sim/org/formulas.py` | `backend/tst/sim/org/formulas.py` | ported | — |
+| `backend/ptk/sim/org/rules.py` | `backend/tst/sim/org/rules.py` | ported | — |
+| `backend/ptk/sim/org/actions.py` | `backend/tst/sim/actions/org.py` | ported | — |
+| `backend/ptk/sim/org/delegates.py` | `backend/tst/sim/org/delegates.py` | ported | — |
 
 Changes in ported files:
 
@@ -73,3 +78,8 @@ Changes in ported files:
 - `backend/data/tags.yaml` (PT-M1a): PT's seven new tags appended; the `negative` flag (ADR PT-0013).
 - `backend/data/names.yaml` (PT-M1a): one `us` pool (TST's north_america list); rival names dropped.
 - `backend/data/backgrounds.yaml` (PT-M1a): PT's five founding-partner backgrounds; TST's presets as is.
+- `backend/ptk/sim/org/models.py` (PT-M2): unit kinds are practice groups and teams; membership, raise history and one-off morale in an `OrgState` on the game state; PT's plan channels (campus, referral), no equity; no seats, authority, proposals, pitches, policies or offices.
+- `backend/ptk/sim/org/formulas.py` (PT-M2): span, supervisor quality, W_mgr and its label, M_growth, the offer pitch and the raise test only; `OrgBalance` keys.
+- `backend/ptk/sim/org/rules.py` (PT-M2): units and membership from `GameState.org`; the root's leader is the player's founding partner; no teammate-tag morale, work policy or memo cache; growth multipliers and the practice-group gate added.
+- `backend/ptk/sim/org/actions.py` (PT-M2, from `actions/org.py`): practice groups (one per practice, from 10 lawyers) and teams; co-founding partners may lead; ADR PT-0006 promotions (accelerated class years, no partnership); raises through `interfaces.salary_cents`/`set_salary`; plan owners lead a unit or are recruiting managers; campus targets per group; no founder energy, divisions or policies; one-off morale as nudges.
+- `backend/ptk/sim/org/delegates.py` (PT-M2): every step is a request through PT-M1b's delegate hook (`ptk.sim.interfaces`); energy given and spent through the hook; hires placed from accepted offers; per-search scouting; campus plans; no executives' reuse.

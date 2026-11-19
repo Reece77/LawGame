@@ -102,11 +102,11 @@ class OrgRuleError(SimError):
     code = "org_rule"
 
 
-class UnknownUnitError(SimError):
+class UnknownUnitError(NotFoundError):
     code = "unknown_unit"
 
 
-class UnknownPlanError(SimError):
+class UnknownPlanError(NotFoundError):
     code = "unknown_plan"
 
 

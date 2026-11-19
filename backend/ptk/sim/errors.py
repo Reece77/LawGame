@@ -75,3 +75,19 @@ class GameOverError(SimError):
 
 class InvalidDataError(SimError):
     code = "invalid_data"
+
+
+class InvalidFounderError(SimError):
+    """A founding partner build breaks a rule (formulas.md 5; spec 2.1)."""
+
+    code = "invalid_founder"
+
+
+class InvalidPersonError(SimError):
+    """A person was asked for with a role and level that do not fit."""
+
+    code = "invalid_person"
+
+
+class UnknownKnowledgeActionError(SimError):
+    code = "unknown_knowledge_action"

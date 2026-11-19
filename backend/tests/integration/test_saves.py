@@ -7,9 +7,13 @@ from pathlib import Path
 import pytest
 
 from ptk.db import backup, saves, state_io
+from ptk.loader import load_balance
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import GameOverError, SaveExistsError
 from ptk.sim.ledger import CASH
+from tests.conftest import DATA_DIR
+
+BALANCE = load_balance(DATA_DIR)
 
 
 def _new(save_dir: Path, data: GameData, slug: str = "t", seed: int = 7) -> Path:
@@ -20,6 +24,7 @@ def _new(save_dir: Path, data: GameData, slug: str = "t", seed: int = 7) -> Path
         scenario_id="biglaw_spinout",
         difficulty="standard",
         data=data,
+        balance=BALANCE,
         seed=seed,
     )
     return saves.open_save(save_dir, slug)
@@ -77,3 +82,22 @@ def test_seed_round_trips_at_the_extremes(save_dir: Path, data: GameData) -> Non
     for i, seed in enumerate((0, 2**63, 2**64 - 1)):
         path = _new(save_dir, data, slug=f"s{i}", seed=seed)
         assert saves.read_state(path)[0].save_meta.master_seed == seed
+
+
+def test_people_round_trip_through_the_save(save_dir: Path, data: GameData) -> None:
+    from ptk.sim.setup import new_game
+
+    path = _new(save_dir, data, slug="people", seed=11)
+    state, _ = saves.read_state(path)
+    fresh = new_game(
+        name="people",
+        firm_name="Founders LLP",
+        master_seed=11,
+        scenario_id="biglaw_spinout",
+        difficulty="standard",
+        data=data,
+        balance=BALANCE,
+    ).state
+    assert state.people == fresh.people
+    assert state.employments == fresh.employments
+    assert state.reveals == fresh.reveals

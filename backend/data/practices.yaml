@@ -1,0 +1,15 @@
+# Practice areas (spec section 6). v1's ten practices; keys only for PT-M1a: every lawyer
+# holds a familiarity 1-20 for each (ADR PT-0006 section 2). Demand, rate cards, norms and
+# the other ten practices arrive with PT-M3a and PT-M12. Append-only: familiarity draws
+# follow this order (ADR-0013).
+practices:
+  - { key: corporate_ma, label: Corporate and M&A, short_label: M&A }
+  - { key: private_equity, label: Private equity and funds, short_label: PE }
+  - { key: capital_markets, label: Capital markets, short_label: Cap mkts }
+  - { key: banking_finance, label: Banking and finance, short_label: Banking }
+  - { key: restructuring, label: Restructuring and insolvency, short_label: Restruct }
+  - { key: commercial_litigation, label: Commercial litigation, short_label: Litigation }
+  - { key: white_collar, label: White collar and investigations, short_label: White collar }
+  - { key: ip, label: IP, short_label: IP }
+  - { key: employment, label: Employment and labour, short_label: Employment }
+  - { key: real_estate, label: Real estate, short_label: Real estate }

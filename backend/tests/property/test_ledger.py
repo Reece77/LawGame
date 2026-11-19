@@ -7,7 +7,7 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
-from ptk.sim.data_models import GameData
+from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import UnbalancedEntryError
 from ptk.sim.ledger import LedgerEntry, LedgerLine, apply_entries
 from ptk.sim.setup import new_game
@@ -59,7 +59,9 @@ def test_float_amounts_are_refused() -> None:
 
 
 @given(st.integers(0, 2**64 - 1), st.sampled_from(["easy", "standard", "hard", "ironman"]))
-def test_new_game_balance_sheet_balances(data: GameData, seed: int, difficulty: str) -> None:
+def test_new_game_balance_sheet_balances(
+    data: GameData, balance: Balance, seed: int, difficulty: str
+) -> None:
     game = new_game(
         name="p",
         firm_name="F",
@@ -67,6 +69,7 @@ def test_new_game_balance_sheet_balances(data: GameData, seed: int, difficulty: 
         scenario_id="biglaw_spinout",
         difficulty=difficulty,
         data=data,
+        balance=balance,
     )
     balances = apply_entries({}, game.ledger_entries)
     types = data.account_types()

@@ -28,6 +28,8 @@ Files copied or ported from Tech Startup Tycoon (`Reece77/Tech_Executive_Tycoon`
 | `frontend/tsconfig.app.json` | `frontend/tsconfig.app.json` | AS IS | 82a5db4f3335b292a2080cc9b9981e7ddf06cab32089a7096282e3949fe75d28 |
 | `frontend/tsconfig.node.json` | `frontend/tsconfig.node.json` | AS IS | bdc4ff59093bf9a08d6117c6bae4823201bbb1e6bbd4ef1fe70acc6b28035db6 |
 | `frontend/.prettierrc.json` | `frontend/.prettierrc.json` | AS IS | 85378d4d734cb7d35641c44ffdf322fe0bc76a3b12841927f20aa5f0eba12695 |
+| `backend/data/personality.yaml` | `backend/data/personality.yaml` | AS IS | 9086d8dd35efdb93894aa85dbb880d42f120d080a6bcc43980ad00d4e5972ad8 |
+| `backend/data/interests.yaml` | `backend/data/interests.yaml` | AS IS | b3be7dd7e48fe844b67f57e27ab8f6556d194c529658d9417ae96b862bd111ff |
 | `backend/ptk/sim/rng.py` | `backend/tst/sim/rng.py` | ported | — |
 | `backend/ptk/sim/calendar.py` | `backend/tst/sim/calendar.py` | ported | — |
 | `backend/ptk/sim/errors.py` | `backend/tst/sim/errors.py` | ported | — |
@@ -37,6 +39,17 @@ Files copied or ported from Tech Startup Tycoon (`Reece77/Tech_Executive_Tycoon`
 | `backend/tests/unit/test_sim_purity.py` | `backend/tests/unit/test_sim_purity.py` | ported | — |
 | `backend/tests/unit/test_rng_call_sites.py` | `backend/tests/unit/test_rng_call_sites.py` | ported | — |
 | `frontend/src/main.tsx` | `frontend/src/main.tsx` | ported | — |
+| `backend/ptk/sim/people/models.py` | `backend/tst/sim/people/models.py` | ported | — |
+| `backend/ptk/sim/people/formulas.py` | `backend/tst/sim/people/formulas.py` | ported | — |
+| `backend/ptk/sim/people/generator.py` | `backend/tst/sim/people/generator.py` | ported | — |
+| `backend/ptk/sim/people/reveal.py` | `backend/tst/sim/people/reveal.py` | ported | — |
+| `backend/ptk/sim/people/founder.py` | `backend/tst/sim/people/founder.py` | ported | — |
+| `backend/ptk/sim/people/growth.py` | `backend/tst/sim/people/growth.py` | ported | — |
+| `frontend/src/lib/attr.ts` | `frontend/src/lib/attr.ts` | ported | — |
+| `frontend/src/components/AttributeRange.tsx` | `frontend/src/components/AttributeRange.tsx` | ported | — |
+| `backend/data/tags.yaml` | `backend/data/tags.yaml` | ported | — |
+| `backend/data/names.yaml` | `backend/data/names.yaml` | ported | — |
+| `backend/data/backgrounds.yaml` | `backend/data/backgrounds.yaml` | ported | — |
 
 Changes in ported files:
 
@@ -49,3 +62,14 @@ Changes in ported files:
 - `backend/tests/unit/test_sim_purity.py`: package rename.
 - `backend/tests/unit/test_rng_call_sites.py`: known names a parameter.
 - `frontend/src/main.tsx`: no glossary or busy retry yet.
+- `backend/ptk/sim/people/models.py` (PT-M1a): class-year levels; familiarity, school tier, bar, strain, book and portability on a person; every person has a role; employment with a firm.
+- `backend/ptk/sim/people/formulas.py` (PT-M1a): growth times `learn(h)`; familiarity and strain formulas; no salary expectation yet.
+- `backend/ptk/sim/people/generator.py` (PT-M1a): school tier first; familiarity and portability draws last; one US pool; no cities or salary.
+- `backend/ptk/sim/people/reveal.py` (PT-M1a): firm observers; familiarity records (narrow); TST's first six actions.
+- `backend/ptk/sim/people/founder.py` (PT-M1a): the founding partner build: home practice role at equity partner, familiarity, book, bar admissions, age 34-52; stream keyed by founder index.
+- `backend/ptk/sim/people/growth.py` (PT-M1a): growth times `learn(h)` from a month of work; familiarity growth and decay; growth in the person's own role.
+- `frontend/src/lib/attr.ts` (PT-M1a): ranges as `{lo, hi}`; a strain band; no morale band yet.
+- `frontend/src/components/AttributeRange.tsx` (PT-M1a): ranges as `{lo, hi}`.
+- `backend/data/tags.yaml` (PT-M1a): PT's seven new tags appended; the `negative` flag (ADR PT-0013).
+- `backend/data/names.yaml` (PT-M1a): one `us` pool (TST's north_america list); rival names dropped.
+- `backend/data/backgrounds.yaml` (PT-M1a): PT's five founding-partner backgrounds; TST's presets as is.

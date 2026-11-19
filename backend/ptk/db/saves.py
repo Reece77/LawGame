@@ -18,6 +18,7 @@ from ptk.sim.calendar import format_turn
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
 from ptk.sim.errors import InvalidSaveNameError, SaveExistsError, SaveNotFoundError
+from ptk.sim.people.founder import FounderSpec
 from ptk.sim.rng import MAX_SEED, RngFactory
 from ptk.sim.setup import new_game
 from ptk.sim.state import GameState
@@ -52,7 +53,9 @@ def create_save(
     scenario_id: str,
     difficulty: str,
     data: GameData,
+    balance: Balance,
     seed: int | None = None,
+    founder: FounderSpec | None = None,
 ) -> GameState:
     path = save_path(save_dir, slug)
     if path.exists():
@@ -65,6 +68,8 @@ def create_save(
         scenario_id=scenario_id,
         difficulty=difficulty,
         data=data,
+        balance=balance,
+        founder=founder,
     )
     save_dir.mkdir(parents=True, exist_ok=True)
     migrate.upgrade_new(path)

@@ -13,5 +13,12 @@
   ],
   "final_turn": 360,
   "game_state": "campaign_complete",
+  "names": [
+    "Jennifer King",
+    "Kevin Carter",
+    "Ashley Cook",
+    "Whitney Brown"
+  ],
+  "people": "e14095e46518809fbd7c6f8f06bda1fc39e46f1155862722fa7599801c429871",
   "sha256": "147d3886d6de9e0b511a9cd69dd031cb87c6f61853ebe2d3f4bb011aec8c8efd"
 }

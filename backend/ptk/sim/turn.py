@@ -9,7 +9,7 @@ guards. Phases not yet built are no-ops so the order never changes.
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
@@ -17,6 +17,8 @@ from ptk.sim.errors import GameOverError
 from ptk.sim.ledger import CASH, AccountCode, LedgerBalances, LedgerEntry, apply_entries
 from ptk.sim.log import LogItem
 from ptk.sim.money import Cents
+from ptk.sim.people.models import WorkMonth
+from ptk.sim.people.phase import people_month
 from ptk.sim.rng import RngFactory
 from ptk.sim.snapshot import FirmSnapshot, TurnSnapshot
 from ptk.sim.state import GameState
@@ -49,6 +51,7 @@ class TurnContext:
     log_items: tuple[LogItem, ...] = ()
     snapshot: TurnSnapshot | None = None
     event_requests: tuple[EventRequest, ...] = ()
+    work: Mapping[int, WorkMonth] = field(default_factory=dict)  # person id -> month (PT-M1a)
 
     @property
     def turn(self) -> int:
@@ -105,8 +108,10 @@ def financing(ctx: TurnContext) -> TurnContext:
 
 
 def people_updates(ctx: TurnContext) -> TurnContext:
-    """8. Strain, morale, growth, reveals, departures (PT-M1a, PT-M1b)."""
-    return ctx
+    """8. Strain, growth, familiarity, class years, reveals (PT-M1a); morale and departures
+    (PT-M1b)."""
+    state = people_month(ctx.state, ctx.rng, ctx.data, ctx.balance, ctx.work)
+    return replace(ctx, state=state)
 
 
 def market_and_macro_update(ctx: TurnContext) -> TurnContext:
@@ -164,8 +169,12 @@ def advance_turn(
     balance: Balance,
     data: GameData,
     ledger_balances: LedgerBalances,
+    work: tuple[WorkMonth, ...] = (),
 ) -> TurnResult:
-    """Resolve turn `state.turn` and return the next state plus everything to persist."""
+    """Resolve turn `state.turn` and return the next state plus everything to persist.
+
+    `work` (PT-M1a): each person's month of hours, a test input until PT-M3a staffs matters
+    (the brief); a person without one worked no hours."""
     if state.ended:
         raise GameOverError(f"the game is over ({state.save_meta.game_state.replace('_', ' ')})")
     ctx = TurnContext(
@@ -176,6 +185,7 @@ def advance_turn(
         data=data,
         opening_balances=ledger_balances,
         balances=dict(ledger_balances),
+        work={w.person_id: w for w in work},
     )
     for _name, phase in PHASES:
         ctx = phase(ctx)

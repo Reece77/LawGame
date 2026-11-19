@@ -18,6 +18,7 @@ export function NewGameScreen() {
   const [firmName, setFirmName] = useState('Founders LLP');
   const [scenario, setScenario] = useState<string | null>('biglaw_spinout');
   const [difficulty, setDifficulty] = useState<string | null>('standard');
+  const [background, setBackground] = useState<string | null>(null); // null: the scenario's
   const slug = slugify(firmName) || 'firm';
 
   const start = () =>
@@ -27,6 +28,7 @@ export function NewGameScreen() {
         firm_name: firmName,
         scenario_id: scenario ?? undefined,
         difficulty: difficulty ?? undefined,
+        background: background ?? undefined,
       },
       { onSuccess: (game) => navigate(`/game/${game.slug}`) },
     );
@@ -50,6 +52,15 @@ export function NewGameScreen() {
         data={(meta.data?.difficulties ?? []).map((d) => ({ value: d.id, label: d.name }))}
         value={difficulty}
         onChange={setDifficulty}
+      />
+      <Select
+        label="Your background"
+        placeholder="The scenario's founding partner"
+        clearable
+        data={(meta.data?.backgrounds ?? []).map((b) => ({ value: b.key, label: b.label }))}
+        value={background}
+        onChange={setBackground}
+        description={meta.data?.backgrounds.find((b) => b.key === background)?.description}
       />
       {create.error && <Alert color="warn">{create.error.message}</Alert>}
       <Button onClick={start} loading={create.isPending} disabled={!firmName.trim()}>

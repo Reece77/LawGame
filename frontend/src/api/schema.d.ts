@@ -69,10 +69,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/saves/{slug}/people": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List People */
+        get: operations["listPeople"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/people/{person_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Person */
+        get: operations["getPerson"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AttributeOut */
+        AttributeOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Group */
+            group: string;
+            /** Lo */
+            lo: number;
+            /** Hi */
+            hi: number;
+        };
+        /** BackgroundOut */
+        BackgroundOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Description */
+            description: string;
+        };
         /** DifficultyOut */
         DifficultyOut: {
             /** Id */
@@ -86,6 +142,19 @@ export interface components {
             code: string;
             /** Message */
             message: string;
+        };
+        /** FamiliarityOut */
+        FamiliarityOut: {
+            /** Practice */
+            practice: string;
+            /** Label */
+            label: string;
+            /** Short Label */
+            short_label: string;
+            /** Lo */
+            lo: number;
+            /** Hi */
+            hi: number;
         };
         /** GameOut */
         GameOut: {
@@ -118,6 +187,8 @@ export interface components {
             scenarios: components["schemas"]["ScenarioOut"][];
             /** Difficulties */
             difficulties: components["schemas"]["DifficultyOut"][];
+            /** Backgrounds */
+            backgrounds: components["schemas"]["BackgroundOut"][];
         };
         /** NewGameIn */
         NewGameIn: {
@@ -137,6 +208,119 @@ export interface components {
             difficulty?: string;
             /** Seed */
             seed?: number | null;
+            /** Background */
+            background?: string | null;
+        };
+        /**
+         * PersonOut
+         * @description The Person profile.
+         */
+        PersonOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Role */
+            role: string;
+            /** Role Label */
+            role_label: string;
+            /** Kind */
+            kind: string;
+            /** Level */
+            level: string;
+            /** Practice */
+            practice: string | null;
+            /** Age */
+            age: number;
+            /** Is Founder */
+            is_founder: boolean;
+            /** Founding Partner */
+            founding_partner: boolean;
+            /** Own Firm */
+            own_firm: boolean;
+            ability: components["schemas"]["RangeOut"];
+            /** Potential */
+            potential: string;
+            /** Familiarity */
+            familiarity: components["schemas"]["FamiliarityOut"][];
+            /** Strain */
+            strain: number | null;
+            /** Burnt Out */
+            burnt_out: boolean | null;
+            /** First Name */
+            first_name: string;
+            /** Last Name */
+            last_name: string;
+            /** City */
+            city: string;
+            /** School Tier */
+            school_tier: string | null;
+            /** Bar Admissions */
+            bar_admissions: string[];
+            /** Background */
+            background: string | null;
+            /** Skills */
+            skills: components["schemas"]["AttributeOut"][];
+            /** Personality */
+            personality: components["schemas"]["AttributeOut"][];
+            /** Interests */
+            interests: string[] | null;
+            /** Work Style */
+            work_style: string | null;
+            /** Tags */
+            tags: components["schemas"]["TagOut"][];
+            /** Capacity Hours */
+            capacity_hours: number;
+            /** Billable Target Hours */
+            billable_target_hours: number;
+            /** Book Cents */
+            book_cents: number | null;
+            /** Burnout Since Turn */
+            burnout_since_turn: number | null;
+        };
+        /**
+         * PersonRowOut
+         * @description One row of the People screen.
+         */
+        PersonRowOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Role */
+            role: string;
+            /** Role Label */
+            role_label: string;
+            /** Kind */
+            kind: string;
+            /** Level */
+            level: string;
+            /** Practice */
+            practice: string | null;
+            /** Age */
+            age: number;
+            /** Is Founder */
+            is_founder: boolean;
+            /** Founding Partner */
+            founding_partner: boolean;
+            /** Own Firm */
+            own_firm: boolean;
+            ability: components["schemas"]["RangeOut"];
+            /** Potential */
+            potential: string;
+            /** Familiarity */
+            familiarity: components["schemas"]["FamiliarityOut"][];
+            /** Strain */
+            strain: number | null;
+            /** Burnt Out */
+            burnt_out: boolean | null;
+        };
+        /** RangeOut */
+        RangeOut: {
+            /** Lo */
+            lo: number;
+            /** Hi */
+            hi: number;
         };
         /** SaveOut */
         SaveOut: {
@@ -161,6 +345,15 @@ export interface components {
             name: string;
             /** Description */
             description: string;
+        };
+        /** TagOut */
+        TagOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Text */
+            text: string;
         };
         /** ValidationError */
         ValidationError: {
@@ -360,6 +553,123 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GameOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    listPeople: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PersonRowOut"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getPerson: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                person_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PersonOut"];
                 };
             };
             /** @description Bad Request */

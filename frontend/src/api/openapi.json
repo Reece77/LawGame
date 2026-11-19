@@ -248,10 +248,217 @@
           }
         }
       }
+    },
+    "/api/saves/{slug}/people": {
+      "get": {
+        "summary": "List People",
+        "operationId": "listPeople",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PersonRowOut"
+                  },
+                  "title": "Response Listpeople"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/people/{person_id}": {
+      "get": {
+        "summary": "Get Person",
+        "operationId": "getPerson",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Person Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AttributeOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "group": {
+            "type": "string",
+            "title": "Group"
+          },
+          "lo": {
+            "type": "integer",
+            "title": "Lo"
+          },
+          "hi": {
+            "type": "integer",
+            "title": "Hi"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "group",
+          "lo",
+          "hi"
+        ],
+        "title": "AttributeOut"
+      },
+      "BackgroundOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "description"
+        ],
+        "title": "BackgroundOut"
+      },
       "DifficultyOut": {
         "properties": {
           "id": {
@@ -287,6 +494,39 @@
           "message"
         ],
         "title": "ErrorBody"
+      },
+      "FamiliarityOut": {
+        "properties": {
+          "practice": {
+            "type": "string",
+            "title": "Practice"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "short_label": {
+            "type": "string",
+            "title": "Short Label"
+          },
+          "lo": {
+            "type": "integer",
+            "title": "Lo"
+          },
+          "hi": {
+            "type": "integer",
+            "title": "Hi"
+          }
+        },
+        "type": "object",
+        "required": [
+          "practice",
+          "label",
+          "short_label",
+          "lo",
+          "hi"
+        ],
+        "title": "FamiliarityOut"
       },
       "GameOut": {
         "properties": {
@@ -364,12 +604,20 @@
             },
             "type": "array",
             "title": "Difficulties"
+          },
+          "backgrounds": {
+            "items": {
+              "$ref": "#/components/schemas/BackgroundOut"
+            },
+            "type": "array",
+            "title": "Backgrounds"
           }
         },
         "type": "object",
         "required": [
           "scenarios",
-          "difficulties"
+          "difficulties",
+          "backgrounds"
         ],
         "title": "MetaOut"
       },
@@ -409,6 +657,17 @@
               }
             ],
             "title": "Seed"
+          },
+          "background": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Background"
           }
         },
         "type": "object",
@@ -417,6 +676,380 @@
           "firm_name"
         ],
         "title": "NewGameIn"
+      },
+      "PersonOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "role_label": {
+            "type": "string",
+            "title": "Role Label"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "practice": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Practice"
+          },
+          "age": {
+            "type": "integer",
+            "title": "Age"
+          },
+          "is_founder": {
+            "type": "boolean",
+            "title": "Is Founder"
+          },
+          "founding_partner": {
+            "type": "boolean",
+            "title": "Founding Partner"
+          },
+          "own_firm": {
+            "type": "boolean",
+            "title": "Own Firm"
+          },
+          "ability": {
+            "$ref": "#/components/schemas/RangeOut"
+          },
+          "potential": {
+            "type": "string",
+            "title": "Potential"
+          },
+          "familiarity": {
+            "items": {
+              "$ref": "#/components/schemas/FamiliarityOut"
+            },
+            "type": "array",
+            "title": "Familiarity"
+          },
+          "strain": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Strain"
+          },
+          "burnt_out": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Burnt Out"
+          },
+          "first_name": {
+            "type": "string",
+            "title": "First Name"
+          },
+          "last_name": {
+            "type": "string",
+            "title": "Last Name"
+          },
+          "city": {
+            "type": "string",
+            "title": "City"
+          },
+          "school_tier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "School Tier"
+          },
+          "bar_admissions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Bar Admissions"
+          },
+          "background": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Background"
+          },
+          "skills": {
+            "items": {
+              "$ref": "#/components/schemas/AttributeOut"
+            },
+            "type": "array",
+            "title": "Skills"
+          },
+          "personality": {
+            "items": {
+              "$ref": "#/components/schemas/AttributeOut"
+            },
+            "type": "array",
+            "title": "Personality"
+          },
+          "interests": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interests"
+          },
+          "work_style": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Work Style"
+          },
+          "tags": {
+            "items": {
+              "$ref": "#/components/schemas/TagOut"
+            },
+            "type": "array",
+            "title": "Tags"
+          },
+          "capacity_hours": {
+            "type": "integer",
+            "title": "Capacity Hours"
+          },
+          "billable_target_hours": {
+            "type": "integer",
+            "title": "Billable Target Hours"
+          },
+          "book_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Book Cents"
+          },
+          "burnout_since_turn": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Burnout Since Turn"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "role",
+          "role_label",
+          "kind",
+          "level",
+          "practice",
+          "age",
+          "is_founder",
+          "founding_partner",
+          "own_firm",
+          "ability",
+          "potential",
+          "familiarity",
+          "strain",
+          "burnt_out",
+          "first_name",
+          "last_name",
+          "city",
+          "school_tier",
+          "bar_admissions",
+          "background",
+          "skills",
+          "personality",
+          "interests",
+          "work_style",
+          "tags",
+          "capacity_hours",
+          "billable_target_hours",
+          "book_cents",
+          "burnout_since_turn"
+        ],
+        "title": "PersonOut",
+        "description": "The Person profile."
+      },
+      "PersonRowOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "role_label": {
+            "type": "string",
+            "title": "Role Label"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "practice": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Practice"
+          },
+          "age": {
+            "type": "integer",
+            "title": "Age"
+          },
+          "is_founder": {
+            "type": "boolean",
+            "title": "Is Founder"
+          },
+          "founding_partner": {
+            "type": "boolean",
+            "title": "Founding Partner"
+          },
+          "own_firm": {
+            "type": "boolean",
+            "title": "Own Firm"
+          },
+          "ability": {
+            "$ref": "#/components/schemas/RangeOut"
+          },
+          "potential": {
+            "type": "string",
+            "title": "Potential"
+          },
+          "familiarity": {
+            "items": {
+              "$ref": "#/components/schemas/FamiliarityOut"
+            },
+            "type": "array",
+            "title": "Familiarity"
+          },
+          "strain": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Strain"
+          },
+          "burnt_out": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Burnt Out"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "role",
+          "role_label",
+          "kind",
+          "level",
+          "practice",
+          "age",
+          "is_founder",
+          "founding_partner",
+          "own_firm",
+          "ability",
+          "potential",
+          "familiarity",
+          "strain",
+          "burnt_out"
+        ],
+        "title": "PersonRowOut",
+        "description": "One row of the People screen."
+      },
+      "RangeOut": {
+        "properties": {
+          "lo": {
+            "type": "integer",
+            "title": "Lo"
+          },
+          "hi": {
+            "type": "integer",
+            "title": "Hi"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lo",
+          "hi"
+        ],
+        "title": "RangeOut"
       },
       "SaveOut": {
         "properties": {
@@ -478,6 +1111,29 @@
           "description"
         ],
         "title": "ScenarioOut"
+      },
+      "TagOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "text"
+        ],
+        "title": "TagOut"
       },
       "ValidationError": {
         "properties": {

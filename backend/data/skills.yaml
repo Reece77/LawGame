@@ -1,0 +1,40 @@
+# Skills (spec section 5.1), in group order. Order is significant: random draws per skill
+# follow this order (ADR-0013), so append new skills at the end of the file and never
+# reorder or remove one. short_label is for narrow table columns; profiles use label.
+# `languages` is one 1-20 skill (breadth and fluency) until a language list arrives (v2).
+skills:
+  # Legal craft
+  - { key: legal_reasoning, label: Legal reasoning, short_label: Reasoning, group: legal }
+  - { key: research, label: Research, short_label: Research, group: legal }
+  - { key: writing, label: Writing (drafting), short_label: Writing, group: legal }
+  - { key: advocacy, label: Advocacy (oral and trial), short_label: Advocacy, group: legal }
+  - { key: negotiation, label: Negotiation, short_label: Negotiation, group: legal }
+  - { key: deal_structuring, label: Deal structuring, short_label: Structuring, group: legal }
+  - { key: procedure, label: Procedure (court and filing), short_label: Procedure, group: legal }
+  - { key: technical, label: Technical (science and engineering), short_label: Technical, group: legal }
+  - { key: numeracy, label: "Numeracy (tax, finance, restructuring)", short_label: Numeracy, group: legal }
+  # Client
+  - { key: business_development, label: Business development, short_label: BD, group: client }
+  - { key: client_care, label: Client care, short_label: Client care, group: client }
+  - { key: commercial_awareness, label: Commercial awareness, short_label: Commercial, group: client }
+  - { key: languages, label: Languages, short_label: Languages, group: client }
+  # Working
+  - { key: supervision, label: Supervision, short_label: Supervision, group: working }
+  - { key: project_management, label: Project management, short_label: Project mgmt, group: working }
+  - { key: stamina, label: Stamina, short_label: Stamina, group: working }
+  - { key: technology, label: Technology (legal tech and AI), short_label: Technology, group: working }
+  # Leadership (Tech Startup Tycoon's group, kept)
+  - { key: leadership, label: Leadership, short_label: Leadership, group: leadership }
+  - { key: mentoring, label: Mentoring, short_label: Mentoring, group: leadership }
+  - { key: strategy, label: Strategy, short_label: Strategy, group: leadership }
+  - { key: communication, label: Communication, short_label: Comms, group: leadership }
+  - { key: judgment_of_talent, label: Judgment of talent, short_label: Judging talent, group: leadership }
+  - { key: recruiting, label: Recruiting, short_label: Recruiting, group: leadership }
+  # Business services
+  - { key: finance, label: Finance, short_label: Finance, group: business_services }
+  - { key: operations, label: Operations, short_label: Ops, group: business_services }
+  - { key: marketing, label: Marketing, short_label: Marketing, group: business_services }
+  - { key: human_resources, label: Human resources, short_label: HR, group: business_services }
+  - { key: it, label: IT, short_label: IT, group: business_services }
+  - { key: pricing, label: Pricing, short_label: Pricing, group: business_services }
+  - { key: knowledge_management, label: Knowledge management, short_label: KM, group: business_services }

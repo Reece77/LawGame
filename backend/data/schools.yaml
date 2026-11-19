@@ -1,0 +1,11 @@
+# Law school tiers (spec section 5.2). A generated lawyer draws a tier (weights in
+# balance.yaml people.school_tier_weights), which shifts the mean of their target CA and
+# their potential gap, in ability points (10-200 scale). Salary expectations and campus
+# channel quality by tier arrive with PT-M1b. The UK tiers are data for v2 (not drawn).
+school_tiers:
+  - { key: t14, label: T14-equivalent, country: us, available_in: v1, ca_shift: 6, pa_shift: 8 }
+  - { key: national, label: National, country: us, available_in: v1, ca_shift: 0, pa_shift: 0 }
+  - { key: regional, label: Regional, country: us, available_in: v1, ca_shift: -6, pa_shift: -5 }
+  - { key: oxbridge, label: Oxbridge, country: uk, available_in: v2, ca_shift: 6, pa_shift: 8 }
+  - { key: russell_group, label: Russell Group, country: uk, available_in: v2, ca_shift: 0, pa_shift: 0 }
+  - { key: other_uk, label: Other UK, country: uk, available_in: v2, ca_shift: -6, pa_shift: -5 }

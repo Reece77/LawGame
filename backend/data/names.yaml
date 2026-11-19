@@ -1,0 +1,8 @@
+# Name pools (formulas.md section 2). Ported from backend/data/names.yaml @ 02fba2aa (Tech
+# Startup Tycoon); changed: one pool, `us` (TST's north_america list as is), for v1's one
+# country; the rival company names are dropped. No entry is meant to name a real person;
+# real lawyers and judges arrive by name from their own dossiers (ADR PT-0013, PT-M5).
+names:
+  us:
+    first: ["James", "Michael", "David", "Sarah", "Emily", "Jessica", "Daniel", "Matthew", "Ashley", "Jennifer", "Christopher", "Andrew", "Joshua", "Megan", "Lauren", "Ryan", "Brandon", "Rachel", "Nicole", "Tyler", "Kevin", "Amanda", "Stephanie", "Justin", "Brittany", "Kyle", "Heather", "Eric", "Rebecca", "Jason", "Laura", "Adam", "Melissa", "Nathan", "Hannah", "Samantha", "Aaron", "Kayla", "Jordan", "Taylor", "Morgan", "Dylan", "Olivia", "Ethan", "Grace", "Logan", "Chloe", "Austin", "Natalie", "Caleb", "Madison", "Marcus", "Jasmine", "Luis", "Maria", "Carlos", "Sofia", "Derek", "Whitney", "Trevor"]
+    last: ["Smith", "Johnson", "Williams", "Brown", "Jones", "Miller", "Davis", "Garcia", "Rodriguez", "Wilson", "Martinez", "Anderson", "Taylor", "Thomas", "Hernandez", "Moore", "Martin", "Jackson", "Thompson", "White", "Lopez", "Lee", "Gonzalez", "Harris", "Clark", "Lewis", "Robinson", "Walker", "Perez", "Hall", "Young", "Allen", "Sanchez", "Wright", "King", "Scott", "Green", "Baker", "Adams", "Nelson", "Hill", "Ramirez", "Campbell", "Mitchell", "Roberts", "Carter", "Phillips", "Evans", "Turner", "Torres", "Parker", "Collins", "Edwards", "Stewart", "Flores", "Morris", "Nguyen", "Murphy", "Rivera", "Cook"]

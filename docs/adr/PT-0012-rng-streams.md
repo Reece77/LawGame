@@ -10,6 +10,10 @@
 
 | Name | Id | Key | Used for | Milestone |
 | --- | --- | --- | --- | --- |
+| `people_gen` | 1 | `(search_id, n)` | Generated people; search 0 is a scenario's starting staff | PT-M1a |
+| `founder` | 7 | `(founder_index,)` | A founding partner's build; index 0 is the player's | PT-M1a |
+| `growth` | 8 | `(person_id,)` | Monthly growth noise | PT-M1a |
+| `reveal` | 9 | `(observer_firm_id, person_id)` | Reveal record offsets | PT-M1a |
 | `demand` | 20 | `(region, practice)` | Monthly legal demand noise | PT-M3 |
 | `intake` | 21 | `(client_id,)` | New instructions from a client | PT-M3 |
 | `matter` | 22 | `(matter_id,)` | Progress noise, events and the outcome | PT-M3 |
@@ -19,7 +23,7 @@
 | `rival_firm` | 26 | `(*rival_key,)` | A rival firm's monthly decision noise | PT-M5 |
 | `lateral` | 27 | `(person_id,)` | A partner's portability realised at a move | PT-M4 |
 | `vote` | 28 | `(vote_id, person_id)` | Each partner's vote noise | PT-M4 |
-| `strain` | 29 | `(person_id,)` | Burnout events | PT-M1 |
+| `strain` | 29 | `(person_id,)` | A generated person's starting strain (PT-M1a); burnout events (PT-M6) | PT-M1a |
 | `campus` | 30 | `(year, school_index)` | Campus candidate pools | PT-M1 |
 | `client_gen` | 31 | `(client_index,)` | Generated clients and their GCs | PT-M3 |
 | `macro_law` | 32 | `(indicator_index,)` | Seeded legal indices after 2025 | PT-M10 |

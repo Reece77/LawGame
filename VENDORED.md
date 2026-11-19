@@ -39,6 +39,10 @@ Files copied or ported from Tech Startup Tycoon (`Reece77/Tech_Executive_Tycoon`
 | `backend/tests/unit/test_sim_purity.py` | `backend/tests/unit/test_sim_purity.py` | ported | — |
 | `backend/tests/unit/test_rng_call_sites.py` | `backend/tests/unit/test_rng_call_sites.py` | ported | — |
 | `frontend/src/main.tsx` | `frontend/src/main.tsx` | ported | — |
+| `backend/ptk/sim/people/models.py` | `backend/tst/sim/people/models.py` | ported | — |
+| `backend/ptk/sim/people/formulas.py` | `backend/tst/sim/people/formulas.py` | ported | — |
+| `backend/ptk/sim/people/generator.py` | `backend/tst/sim/people/generator.py` | ported | — |
+| `backend/ptk/sim/people/reveal.py` | `backend/tst/sim/people/reveal.py` | ported | — |
 | `backend/data/tags.yaml` | `backend/data/tags.yaml` | ported | — |
 | `backend/data/names.yaml` | `backend/data/names.yaml` | ported | — |
 | `backend/data/backgrounds.yaml` | `backend/data/backgrounds.yaml` | ported | — |
@@ -54,6 +58,10 @@ Changes in ported files:
 - `backend/tests/unit/test_sim_purity.py`: package rename.
 - `backend/tests/unit/test_rng_call_sites.py`: known names a parameter.
 - `frontend/src/main.tsx`: no glossary or busy retry yet.
+- `backend/ptk/sim/people/models.py` (PT-M1a): class-year levels; familiarity, school tier, bar, strain, book and portability on a person; every person has a role; employment with a firm.
+- `backend/ptk/sim/people/formulas.py` (PT-M1a): growth times `learn(h)`; familiarity and strain formulas; no salary expectation yet.
+- `backend/ptk/sim/people/generator.py` (PT-M1a): school tier first; familiarity and portability draws last; one US pool; no cities or salary.
+- `backend/ptk/sim/people/reveal.py` (PT-M1a): firm observers; familiarity records (narrow); TST's first six actions.
 - `backend/data/tags.yaml` (PT-M1a): PT's seven new tags appended; the `negative` flag (ADR PT-0013).
 - `backend/data/names.yaml` (PT-M1a): one `us` pool (TST's north_america list); rival names dropped.
 - `backend/data/backgrounds.yaml` (PT-M1a): PT's five founding-partner backgrounds; TST's presets as is.

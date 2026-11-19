@@ -21,6 +21,11 @@ from ptk.sim.errors import InvalidSeedError, UnknownStreamError
 # Partner Track's own; 99 is for tests. A stream is added by the milestone that first draws.
 STREAM_IDS: Final = MappingProxyType(
     {
+        "people_gen": 1,  # (search_id, n): generated people; search 0 = a scenario's staff
+        "founder": 7,  # (founder_index,): a founding partner's build; 0 = the player's
+        "growth": 8,  # (person_id,): monthly growth noise
+        "reveal": 9,  # (observer_firm_id, person_id): reveal record offsets
+        "strain": 29,  # (person_id,): a generated person's starting strain (PT-M1a)
         "misc": 99,  # tests only
     }
 )

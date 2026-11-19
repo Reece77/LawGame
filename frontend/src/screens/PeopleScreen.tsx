@@ -6,10 +6,11 @@ import { AttributeRange } from '../components/AttributeRange';
 import { rangeText } from '../lib/attr';
 import { StrainBar } from '../components/StrainBar';
 import { usePeople, type PersonRow } from '../lib/api';
-import { humanize } from '../lib/format';
+import { formatWhole, humanize } from '../lib/format';
 
 // The squad (spec 16): level, practice, ability and potential as the firm sees them, the
-// familiarity grid and strain. Hours and utilisation arrive with matters (PT-M3a).
+// familiarity grid, strain and morale (PT-M1b). Hours and utilisation arrive with matters
+// (PT-M3a).
 const features = tableFeatures({});
 const helper = createColumnHelper<typeof features, PersonRow>();
 const EMPTY: PersonRow[] = [];
@@ -72,6 +73,15 @@ const baseColumns = [
           compact
         />
       ),
+  }),
+  helper.display({
+    id: 'morale',
+    header: 'Morale',
+    cell: ({ row }) => (
+      <span className="tst-num">
+        {row.original.morale == null ? '—' : formatWhole(row.original.morale)}
+      </span>
+    ),
   }),
 ];
 

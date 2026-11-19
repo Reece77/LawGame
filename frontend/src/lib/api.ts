@@ -73,7 +73,142 @@ export function useAdvance(slug: string) {
       unwrap(await api.POST('/api/saves/{slug}/advance', { params: { path: { slug } } })),
     onSuccess: (game) => {
       client.setQueryData(['game', slug], game);
-      void client.invalidateQueries({ queryKey: ['people', slug] });
+      for (const key of ['people', 'recruitment', 'inbox', 'payroll']) {
+        void client.invalidateQueries({ queryKey: [key, slug] });
+      }
     },
+  });
+}
+
+// --- PT-M1b: recruitment, inbox, payroll ------------------------------------------------------
+
+export type Recruitment = Schemas['RecruitmentOut'];
+export type Candidate = Schemas['CandidateOut'];
+export type OpenSearchBody = Schemas['OpenSearchIn'];
+export type PayPolicyBody = Schemas['PayPolicyIn'];
+export type InboxItem = Schemas['InboxItemOut'];
+export type Payroll = Schemas['PayrollOut'];
+
+export const useRecruitment = (slug: string) =>
+  useQuery({
+    queryKey: ['recruitment', slug],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/saves/{slug}/recruitment', { params: { path: { slug } } })),
+  });
+
+export const useInbox = (slug: string) =>
+  useQuery({
+    queryKey: ['inbox', slug],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/saves/{slug}/inbox', { params: { path: { slug } } })),
+  });
+
+export const usePayroll = (slug: string) =>
+  useQuery({
+    queryKey: ['payroll', slug],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/saves/{slug}/payroll', { params: { path: { slug } } })),
+  });
+
+export const useOfferPreview = (slug: string, candidateId: number | null, salaryCents: number) =>
+  useQuery({
+    queryKey: ['offer-preview', slug, candidateId, salaryCents],
+    enabled: candidateId !== null && salaryCents > 0,
+    queryFn: async () =>
+      unwrap(
+        await api.GET('/api/saves/{slug}/recruitment/candidates/{candidate_id}/offer-preview', {
+          params: {
+            path: { slug, candidate_id: candidateId ?? 0 },
+            query: { salary_cents: salaryCents },
+          },
+        }),
+      ),
+  });
+
+/** A recruitment action: the server applies it at once and returns the new view. */
+export type RecruitmentAction =
+  | { kind: 'open'; body: OpenSearchBody }
+  | { kind: 'close' | 'scout'; searchId: number }
+  | { kind: 'interview' | 'reference'; candidateId: number }
+  | { kind: 'offer'; candidateId: number; salaryCents: number }
+  | { kind: 'withdraw'; offerId: number }
+  | { kind: 'pay'; body: PayPolicyBody };
+
+async function runRecruitment(slug: string, a: RecruitmentAction): Promise<Recruitment> {
+  const path = { slug };
+  switch (a.kind) {
+    case 'open':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/recruitment/searches', {
+          params: { path },
+          body: a.body,
+        }),
+      );
+    case 'close':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/recruitment/searches/{search_id}/close', {
+          params: { path: { slug, search_id: a.searchId } },
+        }),
+      );
+    case 'scout':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/recruitment/searches/{search_id}/scout', {
+          params: { path: { slug, search_id: a.searchId } },
+        }),
+      );
+    case 'interview':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/recruitment/candidates/{candidate_id}/interview', {
+          params: { path: { slug, candidate_id: a.candidateId } },
+        }),
+      );
+    case 'reference':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/recruitment/candidates/{candidate_id}/reference', {
+          params: { path: { slug, candidate_id: a.candidateId } },
+        }),
+      );
+    case 'offer':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/recruitment/offers', {
+          params: { path },
+          body: { candidate_id: a.candidateId, salary_cents: a.salaryCents },
+        }),
+      );
+    case 'withdraw':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/recruitment/offers/{offer_id}/withdraw', {
+          params: { path: { slug, offer_id: a.offerId } },
+        }),
+      );
+    case 'pay':
+      return unwrap(
+        await api.PUT('/api/saves/{slug}/recruitment/pay-policy', {
+          params: { path },
+          body: a.body,
+        }),
+      );
+  }
+}
+
+export function useRecruitmentAction(slug: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (a: RecruitmentAction) => runRecruitment(slug, a),
+    onSuccess: (view) => {
+      client.setQueryData(['recruitment', slug], view);
+      void client.invalidateQueries({ queryKey: ['payroll', slug] });
+      void client.invalidateQueries({ queryKey: ['inbox', slug] });
+      void client.invalidateQueries({ queryKey: ['game', slug] });
+    },
+  });
+}
+
+export function useMarkInboxRead(slug: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: async () =>
+      unwrap(await api.POST('/api/saves/{slug}/inbox/read', { params: { path: { slug } } })),
+    onSuccess: (items) => client.setQueryData(['inbox', slug], items),
   });
 }

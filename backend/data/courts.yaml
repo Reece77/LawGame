@@ -1,0 +1,29 @@
+# Courts and forums for v1 (spec 7.6a). Judges are generated (stream judge_gen, ADR PT-0012)
+# with procedural traits only (ADR PT-0013): they move a case's path, timing and cost, never
+# its side. Real judges arrive with PT-M5 (judges.yaml). All numbers [A]: docket paces are
+# shaped on the courts' reputations in 2005 (E.D. Tex. and the Delaware Chancery fast, N.D.
+# Cal. slow); median-time-to-trial statistics were not checked this session.
+#   pace: multiplier on a case's planned duration (1.0 = S.D.N.Y.).
+#   trial_bp: share of cases a judge of average trial appetite would take to a verdict rather
+#     than see settle or end at motions.
+#   judges: how many judges or arbitrators the court seats.
+courts:
+  - { key: sdny, label: S.D.N.Y., kind: federal, pace: 1.0, trial_bp: 1500, judges: 8 }
+  - { key: edny, label: E.D.N.Y., kind: federal, pace: 1.05, trial_bp: 1500, judges: 5 }
+  - { key: ddel, label: D. Del., kind: federal, pace: 0.95, trial_bp: 2000, judges: 4 }
+  - { key: ndcal, label: N.D. Cal., kind: federal, pace: 1.15, trial_bp: 1500, judges: 5 }
+  - { key: edtex, label: E.D. Tex., kind: federal, pace: 0.8, trial_bp: 3000, judges: 3 }
+  - { key: wdtex, label: W.D. Tex., kind: federal, pace: 1.0, trial_bp: 2000, judges: 3 }
+  - { key: del_chancery, label: Delaware Court of Chancery, kind: state, pace: 0.7, trial_bp: 2500, judges: 4 }
+  - { key: ny_commercial, label: N.Y. Commercial Division, kind: state, pace: 1.0, trial_bp: 1200, judges: 5 }
+  - { key: aaa, label: AAA arbitration, kind: arbitration, pace: 0.9, trial_bp: 4000, judges: 6 }
+  - { key: icc, label: ICC arbitration, kind: arbitration, pace: 1.1, trial_bp: 4000, judges: 6 }
+
+# Judges' procedural traits (1-20), in draw order (append-only).
+judge_traits:
+  - { key: docket_speed, label: Docket speed }
+  - { key: trial_appetite, label: Appetite for trial }
+  - { key: discovery_strictness, label: Discovery strictness }
+  - { key: settlement_pressure, label: Settlement pressure }
+  - { key: summary_judgment, label: Summary-judgment appetite }
+  - { key: sanctions_strictness, label: Sanctions strictness }

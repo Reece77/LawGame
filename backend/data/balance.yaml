@@ -134,6 +134,12 @@ energy: # the founding partner's monthly energy (TST formulas.md 6, M4c values; 
     withdraw_offer: 0
     close_search: 0
     pay_policy: 2 # change the firm's pay policy
+    staff: 0 # assign, set hours or remove on a named matter (PT-M3a)
+    seek_waiver: 6 # ask a client for a conflict waiver (ADR PT-0009)
+    introduce: 10 # introduce a colleague to a client (spec 7.2)
+    settlement: 0 # answer a settlement offer
+    conflict_policy: 2 # turn conflicts checks on or off
+    forum: 0 # choose a new case's forum
 hiring: # searches and offers (TST formulas.md 7; spec 5.7)
   candidate_shelf_turns: 3 # months a lateral candidate stays open unless hired
   lowball_ratio: 0.85 # offers below this share of the ask are always declined
@@ -258,3 +264,114 @@ org: # practice groups, teams and supervision (PT-M2; TST formulas.md 13, ported
     reserve: 20 # energy kept back while interviewing, for a scouting pass (TST: the scout cost)
     max_ratio_bp: 12000 # bp of the ask; highest salary ratio a plan may offer (1.2x)
     plan_owner_roles: [human_resources] # roles that may own a plan without leading a unit (a recruiting manager)
+clients: # the client universe (spec 7.1, 7.3; PT-M3a)
+  generated_count: 700 # generated clients beside clients.yaml's 300 real ones (stream client_gen)
+  size_exponent: 0.7 # wallet weight = revenue_bn ^ this x sector intensity x mix (diminishing with size)
+  generated_revenue_bn: { median: 0.8, sigma: 1.0, min: 0.1, max: 30 } # USD bn, LogNormal, clipped
+  large_revenue_bn: 10 # USD bn; clients at or above this are "large" (they weigh reputation, spec 7.1)
+  panel_large: [5, 7] # static panel firms on a large client's panel, uniform inclusive
+  panel_mid: [3, 5] # the same for other clients
+  price_sensitivity: [6, 16] # 1-20, uniform: how much a client weighs price
+  loyalty: [6, 16] # 1-20, uniform: how slowly a relationship drifts
+  gc_age: [40, 60] # years, uniform: a general counsel's age at the start
+books: # the founding partners' clients (spec 7.1: the player's firm on panels where the founders' books came from)
+  start_relationship: [55, 70] # relationship 0-100 at the start, uniform
+  max_client_share: 0.5 # no client brings more than this share of a founder's book a year
+  max_clients: 12 # clients per founding partner at most
+appeal: # wallet share between panel firms (spec 7.1; TST 11.6's logit pattern), logit points
+  large: { relationship: 3.0, reputation: 1.5, price: 0.5, capacity: 1.5, conflict: 2.0 } # per unit of each term (0-1 scales)
+  mid: { relationship: 3.0, reputation: 0.8, price: 1.5, capacity: 1.0, conflict: 2.0 }
+  rival_strong: 0.5 # logit points added to a static panel firm in its strong practices
+  rate_ref_band: partner # price term compares the firm's rate in this band with the practice's card
+matters: # intake and staffing (spec 7.4-7.5; ADR PT-0004, PT-0005)
+  named_min_cents: 25000000 # $250,000 expected fees: a matter at or above is named (ADR PT-0004 1)
+  key_named_min_cents: 10000000 # $100,000: a key client's matter at or above is named (decision, PT-M3a)
+  key_clients: 20 # top clients by trailing-12-month fees are key clients (ADR PT-0004 1)
+  flow_fill: 0.9 # share of a person's monthly capacity flow work may fill (after named hours)
+  max_load: 1.35 # named hours a person may work, as a multiple of monthly capacity (overtime)
+  partner_other_hours: 25 # hours a month a partner spends on business development and management
+  flow_min_familiarity: 8 # 1-20; outside a practice's own people, flow goes only to people this familiar
+  conflicted_window_turns: 1 # months a conflicted instruction waits for a waiver before it is declined
+  lead_share_min: 0.08 # the lead partner plans at least this share of a matter's monthly hours
+  staff_round_tenths: 10 # planned hours are whole hours
+  substantive_window: 1 # task levels at or this many above a person's own count as substantive
+  max_slip_months: 6 # a case goes to trial (or a deal must close) this long after its due month regardless
+  forum_change_turns: 0 # months after intake a forum may still be chosen (0: the intake month only)
+outcomes: # spec 7.6; ADR PT-0011 tasks; never shown, only bands (PT-M3c)
+  case_k: 0.3 # logit points per point of team craft over opposing counsel's
+  merits_sd: 1.0 # logit points; a case's hidden merits ~ Normal(0, sd)
+  opposing_mean: 12 # 1-20 craft of opposing counsel (other large firms)
+  opposing_sd: 2 # 1-20
+  big_moments: 0.5 # craft points at trial per 10 points of the lead's big moments over 10
+  prep: 3.0 # craft points per unit of preparation (progress delivered by trial) below 1
+  craft_skills: { advocacy: 0.35, legal_reasoning: 0.35, writing: 0.15, procedure: 0.15 } # case craft weights (spec 7.6)
+  deal_skills: { negotiation: 0.4, deal_structuring: 0.4, commercial_awareness: 0.2 } # deal craft weights
+  deal_base: 1.5 # logit points: p_close at team craft 10 is about 82%
+  deal_k: 0.25 # logit points per craft point over 10
+  critical_deal: -0.5 # logit points for a critical (public, contested) deal
+  stakes_mult: [2, 8] # a case's amount in dispute, as a multiple of its expected fees, uniform
+errors: # spec 7.6 errors; recorded only (claims arrive in v2)
+  base_bp: 200 # bp a matter-month at team effective skill 10, rested, supervised
+  strain_slope: 1.0 # error multiplier 1 + slope x strain / 100, hours-weighted over the team
+  burnout_mult: 2.0 # error chance x this for a person in burnout's 6-month effects (spec 5.6)
+  cowboy_mult: 2.0 # the cowboy tag (spec 5.1)
+  max_bp: 5000 # ceiling on a matter-month's error chance
+  catch_bp: 7000 # chance an error is caught before it escapes (rework), at supervision factor 1
+  rework_share: 0.03 # a caught error adds this share of the matter's hours as rework
+  deadline_miss_bp: 1500 # chance a month at under half the needed pace misses a deadline (cases, filings)
+progress: # spec 7.5
+  strain_from: 50 # strain above this lowers a person's output
+  strain_output: 0.3 # output lost at strain 100, linear from strain_from
+  under_pace: 0.5 # a month's output under this share of the planned pace counts as under-staffed
+judges: # spec 7.6a: path, timing and cost only, never the side (ADR PT-0013)
+  speed: 0.2 # duration x (1 - speed x (docket_speed - 10) / 10)
+  discovery: 0.3 # discovery hours x (1 + discovery x (10 - discovery_strictness) / 10)
+  settlement: 0.5 # settlement-offer chance x (1 + settlement x (pressure - 10) / 10 - trial x (appetite - 10) / 10)
+  trial: 0.3
+  settlement_floor: 0.2 # the multiplier never falls below this
+  summary_judgment_bp: 1500 # chance at the end of motions that the case is decided without trial, at appetite 10
+  summary_judgment: 0.5 # per 10 points of appetite over 10
+  sanctions: 0.5 # relationship cost of an escaped error in court x (1 + sanctions x (strictness - 10) / 10)
+  procedure: 0.15 # output x (1 + procedure x (strictness - 10)/10 x (procedure skill - 10)/10) in discovery and motions
+  appearance_full_hours: 500 # hours before a judge for the full familiarity bonus
+  appearance_bonus: 0.5 # the procedure effect x (1 + bonus) at full familiarity
+settlement: # spec 7.6: offers from the other side, pending items (ADR-0014)
+  base_bp: 400 # bp a month in discovery and motions, before the judge's multiplier
+  discount: 0.85 # the other side offers its view of our expected recovery x this
+  view_sd: 0.5 # logit points of noise in the other side's view
+  window_turns: 1 # months an offer stays open
+relationships: # spec 7.2; 0-100 per (client, firm)
+  drift_to: 40 # the level relationships drift toward
+  drift: 0.02 # share of the gap closed a month, at loyalty 10 (loyalty 20 halves it)
+  win: 8 # points for a won case, a closed deal or good advice (quality 14+)
+  loss: -8 # points for a lost case or a collapsed deal (collapsed deals count half)
+  settle: 10 # points x (accepted offer - true expected recovery), for a settlement
+  critical_mult: 2.0 # outcomes of critical matters count this many times
+  service: -6 # points a month x the share of the client's flow the firm could not serve
+  strain: -2 # points a month when the client's team averages strain over strain_at
+  strain_at: 60
+  care: 0.6 # points a month per 10 of the relationship partner's client care over 10
+  breadth: 0.3 # points a month per practice used beyond the first
+  breadth_cap: 1.2 # at most this many points a month for breadth
+  conflict_refused: -3 # points when the firm declines an instruction for a conflict
+  waiver_asked: -2 # points for asking a waiver (granted or not)
+  positional: -1 # points to a key client when the firm acts for its direct competitor in a new named matter
+  escaped_error: -3 # points when an escaped error comes to light in court (x the judge's sanctions term)
+  missed_deadline: -6 # points for a missed deadline
+  disqualified: -15 # points to both clients when a hidden conflict surfaces
+cross_sell: # spec 7.2 introductions (an action)
+  base: -1.0 # logit points
+  affinity: 2.0 # per unit of the practices' affinity
+  relationship: 2.0 # per unit of (relationship - 50) / 50
+  bd: 0.5 # per 10 of the introducing partner's business development over 10
+  care: 0.5 # per 10 of the introduced colleague's client care over 10
+  failure: -2 # relationship points when an introduction fails
+  cooldown_turns: 6 # months before the same practice can be introduced to the same client again
+conflicts: # ADR PT-0009
+  current_months: 12 # a client instructed within this many months is a current client
+  former_months: 36 # former clients are indexed this long
+  waiver_base: -0.5 # logit points of a specific waiver
+  waiver_relationship: 3.0 # per unit of (relationship - 50) / 50
+  waiver_gc: 0.15 # per point of the GC's adaptability + risk appetite - 20, halved
+  advance_penalty: -1.5 # logit points for an advance waiver instead of a specific one
+  hidden_surface_bp: 300 # bp a month an unchecked conflict comes to light

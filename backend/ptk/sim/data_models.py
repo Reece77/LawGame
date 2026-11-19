@@ -34,6 +34,7 @@ LEVELS: Final = (
     "chief",
 )
 PARTNER_LEVELS: Final = frozenset({"income_partner", "equity_partner"})
+BUSINESS_SERVICES_LEVELS: Final = ("staff", "manager", "director", "chief")  # bill nothing
 # PT-M1b: associates are paid on the class-year scale (senior associates as class 8); equity
 # partners take profit, not salary (spec 5.4); everyone else is paid from a band.
 SCALE_LEVELS: Final = (
@@ -360,6 +361,12 @@ ENERGY_ACTIONS: Final = (
     "withdraw_offer",
     "close_search",
     "pay_policy",
+    "staff",
+    "seek_waiver",
+    "introduce",
+    "settlement",
+    "conflict_policy",
+    "forum",
 )
 LATERAL_CHANNELS: Final = ("referral", "job_post", "recruiter")
 
@@ -586,6 +593,159 @@ class OrgBalance(_Strict):
         return self
 
 
+# --- Clients and matters balance (PT-M3a) ------------------------------------------------------
+
+
+class LogNormalSpan(_Strict):
+    median: float = Field(gt=0)
+    sigma: float = Field(ge=0)
+    min: float = Field(gt=0)
+    max: float = Field(gt=0)
+
+
+class ClientsBalance(_Strict):
+    generated_count: int = Field(ge=0)
+    size_exponent: float = Field(gt=0)
+    generated_revenue_bn: LogNormalSpan
+    large_revenue_bn: float = Field(gt=0)
+    panel_large: tuple[int, int]
+    panel_mid: tuple[int, int]
+    price_sensitivity: Span
+    loyalty: Span
+    gc_age: tuple[int, int]
+
+
+class BooksBalance(_Strict):
+    start_relationship: Span
+    max_client_share: float = Field(gt=0, le=1)
+    max_clients: int = Field(gt=0)
+
+
+class AppealWeights(_Strict):
+    relationship: float
+    reputation: float
+    price: float
+    capacity: float
+    conflict: float
+
+
+class AppealBalance(_Strict):
+    large: AppealWeights
+    mid: AppealWeights
+    rival_strong: float
+    rate_ref_band: str
+
+
+class MattersBalance(_Strict):
+    named_min_cents: int = Field(gt=0)
+    key_named_min_cents: int = Field(gt=0)
+    key_clients: int = Field(ge=0)
+    flow_fill: float = Field(gt=0, le=1.5)
+    max_load: float = Field(gt=0)
+    partner_other_hours: int = Field(ge=0)
+    flow_min_familiarity: float = Field(ge=1, le=20)
+    conflicted_window_turns: int = Field(ge=0)
+    lead_share_min: float = Field(ge=0, le=1)
+    staff_round_tenths: int = Field(gt=0)
+    substantive_window: int = Field(ge=0)
+    max_slip_months: int = Field(ge=0)
+    forum_change_turns: int = Field(ge=0)
+
+
+class OutcomesBalance(_Strict):
+    case_k: float = Field(gt=0)
+    merits_sd: float = Field(ge=0)
+    opposing_mean: float = Field(ge=1, le=20)
+    opposing_sd: float = Field(ge=0)
+    big_moments: float
+    prep: float = Field(ge=0)
+    craft_skills: dict[str, float]
+    deal_skills: dict[str, float]
+    deal_base: float
+    deal_k: float = Field(ge=0)
+    critical_deal: float
+    stakes_mult: Span
+
+
+class ErrorsBalance(_Strict):
+    base_bp: int = Field(ge=0)
+    strain_slope: float = Field(ge=0)
+    burnout_mult: float = Field(ge=1)
+    cowboy_mult: float = Field(ge=1)
+    max_bp: int = Field(gt=0, le=10000)
+    catch_bp: int = Field(ge=0, le=10000)
+    rework_share: float = Field(ge=0)
+    deadline_miss_bp: int = Field(ge=0, le=10000)
+
+
+class ProgressBalance(_Strict):
+    strain_from: float = Field(ge=0, lt=100)
+    strain_output: float = Field(ge=0, le=1)
+    under_pace: float = Field(ge=0, le=1)
+
+
+class JudgesBalance(_Strict):
+    speed: float = Field(ge=0, lt=1)
+    discovery: float = Field(ge=0)
+    settlement: float = Field(ge=0)
+    trial: float = Field(ge=0)
+    settlement_floor: float = Field(gt=0)
+    summary_judgment_bp: int = Field(ge=0, le=10000)
+    summary_judgment: float = Field(ge=0)
+    sanctions: float = Field(ge=0)
+    procedure: float = Field(ge=0)
+    appearance_full_hours: int = Field(gt=0)
+    appearance_bonus: float = Field(ge=0)
+
+
+class SettlementBalance(_Strict):
+    base_bp: int = Field(ge=0, le=10000)
+    discount: float = Field(gt=0, le=1)
+    view_sd: float = Field(ge=0)
+    window_turns: int = Field(gt=0)
+
+
+class RelationshipsBalance(_Strict):
+    drift_to: float = Field(ge=0, le=100)
+    drift: float = Field(ge=0, le=1)
+    win: float
+    loss: float
+    settle: float
+    critical_mult: float = Field(ge=0)
+    service: float
+    strain: float
+    strain_at: float
+    care: float
+    breadth: float
+    breadth_cap: float = Field(ge=0)
+    conflict_refused: float
+    waiver_asked: float
+    positional: float
+    escaped_error: float
+    missed_deadline: float
+    disqualified: float
+
+
+class CrossSellBalance(_Strict):
+    base: float
+    affinity: float
+    relationship: float
+    bd: float
+    care: float
+    failure: float
+    cooldown_turns: int = Field(ge=0)
+
+
+class ConflictsBalance(_Strict):
+    current_months: int = Field(gt=0)
+    former_months: int = Field(gt=0)
+    waiver_base: float
+    waiver_relationship: float
+    waiver_gc: float
+    advance_penalty: float
+    hidden_surface_bp: int = Field(ge=0, le=10000)
+
+
 class Balance(_Strict):
     campaign: CampaignBalance
     backups: BackupBalance
@@ -603,6 +763,18 @@ class Balance(_Strict):
     resign: ResignBalance
     tags: TagRevealBalance
     org: OrgBalance
+    clients: ClientsBalance  # PT-M3a
+    books: BooksBalance
+    appeal: AppealBalance
+    matters: MattersBalance
+    outcomes: OutcomesBalance
+    errors: ErrorsBalance
+    progress: ProgressBalance
+    judges: JudgesBalance
+    settlement: SettlementBalance
+    relationships: RelationshipsBalance
+    cross_sell: CrossSellBalance
+    conflicts: ConflictsBalance
 
 
 # --- People seed data (PT-M1a) ------------------------------------------------------------
@@ -624,10 +796,244 @@ class HiddenTraitDef(_Strict):
     key: str = Field(pattern=_KEY)
 
 
+# --- Practices, clients and courts (PT-M3a; spec 6, 7) ----------------------------------------
+
+RATE_BANDS: Final = ("paralegal", "junior", "mid", "senior", "counsel", "partner")
+# Task levels (practices.yaml tasks): 0 paralegal, 1 junior, 2 mid, 3 senior and counsel,
+# 4 partner. Each rate band works at one task level.
+BAND_TASK_LEVEL: Final = {
+    "paralegal": 0,
+    "junior": 1,
+    "mid": 2,
+    "senior": 3,
+    "counsel": 3,
+    "partner": 4,
+}
+type MatterKind = Literal["deal", "case", "investigation", "restructuring", "advisory", "filing"]
+type OutcomeKind = Literal["deal", "case", "quality"]
+MATTER_KINDS: Final = ("deal", "case", "investigation", "restructuring", "advisory", "filing")
+
+
+def _weights_positive(weights: dict[str, float], name: str) -> None:
+    if any(w < 0 for w in weights.values()) or not any(w > 0 for w in weights.values()):
+        raise ValueError(f"{name}: weights need a positive weight and none negative")
+
+
+class RateRange(_Strict):
+    low: int = Field(gt=0)
+    median: int = Field(gt=0)
+    high: int = Field(gt=0)
+
+    @model_validator(mode="after")
+    def _ordered(self) -> RateRange:
+        if not self.low <= self.median <= self.high:
+            raise ValueError("rate card: low <= median <= high")
+        return self
+
+
+class Norms2005(_Strict):
+    revenue_per_lawyer_cents: int = Field(gt=0)
+    pep_cents: int = Field(gt=0)
+    realisation_bp: int = Field(gt=0, le=10000)
+    collection_bp: int = Field(gt=0, le=10000)
+    leverage: Span
+    billable_target_hours: Span
+    associate_attrition_bp: Span
+
+
+class TaskDef(_Strict):
+    key: str = Field(pattern=_KEY)
+    level: int = Field(ge=0, le=4)
+    ai_exposure: float = Field(ge=0, le=1)
+    skills: dict[str, float]
+
+    @model_validator(mode="after")
+    def _check(self) -> TaskDef:
+        _weights_positive(self.skills, f"task {self.key}")
+        return self
+
+
+class PhaseDef(_Strict):
+    key: str = Field(pattern=_KEY)
+    share: float = Field(gt=0, le=1)
+    tasks: dict[str, float]
+
+    @model_validator(mode="after")
+    def _check(self) -> PhaseDef:
+        _weights_positive(self.tasks, f"phase {self.key}")
+        return self
+
+
+class KindDef(_Strict):
+    outcome: OutcomeKind
+    phases: tuple[PhaseDef, ...] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def _check(self) -> KindDef:
+        if abs(sum(p.share for p in self.phases) - 1.0) > 1e-9:  # tunable-exempt: rounding
+            raise ValueError("phase shares must sum to 1")
+        return self
+
+
+class MatterKindDef(_Strict):
+    key: str = Field(pattern=_KEY)
+    label: str = Field(min_length=1)
+    kind: MatterKind
+    weight: float = Field(gt=0)
+    median_cents: int = Field(gt=0)
+    sigma: float = Field(gt=0)
+    months: tuple[int, int]
+    critical_bp: int = Field(ge=0, le=10000)
+    forums: dict[str, float] = Field(default_factory=dict)
+
+    @model_validator(mode="after")
+    def _check(self) -> MatterKindDef:
+        if not 1 <= self.months[0] <= self.months[1]:
+            raise ValueError(f"matter kind {self.key}: months must be 1 <= min <= max")
+        if (self.kind == "case") != bool(self.forums):
+            raise ValueError(f"matter kind {self.key}: case kinds, and only they, name forums")
+        if self.forums:
+            _weights_positive(self.forums, f"matter kind {self.key} forums")
+        return self
+
+
 class PracticeDef(_Strict):
     key: str = Field(pattern=_KEY)
     label: str = Field(min_length=1)
     short_label: str = Field(min_length=1)
+    demand_cents: int = Field(gt=0)  # NY 2005 annual demand base D0 (spec 6)
+    driver: str = Field(min_length=1)
+    beta: float  # sensitivity to the driver index (indices are 1.0 until PT-M7)
+    sigma: float = Field(ge=0)  # monthly LogNormal demand noise
+    rates: dict[str, int]  # rate band -> cents an hour
+    leverage: float = Field(gt=0)
+    margin_bp: int = Field(ge=0, le=10000)
+    realisation_bp: int = Field(gt=0, le=10000)
+    collection_bp: int = Field(gt=0, le=10000)
+    flow_share: float = Field(ge=0, le=1)
+    conflict_bp: int = Field(ge=0, le=10000)
+    seasonality: tuple[float, ...] = Field(min_length=12, max_length=12)
+    matter_kinds: tuple[MatterKindDef, ...] = Field(min_length=1)
+    cross_sell: dict[str, float]
+
+    @model_validator(mode="after")
+    def _check(self) -> PracticeDef:
+        if sorted(self.rates) != sorted(RATE_BANDS) or min(self.rates.values()) <= 0:
+            raise ValueError(f"practice {self.key}: rates must give every band {RATE_BANDS}")
+        if abs(sum(self.seasonality) / 12 - 1.0) > 1e-6:  # tunable-exempt: mean 1, rounding
+            raise ValueError(f"practice {self.key}: seasonality must average 1")
+        keys = [k.key for k in self.matter_kinds]
+        if len(keys) != len(set(keys)):
+            raise ValueError(f"practice {self.key}: duplicate matter kind keys")
+        if any(not 0 <= v <= 1 for v in self.cross_sell.values()):
+            raise ValueError(f"practice {self.key}: cross_sell affinities are 0-1")
+        return self
+
+    def kind(self, key: str) -> MatterKindDef:
+        for k in self.matter_kinds:
+            if k.key == key:
+                return k
+        raise KeyError(f"practice {self.key}: no matter kind {key!r}")
+
+
+class PracticeMarket(_Strict):
+    """practices.yaml beyond the practice list: rate bands, the rate card, norms, tasks."""
+
+    rate_bands: dict[str, str]  # level -> rate band
+    rate_card: dict[str, RateRange]
+    norms_2005: Norms2005
+    tasks: tuple[TaskDef, ...] = Field(min_length=1)
+    kinds: dict[str, KindDef]
+    flow_tasks: dict[str, float]
+
+    @model_validator(mode="after")
+    def _check(self) -> PracticeMarket:
+        if sorted(self.rate_card) != sorted(RATE_BANDS):
+            raise ValueError(f"rate_card must give every band {RATE_BANDS}")
+        if bad := sorted(set(self.rate_bands.values()) - set(RATE_BANDS)):
+            raise ValueError(f"rate_bands name unknown bands {bad}")
+        if bad := sorted(set(self.rate_bands) - set(LEVELS)):
+            raise ValueError(f"rate_bands name unknown levels {bad}")
+        if sorted(self.kinds) != sorted(MATTER_KINDS):
+            raise ValueError(f"kinds must define exactly {list(MATTER_KINDS)}")
+        tasks = {t.key for t in self.tasks}
+        if len(tasks) != len(self.tasks):
+            raise ValueError("duplicate task keys")
+        for key, kind in self.kinds.items():
+            for phase in kind.phases:
+                if bad := sorted(set(phase.tasks) - tasks):
+                    raise ValueError(f"kind {key} phase {phase.key}: unknown tasks {bad}")
+        if bad := sorted(set(self.flow_tasks) - tasks):
+            raise ValueError(f"flow_tasks: unknown tasks {bad}")
+        _weights_positive(self.flow_tasks, "flow_tasks")
+        return self
+
+    def task(self, key: str) -> TaskDef:
+        for t in self.tasks:
+            if t.key == key:
+                return t
+        raise KeyError(f"unknown task {key!r}")
+
+
+class SectorDef(_Strict):
+    key: str = Field(pattern=_KEY)
+    label: str = Field(min_length=1)
+    intensity: float = Field(gt=0)  # legal spend per unit of size, relative
+    mix: dict[str, float]  # practice -> weight
+    suffixes: tuple[str, ...] = Field(min_length=1)  # generated client names
+
+
+class RealClientDef(_Strict):
+    name: str = Field(min_length=1)
+    sector: str
+    revenue_bn: float = Field(gt=0)
+    country: str = "us"
+
+
+class PanelFirmDef(_Strict):
+    key: str = Field(pattern=_KEY)
+    name: str = Field(min_length=1)
+    base: float  # appeal, logit points
+    strong: tuple[str, ...] = ()  # practices with the strength bonus
+
+
+class ClientsData(_Strict):
+    sectors: tuple[SectorDef, ...] = Field(min_length=1)
+    generated_sector_weights: dict[str, float]
+    panel_firms: tuple[PanelFirmDef, ...] = Field(min_length=1)
+    real_clients: tuple[RealClientDef, ...]
+
+    def sector(self, key: str) -> SectorDef:
+        for s in self.sectors:
+            if s.key == key:
+                return s
+        raise KeyError(f"unknown sector {key!r}")
+
+    def panel_firm(self, key: str) -> PanelFirmDef:
+        for f in self.panel_firms:
+            if f.key == key:
+                return f
+        raise KeyError(f"unknown panel firm {key!r}")
+
+
+class CourtDef(_Strict):
+    key: str = Field(pattern=_KEY)
+    label: str = Field(min_length=1)
+    kind: Literal["federal", "state", "arbitration"]
+    pace: float = Field(gt=0)  # multiplier on a case's planned duration
+    trial_bp: int = Field(ge=0, le=10000)
+    judges: int = Field(gt=0)
+
+
+class CourtsData(_Strict):
+    courts: tuple[CourtDef, ...] = Field(min_length=1)
+    judge_traits: tuple[TraitDef, ...] = Field(min_length=1)
+
+    def court(self, key: str) -> CourtDef:
+        for c in self.courts:
+            if c.key == key:
+                return c
+        raise KeyError(f"unknown court {key!r}")
 
 
 class SchoolTier(_Strict):
@@ -811,6 +1217,9 @@ class GameData(_Strict):
     names: dict[str, NamePool]
     salary_scale: SalaryScale
     inbox_templates: dict[str, InboxTemplate]
+    market: PracticeMarket  # PT-M3a: practices.yaml's rate card, norms, tasks and kinds
+    clients: ClientsData  # PT-M3a: clients.yaml
+    courts: CourtsData  # PT-M3a: courts.yaml
 
     @model_validator(mode="after")
     def _unique(self) -> GameData:
@@ -829,6 +1238,11 @@ class GameData(_Strict):
             ("tag", [t.key for t in self.tags]),
             ("background", [b.key for b in self.backgrounds]),
             ("personality preset", [p.key for p in self.personality_presets]),
+            ("sector", [x.key for x in self.clients.sectors]),
+            ("panel firm", [f.key for f in self.clients.panel_firms]),
+            ("real client", [c.name for c in self.clients.real_clients]),
+            ("court", [c.key for c in self.courts.courts]),
+            ("judge trait", [t.key for t in self.courts.judge_traits]),
         ):
             if len(keys) != len(set(keys)):
                 raise ValueError(f"duplicate {name} keys")
@@ -874,6 +1288,7 @@ class GameData(_Strict):
             raise ValueError("names.yaml needs the `us` pool")
         if missing := sorted(set(OFF_SCALE_LEVELS) - set(self.salary_scale.bands)):
             raise ValueError(f"salary_scale.yaml bands must cover {missing}")
+        self._check_market(practices, skills)
         backgrounds = {b.key for b in self.backgrounds}
         for sc in self.scenarios:
             if sc.home_jurisdiction not in jurisdictions:
@@ -887,6 +1302,36 @@ class GameData(_Strict):
                     raise ValueError(f"scenario {sc.id!r}: unknown role {staff.role!r}")
                 if staff.practice is not None and staff.practice not in practices:
                     raise ValueError(f"scenario {sc.id!r}: unknown practice {staff.practice!r}")
+
+    def _check_market(self, practices: set[str], skills: set[str]) -> None:
+        """PT-M3a's practices, clients and courts refer to known keys."""
+        fee_earners = set(LEVELS) - set(BUSINESS_SERVICES_LEVELS)
+        if missing := sorted(fee_earners - set(self.market.rate_bands)):
+            raise ValueError(f"practices.yaml rate_bands must cover fee earners {missing}")
+        for task in self.market.tasks:
+            if bad := sorted(set(task.skills) - skills):
+                raise ValueError(f"task {task.key}: unknown skills {bad}")
+        courts = {c.key for c in self.courts.courts}
+        for p in self.practices:
+            if bad := sorted(set(p.cross_sell) - practices) or (
+                [p.key] if p.key in p.cross_sell else []
+            ):
+                raise ValueError(f"practice {p.key}: bad cross_sell practices {bad}")
+            for mk in p.matter_kinds:
+                if bad := sorted(set(mk.forums) - courts):
+                    raise ValueError(f"matter kind {mk.key}: unknown forums {bad}")
+        sectors = {s.key for s in self.clients.sectors}
+        for sector in self.clients.sectors:
+            if bad := sorted(set(sector.mix) - practices):
+                raise ValueError(f"sector {sector.key}: unknown practices {bad}")
+        if bad := sorted(set(self.clients.generated_sector_weights) - sectors):
+            raise ValueError(f"generated_sector_weights: unknown sectors {bad}")
+        for client in self.clients.real_clients:
+            if client.sector not in sectors:
+                raise ValueError(f"client {client.name!r}: unknown sector {client.sector!r}")
+        for firm in self.clients.panel_firms:
+            if bad := sorted(set(firm.strong) - practices):
+                raise ValueError(f"panel firm {firm.key}: unknown practices {bad}")
 
     # --- lookups ---------------------------------------------------------------------------
 
@@ -913,6 +1358,12 @@ class GameData(_Strict):
     @property
     def practice_keys(self) -> tuple[str, ...]:
         return tuple(p.key for p in self.practices)
+
+    def practice(self, key: str) -> PracticeDef:
+        for p in self.practices:
+            if p.key == key:
+                return p
+        raise KeyError(f"unknown practice {key!r}")
 
     def role(self, key: str) -> Role:
         for role in self.roles:

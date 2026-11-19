@@ -1,0 +1,399 @@
+# The client universe (spec 7.1, 7.3; PT-M3a). Real clients and the sectors that shape every
+# client's legal wallet. Append-only: client ids follow this file's order, then the generated
+# clients (stream client_gen, ADR PT-0012), so editing earlier rows changes every save.
+#
+# Wallets: a client's weight in practice p is size x sector intensity x the sector's practice
+# mix, where size = revenue_bn ^ clients.size_exponent (balance.yaml). Each month the market's
+# demand in p (practices.yaml) is split over all clients by weight, so wallets always sum to
+# the market. All sector numbers are [A] (no source found; shaped on the F&J 2006 litigation
+# share of 58% [S] via docs/research/v1-market.md s2 and on each industry's deal and dispute
+# profile). Mix weights need not sum to 1; they are normalised per practice across clients.
+
+sectors:
+  - key: banking
+    label: Banks and brokers
+    intensity: 2.0
+    mix: { corporate_ma: 0.10, private_equity: 0.05, capital_markets: 0.25, banking_finance: 0.25, restructuring: 0.05, commercial_litigation: 0.15, white_collar: 0.10, ip: 0.0, employment: 0.03, real_estate: 0.02 }
+    suffixes: [Bancorp, Financial, Capital, Trust]
+  - key: insurance
+    label: Insurance
+    intensity: 1.0
+    mix: { corporate_ma: 0.10, private_equity: 0.0, capital_markets: 0.10, banking_finance: 0.05, restructuring: 0.05, commercial_litigation: 0.35, white_collar: 0.10, ip: 0.0, employment: 0.10, real_estate: 0.15 }
+    suffixes: [Insurance, Assurance, Mutual, Re]
+  - key: private_equity
+    label: Private equity sponsors
+    intensity: 3.0
+    mix: { corporate_ma: 0.25, private_equity: 0.45, capital_markets: 0.05, banking_finance: 0.15, restructuring: 0.05, commercial_litigation: 0.03, white_collar: 0.0, ip: 0.0, employment: 0.02, real_estate: 0.0 }
+    suffixes: [Partners, Capital Partners, Equity]
+  - key: technology
+    label: Technology
+    intensity: 1.0
+    mix: { corporate_ma: 0.20, private_equity: 0.0, capital_markets: 0.10, banking_finance: 0.03, restructuring: 0.0, commercial_litigation: 0.20, white_collar: 0.05, ip: 0.35, employment: 0.05, real_estate: 0.02 }
+    suffixes: [Systems, Technologies, Software, Networks]
+  - key: pharma_health
+    label: Pharma and healthcare
+    intensity: 1.2
+    mix: { corporate_ma: 0.20, private_equity: 0.0, capital_markets: 0.05, banking_finance: 0.03, restructuring: 0.0, commercial_litigation: 0.25, white_collar: 0.15, ip: 0.25, employment: 0.05, real_estate: 0.02 }
+    suffixes: [Pharmaceuticals, Health, Therapeutics, Medical]
+  - key: energy
+    label: Energy and utilities
+    intensity: 0.6
+    mix: { corporate_ma: 0.25, private_equity: 0.0, capital_markets: 0.10, banking_finance: 0.15, restructuring: 0.05, commercial_litigation: 0.25, white_collar: 0.10, ip: 0.0, employment: 0.05, real_estate: 0.05 }
+    suffixes: [Energy, Resources, Power, Petroleum]
+  - key: industrials
+    label: Industrials
+    intensity: 0.7
+    mix: { corporate_ma: 0.20, private_equity: 0.0, capital_markets: 0.10, banking_finance: 0.10, restructuring: 0.05, commercial_litigation: 0.25, white_collar: 0.05, ip: 0.10, employment: 0.10, real_estate: 0.05 }
+    suffixes: [Industries, Manufacturing, Materials, Group]
+  - key: consumer_retail
+    label: Consumer and retail
+    intensity: 0.6
+    mix: { corporate_ma: 0.20, private_equity: 0.0, capital_markets: 0.05, banking_finance: 0.10, restructuring: 0.05, commercial_litigation: 0.20, white_collar: 0.05, ip: 0.10, employment: 0.15, real_estate: 0.10 }
+    suffixes: [Brands, Stores, Foods, Consumer]
+  - key: telecom_media
+    label: Telecom and media
+    intensity: 1.0
+    mix: { corporate_ma: 0.25, private_equity: 0.0, capital_markets: 0.10, banking_finance: 0.10, restructuring: 0.05, commercial_litigation: 0.20, white_collar: 0.05, ip: 0.15, employment: 0.05, real_estate: 0.05 }
+    suffixes: [Media, Communications, Broadcasting]
+  - key: autos_transport
+    label: Autos and transport
+    intensity: 0.6
+    mix: { corporate_ma: 0.15, private_equity: 0.0, capital_markets: 0.05, banking_finance: 0.10, restructuring: 0.15, commercial_litigation: 0.30, white_collar: 0.05, ip: 0.05, employment: 0.10, real_estate: 0.05 }
+    suffixes: [Motors, Logistics, Transport, Automotive]
+  - key: real_estate
+    label: Real estate and hospitality
+    intensity: 1.5
+    mix: { corporate_ma: 0.10, private_equity: 0.05, capital_markets: 0.10, banking_finance: 0.20, restructuring: 0.05, commercial_litigation: 0.10, white_collar: 0.0, ip: 0.0, employment: 0.05, real_estate: 0.35 }
+    suffixes: [Properties, Realty, Development, Holdings]
+
+# Generated clients' sector weights (stream client_gen) [A]: mid-market companies, more
+# industrials and consumer, fewer banks and sponsors.
+generated_sector_weights: { banking: 0.08, insurance: 0.06, private_equity: 0.06, technology: 0.14, pharma_health: 0.10, energy: 0.08, industrials: 0.18, consumer_retail: 0.16, telecom_media: 0.06, autos_transport: 0.04, real_estate: 0.04 }
+
+# Static 2005 panel firms (PT-M3a): the rivals a client's wallet is split with, each with a
+# fixed appeal (logit points) in every practice: `base`, plus `strong` in its known strengths.
+# PT-M5 replaces them with rival firms that act. Keys match docs/research/rivals-2005.md;
+# appeals are [A] from each firm's 2005 reputation (Am Law rank and RPL [S] in that dossier).
+panel_firms:
+  - { key: skadden, name: "Skadden, Arps, Slate, Meagher & Flom", base: 1.6, strong: [corporate_ma, commercial_litigation, white_collar, capital_markets] }
+  - { key: cravath, name: "Cravath, Swaine & Moore", base: 1.7, strong: [corporate_ma, capital_markets, commercial_litigation] }
+  - { key: wachtell, name: "Wachtell, Lipton, Rosen & Katz", base: 1.4, strong: [corporate_ma, restructuring] }
+  - { key: sullivan_cromwell, name: Sullivan & Cromwell, base: 1.7, strong: [corporate_ma, capital_markets, banking_finance] }
+  - { key: davis_polk, name: Davis Polk & Wardwell, base: 1.6, strong: [capital_markets, banking_finance, white_collar] }
+  - { key: simpson_thacher, name: Simpson Thacher & Bartlett, base: 1.6, strong: [private_equity, banking_finance, corporate_ma] }
+  - { key: paul_weiss, name: "Paul, Weiss, Rifkind, Wharton & Garrison", base: 1.5, strong: [commercial_litigation, real_estate, corporate_ma] }
+  - { key: cleary, name: Cleary Gottlieb Steen & Hamilton, base: 1.5, strong: [capital_markets, corporate_ma] }
+  - { key: debevoise, name: Debevoise & Plimpton, base: 1.4, strong: [private_equity, white_collar] }
+  - { key: weil, name: "Weil, Gotshal & Manges", base: 1.4, strong: [restructuring, private_equity, ip] }
+  - { key: shearman, name: Shearman & Sterling, base: 1.3, strong: [banking_finance, capital_markets] }
+  - { key: milbank, name: "Milbank, Tweed, Hadley & McCloy", base: 1.3, strong: [banking_finance, restructuring] }
+  - { key: fried_frank, name: "Fried, Frank, Harris, Shriver & Jacobson", base: 1.2, strong: [real_estate, corporate_ma] }
+  - { key: latham, name: Latham & Watkins, base: 1.4, strong: [capital_markets, banking_finance, ip] }
+  - { key: kirkland, name: Kirkland & Ellis, base: 1.4, strong: [private_equity, restructuring, ip] }
+  - { key: jones_day, name: Jones Day, base: 1.2, strong: [commercial_litigation, employment, ip] }
+
+# 300 real clients, 2005 (spec 7.1: Fortune 500 and FTSE 100 names, personal use). revenue_bn
+# is 2005 revenue in USD billions [A]: approximate, from memory of the 2006 Fortune 500 (FY2005)
+# and FTSE 100 annual reports; not verified this session. Private equity sponsors' revenue_bn is
+# a size proxy (about 1% of assets under management) [A]. country: us unless stated.
+real_clients:
+  - { name: Exxon Mobil, sector: energy, revenue_bn: 340 }
+  - { name: Chevron, sector: energy, revenue_bn: 189 }
+  - { name: ConocoPhillips, sector: energy, revenue_bn: 166 }
+  - { name: Valero Energy, sector: energy, revenue_bn: 82 }
+  - { name: Marathon Oil, sector: energy, revenue_bn: 63 }
+  - { name: Sunoco, sector: energy, revenue_bn: 34 }
+  - { name: Amerada Hess, sector: energy, revenue_bn: 23 }
+  - { name: Occidental Petroleum, sector: energy, revenue_bn: 15 }
+  - { name: Devon Energy, sector: energy, revenue_bn: 10 }
+  - { name: Halliburton, sector: energy, revenue_bn: 21 }
+  - { name: Schlumberger, sector: energy, revenue_bn: 14 }
+  - { name: Duke Energy, sector: energy, revenue_bn: 16.7 }
+  - { name: Exelon, sector: energy, revenue_bn: 15.4 }
+  - { name: Dominion Resources, sector: energy, revenue_bn: 18 }
+  - { name: Southern Company, sector: energy, revenue_bn: 13.5 }
+  - { name: American Electric Power, sector: energy, revenue_bn: 12 }
+  - { name: FirstEnergy, sector: energy, revenue_bn: 11.9 }
+  - { name: Constellation Energy, sector: energy, revenue_bn: 17 }
+  - { name: TXU, sector: energy, revenue_bn: 10.4 }
+  - { name: Edison International, sector: energy, revenue_bn: 11.9 }
+  - { name: "PG&E", sector: energy, revenue_bn: 11.7 }
+  - { name: Consolidated Edison, sector: energy, revenue_bn: 11.7 }
+  - { name: Murphy Oil, sector: energy, revenue_bn: 11.9 }
+  - { name: Tesoro, sector: energy, revenue_bn: 16.6 }
+  - { name: Williams Companies, sector: energy, revenue_bn: 12.6 }
+  - { name: BP, sector: energy, revenue_bn: 250, country: uk }
+  - { name: Royal Dutch Shell, sector: energy, revenue_bn: 307, country: uk }
+  - { name: BG Group, sector: energy, revenue_bn: 9, country: uk }
+  - { name: Centrica, sector: energy, revenue_bn: 23, country: uk }
+  - { name: Citigroup, sector: banking, revenue_bn: 131 }
+  - { name: Bank of America, sector: banking, revenue_bn: 84 }
+  - { name: JPMorgan Chase, sector: banking, revenue_bn: 79 }
+  - { name: Morgan Stanley, sector: banking, revenue_bn: 52 }
+  - { name: Merrill Lynch, sector: banking, revenue_bn: 47 }
+  - { name: Goldman Sachs, sector: banking, revenue_bn: 43 }
+  - { name: Wachovia, sector: banking, revenue_bn: 35 }
+  - { name: Wells Fargo, sector: banking, revenue_bn: 40 }
+  - { name: Lehman Brothers, sector: banking, revenue_bn: 32 }
+  - { name: Washington Mutual, sector: banking, revenue_bn: 22 }
+  - { name: Fannie Mae, sector: banking, revenue_bn: 36 }
+  - { name: Freddie Mac, sector: banking, revenue_bn: 26 }
+  - { name: American Express, sector: banking, revenue_bn: 25 }
+  - { name: Countrywide Financial, sector: banking, revenue_bn: 25 }
+  - { name: U.S. Bancorp, sector: banking, revenue_bn: 15 }
+  - { name: Bear Stearns, sector: banking, revenue_bn: 11.5 }
+  - { name: National City, sector: banking, revenue_bn: 10.8 }
+  - { name: SunTrust Banks, sector: banking, revenue_bn: 11 }
+  - { name: Capital One Financial, sector: banking, revenue_bn: 12 }
+  - { name: PNC Financial Services, sector: banking, revenue_bn: 8.6 }
+  - { name: MBNA, sector: banking, revenue_bn: 12 }
+  - { name: Deutsche Bank, sector: banking, revenue_bn: 30, country: de }
+  - { name: UBS, sector: banking, revenue_bn: 35, country: ch }
+  - { name: Credit Suisse, sector: banking, revenue_bn: 30, country: ch }
+  - { name: BNP Paribas, sector: banking, revenue_bn: 30, country: fr }
+  - { name: HSBC, sector: banking, revenue_bn: 60, country: uk }
+  - { name: Barclays, sector: banking, revenue_bn: 40, country: uk }
+  - { name: Royal Bank of Scotland, sector: banking, revenue_bn: 45, country: uk }
+  - { name: Lloyds TSB, sector: banking, revenue_bn: 25, country: uk }
+  - { name: HBOS, sector: banking, revenue_bn: 30, country: uk }
+  - { name: Standard Chartered, sector: banking, revenue_bn: 9, country: uk }
+  - { name: American International Group, sector: insurance, revenue_bn: 108 }
+  - { name: Berkshire Hathaway, sector: insurance, revenue_bn: 81 }
+  - { name: State Farm, sector: insurance, revenue_bn: 59 }
+  - { name: MetLife, sector: insurance, revenue_bn: 48 }
+  - { name: Prudential Financial, sector: insurance, revenue_bn: 32 }
+  - { name: Allstate, sector: insurance, revenue_bn: 35 }
+  - { name: Hartford Financial Services, sector: insurance, revenue_bn: 27 }
+  - { name: Nationwide, sector: insurance, revenue_bn: 28 }
+  - { name: Liberty Mutual, sector: insurance, revenue_bn: 23 }
+  - { name: New York Life, sector: insurance, revenue_bn: 27 }
+  - { name: TIAA-CREF, sector: insurance, revenue_bn: 26 }
+  - { name: MassMutual, sector: insurance, revenue_bn: 23 }
+  - { name: St. Paul Travelers, sector: insurance, revenue_bn: 24 }
+  - { name: Loews, sector: insurance, revenue_bn: 16 }
+  - { name: Progressive, sector: insurance, revenue_bn: 14.3 }
+  - { name: Chubb, sector: insurance, revenue_bn: 14.1 }
+  - { name: Aflac, sector: insurance, revenue_bn: 14.4 }
+  - { name: Principal Financial, sector: insurance, revenue_bn: 9 }
+  - { name: Genworth Financial, sector: insurance, revenue_bn: 11 }
+  - { name: Aon, sector: insurance, revenue_bn: 9.8 }
+  - { name: "Marsh & McLennan", sector: insurance, revenue_bn: 11.6 }
+  - { name: Unum, sector: insurance, revenue_bn: 10.4 }
+  - { name: ACE, sector: insurance, revenue_bn: 13 }
+  - { name: XL Capital, sector: insurance, revenue_bn: 9 }
+  - { name: Aviva, sector: insurance, revenue_bn: 60, country: uk }
+  - { name: Prudential plc, sector: insurance, revenue_bn: 30, country: uk }
+  - { name: "Legal & General", sector: insurance, revenue_bn: 20, country: uk }
+  - { name: IBM, sector: technology, revenue_bn: 91 }
+  - { name: Hewlett-Packard, sector: technology, revenue_bn: 87 }
+  - { name: Dell, sector: technology, revenue_bn: 56 }
+  - { name: Microsoft, sector: technology, revenue_bn: 40 }
+  - { name: Intel, sector: technology, revenue_bn: 39 }
+  - { name: Cisco Systems, sector: technology, revenue_bn: 25 }
+  - { name: Motorola, sector: technology, revenue_bn: 37 }
+  - { name: Apple Computer, sector: technology, revenue_bn: 14 }
+  - { name: Oracle, sector: technology, revenue_bn: 12 }
+  - { name: Texas Instruments, sector: technology, revenue_bn: 13 }
+  - { name: Electronic Data Systems, sector: technology, revenue_bn: 19.8 }
+  - { name: Computer Sciences, sector: technology, revenue_bn: 14.6 }
+  - { name: Xerox, sector: technology, revenue_bn: 15.7 }
+  - { name: Sun Microsystems, sector: technology, revenue_bn: 11 }
+  - { name: EMC, sector: technology, revenue_bn: 9.7 }
+  - { name: Lucent Technologies, sector: technology, revenue_bn: 9.4 }
+  - { name: Sanmina-SCI, sector: technology, revenue_bn: 11.7 }
+  - { name: Accenture, sector: technology, revenue_bn: 15.5 }
+  - { name: McKesson, sector: pharma_health, revenue_bn: 89 }
+  - { name: Cardinal Health, sector: pharma_health, revenue_bn: 75 }
+  - { name: AmerisourceBergen, sector: pharma_health, revenue_bn: 54 }
+  - { name: Pfizer, sector: pharma_health, revenue_bn: 51 }
+  - { name: "Johnson & Johnson", sector: pharma_health, revenue_bn: 50 }
+  - { name: UnitedHealth Group, sector: pharma_health, revenue_bn: 46 }
+  - { name: WellPoint, sector: pharma_health, revenue_bn: 45 }
+  - { name: Medco Health Solutions, sector: pharma_health, revenue_bn: 37 }
+  - { name: HCA, sector: pharma_health, revenue_bn: 25 }
+  - { name: Merck, sector: pharma_health, revenue_bn: 22 }
+  - { name: Abbott Laboratories, sector: pharma_health, revenue_bn: 22 }
+  - { name: Caremark Rx, sector: pharma_health, revenue_bn: 32 }
+  - { name: Express Scripts, sector: pharma_health, revenue_bn: 16 }
+  - { name: Wyeth, sector: pharma_health, revenue_bn: 18.8 }
+  - { name: Bristol-Myers Squibb, sector: pharma_health, revenue_bn: 19 }
+  - { name: Eli Lilly, sector: pharma_health, revenue_bn: 14.6 }
+  - { name: Amgen, sector: pharma_health, revenue_bn: 12.4 }
+  - { name: Schering-Plough, sector: pharma_health, revenue_bn: 9.5 }
+  - { name: Baxter International, sector: pharma_health, revenue_bn: 9.8 }
+  - { name: Medtronic, sector: pharma_health, revenue_bn: 10.1 }
+  - { name: Tenet Healthcare, sector: pharma_health, revenue_bn: 9.6 }
+  - { name: Humana, sector: pharma_health, revenue_bn: 14.4 }
+  - { name: Aetna, sector: pharma_health, revenue_bn: 22 }
+  - { name: Cigna, sector: pharma_health, revenue_bn: 16.7 }
+  - { name: Health Net, sector: pharma_health, revenue_bn: 11.9 }
+  - { name: GlaxoSmithKline, sector: pharma_health, revenue_bn: 37, country: uk }
+  - { name: AstraZeneca, sector: pharma_health, revenue_bn: 24, country: uk }
+  - { name: General Electric, sector: industrials, revenue_bn: 157 }
+  - { name: Boeing, sector: industrials, revenue_bn: 55 }
+  - { name: United Technologies, sector: industrials, revenue_bn: 43 }
+  - { name: Lockheed Martin, sector: industrials, revenue_bn: 37 }
+  - { name: Dow Chemical, sector: industrials, revenue_bn: 46 }
+  - { name: Caterpillar, sector: industrials, revenue_bn: 36 }
+  - { name: Honeywell International, sector: industrials, revenue_bn: 27 }
+  - { name: Northrop Grumman, sector: industrials, revenue_bn: 30 }
+  - { name: General Dynamics, sector: industrials, revenue_bn: 21 }
+  - { name: Raytheon, sector: industrials, revenue_bn: 22 }
+  - { name: DuPont, sector: industrials, revenue_bn: 28 }
+  - { name: 3M, sector: industrials, revenue_bn: 21 }
+  - { name: Alcoa, sector: industrials, revenue_bn: 26 }
+  - { name: International Paper, sector: industrials, revenue_bn: 24 }
+  - { name: Deere, sector: industrials, revenue_bn: 22 }
+  - { name: Johnson Controls, sector: industrials, revenue_bn: 28 }
+  - { name: Emerson Electric, sector: industrials, revenue_bn: 17.3 }
+  - { name: Illinois Tool Works, sector: industrials, revenue_bn: 12.9 }
+  - { name: Textron, sector: industrials, revenue_bn: 10 }
+  - { name: Weyerhaeuser, sector: industrials, revenue_bn: 22.6 }
+  - { name: Nucor, sector: industrials, revenue_bn: 12.7 }
+  - { name: United States Steel, sector: industrials, revenue_bn: 14 }
+  - { name: Eaton, sector: industrials, revenue_bn: 11.1 }
+  - { name: Cummins, sector: industrials, revenue_bn: 9.9 }
+  - { name: Ingersoll-Rand, sector: industrials, revenue_bn: 10.5 }
+  - { name: Fluor, sector: industrials, revenue_bn: 13.2 }
+  - { name: Bechtel, sector: industrials, revenue_bn: 18 }
+  - { name: Masco, sector: industrials, revenue_bn: 12.6 }
+  - { name: Whirlpool, sector: industrials, revenue_bn: 14.3 }
+  - { name: "Goodyear Tire & Rubber", sector: industrials, revenue_bn: 19.7 }
+  - { name: PPG Industries, sector: industrials, revenue_bn: 10.2 }
+  - { name: Tyco International, sector: industrials, revenue_bn: 40 }
+  - { name: Rio Tinto, sector: industrials, revenue_bn: 19, country: uk }
+  - { name: BHP Billiton, sector: industrials, revenue_bn: 32, country: uk }
+  - { name: Anglo American, sector: industrials, revenue_bn: 30, country: uk }
+  - { name: BAE Systems, sector: industrials, revenue_bn: 22, country: uk }
+  - { name: Rolls-Royce, sector: industrials, revenue_bn: 11, country: uk }
+  - { name: Wal-Mart Stores, sector: consumer_retail, revenue_bn: 316 }
+  - { name: Home Depot, sector: consumer_retail, revenue_bn: 81 }
+  - { name: Kroger, sector: consumer_retail, revenue_bn: 60 }
+  - { name: "Procter & Gamble", sector: consumer_retail, revenue_bn: 57 }
+  - { name: Costco Wholesale, sector: consumer_retail, revenue_bn: 52 }
+  - { name: Target, sector: consumer_retail, revenue_bn: 52 }
+  - { name: Sears Holdings, sector: consumer_retail, revenue_bn: 49 }
+  - { name: Altria Group, sector: consumer_retail, revenue_bn: 70 }
+  - { name: Albertsons, sector: consumer_retail, revenue_bn: 40 }
+  - { name: Safeway, sector: consumer_retail, revenue_bn: 38 }
+  - { name: Walgreen, sector: consumer_retail, revenue_bn: 42 }
+  - { name: "Lowe's", sector: consumer_retail, revenue_bn: 43 }
+  - { name: PepsiCo, sector: consumer_retail, revenue_bn: 33 }
+  - { name: Kraft Foods, sector: consumer_retail, revenue_bn: 34 }
+  - { name: Coca-Cola, sector: consumer_retail, revenue_bn: 23 }
+  - { name: Best Buy, sector: consumer_retail, revenue_bn: 30 }
+  - { name: CVS, sector: consumer_retail, revenue_bn: 37 }
+  - { name: Rite Aid, sector: consumer_retail, revenue_bn: 17 }
+  - { name: Supervalu, sector: consumer_retail, revenue_bn: 19.5 }
+  - { name: Tyson Foods, sector: consumer_retail, revenue_bn: 26 }
+  - { name: Archer Daniels Midland, sector: consumer_retail, revenue_bn: 36 }
+  - { name: Bunge, sector: consumer_retail, revenue_bn: 24 }
+  - { name: ConAgra Foods, sector: consumer_retail, revenue_bn: 14.5 }
+  - { name: Sara Lee, sector: consumer_retail, revenue_bn: 19.3 }
+  - { name: General Mills, sector: consumer_retail, revenue_bn: 11.2 }
+  - { name: Kellogg, sector: consumer_retail, revenue_bn: 10.2 }
+  - { name: Anheuser-Busch, sector: consumer_retail, revenue_bn: 15 }
+  - { name: Coca-Cola Enterprises, sector: consumer_retail, revenue_bn: 18.7 }
+  - { name: Federated Department Stores, sector: consumer_retail, revenue_bn: 22.4 }
+  - { name: J.C. Penney, sector: consumer_retail, revenue_bn: 18.8 }
+  - { name: "Kohl's", sector: consumer_retail, revenue_bn: 13.4 }
+  - { name: Gap, sector: consumer_retail, revenue_bn: 16 }
+  - { name: TJX Companies, sector: consumer_retail, revenue_bn: 16 }
+  - { name: Staples, sector: consumer_retail, revenue_bn: 16 }
+  - { name: Nike, sector: consumer_retail, revenue_bn: 13.7 }
+  - { name: "McDonald's", sector: consumer_retail, revenue_bn: 20.5 }
+  - { name: Yum Brands, sector: consumer_retail, revenue_bn: 9.3 }
+  - { name: Colgate-Palmolive, sector: consumer_retail, revenue_bn: 11.4 }
+  - { name: Kimberly-Clark, sector: consumer_retail, revenue_bn: 16 }
+  - { name: Sysco, sector: consumer_retail, revenue_bn: 30.3 }
+  - { name: Office Depot, sector: consumer_retail, revenue_bn: 14.3 }
+  - { name: Limited Brands, sector: consumer_retail, revenue_bn: 9.7 }
+  - { name: Toys R Us, sector: consumer_retail, revenue_bn: 11 }
+  - { name: Unilever, sector: consumer_retail, revenue_bn: 50, country: uk }
+  - { name: Tesco, sector: consumer_retail, revenue_bn: 68, country: uk }
+  - { name: Diageo, sector: consumer_retail, revenue_bn: 15, country: uk }
+  - { name: British American Tobacco, sector: consumer_retail, revenue_bn: 18, country: uk }
+  - { name: Cadbury Schweppes, sector: consumer_retail, revenue_bn: 12, country: uk }
+  - { name: "Marks & Spencer", sector: consumer_retail, revenue_bn: 14, country: uk }
+  - { name: Verizon Communications, sector: telecom_media, revenue_bn: 75 }
+  - { name: "AT&T", sector: telecom_media, revenue_bn: 44 }
+  - { name: Time Warner, sector: telecom_media, revenue_bn: 44 }
+  - { name: Sprint Nextel, sector: telecom_media, revenue_bn: 34 }
+  - { name: Walt Disney, sector: telecom_media, revenue_bn: 32 }
+  - { name: Comcast, sector: telecom_media, revenue_bn: 22 }
+  - { name: BellSouth, sector: telecom_media, revenue_bn: 20.5 }
+  - { name: CBS, sector: telecom_media, revenue_bn: 14.5 }
+  - { name: Viacom, sector: telecom_media, revenue_bn: 9.6 }
+  - { name: News Corporation, sector: telecom_media, revenue_bn: 24 }
+  - { name: DirecTV Group, sector: telecom_media, revenue_bn: 13.2 }
+  - { name: Qwest Communications, sector: telecom_media, revenue_bn: 13.9 }
+  - { name: Alltel, sector: telecom_media, revenue_bn: 9.5 }
+  - { name: Omnicom Group, sector: telecom_media, revenue_bn: 10.5 }
+  - { name: Vodafone, sector: telecom_media, revenue_bn: 50, country: uk }
+  - { name: BT Group, sector: telecom_media, revenue_bn: 34, country: uk }
+  - { name: WPP Group, sector: telecom_media, revenue_bn: 10, country: uk }
+  - { name: Reed Elsevier, sector: telecom_media, revenue_bn: 9, country: uk }
+  - { name: Pearson, sector: telecom_media, revenue_bn: 7, country: uk }
+  - { name: General Motors, sector: autos_transport, revenue_bn: 193 }
+  - { name: Ford Motor, sector: autos_transport, revenue_bn: 177 }
+  - { name: Delphi, sector: autos_transport, revenue_bn: 27 }
+  - { name: United Parcel Service, sector: autos_transport, revenue_bn: 42 }
+  - { name: FedEx, sector: autos_transport, revenue_bn: 30 }
+  - { name: AMR, sector: autos_transport, revenue_bn: 20.7 }
+  - { name: UAL, sector: autos_transport, revenue_bn: 17.4 }
+  - { name: Delta Air Lines, sector: autos_transport, revenue_bn: 16.2 }
+  - { name: Northwest Airlines, sector: autos_transport, revenue_bn: 12.3 }
+  - { name: Continental Airlines, sector: autos_transport, revenue_bn: 11.2 }
+  - { name: Union Pacific, sector: autos_transport, revenue_bn: 13.6 }
+  - { name: Burlington Northern Santa Fe, sector: autos_transport, revenue_bn: 13 }
+  - { name: CSX, sector: autos_transport, revenue_bn: 8.6 }
+  - { name: Norfolk Southern, sector: autos_transport, revenue_bn: 8.5 }
+  - { name: Lear, sector: autos_transport, revenue_bn: 17 }
+  - { name: Visteon, sector: autos_transport, revenue_bn: 17 }
+  - { name: Navistar International, sector: autos_transport, revenue_bn: 12 }
+  - { name: Paccar, sector: autos_transport, revenue_bn: 14 }
+  - { name: Dana, sector: autos_transport, revenue_bn: 8.6 }
+  - { name: ArvinMeritor, sector: autos_transport, revenue_bn: 8.9 }
+  - { name: Simon Property Group, sector: real_estate, revenue_bn: 3.2 }
+  - { name: Equity Office Properties, sector: real_estate, revenue_bn: 3.2 }
+  - { name: Vornado Realty Trust, sector: real_estate, revenue_bn: 2.5 }
+  - { name: Boston Properties, sector: real_estate, revenue_bn: 1.4 }
+  - { name: ProLogis, sector: real_estate, revenue_bn: 2 }
+  - { name: General Growth Properties, sector: real_estate, revenue_bn: 3.1 }
+  - { name: Equity Residential, sector: real_estate, revenue_bn: 2 }
+  - { name: Host Marriott, sector: real_estate, revenue_bn: 3.9 }
+  - { name: Archstone-Smith, sector: real_estate, revenue_bn: 1.2 }
+  - { name: SL Green Realty, sector: real_estate, revenue_bn: 0.5 }
+  - { name: CB Richard Ellis, sector: real_estate, revenue_bn: 3.2 }
+  - { name: Marriott International, sector: real_estate, revenue_bn: 11.6 }
+  - { name: Starwood Hotels, sector: real_estate, revenue_bn: 5.9 }
+  - { name: Hilton Hotels, sector: real_estate, revenue_bn: 4.4 }
+  - { name: Lennar, sector: real_estate, revenue_bn: 13.9 }
+  - { name: D.R. Horton, sector: real_estate, revenue_bn: 13.9 }
+  - { name: Pulte Homes, sector: real_estate, revenue_bn: 14.7 }
+  - { name: Centex, sector: real_estate, revenue_bn: 14.4 }
+  - { name: KB Home, sector: real_estate, revenue_bn: 9.4 }
+  - { name: Toll Brothers, sector: real_estate, revenue_bn: 5.8 }
+  - { name: Brookfield Properties, sector: real_estate, revenue_bn: 1.5 }
+  - { name: Land Securities, sector: real_estate, revenue_bn: 1.5, country: uk }
+  - { name: British Land, sector: real_estate, revenue_bn: 1, country: uk }
+  - { name: Blackstone Group, sector: private_equity, revenue_bn: 8 }
+  - { name: Kohlberg Kravis Roberts, sector: private_equity, revenue_bn: 8 }
+  - { name: Carlyle Group, sector: private_equity, revenue_bn: 7 }
+  - { name: Texas Pacific Group, sector: private_equity, revenue_bn: 6 }
+  - { name: Bain Capital, sector: private_equity, revenue_bn: 6 }
+  - { name: Apollo Management, sector: private_equity, revenue_bn: 5 }
+  - { name: Warburg Pincus, sector: private_equity, revenue_bn: 4 }
+  - { name: Thomas H. Lee Partners, sector: private_equity, revenue_bn: 4 }
+  - { name: Cerberus Capital Management, sector: private_equity, revenue_bn: 4 }
+  - { name: Providence Equity Partners, sector: private_equity, revenue_bn: 3 }
+  - { name: Silver Lake Partners, sector: private_equity, revenue_bn: 3 }
+  - { name: "Hellman & Friedman", sector: private_equity, revenue_bn: 3 }
+  - { name: "Clayton Dubilier & Rice", sector: private_equity, revenue_bn: 3 }
+  - { name: Madison Dearborn Partners, sector: private_equity, revenue_bn: 2.5 }
+  - { name: Lone Star Funds, sector: private_equity, revenue_bn: 2.5 }
+  - { name: Fortress Investment Group, sector: private_equity, revenue_bn: 3 }
+  - { name: Permira, sector: private_equity, revenue_bn: 4, country: uk }
+  - { name: Apax Partners, sector: private_equity, revenue_bn: 4, country: uk }
+  - { name: CVC Capital Partners, sector: private_equity, revenue_bn: 4, country: uk }
+  - { name: 3i Group, sector: private_equity, revenue_bn: 3, country: uk }

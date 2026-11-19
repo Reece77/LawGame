@@ -1,0 +1,193 @@
+# Roles (spec section 5.1; docs/formulas.md section 1 in Tech Startup Tycoon).
+# - kind: lawyer, paralegal or business_services; it fixes which levels a role may hold
+#   (balance.yaml people.levels.<level>.kind).
+# - A lawyer's role is their home practice (`practice`, a practices.yaml key).
+# - primary skills weigh 3 and secondary skills weigh 1 in current ability (CA); a person's
+#   role skills are the ones that grow (formulas.md 3).
+# - work_style_weights and interest_weights are relative weights for generation;
+#   interests left out of interest_weights weigh 1.
+# Append-only: never reorder, rename or remove a role key (saves store them).
+# Values are design defaults (PT-M1a).
+roles:
+  # --- Lawyers: one role per v1 practice ------------------------------------------------
+  - key: corporate_ma
+    label: Corporate and M&A lawyer
+    kind: lawyer
+    practice: corporate_ma
+    summary: "Runs mergers, acquisitions and corporate work: structures the deal, negotiates it and drafts the documents."
+    primary: [deal_structuring, negotiation, writing]
+    secondary: [commercial_awareness, project_management, client_care]
+    work_style: operator
+    work_style_weights: { builder: 3, operator: 5, researcher: 1, seller: 2 }
+    interest_weights: { enterprise: 3, fintech: 2, consumer: 2 }
+
+  - key: private_equity
+    label: Private equity and funds lawyer
+    kind: lawyer
+    practice: private_equity
+    summary: "Acts for sponsors and funds on buyouts, exits and fundraising."
+    primary: [deal_structuring, negotiation, numeracy]
+    secondary: [commercial_awareness, writing, client_care]
+    work_style: seller
+    work_style_weights: { builder: 2, operator: 4, researcher: 1, seller: 4 }
+    interest_weights: { fintech: 3, enterprise: 2 }
+
+  - key: capital_markets
+    label: Capital markets lawyer
+    kind: lawyer
+    practice: capital_markets
+    summary: "Takes issuers and banks through IPOs, bond and equity offerings and disclosure."
+    primary: [writing, deal_structuring, procedure]
+    secondary: [numeracy, project_management, commercial_awareness]
+    work_style: operator
+    work_style_weights: { builder: 2, operator: 6, researcher: 2, seller: 1 }
+    interest_weights: { fintech: 3, policy: 2 }
+
+  - key: banking_finance
+    label: Banking and finance lawyer
+    kind: lawyer
+    practice: banking_finance
+    summary: "Documents and negotiates loans, leveraged finance and security packages."
+    primary: [writing, negotiation, numeracy]
+    secondary: [deal_structuring, commercial_awareness, project_management]
+    work_style: operator
+    work_style_weights: { builder: 2, operator: 6, researcher: 1, seller: 1 }
+    interest_weights: { fintech: 4, enterprise: 2 }
+
+  - key: restructuring
+    label: Restructuring and insolvency lawyer
+    kind: lawyer
+    practice: restructuring
+    summary: "Advises distressed companies and creditors through workouts and bankruptcy."
+    primary: [numeracy, negotiation, legal_reasoning]
+    secondary: [advocacy, procedure, commercial_awareness]
+    work_style: operator
+    work_style_weights: { builder: 2, operator: 4, researcher: 3, seller: 1 }
+    interest_weights: { fintech: 3, policy: 2 }
+
+  - key: commercial_litigation
+    label: Commercial litigator
+    kind: lawyer
+    practice: commercial_litigation
+    summary: "Fights business disputes in court: pleadings, discovery, motions and trial."
+    primary: [advocacy, legal_reasoning, writing]
+    secondary: [research, procedure, client_care]
+    work_style: researcher
+    work_style_weights: { builder: 2, operator: 2, researcher: 4, seller: 3 }
+    interest_weights: { policy: 3, enterprise: 2 }
+
+  - key: white_collar
+    label: White collar and investigations lawyer
+    kind: lawyer
+    practice: white_collar
+    summary: "Defends companies and executives in government investigations and prosecutions."
+    primary: [advocacy, legal_reasoning, procedure]
+    secondary: [research, client_care, writing]
+    work_style: researcher
+    work_style_weights: { builder: 1, operator: 3, researcher: 4, seller: 3 }
+    interest_weights: { policy: 4, security: 2, fintech: 2 }
+
+  - key: ip
+    label: IP lawyer
+    kind: lawyer
+    practice: ip
+    summary: "Litigates, prosecutes and licenses patents and other intellectual property; a science background helps."
+    primary: [technical, legal_reasoning, writing]
+    secondary: [advocacy, research, procedure]
+    work_style: researcher
+    work_style_weights: { builder: 3, operator: 1, researcher: 6, seller: 1 }
+    interest_weights: { ai: 3, hardware: 3, open_source: 2, design: 2 }
+
+  - key: employment
+    label: Employment lawyer
+    kind: lawyer
+    practice: employment
+    summary: "Advises employers on hiring, firing, discrimination claims and labour relations."
+    primary: [legal_reasoning, advocacy, client_care]
+    secondary: [writing, procedure, negotiation]
+    work_style: seller
+    work_style_weights: { builder: 1, operator: 3, researcher: 2, seller: 4 }
+    interest_weights: { policy: 3, consumer: 2 }
+
+  - key: real_estate
+    label: Real estate lawyer
+    kind: lawyer
+    practice: real_estate
+    summary: "Buys, sells, leases and finances property and developments."
+    primary: [negotiation, writing, deal_structuring]
+    secondary: [commercial_awareness, project_management, client_care]
+    work_style: operator
+    work_style_weights: { builder: 3, operator: 5, researcher: 1, seller: 2 }
+    interest_weights: { climate: 2, consumer: 2 }
+
+  # --- Paralegal -------------------------------------------------------------------------
+  - key: paralegal
+    label: Paralegal
+    kind: paralegal
+    summary: "Researches, manages documents and filings, and keeps matters organised."
+    primary: [research, procedure, project_management]
+    secondary: [writing, technology, client_care]
+    work_style: operator
+    work_style_weights: { builder: 2, operator: 6, researcher: 3, seller: 0 }
+    interest_weights: {}
+
+  # --- Business services (six for v1; Reece, PT-M1a) ----------------------------------------
+  - key: finance
+    label: Finance
+    kind: business_services
+    summary: "Runs the books, billing operations, cash and reporting."
+    primary: [finance, numeracy]
+    secondary: [operations, communication, technology]
+    work_style: operator
+    work_style_weights: { builder: 1, operator: 6, researcher: 2, seller: 0 }
+    interest_weights: { fintech: 4, enterprise: 2 }
+
+  - key: human_resources
+    label: Human resources
+    kind: business_services
+    summary: "Recruits, onboards and looks after the firm's people."
+    primary: [human_resources, recruiting]
+    secondary: [communication, judgment_of_talent, operations]
+    work_style: seller
+    work_style_weights: { builder: 1, operator: 4, researcher: 1, seller: 4 }
+    interest_weights: { policy: 2, consumer: 2 }
+
+  - key: it
+    label: IT
+    kind: business_services
+    summary: "Keeps systems, security and legal technology running."
+    primary: [it, technology]
+    secondary: [operations, project_management, communication]
+    work_style: builder
+    work_style_weights: { builder: 6, operator: 3, researcher: 1, seller: 0 }
+    interest_weights: { security: 3, ai: 2, open_source: 3, hardware: 2 }
+
+  - key: marketing_bd
+    label: Marketing and business development
+    kind: business_services
+    summary: "Runs pitches, directory submissions, events and the firm's brand."
+    primary: [marketing, business_development]
+    secondary: [communication, commercial_awareness, writing]
+    work_style: seller
+    work_style_weights: { builder: 1, operator: 2, researcher: 1, seller: 6 }
+    interest_weights: { consumer: 3, design: 3 }
+
+  - key: operations
+    label: Operations
+    kind: business_services
+    summary: "Runs offices, facilities, suppliers and the firm's processes."
+    primary: [operations, project_management]
+    secondary: [finance, communication, leadership]
+    work_style: operator
+    work_style_weights: { builder: 2, operator: 6, researcher: 1, seller: 1 }
+    interest_weights: { enterprise: 3, climate: 2 }
+
+  - key: records_and_conflicts
+    label: Records and conflicts
+    kind: business_services
+    summary: "Keeps client and matter records and runs conflict checks on new instructions."
+    primary: [research, operations]
+    secondary: [procedure, technology, project_management]
+    work_style: researcher
+    work_style_weights: { builder: 1, operator: 4, researcher: 4, seller: 0 }
+    interest_weights: { policy: 2, security: 2 }

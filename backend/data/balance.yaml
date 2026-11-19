@@ -4,3 +4,119 @@ campaign:
 backups:
   every_turns: 12  # months between periodic backups (ADR-0004 section 5)
   keep_periodic: 10  # periodic backups kept per save
+people: # generation (spec 5.1-5.2; formulas.md 2 adapted; ADR PT-0006)
+  # Levels (ADR PT-0006 section 1). ca: target current ability mean and sd (10-200 scale);
+  # age: years, inclusive; capacity_hours and billable_target_hours: hours a year (spec 5.2;
+  # held by the engine as integer tenths, ADR PT-0005); home_familiarity: the 1-20 range a
+  # generated lawyer's or paralegal's home practice is drawn in; next_level: the class year
+  # reached each September (people.class_year_month).
+  levels:
+    paralegal: { kind: paralegal, ca: { mean: 70, sd: 12 }, age: [22, 55], capacity_hours: 1950, billable_target_hours: 1500, home_familiarity: [10, 12] }
+    trainee: { kind: lawyer, ca: { mean: 65, sd: 10 }, age: [23, 27], capacity_hours: 1950, billable_target_hours: 1200, home_familiarity: [10, 11] }
+    associate_1: { kind: lawyer, ca: { mean: 80, sd: 12 }, age: [24, 29], capacity_hours: 2300, billable_target_hours: 1900, home_familiarity: [10, 11], next_level: associate_2 }
+    associate_2: { kind: lawyer, ca: { mean: 90, sd: 12 }, age: [25, 30], capacity_hours: 2300, billable_target_hours: 1950, home_familiarity: [10, 12], next_level: associate_3 }
+    associate_3: { kind: lawyer, ca: { mean: 100, sd: 12 }, age: [26, 31], capacity_hours: 2300, billable_target_hours: 2000, home_familiarity: [11, 12], next_level: associate_4 }
+    associate_4: { kind: lawyer, ca: { mean: 105, sd: 12 }, age: [27, 33], capacity_hours: 2300, billable_target_hours: 2000, home_familiarity: [11, 13], next_level: associate_5 }
+    associate_5: { kind: lawyer, ca: { mean: 112.5, sd: 12 }, age: [28, 34], capacity_hours: 2300, billable_target_hours: 2000, home_familiarity: [12, 13], next_level: associate_6 }
+    associate_6: { kind: lawyer, ca: { mean: 120, sd: 12 }, age: [29, 35], capacity_hours: 2300, billable_target_hours: 2000, home_familiarity: [12, 14], next_level: associate_7 }
+    associate_7: { kind: lawyer, ca: { mean: 125, sd: 12 }, age: [30, 37], capacity_hours: 2300, billable_target_hours: 2000, home_familiarity: [13, 15], next_level: associate_8 }
+    associate_8: { kind: lawyer, ca: { mean: 125, sd: 12 }, age: [31, 38], capacity_hours: 2300, billable_target_hours: 2000, home_familiarity: [13, 15] }
+    senior_associate: { kind: lawyer, ca: { mean: 125, sd: 12 }, age: [30, 38], capacity_hours: 2300, billable_target_hours: 2000, home_familiarity: [13, 15] }
+    counsel: { kind: lawyer, ca: { mean: 130, sd: 12 }, age: [34, 60], capacity_hours: 2100, billable_target_hours: 1700, home_familiarity: [14, 16] }
+    income_partner: { kind: lawyer, ca: { mean: 135, sd: 12 }, age: [33, 58], capacity_hours: 2200, billable_target_hours: 1800, home_familiarity: [14, 16] }
+    equity_partner: { kind: lawyer, ca: { mean: 150, sd: 15 }, age: [36, 64], capacity_hours: 2200, billable_target_hours: 1700, home_familiarity: [14, 16] }
+    staff: { kind: business_services, ca: { mean: 70, sd: 12 }, age: [22, 50], capacity_hours: 1950, billable_target_hours: 0 }
+    manager: { kind: business_services, ca: { mean: 100, sd: 12 }, age: [27, 55], capacity_hours: 1950, billable_target_hours: 0 }
+    director: { kind: business_services, ca: { mean: 125, sd: 12 }, age: [32, 60], capacity_hours: 1950, billable_target_hours: 0 }
+    chief: { kind: business_services, ca: { mean: 145, sd: 12 }, age: [38, 62], capacity_hours: 1950, billable_target_hours: 0 }
+  ca_clip: [30, 190] # ability points: a target CA is clipped to this range
+  skill_noise_sd: { primary: 1.5, secondary: 2.0 } # attribute points around target / 10
+  secondary_offset: 3.0 # attribute points: secondaries start this far below the primaries
+  other_skill_range: [1, 8] # attribute points: skills outside the role, uniform
+  ca_tolerance: 2 # ability points: rescale the primaries if CA misses the target by more
+  pa_gap_mean: # ability points of headroom above CA, by age (years)
+    - { from_age: 0, value: 45 }
+    - { from_age: 25, value: 30 }
+    - { from_age: 30, value: 18 }
+    - { from_age: 35, value: 8 }
+    - { from_age: 45, value: 2 }
+  pa_gap_sd: 15 # ability points
+  personality_mean: 10.5 # attribute points, personality and hidden traits
+  personality_sd: 3.5
+  interest_count: [2, 4] # interests per person, uniform
+  max_tags: 2 # behavior tags per person at most
+  school_tier_weights: { t14: 25, national: 45, regional: 30 } # relative weights, lawyers only
+  other_familiarity: [1, 6] # 1-20: familiarity with practices other than the home one
+  portability_bp: [2000, 8000] # bp of a partner's book that would follow them (hidden; PT-M4)
+  class_year_month: 9 # calendar month in which associates advance one class year
+  initial_strain: [10, 30] # 0-100: a generated person's strain when created, uniform
+growth: # monthly skill growth and decline (formulas.md 3), times learn(h) (spec 5.3)
+  rate: 0.12 # attribute points a month at full headroom, age factor 1, professionalism 10
+  age_factor:
+    - { from_age: 0, value: 1.3 }
+    - { from_age: 25, value: 1.0 }
+    - { from_age: 30, value: 0.7 }
+    - { from_age: 35, value: 0.4 }
+    - { from_age: 45, value: 0.1 }
+    - { from_age: 55, value: 0.0 }
+  decline: # attribute points lost a month, every skill, by age
+    - { from_age: 0, value: 0.0 }
+    - { from_age: 50, value: 0.005 }
+    - { from_age: 55, value: 0.015 }
+  noise_rel_sd: 0.25 # relative sd of the multiplicative growth noise
+  learn: # learn(h) (ADR PT-0006 section 4)
+    reference_share: 0.6 # substantive share of hours that gives learn = 1
+    clamp: [0.5, 1.4] # learn(h) bounds; a month with no hours gives the lower bound
+familiarity: # practice familiarity (spec 5.1, 5.3; ADR PT-0006 section 2)
+  per_100h: 0.4 # familiarity points gained per 100 hours worked in a practice
+  taper_from: 15 # above this, gains shrink linearly to nothing at 20 (diminishing returns)
+  decay_per_month: 0.05 # familiarity points lost in a month with no hours in a practice
+  floor_below_peak: 3 # decay stops this far below the highest familiarity reached
+  factor_at_one: 0.70 # fam_factor(1): effective-skill multiplier at familiarity 1
+  full_at: 15 # fam_factor reaches 1.0 at this familiarity
+strain: # strain and burnout (spec 5.6; ADR PT-0006 section 3)
+  load: 60 # strain points a month per unit of hours / capacity above comfort
+  comfort_base: 1.0 # hours / capacity tolerated at stamina 10
+  comfort_per_stamina: 0.01 # comfort added per stamina point above stamina_neutral
+  stamina_neutral: 10 # stamina at which comfort = comfort_base
+  risk_base: 0.5 # load multiplier = risk_base + burnout_risk / risk_divisor
+  risk_divisor: 20
+  grinder_load: 0.7 # load multiplier for the grinder tag
+  recover: 8 # strain points lost in a month at or under comfort
+  holiday: 25 # strain points lost in a two-week holiday month (instead of recover)
+  sabbatical: 40 # strain points lost in a sabbatical month (instead of recover)
+  burnout_at: 80 # strain at or above which burnout starts
+  burnout_exit: 40 # burnout ends when strain falls below this
+  burnout_capacity: 0.7 # capacity multiplier while burnt out
+  burnout_effect_months: 6 # months from burnout's start that error and resignation are x2
+  founder_start: 20 # a founding partner's strain at the start (TST 32.1's stress start)
+reveal: # revealed ranges (formulas.md 4, ADR-0007); familiarity is narrow (ADR PT-0006 2)
+  initial_hw: { skill: 5.0, personality: 7.0, pa: 66.0, familiarity: 1.5 } # half-widths
+  strength: # share of hw removed per action at scout factor 1 (all but PA)
+    job_post_screen: 0.2
+    network_intro: 0.3
+    interview: 0.35
+    reference_check: 0.3
+    scouting_month: 0.25
+    employed_month: 0.08
+  pa_strength: # the same for potential
+    job_post_screen: 0.05
+    network_intro: 0.3
+    interview: 0.2
+    reference_check: 0.3
+    scouting_month: 0.6
+    employed_month: 0.08
+  scout_base: 0.5 # scout_factor = scout_base + judgment_of_talent / scout_divisor
+  scout_divisor: 40
+  pa_scout_divisor: 16 # PA scout factor = clamp(judgment / pa_scout_divisor, pa_scout_clamp)
+  pa_scout_clamp: [0.1, 1.0]
+  founder_pa_hw: 40 # PA half-width a firm starts with for its own founding partners
+  pa_phrase_bounds: [70, 100, 130, 160] # lower edges of decent, good, excellent, outstanding
+founder: # founding partner build (spec 2.1; formulas.md 5)
+  skill_base: 5 # attribute points every skill starts at
+  skill_points: 110 # points the build spends, exactly
+  skill_cap: 18 # no skill above this after background bonuses
+  default_age: 42 # years
+  age_range: [34, 52] # years (spec 2.1)
+  familiar_range: [15, 17] # 1-20: familiarity in the background's listed practices, uniform
+  book_round_to_cents: 5000000 # a book of business is drawn in $50,000 steps

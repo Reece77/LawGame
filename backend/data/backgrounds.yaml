@@ -1,0 +1,83 @@
+# Founding partner backgrounds (spec section 2.1) and personality presets (formulas.md 5).
+# Ported from backend/data/backgrounds.yaml @ 02fba2aa (Tech Startup Tycoon); changed:
+# Partner Track's five backgrounds; each names the founder's home practice (their role),
+# the practices they know at 15+, their book of business range (integer cents, 2005 USD,
+# drawn in steps of founder.book_round_to_cents) and bar admissions beyond the home
+# jurisdiction. TST's four personality presets are kept as they are.
+# Every skill starts at founder.skill_base (5); the build spends founder.skill_points (110);
+# no skill may exceed founder.skill_cap (18) after the background bonus. default_allocation
+# is used when none is supplied and spends exactly 110. Values are design defaults.
+backgrounds:
+  - key: biglaw_ma_partner
+    label: BigLaw M&A partner
+    available_in: v1
+    description: A big-firm deal partner with portable clients; strongest at negotiation, drafting and client care.
+    home_practice: corporate_ma
+    familiar_practices: [corporate_ma, private_equity]
+    book_cents: [200000000, 350000000]
+    bar_admissions: []
+    bonuses: { negotiation: 2, deal_structuring: 2, client_care: 1 }
+    default_allocation: { deal_structuring: 10, negotiation: 10, writing: 10, commercial_awareness: 8, project_management: 6, client_care: 7, legal_reasoning: 7, research: 3, business_development: 8, supervision: 6, leadership: 6, mentoring: 4, strategy: 6, communication: 6, judgment_of_talent: 4, recruiting: 3, stamina: 6 }
+
+  - key: trial_lawyer
+    label: Trial lawyer
+    available_in: v1
+    description: A courtroom litigator; strongest at advocacy, legal reasoning and writing.
+    home_practice: commercial_litigation
+    familiar_practices: [commercial_litigation, white_collar]
+    book_cents: [100000000, 250000000]
+    bar_admissions: []
+    bonuses: { advocacy: 3, legal_reasoning: 1, writing: 1 }
+    default_allocation: { advocacy: 9, legal_reasoning: 10, writing: 9, research: 7, procedure: 8, client_care: 6, negotiation: 7, business_development: 6, communication: 8, stamina: 7, supervision: 5, leadership: 5, strategy: 6, mentoring: 4, judgment_of_talent: 4, commercial_awareness: 5, project_management: 4 }
+
+  - key: patent_litigator
+    label: Patent litigator with a science degree
+    available_in: v1
+    description: An engineer turned patent litigator, admitted to the patent bar; strongest at legal reasoning and technical work.
+    home_practice: ip
+    familiar_practices: [ip]
+    book_cents: [100000000, 200000000]
+    bar_admissions: [uspto]
+    bonuses: { technical: 3, legal_reasoning: 2 }
+    default_allocation: { technical: 10, legal_reasoning: 9, writing: 9, advocacy: 8, research: 8, procedure: 7, negotiation: 5, client_care: 5, business_development: 5, stamina: 6, supervision: 5, technology: 7, communication: 6, strategy: 5, mentoring: 4, leadership: 4, judgment_of_talent: 3, commercial_awareness: 4 }
+
+  - key: regional_generalist
+    label: Regional generalist
+    available_in: v1
+    description: A local business lawyer every client calls first; strongest at client care and business development.
+    home_practice: corporate_ma
+    familiar_practices: [corporate_ma, real_estate, employment]
+    book_cents: [50000000, 100000000]
+    bar_admissions: []
+    bonuses: { client_care: 3, business_development: 2 }
+    default_allocation: { deal_structuring: 8, negotiation: 9, writing: 9, commercial_awareness: 8, project_management: 6, client_care: 9, business_development: 9, legal_reasoning: 7, advocacy: 5, research: 4, procedure: 5, supervision: 5, leadership: 5, communication: 7, strategy: 4, mentoring: 4, judgment_of_talent: 3, recruiting: 3 }
+
+  - key: government_lawyer
+    label: Government lawyer (DOJ, SEC, regulator)
+    available_in: v1
+    description: A former prosecutor or regulator with reputation rather than clients; strongest at legal reasoning and procedure.
+    home_practice: white_collar
+    familiar_practices: [white_collar]
+    book_cents: [20000000, 20000000]
+    bar_admissions: [us_dc]
+    bonuses: { legal_reasoning: 3, procedure: 2 }
+    default_allocation: { advocacy: 9, legal_reasoning: 10, procedure: 9, research: 8, client_care: 5, writing: 9, negotiation: 6, numeracy: 5, communication: 7, strategy: 6, leadership: 6, stamina: 6, supervision: 6, mentoring: 5, judgment_of_talent: 5, technology: 4, languages: 4 }
+
+# Founder personality presets (true values, 1-20). The firm sees its founders exactly.
+personality_presets:
+  - key: visionary
+    label: Visionary
+    description: Ambitious risk-taker; inspires, but can be impatient.
+    values: { ambition: 17, loyalty: 11, professionalism: 12, temperament: 10, adaptability: 15, risk_appetite: 17, ego: 14, integrity: 12, sociability: 14 }
+  - key: operator
+    label: Operator
+    description: Steady, professional, and careful with money.
+    values: { ambition: 12, loyalty: 14, professionalism: 17, temperament: 15, adaptability: 11, risk_appetite: 8, ego: 8, integrity: 15, sociability: 11 }
+  - key: hustler
+    label: Hustler
+    description: Sociable and adaptable; always selling.
+    values: { ambition: 16, loyalty: 9, professionalism: 10, temperament: 11, adaptability: 16, risk_appetite: 15, ego: 13, integrity: 10, sociability: 17 }
+  - key: scientist
+    label: Scientist
+    description: Principled and thorough; prefers depth to small talk.
+    values: { ambition: 11, loyalty: 13, professionalism: 15, temperament: 13, adaptability: 12, risk_appetite: 9, ego: 10, integrity: 16, sociability: 8 }

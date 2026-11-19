@@ -1,187 +1,210 @@
-"""Seams between lanes that are built at the same time (PT-M1b hiring and pay, PT-M2 org).
+"""Small interfaces between lanes (PT-M1b and PT-M2 are built side by side).
 
-PT-M2 (org) defined this module because PT-M1b had not published one when delegated hiring
-was built (the PT-M2 brief, sub-task 4). Each protocol is what the org needs from hiring or
-pay; each has a default that does nothing, so the game runs before the other lane lands.
-PT-M1b wires its implementations by replacing `PAY` and `DELEGATE_HIRING` below (one line
-each) and calls `ptk.sim.org.morale.org_morale_inputs` from its morale step.
+The delegate hook (TST formulas.md 13.10, ADR-0015) is how PT-M2's delegated hiring drives
+PT-M1b's hiring without reaching into `ptk.sim.hiring`. A delegate (a recruiting manager or a
+practice group leader) acts in phase 2 by sending the same requests the player's actions
+send, as its own actor, with its own energy and its own random stream (`delegate`, keyed
+`(person_id, n)`, where n counts that delegate's actions this turn). Every rule the player
+meets applies to the delegate: an offer needs an interview (ADR-0016), campus offers only in
+the offer month, energy is spent at once.
 
-Contracts:
+Usage from PT-M2 (phase 2):
 
-- **Pay** (`PayAccess`): an employee's salary, read and set. A raise (TST 13.8) sets the
-  new salary through it; the new salary applies from the next payroll.
-- **Delegated hiring** (`DelegateHiring`, TST 13.10, ADR-0015): the hiring actions a
-  delegate takes. Org chooses (deterministically, from displayed ranges); hiring applies.
-  Every step takes `draws`, a factory for the delegate's own generator (stream `delegate`,
-  key `(person_id, n)`); a step that needs randomness calls it once, others never. A step
-  that the rules refuse raises a `SimError` and changes nothing. Energy is the delegate's
-  own and is spent by the org (balance `org.delegates`), never the founder's.
-- **Hires join the plan's unit**: hiring reports who was hired under a plan through
-  `DelegateHiring.hires`; the org places them in the plan's unit in phase 2.
-- **Morale** (PT-M1b): `org_morale_inputs(state, balance)` gives each employee's supervisor
-  term W_mgr (TST 13.4) and this turn's one-off changes (13.7, 13.8) to apply in phase 8;
-  the org clears the one-off changes at the end of phase 8.
+    hook = delegate_hiring()
+    state = hook.set_energy(state, delegate_id, balance_energy)      # the month's budget
+    for cand in hook.candidates(state, firm_id, role="corporate_ma"):
+        ...rank by what the firm knows (revealed ranges) ...
+    result = hook.apply(state, InterviewRequest(cand.candidate_id), actor_id=delegate_id,
+                        draws=lambda: rng.stream(turn, "delegate", delegate_id, n),
+                        balance=balance, data=data, balances=ctx.balances)
+    ctx = ctx.post(*result.entries).log(*result.log); state = result.state
+
+Offers carry a `plan_id` and a `unit_id`; `hook.hires(state, firm_id, turn)` lists the
+offers accepted in phase 1 of `turn` with both, so PT-M2 can count plan hires and place each
+hire in its unit. Nothing here exposes a hidden true value: candidate views carry only what
+the firm can see (the ask is shown exactly, TST 7).
+
+This module holds types only and imports no lane's package at import time; the hiring
+implementation is loaded on first use.
 """
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
-from typing import Protocol
+from typing import TYPE_CHECKING, Literal, Protocol
 
-import numpy as np
+if TYPE_CHECKING:
+    import numpy as np
 
-from ptk.sim.errors import DelegateRefusedError
-from ptk.sim.ledger import LedgerEntry
-from ptk.sim.log import LogItem
-from ptk.sim.state import GameState
+    from ptk.sim.data_models import Balance, GameData
+    from ptk.sim.ledger import AccountCode, LedgerEntry
+    from ptk.sim.log import LogItem
+    from ptk.sim.money import Cents
+    from ptk.sim.state import GameState
 
-type Draws = Callable[[], np.random.Generator]
-
-
-# --- Pay -----------------------------------------------------------------------------------------
-
-
-class PayAccess(Protocol):
-    def salary_cents(self, state: GameState, person_id: int) -> int | None:
-        """The employee's annual salary, or None while the firm pays nobody (no payroll)."""
-        ...
-
-    def set_salary(self, state: GameState, person_id: int, salary_cents: int) -> GameState:
-        """The state with the employee's annual salary changed (from the next payroll)."""
-        ...
+# Spec 5.7: campus (summer programme, offers in August, start the September after), and the
+# lateral channels of TST 7 renamed: a recruiter search (20-25% fee on hire), a job post, a
+# referral (TST's network search).
+type HiringChannel = Literal["campus", "recruiter", "job_post", "referral"]
 
 
-class NoPay:
-    """Before PT-M1b: nobody has a salary, so raises are refused."""
-
-    def salary_cents(self, state: GameState, person_id: int) -> int | None:
-        return None
-
-    def set_salary(self, state: GameState, person_id: int, salary_cents: int) -> GameState:
-        raise DelegateRefusedError("salaries arrive with payroll (PT-M1b)")
+# --- Requests a delegate (or the player) sends ------------------------------------------------
 
 
-# --- Delegated hiring ----------------------------------------------------------------------------
+@dataclass(frozen=True, slots=True)
+class OpenSearchRequest:
+    role: str  # roles.yaml key; a lawyer's role is their home practice
+    channel: HiringChannel
+    level: str | None = None  # lateral target level (balance people.levels); None: the mix
+    school_tiers: tuple[str, ...] = ()  # law school tier filter; () = any tier
+    plan_id: int | None = None  # the hiring plan the search serves (PT-M2)
+
+
+@dataclass(frozen=True, slots=True)
+class CloseSearchRequest:
+    search_id: int
+
+
+@dataclass(frozen=True, slots=True)
+class InterviewRequest:
+    candidate_id: int  # the candidate's person id
+
+
+@dataclass(frozen=True, slots=True)
+class ReferenceCheckRequest:
+    candidate_id: int
+
+
+@dataclass(frozen=True, slots=True)
+class ScoutRequest:
+    """Apply a month of scouting to every open candidate of one search (TST 11.12)."""
+
+    search_id: int
+
+
+@dataclass(frozen=True, slots=True)
+class OfferRequest:
+    candidate_id: int
+    salary_cents: int  # annual
+    plan_id: int | None = None  # the plan a delegate offers under (PT-M2)
+    unit_id: int | None = None  # where the hire joins; None = the firm root (PT-M2)
+
+
+type HiringRequest = (
+    OpenSearchRequest
+    | CloseSearchRequest
+    | InterviewRequest
+    | ReferenceCheckRequest
+    | ScoutRequest
+    | OfferRequest
+)
+
+
+# --- What a delegate can see ------------------------------------------------------------------
+
+
+@dataclass(frozen=True, slots=True)
+class SearchView:
+    search_id: int
+    firm_id: int
+    role: str
+    channel: HiringChannel
+    opened_turn: int
+    plan_id: int | None
 
 
 @dataclass(frozen=True, slots=True)
 class CandidateView:
-    """An open candidate of the firm's searches, as a delegate may see it (no true values)."""
+    """An open candidate as the firm sees it. Rank candidates by the firm's revealed ranges
+    (`ptk.sim.people.reveal.revealed_range` on `state.reveal(firm_id, candidate_id)`)."""
 
-    person_id: int
+    candidate_id: int  # person id
+    search_id: int
     role: str
     level: str
-    channel: str
-    interviewed: bool  # the firm has interviewed them (TST ADR-0016: needed for an offer)
-    offer_pending: bool
-    ask_cents: int  # their salary expectation
+    channel: HiringChannel
+    ask_cents: int  # the salary they expect (shown exactly, TST 7)
+    interviewed: bool  # by anyone at the firm (ADR-0016)
+    pending_offer_id: int | None
+    offer_allowed: bool  # False for a campus candidate outside the offer month
+    plan_id: int | None  # the plan of the search that found them
 
 
 @dataclass(frozen=True, slots=True)
-class HiringStep:
-    """What one hiring action did."""
+class HireView:
+    """An offer accepted in phase 1: the person joins now, or at `start_turn` (campus)."""
 
+    offer_id: int
+    person_id: int
+    firm_id: int
+    plan_id: int | None
+    unit_id: int | None
+    accepted_turn: int
+    start_turn: int
+
+
+@dataclass(frozen=True, slots=True)
+class HookResult:
     state: GameState
-    ledger_entries: tuple[LedgerEntry, ...] = ()
-    log_items: tuple[LogItem, ...] = ()
+    entries: tuple[LedgerEntry, ...] = ()
+    log: tuple[LogItem, ...] = ()
 
 
-class DelegateHiring(Protocol):
-    def candidates(self, state: GameState, firm_id: int, role: str) -> tuple[CandidateView, ...]:
-        """The firm's open candidates for a role, by person id."""
+class DelegateHiringHook(Protocol):
+    def energy_cost(self, request: HiringRequest, balance: Balance) -> int:
+        """Energy the request costs its actor (balance `energy.cost`)."""
         ...
 
-    def has_open_search(self, state: GameState, firm_id: int, role: str) -> bool: ...
-
-    def pending_offers(self, state: GameState, plan_id: int) -> int:
-        """Offers made under the plan that are not yet answered."""
+    def energy_left(self, state: GameState, person_id: int) -> int | None:
+        """The person's energy this month; None if they do not track energy."""
         ...
 
-    def hires(self, state: GameState, plan_id: int) -> tuple[int, ...]:
-        """Person ids who accepted an offer made under the plan, ascending."""
+    def set_energy(self, state: GameState, person_id: int, energy: int) -> GameState:
+        """Give a delegate their month's energy (PT-M2 resets delegates in phase 2)."""
         ...
 
-    def open_search(
+    def searches(self, state: GameState, firm_id: int) -> tuple[SearchView, ...]:
+        """The firm's open searches, by id."""
+        ...
+
+    def candidates(
+        self, state: GameState, firm_id: int, role: str | None = None
+    ) -> tuple[CandidateView, ...]:
+        """The firm's open candidates (optionally of one role), by candidate id."""
+        ...
+
+    def apply(
         self,
         state: GameState,
+        request: HiringRequest,
+        *,
         actor_id: int,
-        role: str,
-        channel: str,
-        plan_id: int,
-        level: str | None,
-        draws: Draws,
-    ) -> HiringStep: ...
+        draws: Callable[[], np.random.Generator],
+        balance: Balance,
+        data: GameData,
+        balances: Mapping[tuple[int, AccountCode], Cents],
+    ) -> HookResult:
+        """Apply one request as `actor_id`, at once (ADR-0014). Raises a `SimError` and
+        changes nothing if a rule forbids it. `draws` is called only if the request draws."""
+        ...
 
-    def interview(
-        self, state: GameState, actor_id: int, person_id: int, draws: Draws
-    ) -> HiringStep: ...
-
-    def make_offer(
-        self,
-        state: GameState,
-        actor_id: int,
-        person_id: int,
-        salary_cents: int,
-        plan_id: int,
-        draws: Draws,
-    ) -> HiringStep: ...
-
-    def close_plan_searches(
-        self, state: GameState, actor_id: int, plan_id: int, draws: Draws
-    ) -> HiringStep:
-        """Close the searches the plan opened that no other open plan for its role uses."""
+    def hires(self, state: GameState, firm_id: int, turn: int) -> tuple[HireView, ...]:
+        """Offers of the firm accepted in phase 1 of `turn`, by offer id."""
         ...
 
 
-class NoDelegateHiring:
-    """Before PT-M1b: no searches and no candidates, so delegates find nothing to do."""
+def delegate_hiring() -> DelegateHiringHook:
+    """PT-M1b's implementation of the hook."""
+    from ptk.sim.hiring.hook import HIRING_HOOK
 
-    def candidates(self, state: GameState, firm_id: int, role: str) -> tuple[CandidateView, ...]:
-        return ()
-
-    def has_open_search(self, state: GameState, firm_id: int, role: str) -> bool:
-        return False
-
-    def pending_offers(self, state: GameState, plan_id: int) -> int:
-        return 0
-
-    def hires(self, state: GameState, plan_id: int) -> tuple[int, ...]:
-        return ()
-
-    def open_search(
-        self,
-        state: GameState,
-        actor_id: int,
-        role: str,
-        channel: str,
-        plan_id: int,
-        level: str | None,
-        draws: Draws,
-    ) -> HiringStep:
-        raise DelegateRefusedError("searches arrive with hiring (PT-M1b)")
-
-    def interview(
-        self, state: GameState, actor_id: int, person_id: int, draws: Draws
-    ) -> HiringStep:
-        raise DelegateRefusedError("interviews arrive with hiring (PT-M1b)")
-
-    def make_offer(
-        self,
-        state: GameState,
-        actor_id: int,
-        person_id: int,
-        salary_cents: int,
-        plan_id: int,
-        draws: Draws,
-    ) -> HiringStep:
-        raise DelegateRefusedError("offers arrive with hiring (PT-M1b)")
-
-    def close_plan_searches(
-        self, state: GameState, actor_id: int, plan_id: int, draws: Draws
-    ) -> HiringStep:
-        return HiringStep(state)
+    return HIRING_HOOK
 
 
-PAY: PayAccess = NoPay()  # PT-M1b: its payroll's implementation
-DELEGATE_HIRING: DelegateHiring = NoDelegateHiring()  # PT-M1b: its hiring's implementation
+def manager_morale_term(
+    state: GameState, person_id: int, balance: Balance, data: GameData
+) -> float:
+    """TST 13.4's manager term in a person's morale target (spec 5.3). PT-M1b's morale calls
+    this for every person it updates; it is 0 until PT-M2 supplies supervising partners
+    (PT-M2 may replace this body)."""
+    return 0.0

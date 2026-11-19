@@ -183,7 +183,7 @@ Associates advance one class year each September. Generation (TST §2) adds **la
 
 ### 5.4 Pay
 
-- **Associates:** a **salary scale** by class year. A market-leading firm can raise the scale (a rival or the player); others match, lag or ignore it. History *(dossier)*: first-year salary of $125,000 in 2005 at top New York firms; $160,000 from 2007; $180,000 from 2016; $190,000 from 2018; $202,500 then $215,000 in 2021–22; $225,000 from 2024. Below-scale pay is allowed (regional firms run 50–80% of the scale) with morale and hiring costs. **Year-end bonuses** by class year in November–December follow the market (special bonuses in 2021).
+- **Associates:** a **salary scale** by class year. A market-leading firm can raise the scale (a rival or the player); others match, lag or ignore it. History *(dossier)*: first-year salary of $125,000 in 2005 at top New York firms; $145,000 from 2006; $160,000 from 2007; $180,000 from 2016; $190,000 from 2018; $202,500 then $215,000 in 2021–22; $225,000 from 2024. Below-scale pay is allowed (regional firms run 50–80% of the scale) with morale and hiring costs. **Year-end bonuses** by class year in November–December follow the market (special bonuses in 2021).
 - **Counsel and income partners:** salaries, with a discretionary bonus.
 - **Equity partners:** a share of profit by the comp system (§8.5). No salary.
 - **Business services:** TST's role bands, by city.

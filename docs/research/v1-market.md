@@ -89,11 +89,11 @@
 | B. Manhattan Census share | $21.2bn Manhattan offices-of-lawyers revenue × 60–75% in large offices [A] (Manhattan holds 61% of the nation's 1,000+ employee law offices) | $12.7–15.9bn |
 | C. Payroll ratio | NY MSA 5411 payroll share 14.6% × Am Law 200 US-sourced revenue $56bn | about $8.2bn. A floor: big firms' revenue/payroll is far higher in NY than the US average. |
 
-The game's NY region demand base should total **about $14bn a year in 2005** for all practices. The v1 ten practices carry about 83% of it (§4).
+The game's NY region demand base should total **about $14bn a year in 2005** for all practices. The v1 ten practices carry about 88% of it (§4, after the review's re-cut).
 
 ## 4. Spend by practice, New York large-firm market, 2005
 
-**Practice list.** The spec does not name v1's ten practices. This dossier assumes the first ten rows of spec §6's table. That is a default for the owner (Reece) to confirm.
+**Practice list.** *Review correction (2026-11-19):* Reece chose v1's ten on 2026-11-19 (PT-M1a's `practices.yaml`): they include **real estate** and leave out **international arbitration**. The table below is re-cut to match: international arbitration moves to "other" and real estate becomes row 8.
 
 **Method.**
 - Shares of the $14bn NY total are [A]. They reflect:
@@ -134,18 +134,18 @@ The game's NY region demand base should total **about $14bn a year in 2005** for
 | 5 | Restructuring and insolvency | 5% | $0.7bn | $0.5–1.0bn | Low defaults (1.40% speculative grade [S]), but SDNY hosted 790 Chapter 11 cases in 2005 [S], including large airline and broker cases. Counter-cyclical: should be at a cyclical low in 2005 and roughly double by 2009. |
 | 6 | Commercial litigation | 18% | $2.5bn | $2.0–3.2bn | Litigation is 58% of large-company spend nationally [S]. NY elite firms are transaction-heavy, so all disputes here (rows 6–9 litigation parts and 10) come to about 36%. Commercial contract and securities suits dominate (contract filings 28,020; securities 2,038 [S]). |
 | 7 | White collar and investigations | 6% | $0.85bn | $0.6–1.2bn | Post-Enron and SOX era. SDNY and EDNY prosecutions; internal investigations; FCPA beginning to rise. Policy-driven. |
-| 8 | International arbitration | 2% | $0.3bn | $0.2–0.5bn | Small in 2005 NY: concentrated at White & Case, Freshfields NY, Debevoise, Shearman, Cleary, Skadden. Caseloads not found. |
+| 8 | Real estate | 7% | $1.0bn | $0.7–1.4bn | [A] (review). Manhattan's 2005 property boom: commercial sales, CMBS-backed acquisition finance, REIT M&A and development. NY large firms with big real estate groups (Fried Frank, Paul Weiss, Skadden, Proskauer, Kramer Levin, Stroock). Pro-cyclical; should fall by half in 2009. Proxy not checked: Manhattan commercial sales volume 2005. |
 | 9 | IP (patent litigation, prosecution, transactional) | 6% | $0.85bn | $0.6–1.1bn | NY is not the IP hub (East Texas, Delaware, California). 2,720 federal patent suits and 5,796 copyright suits nationally in FY2005 [S]; NY is strong on copyright, trademark and media. Prosecution is mostly at specialist firms. |
 | 10 | Employment and labour | 4% | $0.55bn | $0.4–0.8bn | 16,930 federal employment civil-rights suits and 18,322 labour-law suits nationally [S]. At NY large firms this is mostly defence and executive compensation; much of it goes to specialists (e.g. Proskauer, Jackson Lewis). |
-| — | **v1 subtotal** | **83%** | **$11.65bn** | $8.8–15.4bn | [D] sum of rows 1–10 |
-| — | Other practices (tax, real estate, antitrust, financial regulation, healthcare, energy, technology, private client, insurance, mass torts) | 17% | $2.35bn | $1.8–3.0bn | Remainder. Tax and real estate are large in NY (the 2005 property boom). |
+| — | **v1 subtotal** | **88%** | **$12.35bn** | $9.3–16.3bn | [D] sum of rows 1–10 (after the review's re-cut) |
+| — | Other practices (international arbitration about 2%, tax, antitrust, financial regulation, healthcare, energy, technology, private client, insurance, mass torts) | 12% | $1.65bn | $1.2–2.2bn | Remainder. Tax is large in NY. |
 | — | **Total NY large-firm market** | **100%** | **$14.0bn** | $11–17bn | §3 |
 
 **For `practices.yaml`.** If v1 has only ten practices, there are two options:
-- Scale the ten up to the full $14bn, multiplying each by 1/0.83.
-- Keep $11.65bn and treat the rest as unserved demand.
+- Scale the ten up to the full $14bn, multiplying each by 1/0.88.
+- Keep $12.35bn and treat the rest as unserved demand.
 
-I would keep $11.65bn, so that later practices add demand rather than redistribute it ([A]; for the owner to decide).
+I would keep $12.35bn, so that later practices add demand rather than redistribute it ([A]). *Review: agreed, use $12.35bn; PT-M12 adds the other practices' demand.*
 
 ## 5. Billing rates 2005 at top New York firms
 
@@ -198,7 +198,8 @@ I would keep $11.65bn, so that later practices add demand rather than redistribu
 | Restructuring | $850 | $750–850 | High-end but plausible (bankruptcy partners were among the highest-rate lawyers); not verified against 2005 fee applications |
 | Commercial litigation | $700 | $650–725 | OK |
 | White collar | $800 | $700–800 | Slightly high for 2005 |
-| International arbitration | $700 | $650–700 | OK |
+| Real estate | $550 | $525–600 | [A] (review): no rate source found; NY real estate partners sat near the corporate median less 20–25% |
+| International arbitration (v2) | $700 | $650–700 | OK |
 | IP | $650 | $575–650 | OK |
 | Employment | $550 | $475–575 | OK |
 
@@ -288,8 +289,8 @@ All [S] (Biglaw Investor), with these flags:
 
 ## 8. Gaps and open questions
 
-1. **Practice list.** The spec does not name v1's ten practices. This dossier assumed the first ten rows of §6. Owner to confirm.
-2. **Demand for non-v1 practices.** Should the v1 demand base be $11.65bn (unserved rest) or the full $14bn? See §4 for my default.
+1. **Practice list.** Resolved by Reece (2026-11-19); §4 re-cut in review.
+2. **Demand for non-v1 practices.** Resolved in review: $12.35bn, the rest unserved until PT-M12.
 3. **Am Law Second Hundred FY2005 total.** Not found (law.com 403). The $14.5bn is [A].
 4. **NY office-level revenue or lawyer counts** (NLJ 250 / NYLJ 100, 2005). Not found. The NY market of $14bn rests on [A] office shares (65% / 8%).
 5. **NLJ December 2005 and 2006 New York rate tables, and 2005 bankruptcy fee applications** (Delta, Refco, Calpine, Northwest). Not found. The whole §5 rate card is back-cast [D/A] from 2013. This is the most important gap for rate cards.

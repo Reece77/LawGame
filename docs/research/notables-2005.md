@@ -8,6 +8,17 @@
 
 **Known weaknesses.** 212 people across 43 firms. **No Chambers USA 2005 or 2006 band was found for anyone** (archived editions unreachable); later bands appear only with their year. Firms below the 5–7 target: White & Case 3, Cooley 2, Reed Smith 3, LeBoeuf 1, and 4 each at Jones Day, Sidley, Baker & McKenzie, Morgan Lewis, Ropes & Gray, Dewey Ballantine, Hogan & Hartson, Wilson Sonsini and Bingham. Part 2's last eight firms (Milbank to LeBoeuf) rely partly on [A] recall, with 19 rows [A]-only; part 3 has about 15 [A] items. All [A] rows need checking before `notables.yaml`. Each part ends with its gaps list, including leadership dates where sources disagree.
 
+
+## Review notes (product manager, 2026-11-19)
+
+The rules are applied well: no row carries private-life, health, misconduct or controversy content, and the scan for restricted terms found only role titles (for example "DOJ Fraud Section"). Three gaps must be closed in PT-M5's sub-task 1a before `notables.yaml` is built:
+
+1. **An end year for everyone who stopped practising by 2025.** ADR PT-0013 retires real people "by their real date to 2025 where known, then by age". Rows reading "none recorded" for lawyers who are known to have stopped practising (for example Joseph Flom, and those the gaps list says were left out under the rule) would otherwise practise indefinitely. Record **"left practice (YYYY)"** with no reason, whatever the cause. That keeps the rule (no cause is stated) and gives the engine its date.
+2. **A career-start year** (law school graduation or bar admission year, [S] where a firm biography gives it) for every row, so the engine can estimate age for retirement after 2025 without recording age or birth date.
+3. **The 19 [A]-only rows and roughly 15 [A] items in part 3** need a source or removal. A real person enters the game only with at least one [S] fact for their 2005 role.
+
+Low-value rows to keep but not weight: Christine Lagarde leaves Baker & McKenzie in June 2005 (month 6), so she matters only for the first half-year.
+
 ## Notable real lawyers, part 1: 14 rival firms (Partner Track, start January 2005)
 
 Research session: 2026-11-19. Deliverable for the PT-M5 real-people dossier (`notables.yaml`), under ADR PT-0013.

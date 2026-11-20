@@ -769,6 +769,109 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/saves/{slug}/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Events */
+        get: operations["listEvents"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/events/{event_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Event */
+        get: operations["getEvent"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/events/{event_id}/choose": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Choose Event */
+        post: operations["chooseEvent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/texts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Texts */
+        get: operations["listTexts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/llm/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Llm Settings */
+        get: operations["getLlmSettings"];
+        /** Set Llm Settings */
+        put: operations["setLlmSettings"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/llm/meter": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Llm Meter */
+        get: operations["getLlmMeter"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -871,6 +974,11 @@ export interface components {
             energy: number;
             /** Fee Note */
             fee_note: string;
+        };
+        /** ChooseIn */
+        ChooseIn: {
+            /** Choice */
+            choice: string;
         };
         /** ClientOut */
         ClientOut: {
@@ -998,6 +1106,53 @@ export interface components {
             /** Message */
             message: string;
         };
+        /** EventChoiceOut */
+        EventChoiceOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Effects */
+            effects: string[];
+        };
+        /** EventOut */
+        EventOut: {
+            /** Id */
+            id: number;
+            /** Turn */
+            turn: number;
+            /** Date Label */
+            date_label: string;
+            /** Category */
+            category: string;
+            severity: components["schemas"]["SeverityOut"];
+            status: components["schemas"]["EventStatusOut"];
+            /** Title */
+            title: string;
+            /** Body */
+            body: string;
+            /** Choices */
+            choices: components["schemas"]["EventChoiceOut"][];
+            /** Chosen */
+            chosen: string | null;
+            /** Source */
+            source: string;
+            /** Storyline */
+            storyline: string | null;
+            /** People */
+            people: components["schemas"]["EventRefOut"][];
+            client: components["schemas"]["EventRefOut"] | null;
+            matter: components["schemas"]["EventRefOut"] | null;
+        };
+        /** EventRefOut */
+        EventRefOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+        };
+        /** @enum {string} */
+        EventStatusOut: "pending" | "open" | "answered" | "auto";
         /** FamiliarityOut */
         FamiliarityOut: {
             /** Practice */
@@ -1035,6 +1190,8 @@ export interface components {
             game_state: "active" | "campaign_complete" | "dissolved";
             /** Turns In Campaign */
             turns_in_campaign: number;
+            /** Blocking Event Id */
+            blocking_event_id: number | null;
         };
         /** GeneralCounselOut */
         GeneralCounselOut: {
@@ -1084,6 +1241,30 @@ export interface components {
             practice: string;
             /** Introducer Id */
             introducer_id?: number | null;
+        };
+        /** LLMSettingsIn */
+        LLMSettingsIn: {
+            /**
+             * Adapter
+             * @enum {string}
+             */
+            adapter: "claude" | "templates";
+            /** Monthly Budget Cents */
+            monthly_budget_cents: number;
+        };
+        /** LLMSettingsOut */
+        LLMSettingsOut: {
+            /**
+             * Adapter
+             * @enum {string}
+             */
+            adapter: "claude" | "templates";
+            /** Monthly Budget Cents */
+            monthly_budget_cents: number;
+            /** Key Present */
+            key_present: boolean;
+            /** In Use */
+            in_use: string;
         };
         /** LeadIn */
         LeadIn: {
@@ -1217,6 +1398,25 @@ export interface components {
             difficulties: components["schemas"]["DifficultyOut"][];
             /** Backgrounds */
             backgrounds: components["schemas"]["BackgroundOut"][];
+        };
+        /** MeterOut */
+        MeterOut: {
+            /** Month */
+            month: string;
+            /** Spent Cents */
+            spent_cents: number;
+            /** Budget Cents */
+            budget_cents: number;
+            /** Calls */
+            calls: number;
+            /** Events Claude */
+            events_claude: number;
+            /** Events Rejected */
+            events_rejected: number;
+            /** Avg Event Cents */
+            avg_event_cents: number;
+            /** Reset Date */
+            reset_date: string;
         };
         /** MoveUnitIn */
         MoveUnitIn: {
@@ -1822,6 +2022,8 @@ export interface components {
             /** Expires Label */
             expires_label: string;
         };
+        /** @enum {string} */
+        SeverityOut: "minor" | "major" | "critical";
         /** SignedOut */
         SignedOut: {
             /** Person Id */
@@ -1869,6 +2071,20 @@ export interface components {
             planned_hours: number;
             /** Hours Last Month */
             hours_last_month: number;
+        };
+        /** @enum {string} */
+        TextKindOut: "headlines" | "matter_brief" | "pitch_letter" | "partner_memo" | "year_end_letter";
+        /** TextOut */
+        TextOut: {
+            /** Turn */
+            turn: number;
+            /** Date Label */
+            date_label: string;
+            kind: components["schemas"]["TextKindOut"];
+            /** Text */
+            text: string;
+            /** Source */
+            source: string;
         };
         /** ValidationError */
         ValidationError: {
@@ -4774,6 +4990,319 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    listEvents: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventOut"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getEvent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                event_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    chooseEvent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                event_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChooseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    listTexts: {
+        parameters: {
+            query?: {
+                kind?: components["schemas"]["TextKindOut"] | null;
+            };
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TextOut"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getLlmSettings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LLMSettingsOut"];
+                };
+            };
+        };
+    };
+    setLlmSettings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LLMSettingsIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LLMSettingsOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getLlmMeter: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeterOut"];
                 };
             };
         };

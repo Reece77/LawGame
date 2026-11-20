@@ -73,7 +73,7 @@ export function useAdvance(slug: string) {
       unwrap(await api.POST('/api/saves/{slug}/advance', { params: { path: { slug } } })),
     onSuccess: (game) => {
       client.setQueryData(['game', slug], game);
-      for (const key of ['people', 'recruitment', 'inbox', 'payroll', 'org']) {
+      for (const key of ['people', 'recruitment', 'inbox', 'payroll', 'org', 'events', 'texts']) {
         void client.invalidateQueries({ queryKey: [key, slug] });
       }
     },
@@ -210,5 +210,83 @@ export function useMarkInboxRead(slug: string) {
     mutationFn: async () =>
       unwrap(await api.POST('/api/saves/{slug}/inbox/read', { params: { path: { slug } } })),
     onSuccess: (items) => client.setQueryData(['inbox', slug], items),
+  });
+}
+
+// --- PT-M6: events, read-only texts, the LLM settings and meter ------------------------------
+
+export type GameEvent = Schemas['EventOut'];
+export type TextItem = Schemas['TextOut'];
+export type LlmSettings = Schemas['LLMSettingsOut'];
+export type LlmSettingsBody = Schemas['LLMSettingsIn'];
+export type LlmMeter = Schemas['MeterOut'];
+
+export const useEvents = (slug: string) =>
+  useQuery({
+    queryKey: ['events', slug],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/saves/{slug}/events', { params: { path: { slug } } })),
+  });
+
+export const useEvent = (slug: string, eventId: number | null) =>
+  useQuery({
+    queryKey: ['events', slug, eventId],
+    enabled: eventId !== null,
+    queryFn: async () =>
+      unwrap(
+        await api.GET('/api/saves/{slug}/events/{event_id}', {
+          params: { path: { slug, event_id: eventId ?? 0 } },
+        }),
+      ),
+  });
+
+export function useChooseEvent(slug: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ eventId, choice }: { eventId: number; choice: string }) =>
+      unwrap(
+        await api.POST('/api/saves/{slug}/events/{event_id}/choose', {
+          params: { path: { slug, event_id: eventId } },
+          body: { choice },
+        }),
+      ),
+    onSuccess: () => {
+      for (const key of ['events', 'game', 'people', 'inbox', 'payroll', 'recruitment', 'org']) {
+        void client.invalidateQueries({ queryKey: [key, slug] });
+      }
+    },
+  });
+}
+
+export const useTexts = (slug: string, kind: TextItem['kind']) =>
+  useQuery({
+    queryKey: ['texts', slug, kind],
+    queryFn: async () =>
+      unwrap(
+        await api.GET('/api/saves/{slug}/texts', { params: { path: { slug }, query: { kind } } }),
+      ),
+  });
+
+export const useLlmSettings = () =>
+  useQuery({
+    queryKey: ['llm-settings'],
+    queryFn: async () => unwrap(await api.GET('/api/llm/settings')),
+  });
+
+export const useLlmMeter = () =>
+  useQuery({
+    queryKey: ['llm-meter'],
+    queryFn: async () => unwrap(await api.GET('/api/llm/meter')),
+  });
+
+export function useSetLlmSettings() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: LlmSettingsBody) =>
+      unwrap(await api.PUT('/api/llm/settings', { body })),
+    onSuccess: (settings) => {
+      client.setQueryData(['llm-settings'], settings);
+      void client.invalidateQueries({ queryKey: ['llm-meter'] });
+    },
   });
 }

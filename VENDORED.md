@@ -63,6 +63,21 @@ Files copied or ported from Tech Startup Tycoon (`Reece77/Tech_Executive_Tycoon`
 | `backend/ptk/sim/org/rules.py` | `backend/tst/sim/org/rules.py` | ported | — |
 | `backend/ptk/sim/org/actions.py` | `backend/tst/sim/actions/org.py` | ported | — |
 | `backend/ptk/sim/org/delegates.py` | `backend/tst/sim/org/delegates.py` | ported | — |
+| `backend/ptk/sim/events/data.py` | `backend/tst/sim/events/data.py` | ported | — |
+| `backend/ptk/sim/events/models.py` | `backend/tst/sim/events/models.py` | ported | — |
+| `backend/ptk/sim/events/formulas.py` | `backend/tst/sim/events/formulas.py` | ported | — |
+| `backend/ptk/sim/events/modifiers.py` | `backend/tst/sim/events/modifiers.py` | ported | — |
+| `backend/ptk/sim/events/render.py` | `backend/tst/sim/events/render.py` | ported | — |
+| `backend/ptk/sim/events/triggers.py` | `backend/tst/sim/events/triggers.py` | ported | — |
+| `backend/ptk/sim/events/director.py` | `backend/tst/sim/events/director.py` | ported | — |
+| `backend/ptk/sim/events/effects.py` | `backend/tst/sim/events/effects.py` | ported | — |
+| `backend/ptk/sim/events/describe.py` | `backend/tst/sim/events/describe.py` | ported | — |
+| `backend/ptk/sim/events/colleagues.py` | `backend/tst/sim/people/relationships.py` | ported | — |
+| `backend/ptk/sim/events/actions.py` | `backend/tst/sim/actions/events.py` | ported | — |
+| `backend/ptk/events/validator.py` | `backend/tst/events/validator.py` | ported | — |
+| `backend/ptk/events/drafts.py` | `backend/tst/events/drafts.py` | ported | — |
+| `backend/ptk/events/context.py` | `backend/tst/events/context.py` | ported | — |
+| `backend/ptk/events/service.py` | `backend/tst/events/service.py` | ported | — |
 
 Changes in ported files:
 
@@ -101,3 +116,19 @@ Changes in ported files:
 - `backend/ptk/sim/org/rules.py` (PT-M2): units and membership from `GameState.org`; the root's leader is the player's founding partner; no teammate-tag morale, work policy or memo cache; growth multipliers and the practice-group gate added.
 - `backend/ptk/sim/org/actions.py` (PT-M2, from `actions/org.py`): practice groups (one per practice, from 10 lawyers) and teams; co-founding partners may lead; ADR PT-0006 promotions (accelerated class years, no partnership); raises through `interfaces.salary_cents`/`set_salary`; plan owners lead a unit or are recruiting managers; campus targets per group; no founder energy, divisions or policies; one-off morale as nudges.
 - `backend/ptk/sim/org/delegates.py` (PT-M2): every step is a request through PT-M1b's delegate hook (`ptk.sim.interfaces`); energy given and spent through the hook; hires placed from accepted offers; per-search scouting; campus plans; no executives' reuse.
+- `backend/ptk/sim/events/data.py` (PT-M6): spec 15's eight categories; Partner Track's triggers (people, clients, matters, partnership, market, regulatory, technology), matter draws, crises (a key exit, a key client walking, a key matter's trial) and engine-queued criticals; law effect types (client relationship, colleague pair, cash, reputation placeholder, a matter's hours, strain, WIP write-down, merits shift, confidence placeholder) and placeholders; a `restricted` flag (ADR PT-0013); every category needs every severity; the events and colleagues balance models live here.
+- `backend/ptk/sim/events/models.py` (PT-M6): firms; events name a client, a matter and a practice; `ColleaguePair`; one `EventsState` with its own id counters; spec 15's text kinds.
+- `backend/ptk/sim/events/formulas.py` (PT-M6): the cash base from monthly fees; no loan effects; `above_strength`.
+- `backend/ptk/sim/events/modifiers.py` (PT-M6): people, units and the firm; the stats are a person's morale target and strain gain (`person_factor`).
+- `backend/ptk/sim/events/render.py` (PT-M6): client, GC, matter, practice and court placeholders.
+- `backend/ptk/sim/events/triggers.py` (PT-M6): Partner Track's triggers and crises; matter draws on the events stream.
+- `backend/ptk/sim/events/director.py` (PT-M6): matter and client cooldowns; restricted templates never name a real person; engine-queued events; read-only text requests; no press, persona or public names.
+- `backend/ptk/sim/events/effects.py` (PT-M6): law effects; WIP write-downs, reputation and confidence through `ptk.sim.interfaces` hooks (no-ops until PT-M3b, PT-M5, PT-M4); Continue blocked by critical events only; restricted effects never touch a real person.
+- `backend/ptk/sim/events/describe.py` (PT-M6): law effects in words; a merits shift only in words.
+- `backend/ptk/sim/events/colleagues.py` (PT-M6, from `people/relationships.py` and the monthly step of `org/relationships.py`): pairs form on matter teams; no W_rel morale term yet.
+- `backend/ptk/sim/events/actions.py` (PT-M6, the choose_event action of `actions/events.py`): Partner Track's effects.
+- `backend/ptk/events/validator.py` (PT-M6): law effects and targets; no engine steps; drafts that resign a real person or reveal one's tag are rejected (ADR PT-0013).
+- `backend/ptk/events/drafts.py` (PT-M6): law target words; restricted effects on a real person left out.
+- `backend/ptk/events/context.py` (PT-M6): legal state (people as revealed words, public matter facts, clients by relationship score, GCs by name only); the real-person rule in the system prompt; spec 15's text asks.
+- `backend/ptk/events/service.py` (PT-M6): KPIs and text kinds for law; the real-person rule; no lender, public or press cases; `write_pending_events` for in-memory runs.
+- `backend/ptk/sim/hiring/phases.py` (PT-M6): event modifiers multiply a person's morale target.

@@ -1,9 +1,11 @@
 import { Badge, Button, Card, Group, Stack, Text, Title } from '@mantine/core';
 import { Link, useParams } from 'react-router';
-import { useInbox, useMarkInboxRead, type InboxItem } from '../lib/api';
+import { EventCard } from '../components/EventCard';
+import { useEvents, useInbox, useMarkInboxRead, type GameEvent, type InboxItem } from '../lib/api';
 
-// The inbox (spec 16; TST's inbox, first cut): offers accepted and declined, the summer
-// programme, a class starting, resignations, bonuses. Newest first.
+// The inbox (spec 16; TST's inbox): offers, the summer programme, resignations, bonuses,
+// written texts (briefings, letters, memos) and events (PT-M6), whose cards are answered here.
+// Newest first.
 function linkTo(slug: string, item: InboxItem): string | null {
   if (item.link_kind === 'person' && item.link_id !== null)
     return `/game/${slug}/people/${item.link_id}`;
@@ -15,8 +17,10 @@ function linkTo(slug: string, item: InboxItem): string | null {
 export function InboxScreen() {
   const { slug = '' } = useParams();
   const inbox = useInbox(slug);
+  const events = useEvents(slug);
   const markRead = useMarkInboxRead(slug);
   const items = inbox.data ?? [];
+  const byId = new Map<number, GameEvent>((events.data ?? []).map((e) => [e.id, e]));
   return (
     <Stack>
       <Group justify="space-between">
@@ -31,6 +35,9 @@ export function InboxScreen() {
       </Group>
       {items.length === 0 && <Text c="dimmed">Nothing yet.</Text>}
       {items.map((item) => {
+        const event =
+          item.link_kind === 'event' && item.link_id !== null ? byId.get(item.link_id) : undefined;
+        if (event) return <EventCard key={item.id} slug={slug} event={event} />;
         const to = linkTo(slug, item);
         return (
           <Card withBorder key={item.id} data-testid="inbox-item">
@@ -49,7 +56,9 @@ export function InboxScreen() {
                 </Text>
               </Group>
             </Group>
-            <Text size="sm">{item.body}</Text>
+            <Text size="sm" style={{ whiteSpace: 'pre-line' }}>
+              {item.body}
+            </Text>
           </Card>
         );
       })}

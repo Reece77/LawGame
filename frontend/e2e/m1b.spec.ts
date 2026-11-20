@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { continueMonth } from './helpers.js';
 
 // PT-M1b: hire a first-year class through the campus cycle (spec 5.7). Register in January,
 // the summer associates arrive in May, offers go out in August, the class starts the
@@ -17,10 +18,9 @@ test('hire a first-year class through the campus cycle', async ({ page }) => {
   await expect(page.getByTestId('campus-panel')).toContainText('Registered: Corporate and M&A');
   await expect(page.getByTestId('energy')).toHaveText('Energy 55 / 60');
 
-  const cont = page.getByRole('button', { name: 'Continue' });
   const date = page.getByTestId('date');
   for (const month of ['Feb', 'Mar', 'Apr', 'May']) {
-    await cont.click();
+    await continueMonth(page);
     await expect(date).toHaveText(`${month} 2005`);
   }
   await expect(page.getByTestId('campus-status')).toContainText('summer programme is running');
@@ -29,7 +29,7 @@ test('hire a first-year class through the campus cycle', async ({ page }) => {
   await expect(rows.first().getByRole('button', { name: 'Make offer' })).toBeDisabled();
 
   for (const month of ['Jun', 'Jul', 'Aug']) {
-    await cont.click();
+    await continueMonth(page);
     await expect(date).toHaveText(`${month} 2005`);
   }
   await expect(page.getByTestId('campus-status')).toContainText('Offer month');
@@ -48,7 +48,7 @@ test('hire a first-year class through the campus cycle', async ({ page }) => {
   }
   await expect(page.getByTestId('offers-table').locator('tr')).toHaveCount(5);
 
-  await cont.click();
+  await continueMonth(page);
   await expect(date).toHaveText('Sep 2005');
   await expect(page.getByTestId('signed').first()).toContainText('starts Sep 2006');
   const signed = await page.getByTestId('signed').count();
@@ -73,7 +73,7 @@ test('hire a first-year class through the campus cycle', async ({ page }) => {
     'Sep 2006',
     'Oct 2006',
   ]) {
-    await cont.click();
+    await continueMonth(page);
     await expect(date).toHaveText(label);
   }
   await expect(page.getByText(/starts today/).first()).toBeVisible();

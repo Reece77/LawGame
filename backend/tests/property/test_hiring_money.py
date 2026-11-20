@@ -13,6 +13,7 @@ import contextlib
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
+from ptk.sim.billing import books
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import SimError
 from ptk.sim.hiring.actions import Interview, MakeOffer, OpenSearch, SetPayPolicy
@@ -63,19 +64,37 @@ def test_every_money_movement_balances(
         game.advance()
     capital = 0
     paid = 0
+    collected = 0
+    # PT-M3b: billing's entries bring fees in (and release provisions); they balance like
+    # every entry, and tests/property/test_billing.py checks them in full.
+    billing = {
+        books.WIP_POSTED,
+        books.BILLS,
+        books.RETAINERS,
+        books.COLLECTIONS,
+        books.CLIENT_TRANSFERS,
+        books.CREDIT_NOTES,
+        books.WRITE_OFFS,
+        books.CLOSINGS,
+        books.PROVISIONS,
+    }
     for entry in game.entries:
         assert len(entry.lines) >= 2
         assert sum(line.amount for line in entry.lines) == 0
         for line in entry.lines:
             assert isinstance(line.amount, int) and not isinstance(line.amount, bool)
             assert line.account in accounts
-            if line.account.startswith(("5", "6")):
+            if line.account.startswith(("5", "6")) and entry.memo not in billing:
                 assert line.amount >= 0  # costs are debits
         cash = sum(ln.amount for ln in entry.lines if ln.account == "1000_cash")
-        if entry.memo == "Founding partners' capital":
+        if entry.memo in billing:
+            assert entry.memo in (books.COLLECTIONS, books.CLIENT_TRANSFERS) or cash == 0
+            assert cash >= 0  # billing only brings money in
+            collected += cash
+        elif entry.memo == "Founding partners' capital":
             capital += cash
         else:
             assert cash <= 0  # PT-M1b moves money out of the firm only
             paid -= cash
     assert sum(game.balances.values()) == 0
-    assert game.cash() == capital - paid
+    assert game.cash() == capital + collected - paid

@@ -5,12 +5,15 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+from sqlalchemy import select
 
 from ptk.db import backup, saves, state_io
+from ptk.db.models import LedgerLineRow
+from ptk.db.session import make_sessionmaker, shared_engine
 from ptk.loader import load_balance
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import GameOverError, SaveExistsError
-from ptk.sim.ledger import CASH
+from ptk.sim.ledger import CASH, FEES, RECEIVABLES
 from tests.conftest import DATA_DIR
 
 BALANCE = load_balance(DATA_DIR)
@@ -42,9 +45,24 @@ def test_full_campaign_ends_in_december_2034(
     state, balances = saves.read_state(path)
     assert state.save_meta.game_state == "campaign_complete"
     assert state.save_meta.ended_turn == 359
-    # PT-M1b: payroll and rent now spend the founders' capital; the books still balance.
+    # PT-M1b: payroll and rent spend the founders' capital; PT-M3b: fees come in. The books
+    # still balance, every month's turn left the save whole, and cash is the capital plus
+    # what was collected less what was paid.
     assert sum(balances.values()) == 0
-    assert balances[(1, CASH)] < 60_000_000
+    assert balances[(1, FEES)] < 0 and balances[(1, RECEIVABLES)] >= 0
+    with make_sessionmaker(shared_engine(path))() as session:
+        collected = paid = 0
+        for (amount,) in session.execute(
+            select(LedgerLineRow.amount_cents).where(
+                LedgerLineRow.account == CASH
+            )
+        ):
+            if amount > 0:
+                collected += amount
+            else:
+                paid -= amount
+    assert balances[(1, CASH)] == collected - paid
+    assert collected > 60_000_000  # capital plus collections
     with pytest.raises(GameOverError):
         saves.run_turn(path, balance, data)
     backup.wait(path)

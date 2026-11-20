@@ -11,6 +11,7 @@ from pathlib import Path
 from sqlalchemy import func, select
 
 from ptk.db import backup, migrate
+from ptk.db.billing_io import write_billing
 from ptk.db.market_io import write_market
 from ptk.db.models import DecisionLogRow, FirmRow, SaveMetaRow, TurnSnapshotRow
 from ptk.db.org_io import write_delegate_actions
@@ -128,6 +129,7 @@ def run_turn(path: Path, balance: Balance, data: GameData) -> TurnResult:
             result.log_items,
             result.snapshot,
             data.inbox_templates,
+            result.client_book,
         )
         write_delegate_actions(session, state.turn, result.delegate_actions)
     if result.new_state.turn % balance.backups.every_turns == 0:
@@ -161,6 +163,7 @@ def run_action(path: Path, action: Action, balance: Balance, data: GameData) -> 
         write_firms(session, outcome.state)
         write_people(session, outcome.state)
         write_market(session, outcome.state.market, append_hours=False)
+        write_billing(session, outcome.state.billing)
         session.add(
             DecisionLogRow(
                 turn=state.turn,

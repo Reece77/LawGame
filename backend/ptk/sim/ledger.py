@@ -39,6 +39,15 @@ STAFF_SALARIES: Final = "5100_staff_salaries"
 BENEFITS: Final = "5200_benefits"
 RENT: Final = "6000_rent"
 RECRUITING: Final = "6200_recruiting"
+# PT-M3b: the revenue chain (ADR PT-0003 section 2).
+WIP_PROVISION: Final = "1110_wip_provision"
+BAD_DEBT_PROVISION: Final = "1210_bad_debt_provision"
+DEFERRED_FEES: Final = "2200_deferred_fees"
+SUCCESS_FEES: Final = "4100_success_fees"
+WRITE_OFFS: Final = "6700_write_offs"
+# The client-money book's accounts (never in a firm entry).
+CLIENT_BANK: Final = "C1000_client_bank"
+OWED_TO_CLIENTS: Final = "C2000_owed_to_clients"
 ENGINE_ACCOUNTS: Final = (
     CASH,
     WIP,
@@ -55,6 +64,11 @@ ENGINE_ACCOUNTS: Final = (
     BENEFITS,
     RENT,
     RECRUITING,
+    WIP_PROVISION,
+    BAD_DEBT_PROVISION,
+    DEFERRED_FEES,
+    SUCCESS_FEES,
+    WRITE_OFFS,
 )
 
 

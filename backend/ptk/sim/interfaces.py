@@ -41,9 +41,10 @@ from typing import TYPE_CHECKING, Literal, Protocol
 if TYPE_CHECKING:
     import numpy as np
 
-    from ptk.sim.data_models import Balance, GameData
+    from ptk.sim.data_models import Balance, GameData, KindDef
     from ptk.sim.ledger import AccountCode, LedgerEntry
     from ptk.sim.log import LogItem
+    from ptk.sim.matters.models import HoursRecord
     from ptk.sim.money import Cents
     from ptk.sim.state import GameState
 
@@ -248,3 +249,178 @@ def set_salary(state: GameState, person_id: int, salary: int) -> GameState:
         if e.person_id == person_id and e.counts_as_staff:
             return with_employment(state, replace(e, salary_cents=salary))
     raise OrgRuleError(f"person {person_id} is not on a firm's books")
+
+
+# --- PT-M3b (billing): what billing reads of matters, and the relationship it moves --------
+
+
+@dataclass(frozen=True, slots=True)
+class MatterBillingView:
+    """A named matter as billing sees it (lane B reads matters only through this). Carries
+    no hidden value: never merits, opposing quality or the outcome chance."""
+
+    matter_id: int
+    firm_id: int
+    client_id: int
+    practice: str
+    kind: str  # deal, case, investigation, restructuring, advisory, filing
+    kind_key: str
+    name: str
+    status: str  # open, conflicted, closed, declined
+    outcome: str | None
+    opened_turn: int
+    closed_turn: int | None
+    planned_months: int
+    expected_fees_cents: int  # at standard rates
+    stakes_cents: int  # cases: the amount in dispute
+    lead_id: int | None
+    progress: float  # 0-1: the share of the matter's phases completed
+    phases_done: int  # phases completed
+    done_share: float  # 0-1: the hours shares of the phases completed (fixed fees bill by it)
+    settlement_bp: int | None  # the other side's open offer, as a share of the stakes
+
+
+@dataclass(frozen=True, slots=True)
+class ClientBillingView:
+    """A client as billing sees it: size, price sensitivity and its general counsel's
+    temperament and integrity (engine-only; never shown)."""
+
+    client_id: int
+    name: str
+    real: bool
+    size_class: str  # large, mid
+    price_sensitivity: float  # 1-20
+    gc_temperament: float  # 1-20
+    gc_integrity: float  # 1-20
+
+
+def billing_matters(
+    state: GameState, firm_id: int, data: GameData
+) -> tuple[MatterBillingView, ...]:
+    """The firm's named matters that are open, or closed in the turn being played, by id."""
+    from ptk.sim.matters.staffing import completed_share
+
+    out: list[MatterBillingView] = []
+    turn = state.turn
+    for m in state.market.matters:
+        if m.firm_id != firm_id or not (m.is_open or m.closed_turn == turn):
+            continue
+        out.append(
+            MatterBillingView(
+                matter_id=m.id,
+                firm_id=m.firm_id,
+                client_id=m.client_id,
+                practice=m.practice,
+                kind=m.kind,
+                kind_key=m.kind_key,
+                name=m.name,
+                status=m.status,
+                outcome=m.outcome,
+                opened_turn=m.opened_turn,
+                closed_turn=m.closed_turn,
+                planned_months=m.planned_months,
+                expected_fees_cents=m.expected_fees_cents,
+                stakes_cents=m.stakes_cents,
+                lead_id=m.lead_id,
+                progress=completed_share(m, data.market.kinds[m.kind]),
+                phases_done=m.phase_index,
+                done_share=_done_share(m.phase_index, data.market.kinds[m.kind]),
+                settlement_bp=None if m.settlement is None else m.settlement.fraction_bp,
+            )
+        )
+    return tuple(out)
+
+
+def billing_matter(state: GameState, matter_id: int, data: GameData) -> MatterBillingView | None:
+    """One matter of any firm and status (for actions and views), or None."""
+    from ptk.sim.matters.staffing import completed_share
+
+    m = state.market.matter(matter_id)
+    if m is None:
+        return None
+    return MatterBillingView(
+        matter_id=m.id,
+        firm_id=m.firm_id,
+        client_id=m.client_id,
+        practice=m.practice,
+        kind=m.kind,
+        kind_key=m.kind_key,
+        name=m.name,
+        status=m.status,
+        outcome=m.outcome,
+        opened_turn=m.opened_turn,
+        closed_turn=m.closed_turn,
+        planned_months=m.planned_months,
+        expected_fees_cents=m.expected_fees_cents,
+        stakes_cents=m.stakes_cents,
+        lead_id=m.lead_id,
+        progress=completed_share(m, data.market.kinds[m.kind]),
+        phases_done=m.phase_index,
+        done_share=_done_share(m.phase_index, data.market.kinds[m.kind]),
+        settlement_bp=None if m.settlement is None else m.settlement.fraction_bp,
+    )
+
+
+def _done_share(phase_index: int, kind: KindDef) -> float:
+    return min(1.0, sum(p.share for p in kind.phases[:phase_index]))
+
+
+def blended_rate_cents(practice: str, kind_key: str, data: GameData) -> int:
+    """Cents an hour of a matter kind's task mix staffed at its natural levels (PT-M3a's
+    rate card): the base of a blended-rate engagement."""
+    from ptk.sim.matters import formulas as fx
+
+    pdef = data.practice(practice)
+    kind = data.market.kinds[pdef.kind(kind_key).kind]
+    return round(fx.blended_rate(pdef, fx.kind_tasks(kind), data))
+
+
+def billing_client(state: GameState, client_id: int) -> ClientBillingView:
+    c = state.market.client(client_id)
+    return ClientBillingView(
+        client_id=c.id,
+        name=c.name,
+        real=c.real,
+        size_class=c.size_class,
+        price_sensitivity=c.price_sensitivity,
+        gc_temperament=c.gc.personality["temperament"],
+        gc_integrity=c.gc.personality["integrity"],
+    )
+
+
+def month_hours(state: GameState, firm_id: int) -> tuple[HoursRecord, ...]:
+    """The hours of the month being played (PT-M3a's records, sorted by person, matter):
+    each record's `value_cents` is tenths x rate / 10, rounded once (ADR PT-0005 3)."""
+    staff = set(state.staff_ids(firm_id))
+    turn = state.turn
+    return tuple(r for r in state.market.hours if r.turn == turn and r.person_id in staff)
+
+
+def relationship_partner(state: GameState, client_id: int, firm_id: int) -> int | None:
+    rel = state.market.relationship(client_id, firm_id)
+    return None if rel is None else rel.partner_id
+
+
+def bump_relationship(state: GameState, client_id: int, firm_id: int, points: float) -> GameState:
+    """Move a client's relationship with the firm (billing write-downs and disputes)."""
+    from dataclasses import replace
+
+    from ptk.sim.matters.intake import bump
+
+    return replace(state, market=bump(state.market, client_id, firm_id, points))
+
+
+def relationship_score(state: GameState, client_id: int, firm_id: int) -> float:
+    """The client's relationship with the firm, 0-100 (0 without one)."""
+    rel = state.market.relationship(client_id, firm_id)
+    return 0.0 if rel is None else rel.score
+
+
+def fee_earner_capacity_tenths(
+    state: GameState, firm_id: int, data: GameData, balance: Balance
+) -> int:
+    """The month's capacity of the firm's lawyers and paralegals, in tenths (utilisation's
+    denominator, ADR PT-0005 4)."""
+    from ptk.sim.matters.staffing import fee_earners
+
+    return sum(f.capacity for f in fee_earners(state, firm_id, data, balance))

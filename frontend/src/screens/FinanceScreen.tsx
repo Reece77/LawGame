@@ -11,7 +11,16 @@ import {
 } from '@mantine/core';
 import { useState } from 'react';
 import { useParams } from 'react-router';
-import { useBills, useFinance, useRespondDispute, type Bill, type Finance } from '../lib/api';
+import {
+  useBills,
+  useFinance,
+  usePartnership,
+  useRespondDispute,
+  type Bill,
+  type Finance,
+  type Partnership,
+} from '../lib/api';
+import { RevolverCard } from './PartnershipScreen';
 import { formatBpPercent, formatMoneyWhole } from '../lib/format';
 
 // The Finance screen (spec 16; PT-M3b): the revenue chain's KPIs, the P&L in its accrual and
@@ -275,10 +284,59 @@ function Bills({ slug, bills }: { slug: string; bills: Bill[] }) {
   );
 }
 
+// PT-M4: partners' capital and current accounts, draws and the true-up (ADR PT-0003 5-6).
+function CapitalAccounts({ p }: { p: Partnership }) {
+  return (
+    <Card withBorder data-testid="capital-accounts">
+      <Title order={4} mb="xs">
+        Capital accounts and draws {p.draws_suspended ? '(draws suspended)' : ''}
+      </Title>
+      <Table>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>Partner</Table.Th>
+            <Table.Th ta="right">Capital</Table.Th>
+            <Table.Th ta="right">Required</Table.Th>
+            <Table.Th ta="right">Drawn this year</Table.Th>
+            <Table.Th ta="right">Current account</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
+          {p.partners
+            .filter((x) => x.klass === 'equity')
+            .map((x) => (
+              <Table.Tr key={x.person_id}>
+                <Table.Td>{x.name}</Table.Td>
+                <Table.Td className="tst-num" ta="right">
+                  {formatMoneyWhole(x.capital_cents)}
+                </Table.Td>
+                <Table.Td className="tst-num" ta="right">
+                  {formatMoneyWhole(x.capital_required_cents)}
+                </Table.Td>
+                <Table.Td className="tst-num" ta="right">
+                  {formatMoneyWhole(x.drawn_ytd_cents)}
+                </Table.Td>
+                <Table.Td className="tst-num" ta="right">
+                  {formatMoneyWhole(x.current_cents)}
+                </Table.Td>
+              </Table.Tr>
+            ))}
+        </Table.Tbody>
+      </Table>
+      <Text size="xs" c="dimmed">
+        Capital owed to partners who left: {formatMoneyWhole(p.capital_returns_cents)}, repaid over
+        three years. True-up owed: {formatMoneyWhole(p.true_up_owed_cents)}, paid January to April
+        as cash allows.
+      </Text>
+    </Card>
+  );
+}
+
 export function FinanceScreen() {
   const { slug = '' } = useParams();
   const finance = useFinance(slug);
   const bills = useBills(slug);
+  const partnership = usePartnership(slug);
   if (!finance.data) return <Text c="dimmed">Loading…</Text>;
   const f = finance.data;
   return (
@@ -292,6 +350,12 @@ export function FinanceScreen() {
         <Ageing title="Receivables by age" rows={f.receivables_ageing} testId="ar-ageing" />
       </SimpleGrid>
       <Bills slug={slug} bills={bills.data ?? []} />
+      {partnership.data && (
+        <SimpleGrid cols={{ base: 1, md: 2 }}>
+          <CapitalAccounts p={partnership.data} />
+          <RevolverCard p={partnership.data} />
+        </SimpleGrid>
+      )}
     </Stack>
   );
 }

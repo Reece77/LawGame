@@ -112,7 +112,7 @@ class VoteOut(BaseModel):
     no_weight: float
 
 
-class CandidateOut(BaseModel):
+class PartnerCandidateOut(BaseModel):
     person_id: int
     name: str
     level: str
@@ -206,8 +206,14 @@ class ExplainOut(BaseModel):
     collection_bp: int | None
 
 
+class PracticeOut(BaseModel):
+    key: str
+    label: str
+
+
 class PartnershipOut(BaseModel):
     stage: int
+    practices: list[PracticeOut]  # for the lateral search
     mp_name: str | None
     you_are_mp: bool
     election_choice_pending: bool
@@ -218,7 +224,7 @@ class PartnershipOut(BaseModel):
     whip: WhipOut
     partners: list[PartnerOut]
     votes: list[VoteOut]
-    candidates: list[CandidateOut]
+    candidates: list[PartnerCandidateOut]
     approaches: list[ApproachOut]
     departures: list[DepartureOut]
     laterals: list[LateralOut]
@@ -432,7 +438,7 @@ def partnership_view(
         primary = data.role(person.role).primary
         need = practice_utilisation(state, firm, practice, balance, data)
         candidates.append(
-            CandidateOut(
+            PartnerCandidateOut(
                 person_id=pid,
                 name=name(person),
                 level=person.level,
@@ -544,6 +550,7 @@ def partnership_view(
     mp = fp.mp_id
     return PartnershipOut(
         stage=state.player.stage,
+        practices=[PracticeOut(key=pr.key, label=pr.label) for pr in data.practices],
         mp_name=name(state.person(mp)) if mp else None,
         you_are_mp=mp is not None and mp == you,
         election_choice_pending=fp.election_lost_turn is not None,
@@ -726,7 +733,27 @@ def _debug_router(errors: dict[int | str, dict[str, Any]]) -> APIRouter:
             rng = RngFactory(state.save_meta.master_seed)
             panel = data.clients.panel_firms[0]
             suitor = Suitor(panel.key, panel.name)
-            if kind == "approach":
+            if kind == "candidate":
+                from dataclasses import replace as _replace
+
+                from ptk.sim.interfaces import HookResult
+                from ptk.sim.partnership.models import with_partner
+                from ptk.sim.state import with_people
+
+                pid = body.person_id or next(
+                    e.person_id
+                    for e in state.staff(state.player.id)
+                    if state.person(e.person_id).level.startswith("associate")
+                )
+                person = state.person(pid)
+                primary = data.role(person.role).primary
+                skills = person.skills.updated(dict.fromkeys(primary, 18.0))
+                st = with_people(state, [_replace(person, level="associate_8", skills=skills)])
+                for p in fp.partners:
+                    fp = with_partner(fp, _replace(p, confidence=100.0))
+                st = _replace(st, partnership=_replace(st.partnership, firms=(fp,)))
+                res = HookResult(st)
+            elif kind == "approach":
                 value = hook.market_value_cents(state, pid, balance, data)
                 res = hook.approach(
                     state, ApproachRequest(pid, suitor, value, 1), balance=balance, data=data
@@ -758,6 +785,16 @@ def _debug_router(errors: dict[int | str, dict[str, Any]]) -> APIRouter:
     )
     def approach(slug: str, body: DebugIn) -> PartnershipOut:
         return _apply(slug, body, "approach")
+
+    @router.post(
+        f"{base}/candidate",
+        response_model=PartnershipOut,
+        responses=errors,
+        operation_id="debugCandidate",
+        include_in_schema=False,
+    )
+    def candidate(slug: str, body: DebugIn) -> PartnershipOut:
+        return _apply(slug, body, "candidate")
 
     @router.post(
         f"{base}/depart",

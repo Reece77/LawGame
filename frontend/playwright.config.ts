@@ -32,7 +32,12 @@ export default defineConfig({
       command: `uv run uvicorn ptk.api.app:app --port ${API_PORT}`,
       cwd: '../backend',
       url: `http://127.0.0.1:${API_PORT}/api/meta`,
-      env: { PTK_SAVE_DIR: saveDir, PTK_LLM_ADAPTER: 'mock', PTK_SQLITE_SYNC: 'OFF' },
+      env: {
+        PTK_SAVE_DIR: saveDir,
+        PTK_LLM_ADAPTER: 'mock',
+        PTK_SQLITE_SYNC: 'OFF',
+        PTK_DEBUG_ROUTES: '1', // test-only routes (PT-M4's e2e: set up a vote, an approach)
+      },
       reuseExistingServer: false,
       timeout: 120_000,
     },

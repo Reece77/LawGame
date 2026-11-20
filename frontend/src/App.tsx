@@ -6,6 +6,7 @@ import { MainMenu } from './screens/MainMenu';
 import { NewGameScreen } from './screens/NewGameScreen';
 import { OrgScreen } from './screens/OrgScreen';
 import { OverviewScreen } from './screens/OverviewScreen';
+import { PartnershipScreen } from './screens/PartnershipScreen';
 import { PeopleScreen } from './screens/PeopleScreen';
 import { PersonScreen } from './screens/PersonScreen';
 import { RecruitmentScreen } from './screens/RecruitmentScreen';
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="inbox" element={<InboxScreen />} />
           <Route path="org" element={<OrgScreen />} />
           <Route path="finance" element={<FinanceScreen />} />
+          <Route path="partnership" element={<PartnershipScreen />} />
         </Route>
       </Routes>
     </BrowserRouter>

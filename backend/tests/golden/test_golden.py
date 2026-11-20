@@ -20,7 +20,7 @@ SEEDS = (1, 2, 3)
 def _fingerprint(path: Path, balance: Balance, data: GameData) -> dict[str, object]:
     digest = hashlib.sha256()
     for _ in range(balance.campaign.standard_turns):
-        result = saves.run_turn(path, balance, data)
+        result = saves.run_turn(path, balance, data, answer_critical=True)  # a script (PT-M6)
         payload = {
             "turn": result.snapshot.turn,
             "kpis": [f.kpis() for f in result.snapshot.firms],

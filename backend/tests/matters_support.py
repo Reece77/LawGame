@@ -9,6 +9,7 @@ from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
 from ptk.sim.hiring.models import PersonState
 from ptk.sim.hiring.phases import firm_pay_cents, starting_pay
+from ptk.sim.ledger import apply_entries
 from ptk.sim.matters.intake import with_relationship
 from ptk.sim.matters.market import base_monthly_demand, firm_reputation, player_share, wallets
 from ptk.sim.matters.models import Relationship
@@ -52,13 +53,40 @@ def game(
 
 
 def play(
-    state: GameState, data: GameData, balance: Balance, turns: int, seed: int = 1
+    state: GameState,
+    data: GameData,
+    balance: Balance,
+    turns: int,
+    seed: int = 1,
+    *,
+    write_events: bool = False,
+    ledger: dict[tuple[int, str], int] | None = None,
 ) -> tuple[GameState, list[TurnResult]]:
+    """`write_events` (PT-M6): write each turn's events with the mock adapter, as a save does
+    (round trips against a save); without it events stay unwritten and have no effect.
+    `ledger` (PT-M4): carry these opening balances turn to turn, under the real balance (a
+    round trip against a save); without it each turn starts from no balances and the firm
+    cannot go insolvent."""
     results = []
+    carried = None if ledger is None else dict(ledger)
     for _ in range(turns):
-        result = advance_turn(state, Decisions(), RngFactory(seed), solvent(balance), data, {})
+        result = advance_turn(
+            state,
+            Decisions(),
+            RngFactory(seed),
+            balance if carried is not None else solvent(balance),
+            data,
+            carried if carried is not None else {},
+            answer_critical=write_events,
+        )
+        if carried is not None:
+            carried = apply_entries(carried, result.ledger_entries)
         results.append(result)
         state = result.new_state
+        if write_events:
+            from tests.hiring_helpers import mock_events
+
+            state = mock_events(state, balance, data)
     return state, results
 
 

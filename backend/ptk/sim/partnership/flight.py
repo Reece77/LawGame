@@ -42,7 +42,14 @@ from ptk.sim.log import LinkKind, LogItem, inbox_item
 from ptk.sim.matters.intake import with_relationship
 from ptk.sim.money import Cents
 from ptk.sim.partnership import formulas as fx
-from ptk.sim.partnership.common import book_cents, firm_partnership, home_practice, name, put
+from ptk.sim.partnership.common import (
+    book_cents,
+    firm_partnership,
+    home_practice,
+    name,
+    put,
+    queue_event,
+)
 from ptk.sim.partnership.governance import median_book
 from ptk.sim.partnership.models import (
     Approach,
@@ -64,6 +71,7 @@ from ptk.sim.state import GameState, with_employment
 type Draws = Callable[[], np.random.Generator]
 
 PERSON: LinkKind = "person"
+GROUP_EXIT_MONTHS = 6  # tunable-exempt: spec 15's partner group exit, within six months
 END_REASONS: dict[str, EndReason] = {
     "approach": "poached",
     "flight": "poached",
@@ -486,6 +494,20 @@ def depart_partner(
     if fp.mp_id == person_id:
         fp = replace(fp, mp_id=state.founder_of(firm))
     state = put(state, fp)
+    group = [
+        d.person_id
+        for d in fp.departures
+        if d.equity and d.practice == practice and turn - d.turn < GROUP_EXIT_MONTHS
+    ]
+    if p.equity and len(group) >= 2:  # tunable-exempt: a group is two or more
+        state = queue_event(
+            state,
+            firm,
+            "partner_group_exit",
+            balance,
+            person_ids=tuple(group),
+            practice=practice,
+        )
     e = state.employment_of(person_id)
     if e is not None:
         state = with_employment(

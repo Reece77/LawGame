@@ -350,6 +350,109 @@ class MarketDemandRow(Base):
     demand_cents: Mapped[int] = mapped_column(BigInteger)  # the last month played
 
 
+# --- Events and the LLM (schema v7, PT-M6) ---------------------------------------------------
+# Events, storylines, queued events, modifiers and colleague pairs are current state, rewritten
+# each turn and after each answer; the LLM's texts and call log are append-only (a text's words
+# are filled in once, after its turn commits).
+
+
+class GameEventRow(Base):
+    __tablename__ = "game_event"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    firm_id: Mapped[int] = mapped_column(ForeignKey("firm.id"), index=True)
+    turn: Mapped[int] = mapped_column(Integer, index=True)
+    template_id: Mapped[str] = mapped_column(String(60))
+    category: Mapped[str] = mapped_column(String(20))
+    severity: Mapped[str] = mapped_column(String(10))
+    status: Mapped[str] = mapped_column(String(10), index=True)
+    title: Mapped[str] = mapped_column(Text)
+    data_json: Mapped[str] = mapped_column(Text)  # the rest of the GameEvent, choices included
+
+
+class StorylineRow(Base):
+    __tablename__ = "storyline"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    firm_id: Mapped[int] = mapped_column(ForeignKey("firm.id"), index=True)
+    key: Mapped[str] = mapped_column(String(60))
+    status: Mapped[str] = mapped_column(String(10))
+    data_json: Mapped[str] = mapped_column(Text)
+
+
+class QueuedEventRow(Base):
+    __tablename__ = "queued_event"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    firm_id: Mapped[int] = mapped_column(ForeignKey("firm.id"), index=True)
+    template_id: Mapped[str] = mapped_column(String(60))
+    due_turn: Mapped[int] = mapped_column(Integer)
+    done: Mapped[bool]
+    data_json: Mapped[str] = mapped_column(Text)
+
+
+class EventModifierRow(Base):
+    __tablename__ = "event_modifier"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    firm_id: Mapped[int] = mapped_column(ForeignKey("firm.id"), index=True)
+    event_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    target: Mapped[str] = mapped_column(String(40))
+    stat: Mapped[str] = mapped_column(String(40))
+    value_pct: Mapped[float] = mapped_column(Float)
+    start_turn: Mapped[int] = mapped_column(Integer)
+    end_turn: Mapped[int] = mapped_column(Integer)
+
+
+class ColleaguePairRow(Base):
+    __tablename__ = "colleague_pair"
+    a: Mapped[int] = mapped_column(ForeignKey("person.id"), primary_key=True)
+    b: Mapped[int] = mapped_column(ForeignKey("person.id"), primary_key=True)
+    value: Mapped[float] = mapped_column(Float)  # hidden: the player sees a label
+    start: Mapped[float] = mapped_column(Float)
+    since_turn: Mapped[int] = mapped_column(Integer)
+
+
+class EventCountersRow(Base):
+    """The next ids of the events tables (records are dropped, so max + 1 is not enough)."""
+
+    __tablename__ = "event_counters"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)  # always 1
+    next_event_id: Mapped[int] = mapped_column(Integer)
+    next_storyline_id: Mapped[int] = mapped_column(Integer)
+    next_queued_id: Mapped[int] = mapped_column(Integer)
+    next_modifier_id: Mapped[int] = mapped_column(Integer)
+
+
+class LLMTextRow(Base):
+    """A read-only text (TST 16.8): pending when its turn commits, written after."""
+
+    __tablename__ = "llm_text"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    turn: Mapped[int] = mapped_column(Integer, index=True)
+    firm_id: Mapped[int] = mapped_column(Integer)
+    kind: Mapped[str] = mapped_column(String(30))
+    ref_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    status: Mapped[str] = mapped_column(String(10), index=True)  # pending, written
+    text: Mapped[str] = mapped_column(Text)
+    source: Mapped[str] = mapped_column(String(20))
+
+
+class LLMCallLogRow(Base):
+    """Every adapter call (ADR-0005 section 6): append-only, for the meter and debugging."""
+
+    __tablename__ = "llm_call_log"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    turn: Mapped[int] = mapped_column(Integer, index=True)
+    purpose: Mapped[str] = mapped_column(String(30))
+    model: Mapped[str] = mapped_column(String(60))
+    prompt_hash: Mapped[str] = mapped_column(String(16))
+    input_tokens: Mapped[int] = mapped_column(Integer)
+    output_tokens: Mapped[int] = mapped_column(Integer)
+    cost_cents: Mapped[float] = mapped_column(Float)  # tenths of a cent matter; money-exact: meter
+    latency_ms: Mapped[int] = mapped_column(Integer)
+    outcome: Mapped[str] = mapped_column(String(20))
+    created_at: Mapped[str] = mapped_column(String(32))  # wall clock: the meter only
+    prompt: Mapped[str | None] = mapped_column(Text, nullable=True)  # PTK_LLM_DEBUG=1 only
+    response: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+
 # --- Billing (schema v6, PT-M3b). Engagements and bills keep every row (closed ones stay for
 # history; the state loads the open ones); flow accounts and padders are current state;
 # billing_month holds each month's totals; the client book is append-only.
@@ -419,7 +522,7 @@ class ClientBookLineRow(Base):
     amount_cents: Mapped[int] = mapped_column(BigInteger)
 
 
-# --- PT-M4: the partnership (schema v7) -----------------------------------------------------
+# --- PT-M4: the partnership (schema v8) -----------------------------------------------------
 
 
 class PartnershipRow(Base):

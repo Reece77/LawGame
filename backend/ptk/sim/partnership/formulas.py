@@ -1,5 +1,11 @@
 """Pure partnership formulas (spec 5.5, 8.1-8.7; ADR PT-0003, PT-0007). Money in integer
-cents; shares as floats only on the way to an exact split (`split_cents`)."""
+cents; shares as floats only on the way to an exact split (`split_cents`).
+
+Ported from backend/tst/sim/finance/formulas.py @ 02fba2aa (Tech Startup Tycoon), the
+confidence rule only: `clamp_confidence` and `next_confidence` (B <- B + rate (T - B)) as is;
+changed: the target's terms are ADR PT-0007 1's (a partner's PEP against expectation, the
+firm's PEP trend, the MP's persona, money trouble, departures) instead of growth, runway and
+patience; TST's confidence label becomes the whip count's label and ranges."""
 
 from __future__ import annotations
 

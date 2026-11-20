@@ -16,6 +16,7 @@ from dataclasses import replace
 
 from ptk.sim.calendar import YearMonth, turn_to_ym
 from ptk.sim.data_models import Balance, GameData
+from ptk.sim.events.modifiers import person_factor
 from ptk.sim.people.growth import grow_person
 from ptk.sim.people.models import Person, RevealState, WorkMonth
 from ptk.sim.people.reveal import apply_knowledge_action
@@ -24,6 +25,7 @@ from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
 
 EMPLOYED_ACTION = "employed_month"
+STRAIN_GAIN = "strain_gain"  # PT-M6: an event modifier's stat
 
 
 def advance_class_year(person: Person, turn: int, start: YearMonth, balance: Balance) -> Person:
@@ -54,7 +56,7 @@ def people_month(
         month = work.get(person.id, WorkMonth(person_id=person.id))
         m_growth = 1.0 if mentoring is None else mentoring.get(person.id, 1.0)
         p = grow_person(person, turn, rng, data, balance, month, m_growth)
-        p = strain_month(p, turn, month, balance)
+        p = strain_month(p, turn, month, balance, person_factor(state, p.id, STRAIN_GAIN))
         updated[p.id] = p if p.id in joined else advance_class_year(p, turn, start, balance)
     people = tuple(updated.get(p.id, p) for p in state.people)
 

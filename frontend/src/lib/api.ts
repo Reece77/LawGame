@@ -1,5 +1,6 @@
 // Server-state hooks over the generated client (ADR-0009). No game logic here.
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMemo } from 'react';
 import { api, type Schemas } from '../api/client';
 
 export type Game = Schemas['GameOut'];
@@ -80,6 +81,12 @@ export function useAdvance(slug: string) {
         'payroll',
         'org',
         'finance',
+        'matters',
+        'clients',
+        'practices',
+        'explain',
+        'events',
+        'texts',
         'partnership',
       ]) {
         void client.invalidateQueries({ queryKey: [key, slug] });
@@ -242,6 +249,24 @@ export const useBills = (slug: string) =>
       unwrap(await api.GET('/api/saves/{slug}/finance/bills', { params: { path: { slug } } })),
   });
 
+/** Every bill the firm holds (open, and closed since last month), for a matter's page. */
+export const useRecentBills = (slug: string) =>
+  useQuery({
+    queryKey: ['finance', slug, 'bills', 'recent'],
+    queryFn: async () =>
+      unwrap(
+        await api.GET('/api/saves/{slug}/finance/bills', {
+          params: { path: { slug }, query: { status: 'recent' } },
+        }),
+      ),
+  });
+
+/** Each matter's money (PT-M3b) by matter id, for the Matters screens. */
+export function useMatterMoneyById(slug: string): Map<number, MatterMoney> {
+  const data = useMatterMoney(slug).data;
+  return useMemo(() => new Map((data ?? []).map((m) => [m.matter_id, m])), [data]);
+}
+
 export const useMatterMoney = (slug: string) =>
   useQuery({
     queryKey: ['finance', slug, 'matters'],
@@ -277,6 +302,308 @@ export function useWriteDown(slug: string) {
         }),
       ),
     onSuccess: (rows) => client.setQueryData(['finance', slug, 'matters'], rows),
+  });
+}
+
+// --- PT-M3c: matters, clients and practices screens ---------------------------------------
+
+export type MatterRow = Schemas['MatterRowOut'];
+export type MatterDetail = Schemas['MatterOut'];
+export type StaffingBoard = Schemas['StaffingBoardOut'];
+export type BoardPerson = Schemas['BoardPersonOut'];
+export type ClientRow = Schemas['ClientRowOut'];
+export type ClientDetail = Schemas['ClientOut'];
+export type PracticeScreenRow = Schemas['PracticeScreenOut'];
+export type ExplainData = Schemas['ExplainOut'];
+export type ExplainMetric = ExplainData['metric'];
+export type MatterStatusFilter = 'open' | 'conflicted' | 'closed' | 'declined' | 'all';
+
+export const useMatters = (slug: string, status: MatterStatusFilter = 'open') =>
+  useQuery({
+    queryKey: ['matters', slug, 'list', status],
+    queryFn: async () =>
+      unwrap(
+        await api.GET('/api/saves/{slug}/matters', {
+          params: { path: { slug }, query: { status } },
+        }),
+      ),
+  });
+
+export const useMatter = (slug: string, matterId: number) =>
+  useQuery({
+    queryKey: ['matters', slug, matterId],
+    queryFn: async () =>
+      unwrap(
+        await api.GET('/api/saves/{slug}/matters/{matter_id}', {
+          params: { path: { slug, matter_id: matterId } },
+        }),
+      ),
+  });
+
+export const useStaffingBoard = (slug: string, matterId: number) =>
+  useQuery({
+    queryKey: ['matters', slug, matterId, 'board'],
+    queryFn: async () =>
+      unwrap(
+        await api.GET('/api/saves/{slug}/matters/{matter_id}/board', {
+          params: { path: { slug, matter_id: matterId } },
+        }),
+      ),
+  });
+
+/** A matter action: the engine applies it at once and returns the fresh matter. */
+export type MatterAction =
+  | { kind: 'assign'; personId: number; hours: number }
+  | { kind: 'hours'; personId: number; hours: number }
+  | { kind: 'remove'; personId: number }
+  | { kind: 'lead'; personId: number }
+  | { kind: 'default' }
+  | { kind: 'waiver'; advance: boolean }
+  | { kind: 'settlement'; accept: boolean }
+  | { kind: 'forum'; court: string };
+
+async function runMatter(slug: string, id: number, a: MatterAction): Promise<MatterDetail> {
+  const path = { slug, matter_id: id };
+  switch (a.kind) {
+    case 'assign':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/matters/{matter_id}/team', {
+          params: { path },
+          body: { person_id: a.personId, hours: a.hours },
+        }),
+      );
+    case 'hours':
+      return unwrap(
+        await api.PUT('/api/saves/{slug}/matters/{matter_id}/team/{person_id}', {
+          params: { path: { ...path, person_id: a.personId } },
+          body: { hours: a.hours },
+        }),
+      );
+    case 'remove':
+      return unwrap(
+        await api.DELETE('/api/saves/{slug}/matters/{matter_id}/team/{person_id}', {
+          params: { path: { ...path, person_id: a.personId } },
+        }),
+      );
+    case 'lead':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/matters/{matter_id}/lead', {
+          params: { path },
+          body: { person_id: a.personId },
+        }),
+      );
+    case 'default':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/matters/{matter_id}/default-staffing', {
+          params: { path },
+        }),
+      );
+    case 'waiver':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/matters/{matter_id}/waiver', {
+          params: { path },
+          body: { advance: a.advance },
+        }),
+      );
+    case 'settlement':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/matters/{matter_id}/settlement', {
+          params: { path },
+          body: { accept: a.accept },
+        }),
+      );
+    case 'forum':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/matters/{matter_id}/forum', {
+          params: { path },
+          body: { court: a.court },
+        }),
+      );
+  }
+}
+
+export function useMatterAction(slug: string, matterId: number) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (a: MatterAction) => runMatter(slug, matterId, a),
+    onSuccess: (matter) => {
+      client.setQueryData(['matters', slug, matterId], matter);
+      for (const key of [
+        'matters',
+        'clients',
+        'practices',
+        'explain',
+        'game',
+        'inbox',
+        'finance',
+      ]) {
+        void client.invalidateQueries({ queryKey: [key, slug] });
+      }
+    },
+  });
+}
+
+export const useClients = (slug: string) =>
+  useQuery({
+    queryKey: ['clients', slug],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/saves/{slug}/clients', { params: { path: { slug } } })),
+  });
+
+export const useClient = (slug: string, clientId: number) =>
+  useQuery({
+    queryKey: ['clients', slug, clientId],
+    queryFn: async () =>
+      unwrap(
+        await api.GET('/api/saves/{slug}/clients/{client_id}', {
+          params: { path: { slug, client_id: clientId } },
+        }),
+      ),
+  });
+
+export function useIntroduce(slug: string, clientId: number) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: { colleague_id: number; practice: string }) =>
+      unwrap(
+        await api.POST('/api/saves/{slug}/clients/{client_id}/introduce', {
+          params: { path: { slug, client_id: clientId } },
+          body,
+        }),
+      ),
+    onSuccess: (view) => {
+      client.setQueryData(['clients', slug, clientId], view);
+      for (const key of ['clients', 'game', 'inbox']) {
+        void client.invalidateQueries({ queryKey: [key, slug] });
+      }
+    },
+  });
+}
+
+export const usePracticesScreen = (slug: string) =>
+  useQuery({
+    queryKey: ['practices', slug],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/saves/{slug}/practices/screen', { params: { path: { slug } } })),
+  });
+
+export const useExplain = (
+  slug: string,
+  metric: ExplainMetric,
+  entity: string | null,
+  enabled: boolean,
+) =>
+  useQuery({
+    queryKey: ['explain', slug, metric, entity],
+    enabled,
+    queryFn: async () =>
+      unwrap(
+        await api.GET('/api/saves/{slug}/explain/{metric}', {
+          params: { path: { slug, metric }, query: entity === null ? {} : { entity } },
+        }),
+      ),
+  });
+
+export const usePracticeMarket = (slug: string) =>
+  useQuery({
+    queryKey: ['practices', slug, 'market'],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/saves/{slug}/practices', { params: { path: { slug } } })),
+  });
+
+/** Practice key -> label, for display (from the practices endpoint). */
+export function usePracticeLabels(slug: string): (key: string) => string {
+  const data = usePracticeMarket(slug).data;
+  return useMemo(() => {
+    const labels = new Map((data ?? []).map((p) => [p.key, p.label]));
+    return (key: string) => labels.get(key) ?? key;
+  }, [data]);
+}
+
+// --- PT-M6: events, read-only texts, the LLM settings and meter ------------------------------
+
+export type GameEvent = Schemas['EventOut'];
+export type TextItem = Schemas['TextOut'];
+export type LlmSettings = Schemas['LLMSettingsOut'];
+export type LlmSettingsBody = Schemas['LLMSettingsIn'];
+export type LlmMeter = Schemas['MeterOut'];
+
+export const useEvents = (slug: string) =>
+  useQuery({
+    queryKey: ['events', slug],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/saves/{slug}/events', { params: { path: { slug } } })),
+  });
+
+export const useEvent = (slug: string, eventId: number | null) =>
+  useQuery({
+    queryKey: ['events', slug, eventId],
+    enabled: eventId !== null,
+    queryFn: async () =>
+      unwrap(
+        await api.GET('/api/saves/{slug}/events/{event_id}', {
+          params: { path: { slug, event_id: eventId ?? 0 } },
+        }),
+      ),
+  });
+
+export function useChooseEvent(slug: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ eventId, choice }: { eventId: number; choice: string }) =>
+      unwrap(
+        await api.POST('/api/saves/{slug}/events/{event_id}/choose', {
+          params: { path: { slug, event_id: eventId } },
+          body: { choice },
+        }),
+      ),
+    onSuccess: () => {
+      for (const key of [
+        'events',
+        'game',
+        'people',
+        'inbox',
+        'payroll',
+        'recruitment',
+        'org',
+        'finance',
+      ]) {
+        void client.invalidateQueries({ queryKey: [key, slug] });
+      }
+    },
+  });
+}
+
+export const useTexts = (slug: string, kind: TextItem['kind']) =>
+  useQuery({
+    queryKey: ['texts', slug, kind],
+    queryFn: async () =>
+      unwrap(
+        await api.GET('/api/saves/{slug}/texts', { params: { path: { slug }, query: { kind } } }),
+      ),
+  });
+
+export const useLlmSettings = () =>
+  useQuery({
+    queryKey: ['llm-settings'],
+    queryFn: async () => unwrap(await api.GET('/api/llm/settings')),
+  });
+
+export const useLlmMeter = () =>
+  useQuery({
+    queryKey: ['llm-meter'],
+    queryFn: async () => unwrap(await api.GET('/api/llm/meter')),
+  });
+
+export function useSetLlmSettings() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: LlmSettingsBody) =>
+      unwrap(await api.PUT('/api/llm/settings', { body })),
+    onSuccess: (settings) => {
+      client.setQueryData(['llm-settings'], settings);
+      void client.invalidateQueries({ queryKey: ['llm-meter'] });
+    },
   });
 }
 

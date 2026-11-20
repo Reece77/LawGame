@@ -80,6 +80,15 @@ class RangeCentsOut(BaseModel):
     hi: int
 
 
+class RangeBpOut(BaseModel):
+    lo: int
+    hi: int
+
+
+type PanelStatusOut = Literal["key", "active", "dormant"]
+type RiskOut = Literal["low", "medium", "high"]
+
+
 class ClientRowOut(BaseModel):
     id: int
     name: str
@@ -93,6 +102,8 @@ class ClientRowOut(BaseModel):
     key_client: bool
     open_matters: int
     wallet_estimate: RangeCentsOut  # a year, all practices: an estimate, never the true wallet
+    share_estimate: RangeBpOut  # our 12-month fees over the wallet estimate (PT-M3c)
+    panel_status: PanelStatusOut  # key client, instructed in the last year, or dormant (PT-M3c)
 
 
 class GeneralCounselOut(BaseModel):
@@ -147,6 +158,8 @@ class MatterRowOut(BaseModel):
     errors_caught: int  # errors the team caught (escaped ones surface later)
     missed_deadlines: int
     settlement: SettlementOut | None
+    risk: RiskOut  # from what the firm sees: pace, budget, deadlines (PT-M3c)
+    risk_notes: list[str]
 
 
 class TeamMemberOut(BaseModel):
@@ -239,6 +252,8 @@ def _client_row(
     rel: Relationship, state: GameState, data: GameData, balance: Balance, key: frozenset[int]
 ) -> dict[str, Any]:
     client = state.market.client(rel.client_id)
+    wallet = _wallet_estimate(client, state, data, balance)
+    recent = rel.last_instructed_turn is not None and state.turn - rel.last_instructed_turn < MONTHS
     return {
         "id": client.id,
         "name": client.name,
@@ -253,7 +268,12 @@ def _client_row(
         "open_matters": sum(
             1 for m in state.market.open_matters(rel.firm_id) if m.client_id == client.id
         ),
-        "wallet_estimate": _wallet_estimate(client, state, data, balance),
+        "wallet_estimate": wallet,
+        "share_estimate": RangeBpOut(
+            lo=10000 * rel.fees_12m // wallet.hi if wallet.hi else 0,
+            hi=10000 * rel.fees_12m // wallet.lo if wallet.lo else 0,
+        ),
+        "panel_status": "key" if client.id in key else "active" if recent else "dormant",
     }
 
 
@@ -316,6 +336,28 @@ def client_view(state: GameState, client_id: int, data: GameData, balance: Balan
     )
 
 
+def _risk(m: Matter, overdue: bool) -> tuple[RiskOut, list[str]]:
+    """A matter's risk as the firm sees it (PT-M3c): never its merits or outcome."""
+    if not m.is_open:
+        return "low", []
+    notes = []
+    if overdue:
+        notes.append("Past its due month")
+    if m.missed_deadlines:
+        notes.append(f"{m.missed_deadlines} missed deadline{'s' if m.missed_deadlines > 1 else ''}")
+    if m.worked_tenths > m.hours_needed_tenths:
+        notes.append("Over its hours budget")
+    if m.under_months:
+        notes.append("Behind the planned pace")
+    if not m.team:
+        notes.append("Nobody staffed")
+    if m.critical:
+        notes.append("Critical to the client")
+    severe = overdue or m.missed_deadlines > 0 or not m.team
+    level: RiskOut = "high" if severe or len(notes) >= 3 else "medium" if notes else "low"
+    return level, notes
+
+
 def _row_fields(m: Matter, state: GameState, data: GameData) -> dict[str, Any]:
     start = state.save_meta.start_ym
     kind = data.market.kinds[m.kind]
@@ -327,6 +369,8 @@ def _row_fields(m: Matter, state: GameState, data: GameData) -> dict[str, Any]:
     s = m.settlement
     due = m.opened_turn + m.planned_months
     client = state.market.client(m.client_id)
+    overdue = m.is_open and state.turn > due
+    risk, risk_notes = _risk(m, overdue)
     return {
         "id": m.id,
         "name": m.name,
@@ -341,7 +385,9 @@ def _row_fields(m: Matter, state: GameState, data: GameData) -> dict[str, Any]:
         "progress_pct": round(100 * completed_share(m, kind)),
         "opened_label": format_turn(m.opened_turn, start),
         "due_label": format_turn(due, start),
-        "overdue": m.is_open and state.turn > due,
+        "overdue": overdue,
+        "risk": risk,
+        "risk_notes": risk_notes,
         "budget_hours": m.hours_needed_tenths / TENTHS,
         "worked_hours": m.worked_tenths / TENTHS,
         "hours_last_month": sum(h.tenths for h in hours) / TENTHS,

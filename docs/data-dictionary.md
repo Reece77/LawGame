@@ -173,3 +173,44 @@ Billing's books beside the ledger (ADR PT-0003 §2–§3, §7; ADR PT-0005). `en
 | `client_book_line` | `id`, `entry_id`, `account`, `client_id`, `amount_cents` | int, int, str, int, bigint | `account`: `C1000_client_bank` (debit) or `C2000_owed_to_clients` (credit), by client; every entry balances, and the bank equals Σ owed at every month end |
 
 `turn_snapshot.kpis_json` gains (PT-M3b): `collections_cents`, `wip_cents`, `receivables_cents`, `utilisation_bp`, `realisation_bp`, `collection_bp`, `lockup_days`, `open_disputes`; `revenue_cents` is now the month's accrual fees.
+
+## Schema v7 (`0007_events`, PT-M6)
+
+Events, storylines, queued events, modifiers, colleague pairs and the id counters are current state, rewritten each turn, after each answer and after the event service writes a turn's events. `llm_text` and `llm_call_log` are append-only (a text's words are filled in once, after its turn commits). JSON payload columns hold the rest of each frozen sim model (`ptk/sim/events/models.py`). A colleague pair's value is hidden (the player sees a label); an event row never stores a trigger's hidden cause, only who and what it is about.
+
+| Table | Column | Type | Meaning |
+| --- | --- | --- | --- |
+| `game_event` | `id`, `firm_id`, `turn` | int | `turn` is the month the event is shown in (queued in phase 12 of the month before) |
+| | `template_id`, `category`, `severity` | str | `data/events/*.yaml` template; spec 15's category; `minor`, `major` or `critical` |
+| | `status` | str | `pending` (queued, words not yet written), `open`, `answered` (by the player), `auto` (first choice at Continue) |
+| | `title` | text | Written title (empty while pending) |
+| | `data_json` | text | `trigger`, `strength` (never shown), `person_ids`, `unit_id`, `client_id`, `matter_id`, `practice`, `months`, `amount_cents`, `cash_base_cents` (max(cash, 3 × monthly fees) when queued), `tone`, `storyline_id`, `body`, `choices` ([key, label, effects [type, target, value, stat, months], do_nothing]), `chosen`, `resolved_turn`, `source` (`claude`, `template`, `mock`) |
+| `storyline` | `id`, `firm_id`, `key`, `status` | int, int, str, str | A multi-month thread (TST 16.6); `active` or `ended` |
+| | `data_json` | text | `title`, `step`, `started_turn`, `summary`, `person_ids`, `unit_id`, `client_id`, `matter_id`, `practice`, `next_turn`, `next_template`, `ended_turn` |
+| `queued_event` | `id`, `firm_id`, `template_id`, `due_turn`, `done` | | A critical event's follow-up, or an event a later milestone's engine queues (`queue_engine_event`) |
+| | `data_json` | text | `source_event_id` (null: the engine), `person_ids`, `unit_id`, `client_id`, `matter_id`, `practice` |
+| `event_modifier` | `id`, `firm_id`, `event_id` | int | A running effect of a choice (TST 23.2); dropped when it expires |
+| | `target`, `stat` | str | `person:<id>`, `unit:<id>` or `firm:<id>`; `morale_target` or `strain_gain` |
+| | `value_pct`, `start_turn`, `end_turn` | float, int, int | The stat × (1 + value_pct / 100) from `start_turn` until `end_turn` (exclusive) |
+| `colleague_pair` | `a`, `b` | int | Two people on the same open matter team, `a < b` (TST 16.7); dropped when either leaves the firm |
+| | `value`, `start`, `since_turn` | float, float, int | Hidden relationship −100..100, its start from temperaments, the month the pair formed |
+| `event_counters` | `id` (1), `next_event_id`, `next_storyline_id`, `next_queued_id`, `next_modifier_id` | int | The next ids (expired modifiers and gone pairs are dropped, so max + 1 is not enough) |
+| `llm_text` | `id`, `turn`, `firm_id`, `kind`, `ref_id` | | A read-only text for the month played: `headlines`, `matter_brief` (`ref_id` the matter), `pitch_letter` (`ref_id` the client), `partner_memo`, `year_end_letter` |
+| | `status`, `text`, `source` | str, text, str | `pending` until the service writes it, then `written`; `claude`, `template` or `mock` |
+| `llm_call_log` | `id`, `turn`, `purpose`, `model`, `prompt_hash` | | One adapter call (ADR-0005 §6): `event`, `story` or a text kind; the first 16 hex digits of the prompt's SHA-256 |
+| | `input_tokens`, `output_tokens`, `cost_cents`, `latency_ms` | int, int, float, int | `cost_cents` is the meter's (real money, not game money) |
+| | `outcome`, `created_at` | str, str | `ok`, `rejected`, `budget`; wall-clock time (the meter only, never the sim) |
+| | `prompt`, `response` | text, null | Only with `PTK_LLM_DEBUG=1` |
+
+`inbox_item` gains templates `event` and `critical_event` (link kind `event`, the event's card) and `llm_text` (a written briefing, letter or memo; headlines show on the Overview instead).
+
+## Schema v8 (`0008_partnership`, PT-M4)
+
+The partnership is current state, rewritten each turn and after each action: one row per firm holding the whole `FirmPartnership` (`ptk/sim/partnership/models.py`) as JSON, and a row (`firm_id` 0) with the id counters. Hidden values live only in this JSON and never reach the API: each partner's `confidence` and `satisfaction`, and (in `person`) their `portability_bp`.
+
+| Table | Column | Type | Meaning |
+| --- | --- | --- | --- |
+| `partnership` | `firm_id` | int | The firm; 0 is the counters row (`next_vote_id`, `next_approach_id`) |
+| | `data_json` | text | `agreement` (the agreement's terms, spec 8.6: `comp_system`, `two_tier`, `voting`, the vote thresholds in bp, `track_years`, `mp_term_years`, `retirement_age`, `notice_months`, `capital_share_bp`, `draw_share_bp`, `retain_bp`); `mp_id`; `partners` (by person: `klass` equity or income, `admitted_turn`, `points`, `capital_required_cents`, `capital_cents` (the 3000 sub-ledger), `capital_instalment_cents`, `budget_cents` and `budget_base_cents` (draws follow the budget; quarterly re-forecasts only cut it), `drawn_ytd_cents`, `current_cents` (the 2700 sub-ledger: allocated, not yet paid), `guarantee_cents` and `guarantee_until_turn`, `promised_cents` and `promised_points` (counter-offers and promises), `comp_last_cents`, `satisfaction` and `confidence` (hidden), `gate_steps` and `adjust_bp` (the December comp round), `working_ytd_cents` (working credit), `lobbied_turn`, `seat`, `nudge` (one-off confidence points)); `capital_returns` (leavers' capital and current accounts still owed: `monthly_cents`, `remaining_capital_cents`, `remaining_current_cents`, `start_turn`); `votes` (`kind` admission, terms, capital_call, deequity, election; `subject_id`, `params`, `opened_turn`, `threshold_bp`, `status`, `resolved_turn`, `yes_weight`, `no_weight`, `ballots`: who voted which way, never a utility); `candidacies` (this December's proposals: `track`, `sponsor_id`, `year`, `vote_id`); `sponsors` ([associate, partner]); `moving_on` (up or out: `told_turn`, `leave_turn`, `in_house`); `approaches` (`suitor_key`, `suitor_name`, `suitor_firm_id`, `offer_comp_cents`, `guarantee_years`, `made_turn`, `respond_by_turn`, `status`, the counter's comp, points, guarantee years and seat, `stay_hint`: the band shown); `departures` (`turn`, `leave_turn`, `practice`, `reason`, `equity`, the suitor, `book_cents`, `follows`: [client, turn]); `laterals` (lateral partner candidates: `search_id`, `practice`, `ask_cents`, `guarantee_ask_years`, `book_lo_cents` and `book_hi_cents` (the range shown; the true book is the person's `book_cents`), `client_ids`, `conflict_ids`, `created_turn`, `expires_turn`, `diligence`, `status`, the offer); `arrivals` (a lateral's book clients still to come: [person, client, turn, practice]); `pnl` (the last 13 month ends: cumulative accrual revenue and costs, equity partners, lawyers); `pnl_closed_revenue_cents`, `pnl_closed_costs_cents` and `wc_closed_cents` (where the year began: the allocation is the year's cash-basis profit); `last_profit_cents`, `last_pep_cents`, `last_revenue_cents`; `allocated_ytd_cents` (leavers' draws allocated this year); `equity_months` and `months` (PEP's average); `facility_cents`, `breach_months`, `called_turn`, `insolvent_months` (the revolver and the bank); `draws_suspended`; `last_warning_turn` (the CFO's); `term_ends_turn`, `low_confidence_months`, `election_lost_turn`, `ousted_mp_id` (the MP's term and elections) |
+
+`turn_snapshot.kpis_json` gains (PT-M4): `pep_cents`, `rpl_cents`, `margin_bp`, `leverage_bp` (lawyers per equity partner × 10,000), `equity_partners`, `revolver_cents` (drawn); trailing twelve months. `save_meta.game_state` may also be `election_lost` (ironman only). Ledger accounts first posted in PT-M4: 2300 (revolver), 2700 (partner current accounts), 3000 (capital in and out), 3100 (profit allocated), 3200 (draws), 6600 (lateral diligence), 6800 (revolver interest); a lateral partner's recruiter retainer and fee go to 6200.

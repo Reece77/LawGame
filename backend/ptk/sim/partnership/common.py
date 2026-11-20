@@ -118,3 +118,23 @@ def profit_12m(fp: FirmPartnership) -> int:
     months = len(fp.pnl) - 1
     gained = (last.revenue_cents - last.costs_cents) - (first.revenue_cents - first.costs_cents)
     return round(gained * 12 / months)
+
+
+def queue_event(
+    state: GameState, firm_id: int, template_id: str, balance: Balance, **kw: object
+) -> GameState:
+    """Queue one of PT-M6's engine events (spec 15's critical set) for next month: the
+    player's firm only (rivals have no inbox), and only outside the critical gap (no other
+    critical event shown or waiting within critical_gap_turns), so crises stay spaced."""
+    if firm_id != state.player.id:
+        return state
+    from ptk.sim.events.director import queue_engine_event
+
+    due = state.turn + 1
+    gap = balance.events.critical_gap_turns
+    es = state.events
+    if any(e.severity == "critical" and due - e.turn < gap for e in es.events) or any(
+        not q.done for q in es.queued
+    ):
+        return state
+    return queue_engine_event(state, template_id, due, **kw)  # type: ignore[arg-type]

@@ -13,6 +13,7 @@ from typing import Literal
 
 from ptk.sim.billing.models import EMPTY_BILLING, BillingState
 from ptk.sim.calendar import YearMonth
+from ptk.sim.events.models import EMPTY_EVENTS, EventsState
 from ptk.sim.hiring.models import Candidate, Offer, PayPolicy, PersonState, Search
 from ptk.sim.matters.models import EMPTY_MARKET, MarketState
 from ptk.sim.org.models import EMPTY_ORG, OrgState
@@ -62,6 +63,7 @@ class GameState:
     person_states: tuple[PersonState, ...] = ()  # sorted by person_id
     org: OrgState = EMPTY_ORG  # units, membership, plans, delegates (PT-M2)
     market: MarketState = EMPTY_MARKET  # clients, relationships, matters, judges (PT-M3a)
+    events: EventsState = EMPTY_EVENTS  # events, storylines, modifiers, colleagues (PT-M6)
     billing: BillingState = EMPTY_BILLING  # WIP, bills, client money, totals (PT-M3b)
     partnership: PartnershipState = EMPTY_PARTNERSHIP  # capital, comp, votes, flight (PT-M4)
 

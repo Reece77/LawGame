@@ -251,6 +251,58 @@ def set_salary(state: GameState, person_id: int, salary: int) -> GameState:
     raise OrgRuleError(f"person {person_id} is not on a firm's books")
 
 
+# --- PT-M6 (events): effects whose systems belong to other lanes ------------------------------
+#
+# An event choice may write down a matter's WIP (PT-M3b's billing), move the firm's reputation
+# (PT-M5's rankings) or the partners' confidence in the managing partner (PT-M4). A hook whose
+# system has not merged is a no-op: the event's words and choices are unchanged and the effect
+# is recorded on the event, but nothing moves. The owning lane replaces the body.
+
+
+def write_down_wip(
+    state: GameState, matter_id: int, pct: float, balance: Balance
+) -> tuple[GameState, tuple[LedgerEntry, ...]]:
+    """Write down `pct` percent of a matter's time on its next bill, through PT-M3b's
+    write-down (spec 7.7): the engagement's `writedown_bp` rises to at least pct x 100, held to
+    billing.writedown_max_bp; fixed, retainer and contingency matters are not billed by the
+    hour and are unchanged. No energy is spent (the event's choice is the decision); the
+    ledger moves when the bill goes out."""
+    from dataclasses import replace
+
+    e = state.billing.engagement(matter_id)
+    if e is None or e.closed or e.model in ("fixed", "retainer", "contingency"):
+        return state, ()
+    bp = min(
+        balance.billing.writedown_max_bp, max(e.writedown_bp, round(pct * 100))
+    )  # tunable-exempt: % to bp
+    engagements = tuple(
+        replace(x, writedown_bp=bp) if x.matter_id == matter_id else x
+        for x in state.billing.engagements
+    )
+    return replace(state, billing=replace(state.billing, engagements=engagements)), ()
+
+
+def reputation_change(state: GameState, firm_id: int, points: float) -> GameState:
+    """Move a firm's reputation by `points` (PT-M5). No-op until rankings arrive."""
+    return state
+
+
+def confidence_change(state: GameState, firm_id: int, points: float) -> GameState:
+    """Move the partners' confidence in the managing partner by `points` (PT-M4): a one-off
+    nudge each equity partner but the MP takes at the next monthly update."""
+    from dataclasses import replace
+
+    from ptk.sim.partnership.models import with_firm_partnership, with_partner
+
+    fp = state.partnership.of(firm_id)
+    if fp is None or points == 0:
+        return state
+    for p in fp.equity_partners:
+        if p.person_id != fp.mp_id:
+            fp = with_partner(fp, replace(p, nudge=p.nudge + points))
+    return replace(state, partnership=with_firm_partnership(state.partnership, fp))
+
+
 # --- PT-M3b (billing): what billing reads of matters, and the relationship it moves --------
 
 

@@ -1,9 +1,9 @@
-"""Schema v7 (PT-M4): the partnership, one JSON row per firm (capital and current accounts,
+"""Schema v8 (PT-M4): the partnership, one JSON row per firm (capital and current accounts,
 draws, comp, votes, confidence, laterals, flight, the revolver's state, the MP's term) and a
 row of id counters.
 
-Revision ID: 0007_partnership
-Revises: 0006_billing
+Revision ID: 0008_partnership
+Revises: 0007_events
 Create Date: 2026-11-20
 """
 
@@ -12,8 +12,8 @@ from __future__ import annotations
 import sqlalchemy as sa
 from alembic import op
 
-revision = "0007_partnership"
-down_revision = "0006_billing"
+revision = "0008_partnership"
+down_revision = "0007_events"
 branch_labels = None
 depends_on = None
 

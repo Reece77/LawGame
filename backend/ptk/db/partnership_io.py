@@ -1,4 +1,4 @@
-"""Load and write the partnership (schema v7, PT-M4): one row per firm, its
+"""Load and write the partnership (schema v8, PT-M4): one row per firm, its
 `FirmPartnership` as JSON, and the counters for vote and approach ids.
 
 The JSON codec is generic over the frozen dataclasses of `ptk.sim.partnership.models`:

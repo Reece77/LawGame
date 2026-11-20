@@ -1,0 +1,63 @@
+# Press events (spec 15, 12.2): a notable win or loss in the legal press, and the critical
+# press storm (queued by the engine once v2's press arrives). Reputation effects are a
+# placeholder until PT-M5's rankings (interfaces.reputation_change).
+templates:
+  - id: matter_won_press
+    category: press
+    trigger: matter_won
+    severities: [minor, major]
+    weight: 1.0
+    title: "A win on {matter}"
+    body: >-
+      {matter} has ended well for {client}, and the legal press wants a quote from {person}.
+    choices:
+      - key: A
+        label: "Celebrate with the team"
+        effects:
+          - { type: morale_delta, target: person, share: 0.6 }
+          - { type: cash_delta, target: firm, share: -0.1 }
+      - key: B
+        label: "Issue a press release"
+        effects:
+          - { type: reputation_delta, target: firm, share: 0.7 }
+          - { type: relationship_delta, target: client, share: -0.2 }
+
+  - id: matter_lost_press
+    category: press
+    trigger: matter_lost
+    severities: [minor, major]
+    weight: 1.0
+    title: "{matter} goes against {client}"
+    body: >-
+      {matter} has ended badly for {client}, and a legal blog is asking whether {firm} was
+      out of its depth.
+    choices:
+      - key: A
+        label: "Stand by the team in public"
+        effects:
+          - { type: morale_delta, target: person, share: 0.5 }
+          - { type: reputation_delta, target: firm, share: -0.3 }
+      - key: B
+        label: "Review what went wrong with {gc}"
+        effects:
+          - { type: relationship_delta, target: client, share: 0.3 }
+          - { type: morale_delta, target: person, share: -0.4 }
+
+  - id: press_storm
+    category: press
+    trigger: press_storm
+    severities: [critical]
+    weight: 1.0
+    title: "The press turns on {firm}"
+    body: >-
+      A front-page story about {firm} is running in every legal paper this week, and clients
+      are forwarding it to each other.
+    choices:
+      - key: A
+        label: "Front it yourself"
+        effects:
+          - { type: reputation_delta, target: firm, share: 0.3 }
+          - { type: morale_delta, target: firm, share: 0.2 }
+      - key: B
+        label: "Say nothing and let it pass"
+        effects: [{ type: reputation_delta, target: firm, share: -0.5 }]

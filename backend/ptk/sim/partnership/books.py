@@ -49,6 +49,7 @@ from ptk.sim.partnership.common import (
     last_month_costs,
     profit_12m,
     put,
+    queue_event,
     revenue_12m,
     ym,
 )
@@ -339,6 +340,7 @@ def _revolver(
         if breached:
             fp = replace(fp, breach_months=fp.breach_months + 1)
             if fp.breach_months == 1:
+                books.state = queue_event(books.state, firm, "covenant_breach", balance)
                 books.logs.append(
                     inbox_item(
                         turn,

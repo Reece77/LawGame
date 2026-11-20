@@ -1,5 +1,11 @@
 """Confidence and votes (ADR PT-0007 1-2; spec 5.5's utility).
 
+Ported from backend/tst/sim/finance/board.py @ 02fba2aa (Tech Startup Tycoon), the monthly
+confidence step of `board_month`; changed: equity partners instead of directors, confidence
+in the managing partner; the months-below counter becomes the no-confidence petition (an
+average below `petition_below` for `petition_months` brings an election, not a removal); no
+board meetings (the whip count is always shown); votes are Partner Track's own.
+
 Confidence: each equity partner but the managing partner holds a confidence 0-100 in the
 MP, moved monthly by TST 14.6's rule toward a target (formulas.confidence_target). Shown as
 a whip count with ranges, never the number.
@@ -22,7 +28,14 @@ from ptk.sim.ledger import LedgerEntry
 from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.money import BP_DENOMINATOR
 from ptk.sim.partnership import formulas as fx
-from ptk.sim.partnership.common import book_cents, firm_partnership, home_practice, profit_12m, put
+from ptk.sim.partnership.common import (
+    book_cents,
+    firm_partnership,
+    home_practice,
+    profit_12m,
+    put,
+    queue_event,
+)
 from ptk.sim.partnership.models import (
     FirmPartnership,
     Param,
@@ -88,6 +101,8 @@ def confidence_month(state: GameState, balance: Balance) -> GameState:
         low = bool(confs) and statistics.fmean(confs) < cfg.petition_below
         fp = replace(fp, low_confidence_months=fp.low_confidence_months + 1 if low else 0)
         state = put(state, fp)
+        if fp.low_confidence_months == cfg.petition_months:
+            state = queue_event(state, fp.firm_id, "no_confidence", balance)
     return state
 
 

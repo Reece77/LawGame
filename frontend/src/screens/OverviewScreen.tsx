@@ -1,12 +1,14 @@
 import { Card, Group, Table, Text, Title } from '@mantine/core';
 import { useParams } from 'react-router';
-import { useGame, usePayroll } from '../lib/api';
+import { useGame, usePayroll, useTexts } from '../lib/api';
 import { formatMoney } from '../lib/format';
 
 export function OverviewScreen() {
   const { slug = '' } = useParams();
   const game = useGame(slug);
   const payroll = usePayroll(slug);
+  const news = useTexts(slug, 'headlines');
+  const latest = news.data?.[0];
   if (!game.data) return <Text c="dimmed">Loading…</Text>;
   const g = game.data;
   return (
@@ -33,6 +35,14 @@ export function OverviewScreen() {
           </Text>
         </Card>
       </Group>
+      {latest && (
+        <Card withBorder mt="md" maw={560} data-testid="legal-news">
+          <Title order={4}>Legal news, {latest.date_label}</Title>
+          <Text size="sm" style={{ whiteSpace: 'pre-line' }}>
+            {latest.text}
+          </Text>
+        </Card>
+      )}
       {payroll.data && (
         <Card withBorder mt="md" maw={560} data-testid="payroll">
           <Title order={4}>Payroll and costs this month</Title>

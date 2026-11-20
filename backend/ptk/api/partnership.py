@@ -191,7 +191,7 @@ class RevolverOut(BaseModel):
     covenants: list[CovenantOut]
 
 
-class ExplainOut(BaseModel):
+class PepExplainOut(BaseModel):
     pep_cents: int | None
     rpl_cents: int | None
     margin_bp: int | None
@@ -236,7 +236,7 @@ class PartnershipOut(BaseModel):
     last_profit_cents: int | None
     last_pep_cents: int | None
     revolver: RevolverOut
-    explain: ExplainOut
+    explain: PepExplainOut
 
 
 # --- Requests ----------------------------------------------------------------------------------
@@ -575,7 +575,7 @@ def partnership_view(
         last_profit_cents=fp.last_profit_cents,
         last_pep_cents=fp.last_pep_cents,
         revolver=revolver,
-        explain=ExplainOut(
+        explain=PepExplainOut(
             pep_cents=ex.pep_cents,
             rpl_cents=ex.rpl_cents,
             margin_bp=ex.margin_bp,

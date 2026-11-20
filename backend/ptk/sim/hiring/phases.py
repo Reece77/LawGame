@@ -8,6 +8,7 @@ associates are paid on the firm's scale (phase 9 raises them, never cuts); moral
 Partner Track's terms (spec 5.3) and resignation its bonus timing; candidate pools by lateral
 channel and, in April, the campus pools (stream `campus`); summer months scout the summer
 associates; no rivals, options, offices, divisions, free agents, relocation or retirement.
+PT-M6: event modifiers multiply a person's morale target (ptk.sim.events.modifiers).
 
 Each step is pure: state (plus the turn's generators) in; new state, ledger entries and log
 items out. People are processed in ascending id order; every random draw comes from its
@@ -24,6 +25,7 @@ import numpy as np
 
 from ptk.sim.calendar import MONTHS_PER_YEAR, YearMonth, format_turn, turn_to_ym
 from ptk.sim.data_models import Balance, GameData
+from ptk.sim.events.modifiers import person_factor
 from ptk.sim.hiring.formulas import (
     ROLL_RANGE,
     acceptance_probability,
@@ -101,6 +103,7 @@ from ptk.sim.state import (
 
 JOB_HOPPER: Final = "job_hopper"
 LIFER: Final = "lifer"
+MORALE_TARGET: Final = "morale_target"  # PT-M6: an event modifier's stat
 INCOME_PARTNER: Final = "income_partner"
 EQUITY_PARTNER: Final = "equity_partner"
 STAFF_KINDS: Final = frozenset({"paralegal", "business_services"})
@@ -536,7 +539,7 @@ def morale_and_departures(
     for employment, person in _employees(state):
         target = morale_target(
             morale_terms(state, employment, person, work.get(person.id), balance, data), cfg
-        )
+        ) * person_factor(state, person.id, MORALE_TARGET)  # PT-M6: event modifiers
         ps = state.person_state(person.id)
         start = cfg.start if ps.morale is None else ps.morale
         noise = float(

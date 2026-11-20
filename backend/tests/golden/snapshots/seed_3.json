@@ -3,27 +3,27 @@
     [
       1,
       "1000_cash",
-      5133424009
+      178494541
     ],
     [
       1,
       "1100_unbilled_wip",
-      198298850
+      28278350
     ],
     [
       1,
       "1110_wip_provision",
-      -93864185
+      -1331687
     ],
     [
       1,
       "1200_receivables",
-      23148349
+      14184069
     ],
     [
       1,
       "1210_bad_debt_provision",
-      -231483
+      -141842
     ],
     [
       1,
@@ -32,23 +32,38 @@
     ],
     [
       1,
+      "2700_partner_current_accounts",
+      -56395981
+    ],
+    [
+      1,
       "3000_partners_capital",
-      -60000000
+      -122098560
+    ],
+    [
+      1,
+      "3100_undistributed_profit",
+      5431072240
+    ],
+    [
+      1,
+      "3200_drawings",
+      0
     ],
     [
       1,
       "4000_fees",
-      -5586439933
+      -5969925190
     ],
     [
       1,
       "4100_success_fees",
-      -172305628
+      -184681857
     ],
     [
       1,
       "5000_associate_salaries",
-      209291660
+      206409994
     ],
     [
       1,
@@ -58,17 +73,22 @@
     [
       1,
       "5200_benefits",
-      52322910
+      51602494
     ],
     [
       1,
       "6000_rent",
-      251400000
+      250800000
     ],
     [
       1,
       "6700_write_offs",
-      4205451
+      5291263
+    ],
+    [
+      1,
+      "6900_general_admin",
+      127692166
     ]
   ],
   "final_turn": 360,
@@ -76,19 +96,19 @@
   "matter_outcomes": [
     [
       "closed",
-      25
+      31
     ],
     [
       "collapsed",
-      5
+      3
     ],
     [
       "done",
-      12
+      11
     ],
     [
       "lost",
-      3
+      6
     ],
     [
       "open",
@@ -96,17 +116,17 @@
     ],
     [
       "won",
-      5
+      4
     ]
   ],
-  "matters": "915bd0e1fba3c40f499398a242d4ce1ad05dfe0f7ae03e133355fea73d7de04d",
+  "matters": "899cc82ac5ca01ba7d6055b11789c3b8b87b8890b5a356150261daecab27ce67",
   "names": [
     "James Jackson",
     "Michael Garcia",
     "Megan Brown",
     "Hannah Allen"
   ],
-  "people": "584de7b161b12e30de43db5381f80a9ddfaec3ce91d8434517f1a9d2b58d69d2",
-  "relationships": "4849ac9b50337b793f671954cc74a439b2242e85615ad85f5e8885950694dcdd",
-  "sha256": "bfda9e2ad90d36a330e736c3a08f579525725ccbc32618999c81e4e28efa7d6c"
+  "people": "2a78ad6879ae286cfa663920de7e9f55d67fd6d716ade50cf9b9240e81928e21",
+  "relationships": "2baf7026a20357bf06765d3b1ef90121677eb07b8e3a2d17a068fc95bfbdb32a",
+  "sha256": "08b475407be63492d6115e031f968a2609d49615a929ca381ff93c364bb9f0f1"
 }

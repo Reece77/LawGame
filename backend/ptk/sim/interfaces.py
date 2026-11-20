@@ -424,3 +424,188 @@ def fee_earner_capacity_tenths(
     from ptk.sim.matters.staffing import fee_earners
 
     return sum(f.capacity for f in fee_earners(state, firm_id, data, balance))
+
+
+# --- PT-M4 (partnership): partner flight, approaches, counter-offers, departures -----------
+#
+# Spec 8.7 and 5.7. PT-M4 builds the machinery with approaches from the static panel firms
+# (clients.yaml panel_firms); PT-M5's rival firms reuse it unchanged, in both directions:
+#
+#     hook = partner_flight()
+#     p = hook.leave_chance_bp(state, partner_id, balance, data)     # engine-only, never shown
+#     v = hook.market_value_cents(state, partner_id, balance, data)  # engine-only, never shown
+#     res = hook.approach(state, ApproachRequest(partner_id, Suitor("skadden", "Skadden"),
+#                                                offer_comp_cents=v), balance=balance, data=data)
+#     ... the target firm counters (the player's action, or a rival's AI) ...
+#     res = hook.counter(state, CounterOffer(approach_id, comp_cents=...), balance=balance,
+#                        data=data)
+#     ... at the deadline the partner decides (stream `poach`, keyed (person_id,)) ...
+#     res = hook.resolve(state, approach_id, draws=..., balance=balance, data=data,
+#                        balances=ctx.balances)
+#
+# A departure (`depart`, or a resolved approach the partner accepts) ends the employment
+# (reason "poached"), schedules the partner's capital return over 3 years, records the
+# departure for contagion, and sends the portable share of their clients after them over
+# 3-12 months. `arrive` is the reverse: a lateral partner joins a firm with a guarantee,
+# their book's clients imported (conflicts, ADR PT-0009 4) and realised over 12-24 months
+# (stream `lateral`). Views carry only what the firm may see: never portability, true
+# market value or a true vote utility (CLAUDE.md section 10).
+
+type ApproachStatus = Literal["open", "countered", "stayed", "left", "withdrawn"]
+type DepartureReason = Literal[
+    "approach", "flight", "up_or_out", "de_equitised", "retired", "expelled", "dissolved"
+]
+
+
+@dataclass(frozen=True, slots=True)
+class Suitor:
+    """Who makes an approach or receives a departing partner."""
+
+    key: str  # a static panel firm's key (PT-M4) or a rival_key (PT-M5)
+    name: str
+    firm_id: int | None = None  # a rival firm on the books (PT-M5); None: a static panel firm
+
+
+@dataclass(frozen=True, slots=True)
+class ApproachRequest:
+    person_id: int  # a partner (equity or income) of the target firm
+    suitor: Suitor
+    offer_comp_cents: int  # comp a year the suitor offers
+    guarantee_years: int = 0  # years of that comp guaranteed (0-3)
+    respond_by_turn: int | None = None  # None: balance partnership.flight.answer_months
+
+
+@dataclass(frozen=True, slots=True)
+class CounterOffer:
+    """The target firm's answer to an approach (spec 8.7: points, a seat, a guarantee)."""
+
+    approach_id: int
+    comp_cents: int = 0  # extra comp a year (a promise the December comp round honours)
+    points: float = 0.0  # extra lockstep points from the next allocation
+    guarantee_years: int = 0  # years the counter's comp is guaranteed (account 2700)
+    seat: bool = False  # a seat (v2's seats; recorded and counted in the decision only)
+
+
+@dataclass(frozen=True, slots=True)
+class ApproachView:
+    approach_id: int
+    firm_id: int  # the target firm
+    person_id: int
+    suitor: Suitor
+    offer_comp_cents: int  # what the suitor offers (the partner tells the firm)
+    guarantee_years: int
+    made_turn: int
+    respond_by_turn: int
+    status: ApproachStatus
+    counter: CounterOffer | None
+    stay_label: str  # "likely to stay", "undecided", "likely to go": a band, never a number
+
+
+@dataclass(frozen=True, slots=True)
+class DepartureView:
+    person_id: int
+    firm_id: int  # the firm they left
+    suitor: Suitor | None  # where they went; None: out of the market (retired, in-house)
+    turn: int
+    practice: str  # their home practice
+    reason: DepartureReason
+    client_ids: tuple[int, ...]  # clients that follow (over the coming months), by id
+
+
+@dataclass(frozen=True, slots=True)
+class LateralArrival:
+    """A partner joining a firm laterally (PT-M4's lateral market; PT-M5's rivals' people)."""
+
+    person_id: int  # already in state.people; employed elsewhere or not at all
+    firm_id: int  # the joining firm
+    from_suitor: Suitor | None  # the firm they come from; None: the open lateral market
+    comp_cents: int  # comp a year agreed
+    guarantee_years: int = 0  # years guaranteed (account 2700)
+    equity: bool = True  # equity or income partner
+    client_ids: tuple[int, ...] = ()  # their book's clients (to import and realise), by id
+
+
+class PartnerFlightHook(Protocol):
+    def leave_chance_bp(
+        self, state: GameState, person_id: int, balance: Balance, data: GameData
+    ) -> int:
+        """Spec 8.7's monthly p_leave for a partner, in bp. Engine-only: never shown."""
+        ...
+
+    def market_value_cents(
+        self, state: GameState, person_id: int, balance: Balance, data: GameData
+    ) -> int:
+        """V_mkt: what a rival would pay a year for the partner's book and skills (book x
+        the lateral market's multiple). Engine-only: the API shows a band."""
+        ...
+
+    def approach(
+        self, state: GameState, request: ApproachRequest, *, balance: Balance, data: GameData
+    ) -> HookResult:
+        """Open an approach the target firm can counter. Raises a `SimError` if the person
+        is not a partner, or already has an open approach."""
+        ...
+
+    def counter(
+        self, state: GameState, offer: CounterOffer, *, balance: Balance, data: GameData
+    ) -> HookResult:
+        """Record the target firm's counter-offer (replaces an earlier one)."""
+        ...
+
+    def resolve(
+        self,
+        state: GameState,
+        approach_id: int,
+        *,
+        draws: Callable[[], np.random.Generator],
+        balance: Balance,
+        data: GameData,
+        balances: Mapping[tuple[int, AccountCode], Cents],
+    ) -> HookResult:
+        """The partner decides: stays (any counter is honoured) or leaves (`depart`)."""
+        ...
+
+    def depart(
+        self,
+        state: GameState,
+        person_id: int,
+        suitor: Suitor | None,
+        reason: DepartureReason,
+        *,
+        draws: Callable[[], np.random.Generator],
+        balance: Balance,
+        data: GameData,
+        balances: Mapping[tuple[int, AccountCode], Cents],
+    ) -> HookResult:
+        """A partner leaves now: employment ends, capital return scheduled, clients follow."""
+        ...
+
+    def arrive(
+        self,
+        state: GameState,
+        arrival: LateralArrival,
+        *,
+        draws: Callable[[], np.random.Generator],
+        balance: Balance,
+        data: GameData,
+        balances: Mapping[tuple[int, AccountCode], Cents],
+    ) -> HookResult:
+        """A lateral partner joins: employment, capital due, guarantee, book realised."""
+        ...
+
+    def approaches(self, state: GameState, firm_id: int) -> tuple[ApproachView, ...]:
+        """The firm's partners' approaches that are open or countered, by id."""
+        ...
+
+    def departures(
+        self, state: GameState, firm_id: int, since_turn: int
+    ) -> tuple[DepartureView, ...]:
+        """Partners who left the firm from `since_turn` on, by (turn, person id)."""
+        ...
+
+
+def partner_flight() -> PartnerFlightHook:
+    """PT-M4's implementation of the hook (ptk.sim.partnership.flight)."""
+    from ptk.sim.partnership.flight import FLIGHT_HOOK
+
+    return FLIGHT_HOOK

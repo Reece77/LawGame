@@ -14,6 +14,9 @@ from dataclasses import dataclass, field, replace
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
 from ptk.sim.errors import GameOverError
+from ptk.sim.events import colleagues, director, effects
+from ptk.sim.events import modifiers as event_modifiers
+from ptk.sim.events.models import EventRequest, TextRequest
 from ptk.sim.hiring import phases as hiring
 from ptk.sim.interfaces import DelegateHiringHook, delegate_hiring
 from ptk.sim.ledger import CASH, AccountCode, LedgerBalances, LedgerEntry, apply_entries
@@ -31,11 +34,6 @@ from ptk.sim.state import GameState
 
 
 @dataclass(frozen=True, slots=True)
-class EventRequest:
-    """Filled by the event director (PT-M6)."""
-
-
-@dataclass(frozen=True, slots=True)
 class TurnResult:
     new_state: GameState
     ledger_entries: tuple[LedgerEntry, ...]
@@ -43,6 +41,7 @@ class TurnResult:
     snapshot: TurnSnapshot
     event_requests: tuple[EventRequest, ...]
     delegate_actions: tuple[DelegateAction, ...] = ()  # recomputed on replay (ADR-0015)
+    text_requests: tuple[TextRequest, ...] = ()  # PT-M6: read-only texts to write
 
 
 @dataclass(frozen=True, slots=True)
@@ -63,6 +62,9 @@ class TurnContext:
     unserved: Mapping[tuple[int, str], float] = field(default_factory=dict)  # PT-M3a flow
     hiring_hook: DelegateHiringHook | None = None  # PT-M1b's, for delegates (PT-M2)
     delegate_actions: tuple[DelegateAction, ...] = ()
+    start: GameState | None = None  # the state the turn began from (PT-M6 triggers)
+    answer_critical: bool = False  # PT-M6: scripts answer written critical events too
+    text_requests: tuple[TextRequest, ...] = ()
 
     @property
     def turn(self) -> int:
@@ -84,8 +86,13 @@ type Phase = Callable[[TurnContext], TurnContext]
 
 
 def apply_player_decisions(ctx: TurnContext) -> TurnContext:
-    """1. Notices end; offers resolve; a signed campus class starts (PT-M1b); votes held
-    this month count (PT-M4)."""
+    """1. Last month's unanswered events take their first choice (PT-M6); notices end;
+    offers resolve; a signed campus class starts (PT-M1b); votes held this month count
+    (PT-M4)."""
+    state, answered, answer_log = effects.auto_resolve(
+        ctx.state, ctx.balance, ctx.data, critical=ctx.answer_critical
+    )
+    ctx = replace(ctx, state=state).post(*answered).log(*answer_log)
     state, left = hiring.end_notices(ctx.state)
     state, entries, resolved = hiring.resolve_offers(state, ctx.rng, ctx.balance, ctx.data)
     state, started = hiring.start_signed(state, ctx.balance, ctx.data)
@@ -168,12 +175,26 @@ def snapshot_and_month_end_report(ctx: TurnContext) -> TurnContext:
 
 def event_director_requests(ctx: TurnContext) -> TurnContext:
     """12. Candidates leave; lateral batches, the campus pools and the summer programme
-    (PT-M1b); events for next month (PT-M6)."""
+    (PT-M1b); modifiers expire, colleagues' relationships move, then events for next month
+    and this month's read-only texts (PT-M6)."""
     state = hiring.expire_candidates(ctx.state)
     state, batches = hiring.lateral_batches(state, ctx.rng, ctx.balance, ctx.data)
     state, pools = hiring.campus_pools(state, ctx.rng, ctx.balance, ctx.data)
     state = hiring.summer_month(state, ctx.balance, ctx.data)
-    return replace(ctx, state=state).log(*batches, *pools)
+    state, _expired = event_modifiers.expire(state)
+    state = colleagues.colleagues_month(state, ctx.balance.colleagues)
+    cash = ctx.balances.get((state.player.id, CASH), 0)
+    state, requests = director.direct(
+        state, ctx.start or ctx.state, ctx.rng, ctx.balance, ctx.data, cash
+    )
+    texts = director.text_requests(state, ctx.balance)
+    ctx = replace(
+        ctx,
+        state=state,
+        event_requests=ctx.event_requests + requests,
+        text_requests=ctx.text_requests + texts,
+    )
+    return ctx.log(*batches, *pools)
 
 
 PHASES: tuple[tuple[str, Phase], ...] = (
@@ -209,14 +230,21 @@ def advance_turn(
     ledger_balances: LedgerBalances,
     work: tuple[WorkMonth, ...] = (),
     hiring_hook: DelegateHiringHook | None = None,
+    *,
+    answer_critical: bool = False,
 ) -> TurnResult:
     """Resolve turn `state.turn` and return the next state plus everything to persist.
 
     `work` (PT-M1a): each person's month of hours, a test input until PT-M3a staffs matters
     (the brief); a person without one worked no hours. `hiring_hook` (PT-M2): the hiring
-    system delegates drive; by default PT-M1b's (`interfaces.delegate_hiring`), if built."""
+    system delegates drive; by default PT-M1b's (`interfaces.delegate_hiring`), if built.
+    `answer_critical` (PT-M6): a written critical event takes its first choice instead of
+    refusing the turn (scripts, the golden seeds, Holiday later); the player's Continue is
+    refused while one waits (spec 15)."""
     if state.ended:
         raise GameOverError(f"the game is over ({state.save_meta.game_state.replace('_', ' ')})")
+    if not answer_critical:
+        effects.check_continue(state)
     ctx = TurnContext(
         state=state,
         decisions=decisions,
@@ -228,6 +256,8 @@ def advance_turn(
         work={w.person_id: w for w in work},
         work_override={w.person_id: w for w in work},
         hiring_hook=hiring_hook or available_hook(delegate_hiring),
+        start=state,
+        answer_critical=answer_critical,
     )
     for _name, phase in PHASES:
         ctx = phase(ctx)
@@ -243,4 +273,5 @@ def advance_turn(
         snapshot=ctx.snapshot,
         event_requests=ctx.event_requests,
         delegate_actions=ctx.delegate_actions,
+        text_requests=ctx.text_requests,
     )

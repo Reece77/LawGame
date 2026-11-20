@@ -53,7 +53,11 @@ class Game:
         self._post(out.entries)
         self.log += out.log
 
-    def advance(self, turns: int = 1, work: Iterable[WorkMonth] = ()) -> None:
+    def advance(
+        self, turns: int = 1, work: Iterable[WorkMonth] = (), *, write_events: bool = False
+    ) -> None:
+        """`write_events` (PT-M6): after each turn, write its events with the mock adapter,
+        as a save's event service does (round trips against a save)."""
         for _ in range(turns):
             result = advance_turn(
                 self.state,
@@ -63,8 +67,11 @@ class Game:
                 self.data,
                 self.balances,
                 tuple(work),
+                answer_critical=write_events,
             )
             self.state = result.new_state
+            if write_events:
+                self.state = mock_events(self.state, self.balance, self.data)
             self._post(result.ledger_entries)
             self.log += result.log_items
             self.seq = 0
@@ -83,6 +90,16 @@ class Game:
 
     def cash(self) -> Cents:
         return self.balances.get((self.state.player.id, "1000_cash"), 0)
+
+
+def mock_events(state: GameState, balance: Balance, data: GameData) -> GameState:
+    """The state with its pending events written by the mock adapter (PT-M6)."""
+    from ptk.events.service import Writer, write_pending_events
+    from ptk.llm.offline import MockLLMAdapter
+    from ptk.llm.settings import LLMSettings
+
+    writer = Writer(MockLLMAdapter(), LLMSettings(), lambda: 1_000_000.0)
+    return write_pending_events(state, 0, writer, balance, data)
 
 
 def start(

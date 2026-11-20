@@ -1,0 +1,119 @@
+# Partnership events (spec 15: a credit dispute, a partner wanting to retire early, a lateral
+# group courting, a cabal against the MP) and the critical set the partnership brings in PT-M4:
+# a partner group's resignation letter, a no-confidence petition, a merger vote. The critical
+# three are queued by the engine (`queue_engine_event`) once their systems exist. Confidence
+# effects are a placeholder until PT-M4 (interfaces.confidence_change).
+templates:
+  - id: credit_dispute_split
+    category: partnership
+    trigger: credit_dispute
+    severities: [minor, major]
+    weight: 1.0
+    title: "Who gets the credit for {matter}?"
+    body: >-
+      {person} brought {client} in; {other} runs {matter} day to day. Both expect the
+      origination credit at year end, and both have told you so.
+    choices:
+      - key: A
+        label: "Split the credit"
+        effects:
+          - { type: pair_delta, target: pair, share: 0.5 }
+          - { type: morale_delta, target: person, share: -0.2 }
+          - { type: morale_delta, target: other, share: -0.2 }
+      - key: B
+        label: "Back {person}, who found the client"
+        effects:
+          - { type: morale_delta, target: person, share: 0.4 }
+          - { type: morale_delta, target: other, share: -0.6 }
+          - { type: pair_delta, target: pair, share: -0.4 }
+      - key: C
+        label: "Back {other}, who does the work"
+        effects:
+          - { type: morale_delta, target: other, share: 0.4 }
+          - { type: morale_delta, target: person, share: -0.6 }
+          - { type: pair_delta, target: pair, share: -0.4 }
+
+  - id: partner_retiring_talk
+    category: partnership
+    trigger: partner_retiring
+    severities: [minor, major]
+    weight: 1.0
+    title: "{person} is thinking about retiring"
+    body: >-
+      {person} has started talking about a boat, and about grandchildren. {person}'s clients
+      will need a new relationship partner one day soon.
+    choices:
+      - key: A
+        label: "Plan a handover of {person}'s clients"
+        effects:
+          - { type: morale_delta, target: person, share: 0.4 }
+          - { type: confidence_delta, target: partnership, share: 0.3 }
+      - key: B
+        label: "Ask {person} to stay three more years"
+        effects:
+          - { type: morale_delta, target: person, share: -0.2 }
+          - { type: strain_delta, target: person, share: 0.3 }
+
+  - id: partner_group_exit
+    category: partnership
+    trigger: partner_group_exit
+    severities: [critical]
+    weight: 1.0
+    title: "A group of partners has written to you"
+    body: >-
+      A letter signed by several partners says they intend to leave {firm} together, with
+      their clients, unless the partnership changes course.
+    choices:
+      - key: A
+        label: "Meet them and listen"
+        effects:
+          - { type: confidence_delta, target: partnership, share: 0.5 }
+          - { type: morale_delta, target: firm, share: 0.2 }
+      - key: B
+        label: "Offer them a larger share of profit"
+        effects:
+          - { type: cash_delta, target: firm, share: -0.6 }
+          - { type: confidence_delta, target: partnership, share: 0.6 }
+      - key: C
+        label: "Call their bluff"
+        effects:
+          - { type: confidence_delta, target: partnership, share: -0.4 }
+          - { type: morale_delta, target: firm, share: -0.4 }
+
+  - id: no_confidence_petition
+    category: partnership
+    trigger: no_confidence
+    severities: [critical]
+    weight: 1.0
+    title: "A petition of no confidence"
+    body: >-
+      Enough partners have signed a petition to force a vote on your leadership of {firm}.
+      The vote will be held at the next partnership meeting.
+    choices:
+      - key: A
+        label: "Face the partnership and make your case"
+        effects: [{ type: confidence_delta, target: partnership, share: 0.6 }]
+      - key: B
+        label: "Step back from day-to-day management"
+        effects:
+          - { type: confidence_delta, target: partnership, share: 0.3 }
+          - { type: morale_delta, target: firm, share: -0.2 }
+
+  - id: merger_vote
+    category: partnership
+    trigger: merger_vote
+    severities: [critical]
+    weight: 1.0
+    title: "The partners vote on a merger"
+    body: >-
+      The combination you negotiated goes to the partnership this month. Some partners love
+      it, some have hired lawyers of their own.
+    choices:
+      - key: A
+        label: "Make the case for the merger"
+        effects:
+          - { type: confidence_delta, target: partnership, share: 0.4 }
+          - { type: morale_delta, target: firm, share: -0.2 }
+      - key: B
+        label: "Withdraw the proposal"
+        effects: [{ type: confidence_delta, target: partnership, share: -0.3 }]

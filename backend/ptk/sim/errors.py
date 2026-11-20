@@ -208,3 +208,26 @@ class MatterActionError(SimError):
     """A matter or client action is not allowed now (no offer, not conflicted, ...)."""
 
     code = "invalid_matter_action"
+
+
+# --- Events (PT-M6) -------------------------------------------------------------------------
+
+
+class UnknownEventError(NotFoundError):
+    code = "unknown_event"
+
+
+class EventActionError(SimError):
+    """An event cannot be answered that way (already answered, no such choice)."""
+
+    code = "invalid_event_action"
+
+
+class CriticalEventOpenError(SimError):
+    """Continue is refused while a critical event waits for the player (spec 15)."""
+
+    code = "critical_event_open"
+
+    def __init__(self, message: str, event_id: int) -> None:
+        super().__init__(message)
+        self.event_id = event_id

@@ -248,3 +248,29 @@ def set_salary(state: GameState, person_id: int, salary: int) -> GameState:
         if e.person_id == person_id and e.counts_as_staff:
             return with_employment(state, replace(e, salary_cents=salary))
     raise OrgRuleError(f"person {person_id} is not on a firm's books")
+
+
+# --- PT-M6 (events): effects whose systems belong to other lanes ------------------------------
+#
+# An event choice may write down a matter's WIP (PT-M3b's billing), move the firm's reputation
+# (PT-M5's rankings) or the partners' confidence in the managing partner (PT-M4). Until each
+# system merges, its hook is a no-op: the event's words and choices are unchanged and the
+# effect is recorded on the event, but nothing moves. The owning lane replaces the body.
+
+
+def write_down_wip(
+    state: GameState, matter_id: int, pct: float, memo: str
+) -> tuple[GameState, tuple[LedgerEntry, ...]]:
+    """Write down `pct` percent of a matter's unbilled WIP (PT-M3b). No-op until PT-M3b."""
+    return state, ()
+
+
+def reputation_change(state: GameState, firm_id: int, points: float) -> GameState:
+    """Move a firm's reputation by `points` (PT-M5). No-op until rankings arrive."""
+    return state
+
+
+def confidence_change(state: GameState, firm_id: int, points: float) -> GameState:
+    """Move the partners' confidence in the managing partner by `points` (PT-M4). No-op until
+    the partnership arrives."""
+    return state

@@ -37,7 +37,7 @@ def test_full_campaign_ends_in_december_2034(
     for turn in range(balance.campaign.standard_turns):
         state, _ = saves.read_state(path)  # a cold reload every month
         assert state.turn == turn and not state.ended
-        result = saves.run_turn(path, balance, data)
+        result = saves.run_turn(path, balance, data, answer_critical=True)  # a script
     assert result.snapshot.turn == 359
     state, balances = saves.read_state(path)
     assert state.save_meta.game_state == "campaign_complete"
@@ -124,8 +124,8 @@ def test_hiring_round_trips_and_replays(save_dir: Path, data: GameData, balance:
     both(OpenSearch(fid, "corporate_ma", "campus"))
     both(OpenSearch(fid, "ip", "recruiter"))
     for _ in range(8):
-        saves.run_turn(path, balance, data)
-        game.advance()
+        saves.run_turn(path, balance, data, answer_critical=True)
+        game.advance(write_events=True)
         state, _ = saves.read_state(path)
         game.seq = 0
         for c in [c for c in state.candidates if c.status == "open"][:2]:

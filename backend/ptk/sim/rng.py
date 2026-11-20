@@ -24,6 +24,7 @@ STREAM_IDS: Final = MappingProxyType(
         "people_gen": 1,  # (search_id, n): generated people; search 0 = a scenario's staff
         "hiring": 2,  # (offer_id,): an offer's acceptance draw (PT-M1b)
         "morale": 3,  # (person_id,): monthly morale noise (PT-M1b)
+        "events": 6,  # (): the event director's month: count, matter draws, picks, tones (PT-M6)
         "founder": 7,  # (founder_index,): a founding partner's build; 0 = the player's
         "growth": 8,  # (person_id,): monthly growth noise
         "reveal": 9,  # (observer_firm_id, person_id): reveal record offsets

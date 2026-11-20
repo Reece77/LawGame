@@ -22,6 +22,14 @@ def _read(path: Path) -> dict[str, Any]:
     return loaded
 
 
+def _event_templates(folder: Path) -> tuple[dict[str, Any], ...]:
+    """Every events/*.yaml file's templates, files in name order (PT-M6)."""
+    out: list[dict[str, Any]] = []
+    for path in sorted(folder.glob("*.yaml")):
+        out += _read(path)["templates"]
+    return tuple(out)
+
+
 def load_game_data(data_dir: Path) -> GameData:
     try:
         scenarios = _read(data_dir / "scenarios.yaml")
@@ -51,6 +59,7 @@ def load_game_data(data_dir: Path) -> GameData:
             market=market,
             clients=_read(data_dir / "clients.yaml"),
             courts=_read(data_dir / "courts.yaml"),
+            event_templates=_event_templates(data_dir / "events"),
         )
     except (ValidationError, KeyError, FileNotFoundError) as exc:
         raise InvalidDataError(f"invalid seed data: {exc}") from exc

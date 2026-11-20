@@ -9,6 +9,7 @@ from dataclasses import replace
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from ptk.db.events_io import load_events, write_events
 from ptk.db.inbox import inbox_rows
 from ptk.db.market_io import insert_market, load_market, write_market
 from ptk.db.models import (
@@ -92,6 +93,7 @@ def insert_new(session: Session, state: GameState, entries: tuple[LedgerEntry, .
     write_people(session, state)
     write_org(session, state)
     insert_market(session, state.market)
+    write_events(session, state.events)
     write_entries(session, entries)
 
 
@@ -147,6 +149,7 @@ def load_state(session: Session) -> GameState:
         ),
         org=load_org(session),
         market=load_market(session, row.current_turn),
+        events=load_events(session),
         searches=tuple(
             _search(r) for r in session.scalars(select(SearchRow).order_by(SearchRow.id))
         ),
@@ -451,6 +454,7 @@ def write_turn(
     write_people(session, new_state)
     write_org(session, new_state)
     write_market(session, new_state.market)
+    write_events(session, new_state.events)
 
 
 def write_firms(session: Session, state: GameState) -> None:

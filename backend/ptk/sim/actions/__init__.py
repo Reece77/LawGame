@@ -2,7 +2,8 @@
 (ADR-0015).
 
 Ported from backend/tst/sim/actions/__init__.py @ 02fba2aa (Tech Startup Tycoon) as a
-pattern; changed: hiring actions only (PT-M1b); later milestones add theirs here.
+pattern; changed: hiring actions (PT-M1b) and client and matter actions (PT-M3a); later milestones
+add theirs here.
 
 `apply_action` is pure: it takes the state and returns the new state, any ledger entries and
 log items, all belonging to `state.turn`. Randomness inside a player action uses stream
@@ -31,10 +32,11 @@ from ptk.sim.hiring.actions import (
     apply_hiring,
 )
 from ptk.sim.ledger import LedgerBalances
+from ptk.sim.matters.actions import MATTER_ACTION_TYPES, MatterAction, apply_matter_action
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
 
-type Action = HiringAction
+type Action = HiringAction | MatterAction
 
 ACTION_TYPES: dict[str, type[Any]] = {
     "open_search": OpenSearch,
@@ -45,6 +47,7 @@ ACTION_TYPES: dict[str, type[Any]] = {
     "make_offer": MakeOffer,
     "withdraw_offer": WithdrawOffer,
     "set_pay_policy": SetPayPolicy,
+    **MATTER_ACTION_TYPES,  # PT-M3a
 }
 
 
@@ -62,14 +65,10 @@ def apply_action(
     forbids it."""
     if state.ended:
         raise GameOverError("the game is over")
-    return apply_hiring(
-        state,
-        action,
-        lambda: rng.stream(state.turn, "actions", seq),
-        balance,
-        data,
-        ledger_balances,
-    )
+    draws = lambda: rng.stream(state.turn, "actions", seq)  # noqa: E731
+    if type(action) in MATTER_ACTION_TYPES.values():
+        return apply_matter_action(state, action, draws, balance, data)  # type: ignore[arg-type]
+    return apply_hiring(state, action, draws, balance, data, ledger_balances)  # type: ignore[arg-type]
 
 
 def action_payload(action: Action) -> dict[str, Any]:

@@ -11,6 +11,7 @@ from pathlib import Path
 from sqlalchemy import func, select
 
 from ptk.db import backup, migrate
+from ptk.db.market_io import write_market
 from ptk.db.models import DecisionLogRow, FirmRow, SaveMetaRow, TurnSnapshotRow
 from ptk.db.org_io import write_delegate_actions
 from ptk.db.session import make_sessionmaker, shared_engine
@@ -159,6 +160,7 @@ def run_action(path: Path, action: Action, balance: Balance, data: GameData) -> 
         write_log(session, outcome.state, outcome.log, data.inbox_templates)
         write_firms(session, outcome.state)
         write_people(session, outcome.state)
+        write_market(session, outcome.state.market, append_hours=False)
         session.add(
             DecisionLogRow(
                 turn=state.turn,

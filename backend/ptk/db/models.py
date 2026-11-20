@@ -38,6 +38,7 @@ class FirmRow(Base):
     home_city: Mapped[str] = mapped_column(String(40))
     pay_policy_mode: Mapped[str] = mapped_column(String(10))  # PT-M1b: match, lag, lead
     pay_policy_bp: Mapped[int] = mapped_column(Integer)  # bp of the market scale
+    conflict_checks: Mapped[bool]  # PT-M3a (ADR PT-0009 5)
 
 
 class LedgerEntryRow(Base):
@@ -268,3 +269,82 @@ class OrgMoraleNudgeRow(Base):
     turn: Mapped[int] = mapped_column(Integer)
     points: Mapped[float] = mapped_column(Float)
     reason: Mapped[str] = mapped_column(String(40))
+
+
+# --- Clients and matters (schema v5, PT-M3a). Current state, rewritten each turn and after each
+# action, except client and judge (written once at game creation) and hours_log (append-only).
+
+
+class ClientRow(Base):
+    __tablename__ = "client"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(120))
+    sector: Mapped[str] = mapped_column(String(40))
+    real: Mapped[bool]
+    data_json: Mapped[str] = mapped_column(Text)  # the rest of the Client, GC included
+
+
+class JudgeRow(Base):
+    __tablename__ = "judge"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    court: Mapped[str] = mapped_column(String(40))
+    first_name: Mapped[str] = mapped_column(String(40))
+    last_name: Mapped[str] = mapped_column(String(40))
+    traits_json: Mapped[str] = mapped_column(Text)  # hidden procedural traits
+    real: Mapped[bool]
+
+
+class RelationshipRow(Base):
+    __tablename__ = "relationship"
+    client_id: Mapped[int] = mapped_column(ForeignKey("client.id"), primary_key=True)
+    firm_id: Mapped[int] = mapped_column(ForeignKey("firm.id"), primary_key=True)
+    score: Mapped[float] = mapped_column(Float)
+    partner_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    data_json: Mapped[str] = mapped_column(Text)  # the rest of the Relationship
+
+
+class MatterRow(Base):
+    __tablename__ = "matter"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    firm_id: Mapped[int] = mapped_column(ForeignKey("firm.id"), index=True)
+    client_id: Mapped[int] = mapped_column(ForeignKey("client.id"), index=True)
+    practice: Mapped[str] = mapped_column(String(40))
+    status: Mapped[str] = mapped_column(String(20), index=True)
+    opened_turn: Mapped[int] = mapped_column(Integer)
+    closed_turn: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    data_json: Mapped[str] = mapped_column(Text)  # the rest of the Matter, hidden values included
+
+
+class AppearanceRow(Base):
+    __tablename__ = "appearance"
+    person_id: Mapped[int] = mapped_column(ForeignKey("person.id"), primary_key=True)
+    judge_id: Mapped[int] = mapped_column(ForeignKey("judge.id"), primary_key=True)
+    tenths: Mapped[int] = mapped_column(Integer)
+
+
+class OriginationRow(Base):
+    __tablename__ = "origination"
+    person_id: Mapped[int] = mapped_column(ForeignKey("person.id"), primary_key=True)
+    year: Mapped[int] = mapped_column(Integer, primary_key=True)
+    cents: Mapped[int] = mapped_column(BigInteger)
+
+
+class HoursLogRow(Base):
+    """Every month's hours by person and matter or client flow (append-only)."""
+
+    __tablename__ = "hours_log"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    turn: Mapped[int] = mapped_column(Integer, index=True)
+    person_id: Mapped[int] = mapped_column(Integer, index=True)
+    client_id: Mapped[int] = mapped_column(Integer)
+    practice: Mapped[str] = mapped_column(String(40))
+    matter_id: Mapped[int | None] = mapped_column(Integer, nullable=True, index=True)
+    tenths: Mapped[int] = mapped_column(Integer)
+    substantive_tenths: Mapped[int] = mapped_column(Integer)
+    value_cents: Mapped[int] = mapped_column(BigInteger)
+
+
+class MarketDemandRow(Base):
+    __tablename__ = "market_demand"
+    practice: Mapped[str] = mapped_column(String(40), primary_key=True)
+    demand_cents: Mapped[int] = mapped_column(BigInteger)  # the last month played

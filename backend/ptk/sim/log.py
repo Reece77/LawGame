@@ -13,6 +13,8 @@ type LinkKind = Literal[
     "finance",
     "candidate",  # PT-M1b: the Recruitment screen's candidate
     "search",  # PT-M1b
+    "matter",  # PT-M3a: a named matter
+    "client",  # PT-M3a
 ]  # appended by each milestone that links a new screen
 type ParamValue = str | int
 

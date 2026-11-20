@@ -173,3 +173,38 @@ class DelegateRefusedError(SimError):
     """A delegate's hiring step was refused (no hiring system, no candidate, ...)."""
 
     code = "delegate_refused"
+
+
+# --- Clients and matters (PT-M3a) ------------------------------------------------------------
+
+
+class UnknownMatterError(NotFoundError):
+    code = "unknown_matter"
+
+
+class UnknownClientError(NotFoundError):
+    code = "unknown_client"
+
+
+class ConflictError(SimError):
+    """A matter would be adverse to a current client without a waiver (ADR PT-0009 2)."""
+
+    code = "conflict"
+
+
+class StaffingError(SimError):
+    """A staffing change breaks a rule (not a fee earner, not on the team, the lead...)."""
+
+    code = "staffing"
+
+
+class OverCapacityError(StaffingError):
+    """An assignment would plan a person above matters.max_load x their capacity."""
+
+    code = "over_capacity"
+
+
+class MatterActionError(SimError):
+    """A matter or client action is not allowed now (no offer, not conflicted, ...)."""
+
+    code = "invalid_matter_action"

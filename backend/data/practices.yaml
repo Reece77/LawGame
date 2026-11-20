@@ -1,15 +1,330 @@
-# Practice areas (spec section 6). v1's ten practices; keys only for PT-M1a: every lawyer
-# holds a familiarity 1-20 for each (ADR PT-0006 section 2). Demand, rate cards, norms and
-# the other ten practices arrive with PT-M3a and PT-M12. Append-only: familiarity draws
-# follow this order (ADR-0013).
+# Practice areas (spec section 6). v1's ten practices; every lawyer holds a familiarity 1-20 for
+# each (ADR PT-0006 section 2). Append-only: familiarity draws follow this order (ADR-0013).
+#
+# PT-M3a adds the market: the New York demand base, rate cards, norms, matter kinds, flow
+# share, conflict density and cross-sell affinities. Source tags follow docs/research/v1-market.md:
+#   [S] sourced (seen in the cited source), [D] derived from [S] figures (arithmetic shown),
+#   [A] assumed (a reasoned estimate; basis given), [spec] the spec section 6 table's default.
+# "dossier sN" means docs/research/v1-market.md section N. Money is integer cents in 2005 USD.
+#
+# Demand: one region in v1, the New York home market. The ten practices carry $12.35bn of the
+# $14.0bn NY large-firm market (dossier s3-s4 [D/A]); the other 12% ($1.65bn: arbitration, tax,
+# antitrust and the rest) is unserved until PT-M12 adds those practices (dossier s4 review).
+
+# Level -> rate band (dossier s5: junior = 1st-2nd year, mid = 3rd-5th, senior = 6th-8th).
+# Business-services levels bill nothing.
+rate_bands:
+  paralegal: paralegal
+  trainee: junior
+  associate_1: junior
+  associate_2: junior
+  associate_3: mid
+  associate_4: mid
+  associate_5: mid
+  associate_6: senior
+  associate_7: senior
+  associate_8: senior
+  senior_associate: senior
+  counsel: counsel
+  income_partner: partner
+  equity_partner: partner
+
+# Firm-wide 2005 rate card, top NY firm, cents an hour (dossier s5 "Derived 2005 rate card"):
+# back-cast from the NLJ 2013 NY averages (partners $882, associates $520 [S]) by 1.42 [D/A],
+# times a 1.10-1.15 elite premium [A]. Each practice's card below scales the medians by its
+# partner median / $700 [D].
+rate_card:
+  partner: { low: 52500, median: 70000, high: 95000 } # [D/A] s5; $1,000 a 2005 outlier [S]
+  counsel: { low: 47500, median: 57500, high: 70000 } # [A] s5: about 80% of partner median
+  senior: { low: 45000, median: 50000, high: 57500 } # [A] s5: about 1.35 x associate average
+  mid: { low: 35000, median: 41000, high: 47500 } # [A] s5
+  junior: { low: 22500, median: 26500, high: 31000 } # [A] s5: about 0.7 x associate average
+  paralegal: { low: 14000, median: 18500, high: 24000 } # [A] s5: from memory, not verified
+
+# Other 2005 norms (dossier s7; spec 6). Reference values for KPIs and balance targets.
+norms_2005:
+  revenue_per_lawyer_cents: 73000000 # [D] s2: Am Law 100 $51.2bn / 70,161 lawyers
+  pep_cents: 106000000 # [S] s7: Am Law 100 average profit per equity partner (Adam Smith, Esq.)
+  realisation_bp: 9000 # [A] s7: pre-2008 roughly 90%+; spec 6's 85-95%
+  collection_bp: 9500 # [A] spec 6: 93-98%; 2013 all-in anchor 83.5% [S]
+  leverage: [3.0, 5.0] # [A] s7: elite NY lockstep firms, associates per partner
+  billable_target_hours: [1950, 2100] # [A] s7: commonly cited NY norm, not verified
+  associate_attrition_bp: [1800, 2000] # [A] s7: boom years, NALP not reached
+
+# Tasks (ADR PT-0011 section 1). `level` is the band the task suits (0 paralegal, 1 junior,
+# 2 mid, 3 senior/counsel, 4 partner): people do tasks within one band of their own, and hours
+# at or one above their band are substantive (learn(h), ADR PT-0006 section 4). `skills` weigh
+# effective skill on the task. `ai_exposure` (0-1, by 2030) is data for v2's eras. All [A].
+tasks:
+  - { key: review, level: 0, ai_exposure: 0.9, skills: { research: 0.4, legal_reasoning: 0.2, technology: 0.2, project_management: 0.2 } }
+  - { key: diligence, level: 1, ai_exposure: 0.7, skills: { research: 0.35, commercial_awareness: 0.25, writing: 0.2, numeracy: 0.2 } }
+  - { key: research, level: 1, ai_exposure: 0.7, skills: { research: 0.5, legal_reasoning: 0.3, writing: 0.2 } }
+  - { key: drafting, level: 2, ai_exposure: 0.5, skills: { writing: 0.5, legal_reasoning: 0.25, deal_structuring: 0.25 } }
+  - { key: management, level: 3, ai_exposure: 0.3, skills: { project_management: 0.5, supervision: 0.3, client_care: 0.2 } }
+  - { key: negotiation, level: 3, ai_exposure: 0.1, skills: { negotiation: 0.5, deal_structuring: 0.25, commercial_awareness: 0.25 } }
+  - { key: advocacy, level: 4, ai_exposure: 0.1, skills: { advocacy: 0.6, legal_reasoning: 0.25, procedure: 0.15 } }
+  - { key: advice, level: 4, ai_exposure: 0.3, skills: { legal_reasoning: 0.4, commercial_awareness: 0.3, client_care: 0.3 } }
+
+# Matter kinds (spec 7.5): phases in order, each a share of the matter's hours and a task mix.
+# `outcome`: case (p_win, spec 7.6), deal (p_close), quality (advisory and filings). All [A].
+kinds:
+  deal:
+    outcome: deal
+    phases:
+      - { key: diligence, share: 0.30, tasks: { diligence: 0.7, review: 0.2, management: 0.1 } }
+      - { key: negotiation, share: 0.30, tasks: { drafting: 0.5, negotiation: 0.4, advice: 0.1 } }
+      - { key: signing, share: 0.20, tasks: { drafting: 0.4, negotiation: 0.4, management: 0.2 } }
+      - { key: regulatory, share: 0.10, tasks: { advice: 0.5, drafting: 0.3, management: 0.2 } }
+      - { key: closing, share: 0.10, tasks: { management: 0.5, drafting: 0.3, review: 0.2 } }
+  case:
+    outcome: case
+    phases:
+      - { key: pleadings, share: 0.15, tasks: { research: 0.3, drafting: 0.5, advice: 0.2 } }
+      - { key: discovery, share: 0.40, tasks: { review: 0.6, research: 0.2, management: 0.2 } }
+      - { key: motions, share: 0.20, tasks: { research: 0.3, drafting: 0.4, advocacy: 0.3 } }
+      - { key: trial, share: 0.25, tasks: { advocacy: 0.6, research: 0.2, management: 0.2 } }
+  investigation:
+    outcome: case # resolution: declination or a favourable settlement counts as a win
+    phases:
+      - { key: review, share: 0.45, tasks: { review: 0.6, research: 0.2, management: 0.2 } }
+      - { key: interviews, share: 0.30, tasks: { advice: 0.4, research: 0.3, drafting: 0.3 } }
+      - { key: resolution, share: 0.25, tasks: { advocacy: 0.5, negotiation: 0.3, advice: 0.2 } }
+  restructuring:
+    outcome: deal # a confirmed plan or a signed workout closes
+    phases:
+      - { key: analysis, share: 0.30, tasks: { diligence: 0.4, advice: 0.4, management: 0.2 } }
+      - { key: negotiation, share: 0.40, tasks: { negotiation: 0.5, drafting: 0.3, advice: 0.2 } }
+      - { key: confirmation, share: 0.30, tasks: { advocacy: 0.4, drafting: 0.3, management: 0.3 } }
+  advisory:
+    outcome: quality
+    phases:
+      - { key: advice, share: 1.0, tasks: { advice: 0.5, research: 0.3, drafting: 0.2 } }
+  filing:
+    outcome: quality
+    phases:
+      - { key: preparation, share: 0.5, tasks: { drafting: 0.5, research: 0.3, review: 0.2 } }
+      - { key: prosecution, share: 0.5, tasks: { drafting: 0.4, advice: 0.3, management: 0.3 } }
+
+# Flow work's task mix (ADR PT-0004 section 2): routine advice and small matters.
+flow_tasks: { advice: 0.25, research: 0.25, drafting: 0.3, review: 0.2 } # [A]
+
+# Each practice:
+#   demand_cents: the NY 2005 annual demand base D0 (dossier s4 central value).
+#   driver, beta, sigma: spec 6's demand formula; driver indices are 1.0 until PT-M7, so beta
+#     takes effect then. beta: [spec] for M&A 1.4, restructuring -1.2, litigation -0.2; others [A].
+#     sigma: monthly LogNormal noise of demand [A].
+#   rates: cents an hour by band (dossier s5): partner = the s5 comparison table's dossier-view
+#     midpoint [D/A]; other bands = the rate card median x partner / $700 [D], to the nearest $5.
+#   leverage, margin_bp: [spec] 6 table. realisation_bp, collection_bp: [A] within spec 6's
+#     85-95% and 93-98% (used from PT-M3b).
+#   flow_share: share of demand that is routine flow work, never a discrete matter [A].
+#   conflict_bp: chance a matter's adverse party is a company in the client universe [A]
+#     (spec 6: litigation high, private client low).
+#   seasonality: monthly demand multipliers, mean 1 (spec 6: deal closings peak in December) [A].
+#   matter_kinds: weight (share of discrete fees), median_cents and sigma (LogNormal size of
+#     expected fees), months [min, max] (planned duration), critical_bp (chance of a critical
+#     risk: bet-the-company, a public deal, an investigation), forums (case kinds: court weights,
+#     courts.yaml). All [A].
+#   cross_sell: affinities 0-1 with other practices (spec 6, 7.2) [A].
 practices:
-  - { key: corporate_ma, label: Corporate and M&A, short_label: M&A }
-  - { key: private_equity, label: Private equity and funds, short_label: PE }
-  - { key: capital_markets, label: Capital markets, short_label: Cap mkts }
-  - { key: banking_finance, label: Banking and finance, short_label: Banking }
-  - { key: restructuring, label: Restructuring and insolvency, short_label: Restruct }
-  - { key: commercial_litigation, label: Commercial litigation, short_label: Litigation }
-  - { key: white_collar, label: White collar and investigations, short_label: White collar }
-  - { key: ip, label: IP, short_label: IP }
-  - { key: employment, label: Employment and labour, short_label: Employment }
-  - { key: real_estate, label: Real estate, short_label: Real estate }
+  - key: corporate_ma
+    label: Corporate and M&A
+    short_label: M&A
+    demand_cents: 240000000000 # $2.4bn [A] s4 row 1 (range $1.9-3.0bn): US M&A $1.1tn [S]
+    driver: M&A volume
+    beta: 1.4 # [spec]
+    sigma: 0.10
+    rates: { partner: 72500, counsel: 59500, senior: 52000, mid: 42500, junior: 27500, paralegal: 19000 } # partner $700-750 [D/A]
+    leverage: 4.0
+    margin_bp: 4000
+    realisation_bp: 9200
+    collection_bp: 9600
+    flow_share: 0.35
+    conflict_bp: 3500 # counterparties are often other companies
+    seasonality: [0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 1.22]
+    matter_kinds:
+      - { key: public_ma, label: Public M&A, kind: deal, weight: 0.35, median_cents: 120000000, sigma: 1.0, months: [6, 12], critical_bp: 1500 }
+      - { key: private_ma, label: Private M&A, kind: deal, weight: 0.45, median_cents: 35000000, sigma: 0.9, months: [3, 8], critical_bp: 300 }
+      - { key: governance, label: Governance advice, kind: advisory, weight: 0.20, median_cents: 12000000, sigma: 0.8, months: [2, 6], critical_bp: 200 }
+    cross_sell: { banking_finance: 0.8, private_equity: 0.6, employment: 0.6, capital_markets: 0.5, real_estate: 0.4, commercial_litigation: 0.3 }
+  - key: private_equity
+    label: Private equity and funds
+    short_label: PE
+    demand_cents: 110000000000 # $1.1bn [A] s4 row 2 (range $0.8-1.5bn): record buyout fundraising $86bn [S]
+    driver: PE deal and fundraising volume
+    beta: 1.5
+    sigma: 0.12
+    rates: { partner: 76000, counsel: 62500, senior: 54500, mid: 44500, junior: 29000, paralegal: 20000 } # partner $725-800 [D/A]
+    leverage: 4.5
+    margin_bp: 4500
+    realisation_bp: 9200
+    collection_bp: 9600
+    flow_share: 0.30
+    conflict_bp: 2500
+    seasonality: [0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 1.22]
+    matter_kinds:
+      - { key: buyout, label: Buyout, kind: deal, weight: 0.55, median_cents: 80000000, sigma: 0.9, months: [4, 9], critical_bp: 500 }
+      - { key: fund_formation, label: Fund formation, kind: deal, weight: 0.30, median_cents: 60000000, sigma: 0.8, months: [6, 12], critical_bp: 0 }
+      - { key: portfolio_advice, label: Portfolio advice, kind: advisory, weight: 0.15, median_cents: 10000000, sigma: 0.8, months: [2, 5], critical_bp: 0 }
+    cross_sell: { banking_finance: 0.8, corporate_ma: 0.7, employment: 0.4, real_estate: 0.3, restructuring: 0.3 }
+  - key: capital_markets
+    label: Capital markets
+    short_label: Cap mkts
+    demand_cents: 130000000000 # $1.3bn [A] s4 row 3 (range $1.0-1.7bn): US underwriting $3.2tn [S]
+    driver: IPO and issuance volume
+    beta: 1.3
+    sigma: 0.15
+    rates: { partner: 72500, counsel: 59500, senior: 52000, mid: 42500, junior: 27500, paralegal: 19000 } # partner $700-750 [D/A]
+    leverage: 3.5
+    margin_bp: 4200
+    realisation_bp: 9200
+    collection_bp: 9700
+    flow_share: 0.30
+    conflict_bp: 500 # issuers and underwriters are rarely adverse
+    seasonality: [0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 1.22]
+    matter_kinds:
+      - { key: ipo, label: IPO, kind: deal, weight: 0.20, median_cents: 150000000, sigma: 0.6, months: [4, 9], critical_bp: 1500 }
+      - { key: debt_offering, label: Debt offering, kind: deal, weight: 0.55, median_cents: 30000000, sigma: 0.7, months: [1, 3], critical_bp: 0 }
+      - { key: securities_advice, label: Securities advice, kind: advisory, weight: 0.25, median_cents: 10000000, sigma: 0.8, months: [2, 6], critical_bp: 0 }
+    cross_sell: { corporate_ma: 0.5, banking_finance: 0.6, white_collar: 0.3 }
+  - key: banking_finance
+    label: Banking and finance
+    short_label: Banking
+    demand_cents: 110000000000 # $1.1bn [A] s4 row 4 (range $0.8-1.4bn): leveraged lending boom (volume not found)
+    driver: leveraged lending volume
+    beta: 1.1
+    sigma: 0.10
+    rates: { partner: 67500, counsel: 55500, senior: 48000, mid: 39500, junior: 25500, paralegal: 18000 } # partner $650-700 [D/A]
+    leverage: 3.5
+    margin_bp: 3800
+    realisation_bp: 9300
+    collection_bp: 9700
+    flow_share: 0.35
+    conflict_bp: 3000 # lender against borrower
+    seasonality: [0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 1.22]
+    matter_kinds:
+      - { key: acquisition_finance, label: Acquisition finance, kind: deal, weight: 0.50, median_cents: 50000000, sigma: 0.8, months: [2, 5], critical_bp: 300 }
+      - { key: credit_facility, label: Credit facility, kind: deal, weight: 0.35, median_cents: 20000000, sigma: 0.7, months: [1, 4], critical_bp: 0 }
+      - { key: finance_advice, label: Finance advice, kind: advisory, weight: 0.15, median_cents: 8000000, sigma: 0.8, months: [2, 4], critical_bp: 0 }
+    cross_sell: { corporate_ma: 0.8, private_equity: 0.7, restructuring: 0.6, real_estate: 0.5, capital_markets: 0.5 }
+  - key: restructuring
+    label: Restructuring and insolvency
+    short_label: Restruct
+    demand_cents: 70000000000 # $0.7bn [A] s4 row 5 (range $0.5-1.0bn): SDNY 790 Chapter 11 cases in 2005 [S]
+    driver: default rate and distressed debt
+    beta: -1.2 # [spec] counter-cyclical
+    sigma: 0.10
+    rates: { partner: 80000, counsel: 65500, senior: 57000, mid: 47000, junior: 30500, paralegal: 21000 } # partner $750-850 [D/A]
+    leverage: 3.0
+    margin_bp: 4500
+    realisation_bp: 9400 # [A] court-approved fee applications
+    collection_bp: 9500
+    flow_share: 0.25
+    conflict_bp: 5000 # creditors and debtors are other companies
+    seasonality: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    matter_kinds:
+      - { key: chapter_11, label: Chapter 11, kind: restructuring, weight: 0.45, median_cents: 200000000, sigma: 1.0, months: [9, 24], critical_bp: 2500 }
+      - { key: out_of_court, label: Out-of-court workout, kind: restructuring, weight: 0.35, median_cents: 50000000, sigma: 0.8, months: [3, 9], critical_bp: 500 }
+      - { key: creditor_advice, label: Creditor advice, kind: advisory, weight: 0.20, median_cents: 15000000, sigma: 0.8, months: [2, 6], critical_bp: 0 }
+    cross_sell: { banking_finance: 0.6, commercial_litigation: 0.5, corporate_ma: 0.4, employment: 0.3 }
+  - key: commercial_litigation
+    label: Commercial litigation
+    short_label: Litigation
+    demand_cents: 250000000000 # $2.5bn [A] s4 row 6 (range $2.0-3.2bn): litigation 58% of large-company spend [S]
+    driver: litigation index
+    beta: -0.2 # [spec] steady, slightly counter-cyclical
+    sigma: 0.05
+    rates: { partner: 69000, counsel: 56500, senior: 49500, mid: 40500, junior: 26000, paralegal: 18000 } # partner $650-725 [D/A]
+    leverage: 3.0
+    margin_bp: 3500
+    realisation_bp: 8800
+    collection_bp: 9500
+    flow_share: 0.30
+    conflict_bp: 6000 # [spec] litigation high
+    seasonality: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    matter_kinds:
+      - { key: commercial_case, label: Commercial case, kind: case, weight: 0.55, median_cents: 60000000, sigma: 1.0, months: [12, 30], critical_bp: 800, forums: { sdny: 0.35, ny_commercial: 0.35, edny: 0.10, del_chancery: 0.20 } }
+      - { key: securities_class_action, label: Securities class action, kind: case, weight: 0.20, median_cents: 150000000, sigma: 0.9, months: [18, 36], critical_bp: 2000, forums: { sdny: 0.8, edny: 0.2 } }
+      - { key: arbitration, label: Commercial arbitration, kind: case, weight: 0.15, median_cents: 50000000, sigma: 0.9, months: [12, 24], critical_bp: 300, forums: { aaa: 0.6, icc: 0.4 } }
+      - { key: dispute_advice, label: Dispute advice, kind: advisory, weight: 0.10, median_cents: 8000000, sigma: 0.8, months: [2, 5], critical_bp: 0 }
+    cross_sell: { white_collar: 0.7, ip: 0.4, employment: 0.4, restructuring: 0.4, corporate_ma: 0.3 }
+  - key: white_collar
+    label: White collar and investigations
+    short_label: White collar
+    demand_cents: 85000000000 # $0.85bn [A] s4 row 7 (range $0.6-1.2bn): post-Enron, SOX era
+    driver: enforcement intensity
+    beta: 0.0 # [A] policy-driven, not cyclical
+    sigma: 0.08
+    rates: { partner: 75000, counsel: 61500, senior: 53500, mid: 44000, junior: 28500, paralegal: 20000 } # partner $700-800 [D/A]
+    leverage: 3.0
+    margin_bp: 4000
+    realisation_bp: 9000
+    collection_bp: 9500
+    flow_share: 0.20
+    conflict_bp: 2500 # adverse parties are mostly the government
+    seasonality: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    matter_kinds:
+      - { key: investigation, label: Internal investigation, kind: investigation, weight: 0.60, median_cents: 90000000, sigma: 1.0, months: [6, 18], critical_bp: 2500 }
+      - { key: enforcement_defence, label: Enforcement defence, kind: case, weight: 0.25, median_cents: 120000000, sigma: 0.9, months: [12, 30], critical_bp: 2000, forums: { sdny: 0.7, edny: 0.3 } }
+      - { key: compliance_review, label: Compliance review, kind: advisory, weight: 0.15, median_cents: 20000000, sigma: 0.8, months: [3, 6], critical_bp: 0 }
+    cross_sell: { commercial_litigation: 0.7, employment: 0.4, capital_markets: 0.3, corporate_ma: 0.3 }
+  - key: ip
+    label: IP
+    short_label: IP
+    demand_cents: 85000000000 # $0.85bn [A] s4 row 9 (range $0.6-1.1bn): 2,720 patent and 5,796 copyright suits FY2005 [S]
+    driver: patent filings and tech M&A
+    beta: 0.2
+    sigma: 0.06
+    rates: { partner: 61500, counsel: 50500, senior: 44000, mid: 36000, junior: 23500, paralegal: 16500 } # partner $575-650 [D/A]
+    leverage: 2.5
+    margin_bp: 3500
+    realisation_bp: 8900
+    collection_bp: 9500
+    flow_share: 0.45
+    conflict_bp: 5000
+    seasonality: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    matter_kinds:
+      - { key: patent_litigation, label: Patent litigation, kind: case, weight: 0.40, median_cents: 150000000, sigma: 1.0, months: [18, 36], critical_bp: 1500, forums: { edtex: 0.35, ddel: 0.30, ndcal: 0.15, sdny: 0.10, wdtex: 0.10 } }
+      - { key: prosecution, label: Patent prosecution, kind: filing, weight: 0.35, median_cents: 6000000, sigma: 0.7, months: [6, 18], critical_bp: 0 }
+      - { key: ip_transactional, label: IP transaction, kind: deal, weight: 0.25, median_cents: 15000000, sigma: 0.8, months: [2, 6], critical_bp: 0 }
+    cross_sell: { commercial_litigation: 0.4, corporate_ma: 0.4, employment: 0.2 }
+  - key: employment
+    label: Employment and labour
+    short_label: Employment
+    demand_cents: 55000000000 # $0.55bn [A] s4 row 10 (range $0.4-0.8bn): 16,930 employment civil-rights suits [S]
+    driver: employment level and regulation
+    beta: -0.3 # [A] counter-cyclical (layoffs)
+    sigma: 0.05
+    rates: { partner: 52500, counsel: 43000, senior: 37500, mid: 31000, junior: 20000, paralegal: 14000 } # partner $475-575 [D/A]
+    leverage: 2.0
+    margin_bp: 3000
+    realisation_bp: 8800
+    collection_bp: 9500
+    flow_share: 0.60
+    conflict_bp: 1500 # adverse parties are mostly individuals
+    seasonality: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    matter_kinds:
+      - { key: employment_litigation, label: Employment litigation, kind: case, weight: 0.40, median_cents: 30000000, sigma: 0.9, months: [9, 24], critical_bp: 500, forums: { sdny: 0.5, edny: 0.3, aaa: 0.2 } }
+      - { key: exec_comp, label: Executive compensation, kind: advisory, weight: 0.35, median_cents: 8000000, sigma: 0.7, months: [1, 4], critical_bp: 0 }
+      - { key: employment_class_action, label: Employment class action, kind: case, weight: 0.25, median_cents: 80000000, sigma: 0.9, months: [12, 30], critical_bp: 1000, forums: { sdny: 0.6, edny: 0.4 } }
+    cross_sell: { corporate_ma: 0.5, commercial_litigation: 0.4, white_collar: 0.3, private_equity: 0.3 }
+  - key: real_estate
+    label: Real estate
+    short_label: Real estate
+    demand_cents: 100000000000 # $1.0bn [A] s4 row 8 (range $0.7-1.4bn): Manhattan's 2005 property boom
+    driver: property transactions
+    beta: 1.2 # [A] pro-cyclical, should fall by half in 2009
+    sigma: 0.08
+    rates: { partner: 56500, counsel: 46500, senior: 40500, mid: 33000, junior: 21500, paralegal: 15000 } # partner $525-600 [A] (review)
+    leverage: 2.5
+    margin_bp: 3000
+    realisation_bp: 9100
+    collection_bp: 9600
+    flow_share: 0.45
+    conflict_bp: 2000
+    seasonality: [0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 1.22]
+    matter_kinds:
+      - { key: property_acquisition, label: Property acquisition, kind: deal, weight: 0.50, median_cents: 25000000, sigma: 0.9, months: [2, 6], critical_bp: 0 }
+      - { key: development, label: Development, kind: deal, weight: 0.25, median_cents: 40000000, sigma: 0.9, months: [6, 18], critical_bp: 200 }
+      - { key: leasing, label: Leasing, kind: advisory, weight: 0.25, median_cents: 6000000, sigma: 0.7, months: [1, 3], critical_bp: 0 }
+    cross_sell: { banking_finance: 0.6, corporate_ma: 0.4, private_equity: 0.3 }

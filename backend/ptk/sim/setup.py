@@ -14,6 +14,7 @@ from ptk.sim.data_models import Balance, GameData, Scenario
 from ptk.sim.errors import UnknownDifficultyError, UnknownScenarioError
 from ptk.sim.hiring.phases import starting_pay
 from ptk.sim.ledger import CASH, PARTNERS_CAPITAL, LedgerEntry
+from ptk.sim.matters.setup import new_market
 from ptk.sim.money import pct_of
 from ptk.sim.people.founder import FounderSpec, build_founder
 from ptk.sim.people.generator import generate_person, people_gen_stream
@@ -78,6 +79,10 @@ def new_game(
         reveals=reveals,
     )
     state = starting_pay(state, balance, data)  # PT-M1b: salaries, morale, energy
+    # PT-M3a: the client universe, judges and the founding partners' clients
+    state = replace(
+        state, market=new_market(state, firm.id, RngFactory(master_seed), data, balance)
+    )
     capital = pct_of(scenario.partners_capital_cents, level.capital_mult_bp)
     entries: tuple[LedgerEntry, ...] = ()
     if capital:

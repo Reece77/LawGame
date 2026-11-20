@@ -20,7 +20,7 @@
 | `resign` | 11 | `(person_id,)` | The monthly resignation roll | PT-M1b |
 | `actions` | 13 | `(seq,)` | Randomness inside a player action (tag rolls at an interview or reference check; ADR-0014) | PT-M1b |
 | `delegate` | 14 | `(person_id, n)` | A delegate's nth hiring request in a turn, through PT-M1b's hook (TST ADR-0015) | PT-M2 |
-| `demand` | 20 | `(region, practice)` | Monthly legal demand noise | PT-M3 |
+| `demand` | 20 | `(region, practice_index)` | Monthly legal demand noise | PT-M3 |
 | `intake` | 21 | `(client_id,)` | New instructions from a client | PT-M3 |
 | `matter` | 22 | `(matter_id,)` | Progress noise, events and the outcome | PT-M3 |
 | `billing` | 23 | `(matter_id,)` or `(client_id, month)` | Bill disputes, write-downs, collection delays | PT-M3 |
@@ -33,6 +33,8 @@
 | `campus` | 30 | `(year, school_index, search_id)` | Campus candidate pools: one generator per school tier visited by each campus search (PT-M1b added `search_id`, so two practices' searches do not draw the same people) | PT-M1b |
 | `client_gen` | 31 | `(client_index,)` | Generated clients and their GCs | PT-M3 |
 | `macro_law` | 32 | `(indicator_index,)` | Seeded legal indices after 2025 | PT-M10 |
+| `judge_gen` | 33 | `(court_index, n)` | The n-th generated judge of a court (courts.yaml order) at game creation; real judges arrive with PT-M5 | PT-M3a |
+| `book` | 34 | `(founder_index,)` | The clients a founding partner's book of business came from, at game creation | PT-M3a |
 
 ## Consequences
 

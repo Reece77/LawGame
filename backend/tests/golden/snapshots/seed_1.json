@@ -33,12 +33,40 @@
   ],
   "final_turn": 360,
   "game_state": "campaign_complete",
+  "matter_outcomes": [
+    [
+      "closed",
+      17
+    ],
+    [
+      "collapsed",
+      1
+    ],
+    [
+      "done",
+      12
+    ],
+    [
+      "lost",
+      4
+    ],
+    [
+      "open",
+      6
+    ],
+    [
+      "won",
+      9
+    ]
+  ],
+  "matters": "1dfe470fb19e19a6cddb04cac51400c1f3fe21c1784dcbc6d2c6f94d8990c3cd",
   "names": [
     "Jennifer King",
     "Kevin Carter",
     "Ashley Cook",
     "Whitney Brown"
   ],
-  "people": "af28302e99d58cff7b4ff3333d38e8a4e09fdb45c346ae6955ccbdd0579993c0",
-  "sha256": "7edb3d98c12042bc52a572140392d0f1f8dc886afd9c07b880f41dcb3871f2ec"
+  "people": "299910a19a5feadc3e129357266f3001b37593b0db22b5dbd81d1a5605a671bc",
+  "relationships": "34a8aad6f19248b5a7b3172be22900052c9747af49f0cf8fb4d787cfd46ff370",
+  "sha256": "fe7967af3c53ba6ff4bb68f87d6204350230235effaef4b24f479a99cc05ecb7"
 }

@@ -10,6 +10,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from ptk.db.inbox import inbox_rows
+from ptk.db.market_io import insert_market, load_market, write_market
 from ptk.db.models import (
     CandidateRow,
     EmploymentRow,
@@ -84,11 +85,13 @@ def insert_new(session: Session, state: GameState, entries: tuple[LedgerEntry, .
                 home_city=firm.home_city,
                 pay_policy_mode=firm.pay_policy.mode,
                 pay_policy_bp=firm.pay_policy.pct_bp,
+                conflict_checks=firm.conflict_checks,
             )
         )
     session.flush()
     write_people(session, state)
     write_org(session, state)
+    insert_market(session, state.market)
     write_entries(session, entries)
 
 
@@ -114,6 +117,7 @@ def load_state(session: Session) -> GameState:
             founded_turn=f.founded_turn,
             home_city=f.home_city,
             pay_policy=PayPolicy(mode=f.pay_policy_mode, pct_bp=f.pay_policy_bp),  # type: ignore[arg-type]
+            conflict_checks=f.conflict_checks,
         )
         for f in session.scalars(select(FirmRow).order_by(FirmRow.id))
     )
@@ -142,6 +146,7 @@ def load_state(session: Session) -> GameState:
             )
         ),
         org=load_org(session),
+        market=load_market(session, row.current_turn),
         searches=tuple(
             _search(r) for r in session.scalars(select(SearchRow).order_by(SearchRow.id))
         ),
@@ -445,6 +450,7 @@ def write_turn(
     write_firms(session, new_state)
     write_people(session, new_state)
     write_org(session, new_state)
+    write_market(session, new_state.market)
 
 
 def write_firms(session: Session, state: GameState) -> None:
@@ -453,6 +459,7 @@ def write_firms(session: Session, state: GameState) -> None:
         assert row is not None
         row.name, row.stage = firm.name, firm.stage
         row.pay_policy_mode, row.pay_policy_bp = firm.pay_policy.mode, firm.pay_policy.pct_bp
+        row.conflict_checks = firm.conflict_checks
 
 
 def with_turn(state: GameState, turn: int) -> GameState:

@@ -27,6 +27,8 @@ def load_game_data(data_dir: Path) -> GameData:
         scenarios = _read(data_dir / "scenarios.yaml")
         personality = _read(data_dir / "personality.yaml")
         backgrounds = _read(data_dir / "backgrounds.yaml")
+        practices = _read(data_dir / "practices.yaml")
+        market = {k: v for k, v in practices.items() if k != "practices"}
         return GameData(
             accounts=tuple(_read(data_dir / "accounts.yaml")["accounts"]),
             scenarios=tuple(scenarios["scenarios"]),
@@ -37,7 +39,7 @@ def load_game_data(data_dir: Path) -> GameData:
             hidden=tuple(personality["hidden"]),
             work_styles=tuple(personality["work_styles"]),
             interests=tuple(_read(data_dir / "interests.yaml")["interests"]),
-            practices=tuple(_read(data_dir / "practices.yaml")["practices"]),
+            practices=tuple(practices["practices"]),
             school_tiers=tuple(_read(data_dir / "schools.yaml")["school_tiers"]),
             roles=tuple(_read(data_dir / "roles.yaml")["roles"]),
             tags=tuple(_read(data_dir / "tags.yaml")["tags"]),
@@ -46,6 +48,9 @@ def load_game_data(data_dir: Path) -> GameData:
             names=_read(data_dir / "names.yaml")["names"],
             salary_scale=_read(data_dir / "salary_scale.yaml"),
             inbox_templates=_read(data_dir / "inbox_templates.yaml")["templates"],
+            market=market,
+            clients=_read(data_dir / "clients.yaml"),
+            courts=_read(data_dir / "courts.yaml"),
         )
     except (ValidationError, KeyError, FileNotFoundError) as exc:
         raise InvalidDataError(f"invalid seed data: {exc}") from exc

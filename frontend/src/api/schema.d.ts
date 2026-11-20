@@ -769,6 +769,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/saves/{slug}/matters/{matter_id}/board": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Board */
+        get: operations["getStaffingBoard"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/practices/screen": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Practices Screen */
+        get: operations["listPracticesScreen"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/explain/{metric}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Explain */
+        get: operations["explain"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/saves/{slug}/finance": {
         parameters: {
             query?: never;
@@ -940,6 +991,38 @@ export interface components {
             status: string;
             dispute: components["schemas"]["DisputeOut"] | null;
         };
+        /**
+         * BoardPersonOut
+         * @description One fee earner on the staffing board, as the firm sees them.
+         */
+        BoardPersonOut: {
+            person: components["schemas"]["RefOut"];
+            /** Level */
+            level: string;
+            /** Role Label */
+            role_label: string;
+            /** Home Practice */
+            home_practice: string;
+            familiarity: components["schemas"]["RangeOut"];
+            /** Capacity Hours */
+            capacity_hours: number;
+            /** Planned Hours */
+            planned_hours: number;
+            /** Free Hours */
+            free_hours: number;
+            /** Hours Last Month */
+            hours_last_month: number;
+            /** Strain */
+            strain: number;
+            /** Burnt Out */
+            burnt_out: boolean;
+            /** On Team */
+            on_team: boolean;
+            /** Planned Here */
+            planned_here: number;
+            /** Warnings */
+            warnings: string[];
+        };
         /** CampusOut */
         CampusOut: {
             /** Registration Open */
@@ -1035,6 +1118,8 @@ export interface components {
             /** Open Matters */
             open_matters: number;
             wallet_estimate: components["schemas"]["RangeCentsOut"];
+            share_estimate: components["schemas"]["RangeBpOut"];
+            panel_status: components["schemas"]["PanelStatusOut"];
             general_counsel: components["schemas"]["GeneralCounselOut"];
             /** Panel */
             panel: string[];
@@ -1072,6 +1157,8 @@ export interface components {
             /** Open Matters */
             open_matters: number;
             wallet_estimate: components["schemas"]["RangeCentsOut"];
+            share_estimate: components["schemas"]["RangeBpOut"];
+            panel_status: components["schemas"]["PanelStatusOut"];
         };
         /** ConflictChecksIn */
         ConflictChecksIn: {
@@ -1150,6 +1237,34 @@ export interface components {
             code: string;
             /** Message */
             message: string;
+        };
+        /** ExplainItemOut */
+        ExplainItemOut: {
+            /** Label */
+            label: string;
+            /** Amount */
+            amount: number | null;
+            unit: components["schemas"]["Unit"];
+            /** Text */
+            text?: string | null;
+            range?: components["schemas"]["RangeOut"] | null;
+        };
+        /** ExplainOut */
+        ExplainOut: {
+            metric: components["schemas"]["Metric"];
+            /** Label */
+            label: string;
+            /** Subject */
+            subject: string;
+            /** Value */
+            value: number | null;
+            unit: components["schemas"]["Unit"];
+            /** Band */
+            band: string | null;
+            /** Items */
+            items: components["schemas"]["ExplainItemOut"][];
+            /** Note */
+            note: string;
         };
         /** FamiliarityOut */
         FamiliarityOut: {
@@ -1287,6 +1402,17 @@ export interface components {
             /** Person Id */
             person_id: number | null;
         };
+        /** MatterEventOut */
+        MatterEventOut: {
+            /** Id */
+            id: number;
+            /** Date Label */
+            date_label: string;
+            /** Title */
+            title: string;
+            /** Body */
+            body: string;
+        };
         /** MatterMoneyOut */
         MatterMoneyOut: {
             /** Matter Id */
@@ -1360,6 +1486,9 @@ export interface components {
             /** Missed Deadlines */
             missed_deadlines: number;
             settlement: components["schemas"]["SettlementOut"] | null;
+            risk: components["schemas"]["RiskOut"];
+            /** Risk Notes */
+            risk_notes: string[];
             /** Team */
             team: components["schemas"]["TeamMemberOut"][];
             /** Phases */
@@ -1421,6 +1550,9 @@ export interface components {
             /** Missed Deadlines */
             missed_deadlines: number;
             settlement: components["schemas"]["SettlementOut"] | null;
+            risk: components["schemas"]["RiskOut"];
+            /** Risk Notes */
+            risk_notes: string[];
         };
         /** @enum {string} */
         MatterStatusOut: "open" | "conflicted" | "closed" | "declined";
@@ -1433,6 +1565,8 @@ export interface components {
             /** Backgrounds */
             backgrounds: components["schemas"]["BackgroundOut"][];
         };
+        /** @enum {string} */
+        Metric: "utilisation" | "realisation" | "matter_margin" | "outlook";
         /** MonthOut */
         MonthOut: {
             /** Turn */
@@ -1591,6 +1725,8 @@ export interface components {
             /** Campus Target */
             campus_target: number | null;
         };
+        /** @enum {string} */
+        PanelStatusOut: "key" | "active" | "dormant";
         /** PayPolicyIn */
         PayPolicyIn: {
             /**
@@ -1918,10 +2054,59 @@ export interface components {
             /** Label */
             label: string;
         };
+        /** PracticeRateOut */
+        PracticeRateOut: {
+            /** Band */
+            band: string;
+            /** Card Cents */
+            card_cents: number;
+            /** Ours Cents */
+            ours_cents: number | null;
+        };
+        /** PracticeScreenOut */
+        PracticeScreenOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Short Label */
+            short_label: string;
+            /** Demand Trend */
+            demand_trend: components["schemas"]["TrendPointOut"][];
+            /** Demand Cents */
+            demand_cents: number;
+            /** Revenue Cents */
+            revenue_cents: number;
+            /** Share Bp */
+            share_bp: number;
+            /** Lawyers */
+            lawyers: number;
+            /** Partners */
+            partners: number;
+            /** Capacity Hours */
+            capacity_hours: number;
+            /** Hours Last Month */
+            hours_last_month: number;
+            /** Utilisation Bp */
+            utilisation_bp: number | null;
+            /** Leverage */
+            leverage: number | null;
+            /** Leverage Norm */
+            leverage_norm: number;
+            /** Rates */
+            rates: components["schemas"]["PracticeRateOut"][];
+        };
         /** RaiseIn */
         RaiseIn: {
             /** Salary Cents */
             salary_cents: number;
+        };
+        /** RangeBpOut */
+        RangeBpOut: {
+            /** Lo */
+            lo: number;
+            /** Hi */
+            hi: number;
         };
         /** RangeCentsOut */
         RangeCentsOut: {
@@ -1987,6 +2172,8 @@ export interface components {
             /** Name */
             name: string;
         };
+        /** @enum {string} */
+        RiskOut: "low" | "medium" | "high";
         /** RoleOptionOut */
         RoleOptionOut: {
             /** Key */
@@ -2090,6 +2277,19 @@ export interface components {
             /** Start Label */
             start_label: string;
         };
+        /** StaffingBoardOut */
+        StaffingBoardOut: {
+            /** Matter Id */
+            matter_id: number;
+            /** Practice */
+            practice: string;
+            /** Practice Label */
+            practice_label: string;
+            /** People */
+            people: components["schemas"]["BoardPersonOut"][];
+            /** Events */
+            events: components["schemas"]["MatterEventOut"][];
+        };
         /** @enum {string} */
         SupervisorLabel: "strong" | "fine" | "stretched";
         /**
@@ -2125,6 +2325,15 @@ export interface components {
             /** Hours Last Month */
             hours_last_month: number;
         };
+        /** TrendPointOut */
+        TrendPointOut: {
+            /** Date Label */
+            date_label: string;
+            /** Cents */
+            cents: number;
+        };
+        /** @enum {string} */
+        Unit: "cents" | "hours" | "percent" | "ratio" | "text" | "range";
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -5000,6 +5209,184 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ConflictChecksOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getStaffingBoard: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                matter_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffingBoardOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    listPracticesScreen: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PracticeScreenOut"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    explain: {
+        parameters: {
+            query?: {
+                entity?: string | null;
+            };
+            header?: never;
+            path: {
+                slug: string;
+                metric: "utilisation" | "realisation" | "matter_margin" | "outlook";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExplainOut"];
                 };
             };
             /** @description Bad Request */

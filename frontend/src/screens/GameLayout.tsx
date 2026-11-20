@@ -35,6 +35,9 @@ export function GameLayout() {
           label={unread ? `Inbox (${unread})` : 'Inbox'}
         />
         <NavLink component={Link} to={`/game/${slug}/people`} label="People" />
+        <NavLink component={Link} to={`/game/${slug}/matters`} label="Matters" />
+        <NavLink component={Link} to={`/game/${slug}/clients`} label="Clients" />
+        <NavLink component={Link} to={`/game/${slug}/practices`} label="Practices" />
         <NavLink component={Link} to={`/game/${slug}/recruitment`} label="Recruitment" />
         <NavLink component={Link} to={`/game/${slug}/org`} label="Org" />
         <NavLink component={Link} to={`/game/${slug}/finance`} label="Finance" />

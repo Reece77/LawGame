@@ -31,7 +31,6 @@ STREAM_IDS: Final = MappingProxyType(
         "resign": 11,  # (person_id,): the monthly resignation roll (PT-M1b)
         "actions": 13,  # (seq,): randomness inside a player action (ADR-0014; PT-M1b)
         "delegate": 14,  # (person_id, n): a delegate's nth hiring request this turn (PT-M2)
-        "poach": 19,  # (*rival_key, 0, made_turn): a rival's approach answered (PT-M5)
         "demand": 20,  # (region, practice_index): monthly legal demand noise (PT-M3a)
         "intake": 21,  # (client_id,): a client's new instructions this month (PT-M3a)
         "matter": 22,  # (matter_id,): a matter's month: judge, progress, errors, outcome (PT-M3a)
@@ -49,6 +48,7 @@ STREAM_IDS: Final = MappingProxyType(
         "real_swap": 37,  # (kind, index): a real judge's generated name if real people are off
         "opposing": 38,  # (matter_id,): a case's opposing counsel (PT-M5)
         "rival_fate": 39,  # (*rival_key,): a rival's collapse hazard and scatter (PT-M5)
+        "rival_poach": 40,  # (*rival_key, 0, made_turn): a rival's approach answered (PT-M5)
         "misc": 99,  # tests only
     }
 )

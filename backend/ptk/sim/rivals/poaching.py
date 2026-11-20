@@ -4,7 +4,7 @@
 targets one of the player's lawyers in a practice it staffs (partners and senior associates
 first, by book then ability; one draw chooses among the top three) and makes an offer at a
 premium over their pay. At most `rivals.poach.max_per_year` approaches reach the player's
-firm in any 12 months. The approach is answered in phase 1 of the next turn (stream `poach`,
+firm in any 12 months. The approach is answered in phase 1 of the next turn (stream `rival_poach`,
 key `(*rival_key, ANSWER_KEY, made_turn)`): p = 1 / (1 + e^(-2 s)) with
 s = 4 (R - 1) + (55 - morale) / 20 - (loyalty - 10) / 10 - 0.5. Accepted: the person gives
 notice (`poached`) and joins the rival as a key person when it ends. The player can counter
@@ -165,7 +165,7 @@ def resolve_approaches(
             out.append(replace(a, status="lapsed", resolved_turn=turn))
             continue
         odds = answer_odds(state, a, data, balance)
-        draw = float(rng.stream(turn, "poach", *firm.rival_key, ANSWER_KEY, a.made_turn).random())
+        draw = float(rng.stream(turn, "rival_poach", *firm.rival_key, ANSWER_KEY, a.made_turn).random())
         person = state.person(a.person_id)
         if draw < odds.probability:
             months = NOTICE_MONTHS[member_kind(person.level)]

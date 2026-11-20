@@ -20,8 +20,9 @@ reputation) + `w_incumbent` if an incumbent + N(0, `noise_sd`), drawn in contend
 10), where quality is the team's mean of business development, communication, client care
 and familiarity in the RFP's practices, plus `w_claim` for each substantiated claim and minus
 it for each that is not. The best `seats` scores win. A panel's winners become its panel; a
-player's win adds the practices to its relationship (or opens one at `rfp.start_score`), a
-loss as an incumbent removes them. A player's big-matter win opens the named matter, through
+player's pitched win adds the practices to its relationship (or opens one at
+`rfp.start_score`); an unpitched incumbent's win keeps what it had; a loss as an incumbent
+removes the practices. A player's big-matter win opens the named matter, through
 the conflicts check. The opening rolls use stream `rfp`, key `(0, client_id)`.
 """
 
@@ -327,6 +328,8 @@ def _joined(
     balance: Balance,
 ) -> Relationship:
     lead = rfp.pitch.team[0] if rfp.pitch and rfp.pitch.team else state.founder_of(state.player.id)
+    if rel is not None and rfp.pitch is None:
+        return rel  # an unpitched incumbent keeps its seat, and only that
     if rel is None:
         return Relationship(
             client_id=client.id,

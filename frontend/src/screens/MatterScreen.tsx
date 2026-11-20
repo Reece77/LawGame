@@ -19,6 +19,9 @@ import { StrainBar } from '../components/StrainBar';
 import {
   useMatter,
   useMatterAction,
+  useMatterMoneyById,
+  useRecentBills,
+  useWriteDown,
   usePracticeLabels,
   useStaffingBoard,
   type BoardPerson,
@@ -26,7 +29,7 @@ import {
   type MatterDetail,
   type StaffingBoard,
 } from '../lib/api';
-import { formatHours, formatMoneyWhole, humanize } from '../lib/format';
+import { formatBpShort, formatHours, formatMoneyWhole, humanize } from '../lib/format';
 
 // A matter (spec 16): the staffing board (drag people onto the matter, hours a month, strain
 // warnings), phase timeline, bills, events and settlement offers. The engine decides every
@@ -130,13 +133,7 @@ export function MatterScreen() {
           slug={slug}
         />
       )}
-      <div className="tst-panel">
-        <h3 className="tst-ptitle">Bills</h3>
-        <Text size="sm" c="dimmed" data-testid="bills">
-          No bills yet: work in progress stands at {formatMoneyWhole(m.wip_cents)} at standard
-          rates.
-        </Text>
-      </div>
+      <BillsPanel m={m} slug={slug} />
       <div className="tst-panel">
         <h3 className="tst-ptitle">Events</h3>
         {(board.data?.events ?? []).length === 0 ? (
@@ -189,6 +186,7 @@ function MatterStats({ m, slug }: { m: MatterDetail; slug: string }) {
           <Explain metric="matter_margin" entity={m.id} label="matter margin" />
         </Stat>
         <Stat label="Realisation">
+          <RealisationValue slug={slug} matterId={m.id} />
           <Explain metric="realisation" entity={m.id} label="realisation" />
         </Stat>
         <Stat label="Outlook">
@@ -500,6 +498,106 @@ function StaffingBoardPanel({
           </Stack>
         </div>
       </SimpleGrid>
+    </div>
+  );
+}
+
+function RealisationValue({ slug, matterId }: { slug: string; matterId: number }) {
+  const bp = useMatterMoneyById(slug).get(matterId)?.realisation_bp;
+  return (
+    <span data-testid="matter-realisation">
+      {bp === null || bp === undefined ? '—' : formatBpShort(bp)}
+    </span>
+  );
+}
+
+function BillsPanel({ m, slug }: { m: MatterDetail; slug: string }) {
+  const money = useMatterMoneyById(slug).get(m.id);
+  const bills = (useRecentBills(slug).data ?? []).filter((b) => b.matter_id === m.id);
+  const writeDown = useWriteDown(slug);
+  const [pct, setPct] = useState<string | number>(0);
+  return (
+    <div className="tst-panel" data-testid="bills">
+      <h3 className="tst-ptitle">Bills</h3>
+      {!money ? (
+        <Text size="sm" c="dimmed">
+          No billing terms yet: work in progress stands at {formatMoneyWhole(m.wip_cents)} at
+          standard rates.
+        </Text>
+      ) : (
+        <Stack gap="sm">
+          <SimpleGrid cols={{ base: 2, sm: 3, lg: 6 }}>
+            <Stat label="Billing model">{humanize(money.model)}</Stat>
+            <Stat label="Unbilled WIP">{formatMoneyWhole(money.wip_cents)}</Stat>
+            <Stat label="Billed">
+              <span data-testid="matter-billed">{formatMoneyWhole(money.billed_cents)}</span>
+            </Stat>
+            <Stat label="Collected">{formatMoneyWhole(money.collected_cents)}</Stat>
+            <Stat label="On account">{formatMoneyWhole(money.funds_cents)}</Stat>
+            <Stat label="Write-down for the next bill">{formatBpShort(money.writedown_bp)}</Stat>
+          </SimpleGrid>
+          {m.status === 'open' && (
+            <Group gap="xs" align="end">
+              <NumberInput
+                size="xs"
+                w={120}
+                min={0}
+                max={50}
+                value={pct}
+                onChange={setPct}
+                label="Write the next bill down"
+                suffix="%"
+              />
+              <Button
+                size="xs"
+                variant="default"
+                loading={writeDown.isPending}
+                onClick={() =>
+                  writeDown.mutate({ matterId: m.id, bp: Math.round(Number(pct) * 100) })
+                }
+              >
+                Set write-down
+              </Button>
+              {writeDown.error && (
+                <Text size="xs" c="red">
+                  {writeDown.error.message}
+                </Text>
+              )}
+            </Group>
+          )}
+          {bills.length === 0 ? (
+            <Text size="sm" c="dimmed">
+              No open or recent bills.
+            </Text>
+          ) : (
+            <table className="tst-table" aria-label="Matter bills">
+              <thead>
+                <tr>
+                  <th>Issued</th>
+                  <th>Billed</th>
+                  <th>Outstanding</th>
+                  <th>Age</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {bills.map((b) => (
+                  <tr key={b.id} data-testid="matter-bill">
+                    <td>{b.issued_label}</td>
+                    <td className="tst-num">{formatMoneyWhole(b.billed_cents)}</td>
+                    <td className="tst-num">{formatMoneyWhole(b.outstanding_cents)}</td>
+                    <td className="tst-num">{b.age_days} days</td>
+                    <td>
+                      {humanize(b.status)}
+                      {b.dispute && ' (disputed)'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </Stack>
+      )}
     </div>
   );
 }

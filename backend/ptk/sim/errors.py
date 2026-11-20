@@ -208,3 +208,14 @@ class MatterActionError(SimError):
     """A matter or client action is not allowed now (no offer, not conflicted, ...)."""
 
     code = "invalid_matter_action"
+
+
+# --- PT-M3b: billing -----------------------------------------------------------------------
+
+
+class UnknownBillError(NotFoundError):
+    """No such bill for the acting firm."""
+
+
+class BillingActionError(SimError):
+    """A billing action a rule forbids (a write-down out of range, a bill not disputed)."""

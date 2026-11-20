@@ -11,6 +11,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass, field, replace
 from typing import Literal
 
+from ptk.sim.billing.models import EMPTY_BILLING, BillingState
 from ptk.sim.calendar import YearMonth
 from ptk.sim.hiring.models import Candidate, Offer, PayPolicy, PersonState, Search
 from ptk.sim.matters.models import EMPTY_MARKET, MarketState
@@ -59,6 +60,7 @@ class GameState:
     person_states: tuple[PersonState, ...] = ()  # sorted by person_id
     org: OrgState = EMPTY_ORG  # units, membership, plans, delegates (PT-M2)
     market: MarketState = EMPTY_MARKET  # clients, relationships, matters, judges (PT-M3a)
+    billing: BillingState = EMPTY_BILLING  # WIP, bills, client money, totals (PT-M3b)
 
     @property
     def ended(self) -> bool:

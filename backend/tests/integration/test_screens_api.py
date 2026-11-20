@@ -107,7 +107,15 @@ def test_explain_metrics(save_dir: Path) -> None:
         margin["items"][0]["amount"] + margin["items"][1]["amount"] == margin["items"][2]["amount"]
     )
     real = client.get(f"/api/saves/scr/explain/realisation?entity={matter['id']}").json()
-    assert real["items"][0]["amount"] == matter["wip_cents"]
+    money = next(
+        x
+        for x in client.get("/api/saves/scr/finance/matters").json()
+        if x["matter_id"] == matter["id"]
+    )
+    assert money["realisation_bp"] is not None, "three months bring a bill"
+    assert real["value"] == money["realisation_bp"] / 100
+    billed = next(i for i in real["items"] if i["label"] == "Billed")
+    assert billed["amount"] == money["billed_cents"]
     assert client.get("/api/saves/scr/explain/outlook").status_code == 404
     assert client.get("/api/saves/scr/explain/outlook?entity=x").status_code == 404
     assert client.get("/api/saves/scr/explain/utilisation?entity=999").status_code == 404

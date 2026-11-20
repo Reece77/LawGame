@@ -3,12 +3,47 @@
     [
       1,
       "1000_cash",
-      -246164586
+      5768451835
+    ],
+    [
+      1,
+      "1100_unbilled_wip",
+      71774500
+    ],
+    [
+      1,
+      "1110_wip_provision",
+      -22561206
+    ],
+    [
+      1,
+      "1200_receivables",
+      34295135
+    ],
+    [
+      1,
+      "1210_bad_debt_provision",
+      -369127
+    ],
+    [
+      1,
+      "2200_deferred_fees",
+      0
     ],
     [
       1,
       "3000_partners_capital",
       -60000000
+    ],
+    [
+      1,
+      "4000_fees",
+      -5955586035
+    ],
+    [
+      1,
+      "4100_success_fees",
+      -149844745
     ],
     [
       1,
@@ -29,6 +64,11 @@
       1,
       "6000_rent",
       228300000
+    ],
+    [
+      1,
+      "6700_write_offs",
+      7675057
     ]
   ],
   "final_turn": 360,
@@ -68,5 +108,5 @@
   ],
   "people": "299910a19a5feadc3e129357266f3001b37593b0db22b5dbd81d1a5605a671bc",
   "relationships": "34a8aad6f19248b5a7b3172be22900052c9747af49f0cf8fb4d787cfd46ff370",
-  "sha256": "fe7967af3c53ba6ff4bb68f87d6204350230235effaef4b24f479a99cc05ecb7"
+  "sha256": "615081a54127dc1b4ea41ecf31b2a0f8a0bee3efa00fa0effb893632707dfdc4"
 }

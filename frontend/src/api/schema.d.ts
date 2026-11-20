@@ -820,10 +820,104 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/saves/{slug}/finance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Finance */
+        get: operations["getFinance"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/finance/bills": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Bills */
+        get: operations["listBills"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/finance/matters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Matter Money */
+        get: operations["listMatterMoney"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/finance/write-down": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Write Down */
+        post: operations["writeDownMatter"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/finance/bills/{bill_id}/dispute": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Respond */
+        post: operations["respondDispute"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AgeBucketOut */
+        AgeBucketOut: {
+            /** Label */
+            label: string;
+            /** Amount Cents */
+            amount_cents: number;
+            /** Count */
+            count: number;
+        };
         /** AssignIn */
         AssignIn: {
             /** Person Id */
@@ -854,6 +948,48 @@ export interface components {
             label: string;
             /** Description */
             description: string;
+        };
+        /** BalanceLineOut */
+        BalanceLineOut: {
+            /** Account */
+            account: string;
+            /** Label */
+            label: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "asset" | "liability" | "equity";
+            /** Amount Cents */
+            amount_cents: number;
+        };
+        /** BillOut */
+        BillOut: {
+            /** Id */
+            id: number;
+            /** Client Id */
+            client_id: number;
+            /** Client */
+            client: string;
+            /** Matter Id */
+            matter_id: number | null;
+            /** Matter */
+            matter: string | null;
+            /** Practice */
+            practice: string;
+            /** Model */
+            model: string;
+            /** Issued Label */
+            issued_label: string;
+            /** Age Days */
+            age_days: number;
+            /** Billed Cents */
+            billed_cents: number;
+            /** Outstanding Cents */
+            outstanding_cents: number;
+            /** Status */
+            status: string;
+            dispute: components["schemas"]["DisputeOut"] | null;
         };
         /**
          * BoardPersonOut
@@ -1078,6 +1214,23 @@ export interface components {
             /** Name */
             name: string;
         };
+        /** DisputeIn */
+        DisputeIn: {
+            /**
+             * Choice
+             * @enum {string}
+             */
+            choice: "concede" | "negotiate" | "hold";
+        };
+        /** DisputeOut */
+        DisputeOut: {
+            /** Amount Cents */
+            amount_cents: number;
+            /** Raised Label */
+            raised_label: string;
+            /** Expires Label */
+            expires_label: string;
+        };
         /** ErrorBody */
         ErrorBody: {
             /** Code */
@@ -1125,6 +1278,22 @@ export interface components {
             lo: number;
             /** Hi */
             hi: number;
+        };
+        /** FinanceOut */
+        FinanceOut: {
+            /** Date Label */
+            date_label: string;
+            kpis: components["schemas"]["KpisOut"];
+            /** Months */
+            months: components["schemas"]["MonthOut"][];
+            /** Statements */
+            statements: components["schemas"]["PnlOut"][];
+            /** Balance Sheet */
+            balance_sheet: components["schemas"]["BalanceLineOut"][];
+            /** Wip Ageing */
+            wip_ageing: components["schemas"]["AgeBucketOut"][];
+            /** Receivables Ageing */
+            receivables_ageing: components["schemas"]["AgeBucketOut"][];
         };
         /** ForumIn */
         ForumIn: {
@@ -1200,6 +1369,29 @@ export interface components {
             /** Introducer Id */
             introducer_id?: number | null;
         };
+        /** KpisOut */
+        KpisOut: {
+            /** Revenue Cents */
+            revenue_cents: number;
+            /** Collections Cents */
+            collections_cents: number;
+            /** Wip Cents */
+            wip_cents: number;
+            /** Receivables Cents */
+            receivables_cents: number;
+            /** Client Money Cents */
+            client_money_cents: number;
+            /** Utilisation Bp */
+            utilisation_bp: number | null;
+            /** Realisation Bp */
+            realisation_bp: number | null;
+            /** Collection Bp */
+            collection_bp: number | null;
+            /** Lockup Days */
+            lockup_days: number | null;
+            /** Open Disputes */
+            open_disputes: number;
+        };
         /** LeadIn */
         LeadIn: {
             /** Person Id */
@@ -1220,6 +1412,29 @@ export interface components {
             title: string;
             /** Body */
             body: string;
+        };
+        /** MatterMoneyOut */
+        MatterMoneyOut: {
+            /** Matter Id */
+            matter_id: number;
+            /** Model */
+            model: string;
+            /** Closed */
+            closed: boolean;
+            /** Wip Cents */
+            wip_cents: number;
+            /** Standard Cents */
+            standard_cents: number;
+            /** Billed Cents */
+            billed_cents: number;
+            /** Collected Cents */
+            collected_cents: number;
+            /** Realisation Bp */
+            realisation_bp: number | null;
+            /** Writedown Bp */
+            writedown_bp: number;
+            /** Funds Cents */
+            funds_cents: number;
         };
         /** MatterOut */
         MatterOut: {
@@ -1352,6 +1567,19 @@ export interface components {
         };
         /** @enum {string} */
         Metric: "utilisation" | "realisation" | "matter_margin" | "outlook";
+        /** MonthOut */
+        MonthOut: {
+            /** Turn */
+            turn: number;
+            /** Label */
+            label: string;
+            /** Revenue Cents */
+            revenue_cents: number;
+            /** Collections Cents */
+            collections_cents: number;
+            /** Lockup Days */
+            lockup_days: number | null;
+        };
         /** MoveUnitIn */
         MoveUnitIn: {
             /** Parent Id */
@@ -1763,6 +1991,33 @@ export interface components {
             /** Last Activity */
             last_activity: string | null;
         };
+        /** PnlLineOut */
+        PnlLineOut: {
+            /** Account */
+            account: string;
+            /** Label */
+            label: string;
+            /** Amount Cents */
+            amount_cents: number;
+        };
+        /** PnlOut */
+        PnlOut: {
+            /** Label */
+            label: string;
+            /**
+             * Basis
+             * @enum {string}
+             */
+            basis: "accrual" | "cash";
+            /** Revenue Cents */
+            revenue_cents: number;
+            /** Costs Cents */
+            costs_cents: number;
+            /** Profit Cents */
+            profit_cents: number;
+            /** Lines */
+            lines: components["schemas"]["PnlLineOut"][];
+        };
         /** PracticeMarketOut */
         PracticeMarketOut: {
             /** Key */
@@ -2099,6 +2354,13 @@ export interface components {
              * @default false
              */
             advance?: boolean;
+        };
+        /** WriteDownIn */
+        WriteDownIn: {
+            /** Matter Id */
+            matter_id: number;
+            /** Bp */
+            bp: number;
         };
     };
     responses: never;
@@ -5125,6 +5387,307 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ExplainOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getFinance: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    listBills: {
+        parameters: {
+            query?: {
+                status?: "open" | "disputed" | "recent";
+            };
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BillOut"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    listMatterMoney: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MatterMoneyOut"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    writeDownMatter: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WriteDownIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MatterMoneyOut"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    respondDispute: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                bill_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DisputeIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BillOut"][];
                 };
             };
             /** @description Bad Request */

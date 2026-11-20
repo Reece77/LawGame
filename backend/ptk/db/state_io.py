@@ -9,6 +9,7 @@ from dataclasses import replace
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from ptk.db.billing_io import load_billing, write_billing, write_client_book
 from ptk.db.inbox import inbox_rows
 from ptk.db.market_io import insert_market, load_market, write_market
 from ptk.db.models import (
@@ -27,6 +28,7 @@ from ptk.db.models import (
     TurnSnapshotRow,
 )
 from ptk.db.org_io import load_org, write_org
+from ptk.sim.billing.models import ClientBookEntry
 from ptk.sim.data_models import InboxTemplate
 from ptk.sim.hiring.models import Candidate, Offer, PayPolicy, PersonState, Search
 from ptk.sim.ledger import LedgerEntry
@@ -146,6 +148,9 @@ def load_state(session: Session) -> GameState:
             )
         ),
         org=load_org(session),
+        billing=load_billing(
+            session, row.current_turn, next((f.id for f in firms if f.is_player), None)
+        ),
         market=load_market(session, row.current_turn),
         searches=tuple(
             _search(r) for r in session.scalars(select(SearchRow).order_by(SearchRow.id))
@@ -435,8 +440,10 @@ def write_turn(
     log_items: tuple[LogItem, ...],
     snapshot: TurnSnapshot,
     templates: Mapping[str, InboxTemplate] | None = None,
+    client_book: tuple[ClientBookEntry, ...] = (),
 ) -> None:
     write_entries(session, entries)
+    write_client_book(session, client_book)
     write_log(session, new_state, log_items, templates)
     session.add_all(
         TurnSnapshotRow(turn=snapshot.turn, firm_id=f.firm_id, kpis_json=json.dumps(f.kpis()))
@@ -451,6 +458,7 @@ def write_turn(
     write_people(session, new_state)
     write_org(session, new_state)
     write_market(session, new_state.market)
+    write_billing(session, new_state.billing)
 
 
 def write_firms(session: Session, state: GameState) -> None:

@@ -22,6 +22,7 @@ from pydantic import BaseModel
 from sqlalchemy import select
 
 from ptk import loader
+from ptk.api.finance import MatterMoneyOut, matter_money_view
 from ptk.config import get_settings
 from ptk.db import saves
 from ptk.db.models import InboxItemRow
@@ -371,16 +372,39 @@ def _explain_utilisation(
     )
 
 
-def _explain_realisation(state: GameState, m: Matter) -> ExplainOut:
+def _explain_realisation(m: Matter, money: MatterMoneyOut | None) -> ExplainOut:
+    """PT-M3b's figures for the matter, as the Finance view builds them."""
+    if money is None:
+        return ExplainOut(
+            metric="realisation",
+            label="Realisation",
+            subject=m.name,
+            value=None,
+            unit="percent",
+            band=None,
+            items=[_item("Work in progress at standard rates", m.wip_cents, "cents")],
+            note="Realisation is billed value over standard value (spec 8.2); no terms yet.",
+        )
+    relieved = money.standard_cents - money.wip_cents
     return ExplainOut(
         metric="realisation",
         label="Realisation",
         subject=m.name,
-        value=None,
+        value=None if money.realisation_bp is None else money.realisation_bp / 100,
         unit="percent",
         band=None,
-        items=[_item("Work in progress at standard rates", m.wip_cents, "cents")],
-        note="Realisation is billed value over standard value (spec 8.2); no bill yet.",
+        items=[
+            _item("Billing model", None, "text", money.model.replace("_", " ")),
+            _item("Standard value of the work billed", relieved, "cents"),
+            _item("Billed", money.billed_cents, "cents"),
+            _item("Collected", money.collected_cents, "cents"),
+            _item("Unbilled work in progress", money.wip_cents, "cents"),
+            _item("Write-down waiting for the next bill", money.writedown_bp / 100, "percent"),
+        ],
+        note="Realisation is billed value over the standard value of the work those bills "
+        "relieved (spec 8.2); success and contingency premiums do not count."
+        if money.realisation_bp is not None
+        else "Realisation is billed value over standard value (spec 8.2); no bill yet.",
     )
 
 
@@ -496,7 +520,12 @@ def _explain_outlook(state: GameState, m: Matter, data: GameData, balance: Balan
 
 
 def explain(
-    state: GameState, metric: Metric, entity: str | None, data: GameData, balance: Balance
+    state: GameState,
+    metric: Metric,
+    entity: str | None,
+    data: GameData,
+    balance: Balance,
+    money: Mapping[int, MatterMoneyOut] | None = None,
 ) -> ExplainOut:
     entity = entity or None
     if metric == "utilisation":
@@ -505,7 +534,7 @@ def explain(
         raise NotFoundError(f"{metric} needs a matter id")
     m = _own_matter(state, int(entity))
     if metric == "realisation":
-        return _explain_realisation(state, m)
+        return _explain_realisation(m, (money or {}).get(m.id))
     if metric == "matter_margin":
         return _explain_margin(state, m, data, balance)
     return _explain_outlook(state, m, data, balance)
@@ -551,7 +580,13 @@ def make_screens_router(errors: dict[int | str, dict[str, Any]]) -> APIRouter:
         operation_id="explain",
     )
     def get_explain(slug: str, metric: Metric, entity: str | None = None) -> ExplainOut:
-        state = saves.read_state(_path(slug))[0]
-        return explain(state, metric, entity, loader.game_data(), loader.balance())
+        path = _path(slug)
+        state = saves.read_state(path)[0]
+        money = (
+            {x.matter_id: x for x in matter_money_view(path, state)}
+            if metric == "realisation"
+            else None
+        )
+        return explain(state, metric, entity, loader.game_data(), loader.balance(), money)
 
     return router

@@ -11,6 +11,9 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field, replace
 
+from ptk.sim.billing.kpis import firm_snapshot
+from ptk.sim.billing.models import ClientBookEntry
+from ptk.sim.billing.phase import billing_month
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
 from ptk.sim.errors import GameOverError
@@ -26,7 +29,7 @@ from ptk.sim.org.rules import growth_multipliers
 from ptk.sim.people.models import WorkMonth
 from ptk.sim.people.phase import people_month
 from ptk.sim.rng import RngFactory
-from ptk.sim.snapshot import FirmSnapshot, TurnSnapshot
+from ptk.sim.snapshot import TurnSnapshot
 from ptk.sim.state import GameState
 
 
@@ -43,6 +46,7 @@ class TurnResult:
     snapshot: TurnSnapshot
     event_requests: tuple[EventRequest, ...]
     delegate_actions: tuple[DelegateAction, ...] = ()  # recomputed on replay (ADR-0015)
+    client_book: tuple[ClientBookEntry, ...] = ()  # client-money entries (PT-M3b)
 
 
 @dataclass(frozen=True, slots=True)
@@ -63,6 +67,7 @@ class TurnContext:
     unserved: Mapping[tuple[int, str], float] = field(default_factory=dict)  # PT-M3a flow
     hiring_hook: DelegateHiringHook | None = None  # PT-M1b's, for delegates (PT-M2)
     delegate_actions: tuple[DelegateAction, ...] = ()
+    client_book: tuple[ClientBookEntry, ...] = ()  # PT-M3b: the client-money book's entries
 
     @property
     def turn(self) -> int:
@@ -119,7 +124,9 @@ def work_and_billing(ctx: TurnContext) -> TurnContext:
     """5. Hours to WIP at standard value, progress and outcomes, relationships (PT-M3a);
     bills and collections (PT-M3b)."""
     state, logs = matters.work_phase(ctx.state, ctx.rng, ctx.unserved, ctx.data, ctx.balance)
-    return replace(ctx, state=state).log(*logs)
+    month = billing_month(state, ctx.rng, ctx.data, ctx.balance)
+    ctx = replace(ctx, state=month.state, client_book=ctx.client_book + month.book)
+    return ctx.post(*month.entries).log(*logs, *month.log)
 
 
 def payroll_and_operating_costs(ctx: TurnContext) -> TurnContext:
@@ -160,7 +167,7 @@ def stage_checks(ctx: TurnContext) -> TurnContext:
 def snapshot_and_month_end_report(ctx: TurnContext) -> TurnContext:
     """11. KPIs per firm."""
     firms = tuple(
-        FirmSnapshot(firm_id=f.id, cash_cents=ctx.balances.get((f.id, CASH), 0))
+        firm_snapshot(ctx.state.billing, f.id, ctx.turn, ctx.balances.get((f.id, CASH), 0))
         for f in ctx.state.firms
     )
     return replace(ctx, snapshot=TurnSnapshot(turn=ctx.turn, firms=firms))
@@ -243,4 +250,5 @@ def advance_turn(
         snapshot=ctx.snapshot,
         event_requests=ctx.event_requests,
         delegate_actions=ctx.delegate_actions,
+        client_book=ctx.client_book,
     )

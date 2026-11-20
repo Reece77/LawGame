@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router';
 import { ClientScreen } from './screens/ClientScreen';
 import { ClientsScreen } from './screens/ClientsScreen';
+import { FinanceScreen } from './screens/FinanceScreen';
 import { GameLayout } from './screens/GameLayout';
 import { InboxScreen } from './screens/InboxScreen';
 import { MainMenu } from './screens/MainMenu';
@@ -36,6 +37,7 @@ export default function App() {
           <Route path="clients" element={<ClientsScreen />} />
           <Route path="clients/:clientId" element={<ClientScreen />} />
           <Route path="practices" element={<PracticesScreen />} />
+          <Route path="finance" element={<FinanceScreen />} />
         </Route>
       </Routes>
     </BrowserRouter>

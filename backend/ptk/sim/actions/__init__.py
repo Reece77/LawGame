@@ -2,7 +2,8 @@
 (ADR-0015).
 
 Ported from backend/tst/sim/actions/__init__.py @ 02fba2aa (Tech Startup Tycoon) as a
-pattern; changed: hiring actions (PT-M1b) and client and matter actions (PT-M3a); later milestones
+pattern; changed: hiring actions (PT-M1b), client and matter actions (PT-M3a) and billing
+actions (PT-M3b); later milestones
 add theirs here.
 
 `apply_action` is pure: it takes the state and returns the new state, any ledger entries and
@@ -16,6 +17,11 @@ from __future__ import annotations
 from dataclasses import asdict
 from typing import Any
 
+from ptk.sim.billing.actions import (
+    BILLING_ACTION_TYPES,
+    BillingAction,
+    apply_billing_action,
+)
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import GameOverError, InvalidActionError
 from ptk.sim.hiring.actions import (
@@ -36,7 +42,7 @@ from ptk.sim.matters.actions import MATTER_ACTION_TYPES, MatterAction, apply_mat
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
 
-type Action = HiringAction | MatterAction
+type Action = HiringAction | MatterAction | BillingAction
 
 ACTION_TYPES: dict[str, type[Any]] = {
     "open_search": OpenSearch,
@@ -48,6 +54,7 @@ ACTION_TYPES: dict[str, type[Any]] = {
     "withdraw_offer": WithdrawOffer,
     "set_pay_policy": SetPayPolicy,
     **MATTER_ACTION_TYPES,  # PT-M3a
+    **BILLING_ACTION_TYPES,  # PT-M3b
 }
 
 
@@ -66,6 +73,8 @@ def apply_action(
     if state.ended:
         raise GameOverError("the game is over")
     draws = lambda: rng.stream(state.turn, "actions", seq)  # noqa: E731
+    if type(action) in BILLING_ACTION_TYPES.values():
+        return apply_billing_action(state, action, draws, balance)  # type: ignore[arg-type]
     if type(action) in MATTER_ACTION_TYPES.values():
         return apply_matter_action(state, action, draws, balance, data)  # type: ignore[arg-type]
     return apply_hiring(state, action, draws, balance, data, ledger_balances)  # type: ignore[arg-type]

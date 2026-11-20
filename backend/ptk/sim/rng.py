@@ -34,6 +34,7 @@ STREAM_IDS: Final = MappingProxyType(
         "demand": 20,  # (region, practice_index): monthly legal demand noise (PT-M3a)
         "intake": 21,  # (client_id,): a client's new instructions this month (PT-M3a)
         "matter": 22,  # (matter_id,): a matter's month: judge, progress, errors, outcome (PT-M3a)
+        "billing": 23,  # (purpose, id): terms, bills, clients, disputes (PT-M3b; ADR PT-0012)
         "conflict": 24,  # (matter_id,): a hidden conflict surfacing (PT-M3a)
         "strain": 29,  # (person_id,): a generated person's starting strain (PT-M1a)
         "campus": 30,  # (year, school_tier_index, search_id): a campus pool (PT-M1b)

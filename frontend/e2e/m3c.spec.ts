@@ -1,9 +1,9 @@
 import { expect, test } from '@playwright/test';
 
 // PT-M3c: staff a new named matter on the board (drag, hours, the engine's refusal), read its
-// outlook as a band, then introduce a colleague to the client. Group lift, seed 3: the first
-// month brings an M&A matter.
-test('staff a named matter, explain it, and introduce a colleague', async ({ page }) => {
+// outlook as a band, see it billed with its realisation, then introduce a colleague to the
+// client. Group lift, seed 3: the first month brings an M&A matter.
+test('staff a named matter, bill it, see realisation, introduce a colleague', async ({ page }) => {
   const made = await page.request.post('/api/saves', {
     data: { slug: 'm3c', firm_name: 'Screens LLP', seed: 3, scenario_id: 'group_lift' },
   });
@@ -50,6 +50,22 @@ test('staff a named matter, explain it, and introduce a colleague', async ({ pag
   await page.getByRole('button', { name: 'Continue' }).click();
   await expect(page.getByTestId('date')).toHaveText('Mar 2005');
   await expect(member).toContainText('h last month');
+
+  // The matter has been billed: billed value, realisation and the bill itself.
+  const bills = page.getByTestId('bills');
+  await expect(bills.getByTestId('matter-billed')).not.toHaveText('$0');
+  await expect(page.getByTestId('matter-realisation')).toHaveText(/^\d+\.\d%$/);
+  await expect(bills.getByTestId('matter-bill').first()).toBeVisible();
+  await page.getByRole('button', { name: 'Explain realisation' }).click();
+  await expect(page.getByTestId('explain-panel')).toContainText('Billed');
+  await page.keyboard.press('Escape');
+  // A partner writes the next bill down; the API echoes it.
+  await bills.getByLabel('Write the next bill down').fill('10');
+  await bills.getByRole('button', { name: 'Set write-down' }).click();
+  await expect(bills).toContainText('10.0%');
+  await page.getByRole('link', { name: 'Matters', exact: true }).click();
+  await expect(page.getByTestId('realisation').first()).toHaveText(/%$/);
+  await page.getByTestId('matter-link').first().click();
 
   // Introduce a colleague to the client in a practice it does not use yet.
   await page.getByTestId('matter-name').waitFor();

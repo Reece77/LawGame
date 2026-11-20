@@ -4039,10 +4039,438 @@
           }
         }
       }
+    },
+    "/api/saves/{slug}/finance": {
+      "get": {
+        "summary": "Get Finance",
+        "operationId": "getFinance",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinanceOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/finance/bills": {
+      "get": {
+        "summary": "List Bills",
+        "operationId": "listBills",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "open",
+                "disputed",
+                "recent"
+              ],
+              "type": "string",
+              "default": "open",
+              "title": "Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BillOut"
+                  },
+                  "title": "Response Listbills"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/finance/matters": {
+      "get": {
+        "summary": "List Matter Money",
+        "operationId": "listMatterMoney",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MatterMoneyOut"
+                  },
+                  "title": "Response Listmattermoney"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/finance/write-down": {
+      "post": {
+        "summary": "Write Down",
+        "operationId": "writeDownMatter",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WriteDownIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MatterMoneyOut"
+                  },
+                  "title": "Response Writedownmatter"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/finance/bills/{bill_id}/dispute": {
+      "post": {
+        "summary": "Respond",
+        "operationId": "respondDispute",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "bill_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Bill Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DisputeIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BillOut"
+                  },
+                  "title": "Response Responddispute"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AgeBucketOut": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "amount_cents": {
+            "type": "integer",
+            "title": "Amount Cents"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "amount_cents",
+          "count"
+        ],
+        "title": "AgeBucketOut"
+      },
       "AssignIn": {
         "properties": {
           "person_id": {
@@ -4133,6 +4561,132 @@
           "description"
         ],
         "title": "BackgroundOut"
+      },
+      "BalanceLineOut": {
+        "properties": {
+          "account": {
+            "type": "string",
+            "title": "Account"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "asset",
+              "liability",
+              "equity"
+            ],
+            "title": "Kind"
+          },
+          "amount_cents": {
+            "type": "integer",
+            "title": "Amount Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "account",
+          "label",
+          "kind",
+          "amount_cents"
+        ],
+        "title": "BalanceLineOut"
+      },
+      "BillOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "client_id": {
+            "type": "integer",
+            "title": "Client Id"
+          },
+          "client": {
+            "type": "string",
+            "title": "Client"
+          },
+          "matter_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Matter Id"
+          },
+          "matter": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Matter"
+          },
+          "practice": {
+            "type": "string",
+            "title": "Practice"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "issued_label": {
+            "type": "string",
+            "title": "Issued Label"
+          },
+          "age_days": {
+            "type": "integer",
+            "title": "Age Days"
+          },
+          "billed_cents": {
+            "type": "integer",
+            "title": "Billed Cents"
+          },
+          "outstanding_cents": {
+            "type": "integer",
+            "title": "Outstanding Cents"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "dispute": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DisputeOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "client_id",
+          "client",
+          "matter_id",
+          "matter",
+          "practice",
+          "model",
+          "issued_label",
+          "age_days",
+          "billed_cents",
+          "outstanding_cents",
+          "status",
+          "dispute"
+        ],
+        "title": "BillOut"
       },
       "BoardPersonOut": {
         "properties": {
@@ -4780,6 +5334,47 @@
         ],
         "title": "DifficultyOut"
       },
+      "DisputeIn": {
+        "properties": {
+          "choice": {
+            "type": "string",
+            "enum": [
+              "concede",
+              "negotiate",
+              "hold"
+            ],
+            "title": "Choice"
+          }
+        },
+        "type": "object",
+        "required": [
+          "choice"
+        ],
+        "title": "DisputeIn"
+      },
+      "DisputeOut": {
+        "properties": {
+          "amount_cents": {
+            "type": "integer",
+            "title": "Amount Cents"
+          },
+          "raised_label": {
+            "type": "string",
+            "title": "Raised Label"
+          },
+          "expires_label": {
+            "type": "string",
+            "title": "Expires Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "amount_cents",
+          "raised_label",
+          "expires_label"
+        ],
+        "title": "DisputeOut"
+      },
       "ErrorBody": {
         "properties": {
           "code": {
@@ -4943,6 +5538,63 @@
           "hi"
         ],
         "title": "FamiliarityOut"
+      },
+      "FinanceOut": {
+        "properties": {
+          "date_label": {
+            "type": "string",
+            "title": "Date Label"
+          },
+          "kpis": {
+            "$ref": "#/components/schemas/KpisOut"
+          },
+          "months": {
+            "items": {
+              "$ref": "#/components/schemas/MonthOut"
+            },
+            "type": "array",
+            "title": "Months"
+          },
+          "statements": {
+            "items": {
+              "$ref": "#/components/schemas/PnlOut"
+            },
+            "type": "array",
+            "title": "Statements"
+          },
+          "balance_sheet": {
+            "items": {
+              "$ref": "#/components/schemas/BalanceLineOut"
+            },
+            "type": "array",
+            "title": "Balance Sheet"
+          },
+          "wip_ageing": {
+            "items": {
+              "$ref": "#/components/schemas/AgeBucketOut"
+            },
+            "type": "array",
+            "title": "Wip Ageing"
+          },
+          "receivables_ageing": {
+            "items": {
+              "$ref": "#/components/schemas/AgeBucketOut"
+            },
+            "type": "array",
+            "title": "Receivables Ageing"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date_label",
+          "kpis",
+          "months",
+          "statements",
+          "balance_sheet",
+          "wip_ageing",
+          "receivables_ageing"
+        ],
+        "title": "FinanceOut"
       },
       "ForumIn": {
         "properties": {
@@ -5155,6 +5807,92 @@
         ],
         "title": "IntroduceIn"
       },
+      "KpisOut": {
+        "properties": {
+          "revenue_cents": {
+            "type": "integer",
+            "title": "Revenue Cents"
+          },
+          "collections_cents": {
+            "type": "integer",
+            "title": "Collections Cents"
+          },
+          "wip_cents": {
+            "type": "integer",
+            "title": "Wip Cents"
+          },
+          "receivables_cents": {
+            "type": "integer",
+            "title": "Receivables Cents"
+          },
+          "client_money_cents": {
+            "type": "integer",
+            "title": "Client Money Cents"
+          },
+          "utilisation_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Utilisation Bp"
+          },
+          "realisation_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Realisation Bp"
+          },
+          "collection_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Collection Bp"
+          },
+          "lockup_days": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lockup Days"
+          },
+          "open_disputes": {
+            "type": "integer",
+            "title": "Open Disputes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "revenue_cents",
+          "collections_cents",
+          "wip_cents",
+          "receivables_cents",
+          "client_money_cents",
+          "utilisation_bp",
+          "realisation_bp",
+          "collection_bp",
+          "lockup_days",
+          "open_disputes"
+        ],
+        "title": "KpisOut"
+      },
       "LeadIn": {
         "properties": {
           "person_id": {
@@ -5215,6 +5953,71 @@
           "body"
         ],
         "title": "MatterEventOut"
+      },
+      "MatterMoneyOut": {
+        "properties": {
+          "matter_id": {
+            "type": "integer",
+            "title": "Matter Id"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "closed": {
+            "type": "boolean",
+            "title": "Closed"
+          },
+          "wip_cents": {
+            "type": "integer",
+            "title": "Wip Cents"
+          },
+          "standard_cents": {
+            "type": "integer",
+            "title": "Standard Cents"
+          },
+          "billed_cents": {
+            "type": "integer",
+            "title": "Billed Cents"
+          },
+          "collected_cents": {
+            "type": "integer",
+            "title": "Collected Cents"
+          },
+          "realisation_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Realisation Bp"
+          },
+          "writedown_bp": {
+            "type": "integer",
+            "title": "Writedown Bp"
+          },
+          "funds_cents": {
+            "type": "integer",
+            "title": "Funds Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "matter_id",
+          "model",
+          "closed",
+          "wip_cents",
+          "standard_cents",
+          "billed_cents",
+          "collected_cents",
+          "realisation_bp",
+          "writedown_bp",
+          "funds_cents"
+        ],
+        "title": "MatterMoneyOut"
       },
       "MatterOut": {
         "properties": {
@@ -5675,6 +6478,46 @@
           "matter_margin",
           "outlook"
         ]
+      },
+      "MonthOut": {
+        "properties": {
+          "turn": {
+            "type": "integer",
+            "title": "Turn"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "revenue_cents": {
+            "type": "integer",
+            "title": "Revenue Cents"
+          },
+          "collections_cents": {
+            "type": "integer",
+            "title": "Collections Cents"
+          },
+          "lockup_days": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lockup Days"
+          }
+        },
+        "type": "object",
+        "required": [
+          "turn",
+          "label",
+          "revenue_cents",
+          "collections_cents",
+          "lockup_days"
+        ],
+        "title": "MonthOut"
       },
       "MoveUnitIn": {
         "properties": {
@@ -6991,6 +7834,74 @@
         ],
         "title": "PlanOut"
       },
+      "PnlLineOut": {
+        "properties": {
+          "account": {
+            "type": "string",
+            "title": "Account"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "amount_cents": {
+            "type": "integer",
+            "title": "Amount Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "account",
+          "label",
+          "amount_cents"
+        ],
+        "title": "PnlLineOut"
+      },
+      "PnlOut": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "basis": {
+            "type": "string",
+            "enum": [
+              "accrual",
+              "cash"
+            ],
+            "title": "Basis"
+          },
+          "revenue_cents": {
+            "type": "integer",
+            "title": "Revenue Cents"
+          },
+          "costs_cents": {
+            "type": "integer",
+            "title": "Costs Cents"
+          },
+          "profit_cents": {
+            "type": "integer",
+            "title": "Profit Cents"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/PnlLineOut"
+            },
+            "type": "array",
+            "title": "Lines"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "basis",
+          "revenue_cents",
+          "costs_cents",
+          "profit_cents",
+          "lines"
+        ],
+        "title": "PnlOut"
+      },
       "PracticeMarketOut": {
         "properties": {
           "key": {
@@ -7932,6 +8843,26 @@
         },
         "type": "object",
         "title": "WaiverIn"
+      },
+      "WriteDownIn": {
+        "properties": {
+          "matter_id": {
+            "type": "integer",
+            "title": "Matter Id"
+          },
+          "bp": {
+            "type": "integer",
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Bp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "matter_id",
+          "bp"
+        ],
+        "title": "WriteDownIn"
       }
     }
   }

@@ -80,6 +80,7 @@ export function useAdvance(slug: string) {
         'inbox',
         'payroll',
         'org',
+        'finance',
         'matters',
         'clients',
         'practices',
@@ -224,6 +225,83 @@ export function useMarkInboxRead(slug: string) {
   });
 }
 
+// --- PT-M3b: finance (KPIs, statements, ageing, bills and disputes, matter money) -------------
+
+export type Finance = Schemas['FinanceOut'];
+export type Bill = Schemas['BillOut'];
+export type MatterMoney = Schemas['MatterMoneyOut'];
+export type DisputeChoice = Schemas['DisputeIn']['choice'];
+
+export const useFinance = (slug: string) =>
+  useQuery({
+    queryKey: ['finance', slug],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/saves/{slug}/finance', { params: { path: { slug } } })),
+  });
+
+export const useBills = (slug: string) =>
+  useQuery({
+    queryKey: ['finance', slug, 'bills'],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/saves/{slug}/finance/bills', { params: { path: { slug } } })),
+  });
+
+/** Every bill the firm holds (open, and closed since last month), for a matter's page. */
+export const useRecentBills = (slug: string) =>
+  useQuery({
+    queryKey: ['finance', slug, 'bills', 'recent'],
+    queryFn: async () =>
+      unwrap(
+        await api.GET('/api/saves/{slug}/finance/bills', {
+          params: { path: { slug }, query: { status: 'recent' } },
+        }),
+      ),
+  });
+
+/** Each matter's money (PT-M3b) by matter id, for the Matters screens. */
+export function useMatterMoneyById(slug: string): Map<number, MatterMoney> {
+  const data = useMatterMoney(slug).data;
+  return useMemo(() => new Map((data ?? []).map((m) => [m.matter_id, m])), [data]);
+}
+
+export const useMatterMoney = (slug: string) =>
+  useQuery({
+    queryKey: ['finance', slug, 'matters'],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/saves/{slug}/finance/matters', { params: { path: { slug } } })),
+  });
+
+export function useRespondDispute(slug: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: async (a: { billId: number; choice: DisputeChoice }) =>
+      unwrap(
+        await api.POST('/api/saves/{slug}/finance/bills/{bill_id}/dispute', {
+          params: { path: { slug, bill_id: a.billId } },
+          body: { choice: a.choice },
+        }),
+      ),
+    onSuccess: (bills) => {
+      client.setQueryData(['finance', slug, 'bills'], bills);
+      void client.invalidateQueries({ queryKey: ['finance', slug] });
+    },
+  });
+}
+
+export function useWriteDown(slug: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: async (a: { matterId: number; bp: number }) =>
+      unwrap(
+        await api.POST('/api/saves/{slug}/finance/write-down', {
+          params: { path: { slug } },
+          body: { matter_id: a.matterId, bp: a.bp },
+        }),
+      ),
+    onSuccess: (rows) => client.setQueryData(['finance', slug, 'matters'], rows),
+  });
+}
+
 // --- PT-M3c: matters, clients and practices screens ---------------------------------------
 
 export type MatterRow = Schemas['MatterRowOut'];
@@ -347,7 +425,15 @@ export function useMatterAction(slug: string, matterId: number) {
     mutationFn: (a: MatterAction) => runMatter(slug, matterId, a),
     onSuccess: (matter) => {
       client.setQueryData(['matters', slug, matterId], matter);
-      for (const key of ['matters', 'clients', 'practices', 'explain', 'game', 'inbox']) {
+      for (const key of [
+        'matters',
+        'clients',
+        'practices',
+        'explain',
+        'game',
+        'inbox',
+        'finance',
+      ]) {
         void client.invalidateQueries({ queryKey: [key, slug] });
       }
     },

@@ -5,8 +5,14 @@ import { Link, useParams } from 'react-router';
 import { DataTable } from '../components/DataTable';
 import { RiskBadge } from '../components/RiskBadge';
 import { useTableViews } from '../hooks/useTableViews';
-import { useMatters, usePracticeLabels, type MatterRow, type MatterStatusFilter } from '../lib/api';
-import { formatHours, formatMoneyWhole, humanize } from '../lib/format';
+import {
+  useMatterMoneyById,
+  useMatters,
+  usePracticeLabels,
+  type MatterRow,
+  type MatterStatusFilter,
+} from '../lib/api';
+import { formatBpShort, formatHours, formatMoneyWhole, humanize } from '../lib/format';
 import { gameTableFeatures, type GameTableFeatures } from '../lib/table';
 
 // Matters (spec 16): the firm's named matters. Every number is the API's, formatted here.
@@ -19,6 +25,7 @@ export function MattersScreen() {
   const [status, setStatus] = useState<MatterStatusFilter>('open');
   const matters = useMatters(slug, status);
   const practice = usePracticeLabels(slug);
+  const money = useMatterMoneyById(slug);
   const columns = useMemo(
     () =>
       helper.columns([
@@ -73,10 +80,32 @@ export function MattersScreen() {
           sortFn: 'basic',
           cell: ({ getValue }) => <span className="tst-num">{formatHours(getValue())}</span>,
         }),
-        helper.accessor('wip_cents', {
+        helper.accessor((r) => money.get(r.id)?.wip_cents ?? r.wip_cents, {
+          id: 'wip',
           header: 'WIP',
           sortFn: 'basic',
           cell: ({ getValue }) => <span className="tst-num">{formatMoneyWhole(getValue())}</span>,
+        }),
+        helper.accessor((r) => money.get(r.id)?.billed_cents ?? 0, {
+          id: 'billed',
+          header: 'Billed',
+          sortFn: 'basic',
+          cell: ({ getValue }) => <span className="tst-num">{formatMoneyWhole(getValue())}</span>,
+        }),
+        helper.accessor((r) => money.get(r.id)?.realisation_bp ?? -1, {
+          id: 'realisation',
+          header: 'Realisation',
+          sortFn: 'basic',
+          cell: ({ row }) => {
+            const bp = money.get(row.original.id)?.realisation_bp;
+            return bp === null || bp === undefined ? (
+              <span className="tst-muted">—</span>
+            ) : (
+              <span className="tst-num" data-testid="realisation">
+                {formatBpShort(bp)}
+              </span>
+            );
+          },
         }),
         helper.accessor((r) => RISK_ORDER[r.risk], {
           id: 'risk',
@@ -86,7 +115,7 @@ export function MattersScreen() {
         }),
         helper.accessor('due_label', { header: 'Due', enableSorting: false }),
       ]),
-    [slug, practice],
+    [slug, practice, money],
   );
   const views = useTableViews('matters');
   const table = useTable({

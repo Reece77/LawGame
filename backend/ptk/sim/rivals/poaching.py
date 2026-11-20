@@ -293,6 +293,33 @@ def approach_rival(
     chosen = pool[:count]
     if not chosen:
         raise InvalidActionError("that rival has no key people to approach in that practice")
+    return as_candidates(state, chosen, actor_id, data, balance)
+
+
+def approach_free_agents(
+    state: GameState, actor_id: int, gen: np.random.Generator, data: GameData, balance: Balance
+) -> tuple[GameState, tuple[int, ...]]:
+    """The free agents of collapsed or failed rivals, best first, as the firm's candidates
+    (up to the approach's 2-4; draws: the count)."""
+    pb = balance.rivals.poach
+    taken = {c.person_id for c in state.candidates if c.status == "open"}
+    pool = sorted(
+        (a.member for a in state.rivals.free_agents if a.person_id not in taken),
+        key=lambda m: (m.kind != "partner", -m.book_cents, m.person_id),
+    )
+    count = int(gen.integers(int(pb.candidates.lo), int(pb.candidates.hi) + 1))
+    if not pool:
+        raise InvalidActionError("no free agents are looking for work")
+    return as_candidates(state, pool[:count], actor_id, data, balance)
+
+
+def as_candidates(
+    state: GameState, chosen: list[Member], actor_id: int, data: GameData, balance: Balance
+) -> tuple[GameState, tuple[int, ...]]:
+    """A closed referral search (so no generic batch follows) whose candidates are these
+    people, asking `player_ask_premium` over the market. Their records move into
+    GameState.people; key people stay their rival's until hired."""
+    pb = balance.rivals.poach
     search_id = state.next_id("search")
     role = data.practice_role(chosen[0].practice).key
     search = Search(
@@ -341,11 +368,21 @@ def approach_rival(
             )
         if not m.outside:
             moved.append(person)
-            rivals = update_member(rivals, replace(m, outside=True))
+            if rivals.member(m.person_id) is not None:
+                rivals = update_member(rivals, replace(m, outside=True))
+            else:  # a free agent
+                rivals = replace(
+                    rivals,
+                    free_agents=tuple(
+                        replace(a, member=replace(a.member, outside=True))
+                        if a.person_id == m.person_id
+                        else a
+                        for a in rivals.free_agents
+                    ),
+                )
+    state = replace(state, rivals=rivals)
     if moved:
-        state = replace(
-            state, rivals=rivals, people=tuple(sorted((*state.people, *moved), key=lambda p: p.id))
-        )
+        state = replace(state, people=tuple(sorted((*state.people, *moved), key=lambda p: p.id)))
     state = with_candidates(state, cands)
     state = with_reveals(state, reveals)
     return state, tuple(c.person_id for c in cands)

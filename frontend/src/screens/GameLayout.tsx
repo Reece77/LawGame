@@ -46,6 +46,7 @@ export function GameLayout() {
         <NavLink component={Link} to={`/game/${slug}/recruitment`} label="Recruitment" />
         <NavLink component={Link} to={`/game/${slug}/org`} label="Org" />
         <NavLink component={Link} to={`/game/${slug}/finance`} label="Finance" />
+        <NavLink component={Link} to={`/game/${slug}/market`} label="Market" />
         <NavLink component={Link} to="/" label="Main menu" />
       </AppShell.Navbar>
       <AppShell.Main>

@@ -5,6 +5,7 @@ import { FinanceScreen } from './screens/FinanceScreen';
 import { GameLayout } from './screens/GameLayout';
 import { InboxScreen } from './screens/InboxScreen';
 import { MainMenu } from './screens/MainMenu';
+import { MarketScreen } from './screens/MarketScreen';
 import { MatterScreen } from './screens/MatterScreen';
 import { MattersScreen } from './screens/MattersScreen';
 import { NewGameScreen } from './screens/NewGameScreen';
@@ -14,6 +15,7 @@ import { PeopleScreen } from './screens/PeopleScreen';
 import { PersonScreen } from './screens/PersonScreen';
 import { PracticesScreen } from './screens/PracticesScreen';
 import { RecruitmentScreen } from './screens/RecruitmentScreen';
+import { RivalScreen } from './screens/RivalScreen';
 import { SavesScreen } from './screens/SavesScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 
@@ -38,6 +40,8 @@ export default function App() {
           <Route path="clients/:clientId" element={<ClientScreen />} />
           <Route path="practices" element={<PracticesScreen />} />
           <Route path="finance" element={<FinanceScreen />} />
+          <Route path="market" element={<MarketScreen />} />
+          <Route path="market/rivals/:firmId" element={<RivalScreen />} />
         </Route>
       </Routes>
     </BrowserRouter>

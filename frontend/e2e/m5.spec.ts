@@ -1,0 +1,34 @@
+import { expect, test } from '@playwright/test';
+import { continueMonth } from './helpers';
+
+// PT-M5: the Market screen lists the real rivals at their 2005 size; a rival's page shows
+// its key people (real notables among them); approaching them makes them the firm's
+// candidates; a month on, the market has news.
+test('see the rivals, open a rival, approach its people, read the news', async ({ page }) => {
+  const made = await page.request.post('/api/saves', {
+    data: { slug: 'm5', firm_name: 'Rivals LLP', seed: 5 },
+  });
+  expect(made.ok()).toBeTruthy();
+  await page.goto('/game/m5');
+  await expect(page.getByTestId('date')).toHaveText('Jan 2005');
+
+  await page.getByRole('link', { name: 'Market', exact: true }).click();
+  const skadden = page.getByTestId('rival-link').filter({ hasText: 'Skadden' });
+  await expect(skadden).toBeVisible();
+  await expect(page.getByTestId('rival-row').first()).toContainText('$1.6B');
+
+  await skadden.click();
+  await expect(page.getByTestId('rival-name')).toContainText('Skadden');
+  await expect(page.getByTestId('key-person').first()).toBeVisible();
+  await expect(page.getByText('Joseph H. Flom')).toBeVisible();
+
+  await page.getByTestId('approach-rival').click();
+  await expect(page.getByTestId('approach-done')).toBeVisible();
+  await page.getByRole('link', { name: 'Recruitment screen' }).click();
+  await expect(page.getByText('Robert C. Sheehan').first()).toBeVisible({ timeout: 10_000 });
+
+  await continueMonth(page);
+  await expect(page.getByTestId('date')).toHaveText('Feb 2005');
+  await page.getByRole('link', { name: 'Market', exact: true }).click();
+  await expect(page.getByTestId('market-news')).toBeVisible();
+});

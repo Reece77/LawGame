@@ -82,6 +82,18 @@ export function MatterScreen() {
           {m.adverse && ` · against ${m.adverse}`}
           {m.court && ` · ${m.court}`}
           {m.judge && ` · ${m.judge}`}
+          {m.opposing_counsel && (
+            <span data-testid="opposing-counsel">
+              {' · opposing counsel '}
+              {m.opposing_firm_id ? (
+                <Link to={`/game/${slug}/market/rivals/${m.opposing_firm_id}`}>
+                  {m.opposing_counsel}
+                </Link>
+              ) : (
+                m.opposing_counsel
+              )}
+            </span>
+          )}
         </Text>
       </div>
 

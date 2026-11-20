@@ -13,6 +13,7 @@ from typing import Literal
 
 from ptk.sim.calendar import YearMonth
 from ptk.sim.hiring.models import Candidate, Offer, PayPolicy, PersonState, Search
+from ptk.sim.matters.models import EMPTY_MARKET, MarketState
 from ptk.sim.org.models import EMPTY_ORG, OrgState
 from ptk.sim.people.models import Employment, Person, RevealState
 
@@ -40,6 +41,7 @@ class FirmState:
     founded_turn: int
     home_city: str
     pay_policy: PayPolicy = field(default_factory=PayPolicy)  # PT-M1b (spec 5.4)
+    conflict_checks: bool = True  # PT-M3a (ADR PT-0009 5): run checks at intake
 
 
 @dataclass(frozen=True, slots=True)
@@ -56,6 +58,7 @@ class GameState:
     offers: tuple[Offer, ...] = ()  # sorted by id
     person_states: tuple[PersonState, ...] = ()  # sorted by person_id
     org: OrgState = EMPTY_ORG  # units, membership, plans, delegates (PT-M2)
+    market: MarketState = EMPTY_MARKET  # clients, relationships, matters, judges (PT-M3a)
 
     @property
     def ended(self) -> bool:

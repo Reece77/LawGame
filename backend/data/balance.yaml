@@ -347,7 +347,7 @@ relationships: # spec 7.2; 0-100 per (client, firm)
   loss: -8 # points for a lost case or a collapsed deal (collapsed deals count half)
   settle: 10 # points x (accepted offer - true expected recovery), for a settlement
   critical_mult: 2.0 # outcomes of critical matters count this many times
-  service: -6 # points a month x the share of the client's flow the firm could not serve
+  service: -2 # points a month x the share of the client's flow the firm could not serve
   strain: -2 # points a month when the client's team averages strain over strain_at
   strain_at: 60
   care: 0.6 # points a month per 10 of the relationship partner's client care over 10

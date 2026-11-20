@@ -34,3 +34,37 @@ templates:
   bonuses_paid:
     title: "Year-end bonuses: {total_cents}"
     body: "The firm paid {count} year-end bonuses, {total_cents} in all, {policy} the market."
+  # PT-M3a: clients and matters
+  matter_opened:
+    title: "New matter: {matter}"
+    body: "The client has instructed the firm on {matter}, with expected fees of {fees_cents} at standard rates. The practice has staffed it by the default rule; change the team on the matter's page."
+  matter_conflicted:
+    title: "Conflict on {matter}"
+    body: "The conflicts check found {matter} adverse to a current client, {affected}. Seek a waiver this month or the instruction is declined."
+  matter_declined:
+    title: "Declined: {matter}"
+    body: "The firm declined {matter} for a conflict of interest."
+  matter_closed:
+    title: "{matter}: {result}"
+    body: "{matter} has ended ({result})."
+  settlement_offer:
+    title: "Settlement offer on {matter}"
+    body: "The other side offers {offer_cents} to settle {matter}. The offer is open until the end of next month."
+  deadline_missed:
+    title: "Deadline missed on {matter}"
+    body: "The team on {matter} missed a deadline: the matter was under-staffed for its pace. The client has noticed."
+  matter_disqualified:
+    title: "Disqualified from {matter}"
+    body: "A conflict that was never checked has surfaced: the firm is disqualified from {matter}, and both clients are unhappy."
+  waiver_granted:
+    title: "{client} waived the conflict"
+    body: "{client} gave a waiver, and {matter} is open."
+  waiver_refused:
+    title: "{client} refused a waiver"
+    body: "{client} would not waive the conflict; {matter} is declined."
+  introduction_made:
+    title: "{name} introduced to {client}"
+    body: "{client} now instructs the firm in {practice}."
+  introduction_failed:
+    title: "{client} passed on {name}"
+    body: "{client} did not take up the introduction in {practice}."

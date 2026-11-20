@@ -31,8 +31,15 @@ STREAM_IDS: Final = MappingProxyType(
         "resign": 11,  # (person_id,): the monthly resignation roll (PT-M1b)
         "actions": 13,  # (seq,): randomness inside a player action (ADR-0014; PT-M1b)
         "delegate": 14,  # (person_id, n): a delegate's nth hiring request this turn (PT-M2)
+        "demand": 20,  # (region, practice_index): monthly legal demand noise (PT-M3a)
+        "intake": 21,  # (client_id,): a client's new instructions this month (PT-M3a)
+        "matter": 22,  # (matter_id,): a matter's month: judge, progress, errors, outcome (PT-M3a)
+        "conflict": 24,  # (matter_id,): a hidden conflict surfacing (PT-M3a)
         "strain": 29,  # (person_id,): a generated person's starting strain (PT-M1a)
         "campus": 30,  # (year, school_tier_index, search_id): a campus pool (PT-M1b)
+        "client_gen": 31,  # (client_index,): a client, its panel and its general counsel (PT-M3a)
+        "judge_gen": 33,  # (court_index, n): the n-th generated judge of a court (PT-M3a)
+        "book": 34,  # (founder_index,): the clients a founding partner's book came from (PT-M3a)
         "misc": 99,  # tests only
     }
 )

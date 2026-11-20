@@ -18,6 +18,7 @@ from ptk.sim.hiring import phases as hiring
 from ptk.sim.interfaces import DelegateHiringHook, delegate_hiring
 from ptk.sim.ledger import CASH, AccountCode, LedgerBalances, LedgerEntry, apply_entries
 from ptk.sim.log import LogItem
+from ptk.sim.matters import phase as matters
 from ptk.sim.money import Cents
 from ptk.sim.org.delegates import DelegateAction, available_hook, run_delegates
 from ptk.sim.org.phase import clear_nudges
@@ -58,6 +59,8 @@ class TurnContext:
     snapshot: TurnSnapshot | None = None
     event_requests: tuple[EventRequest, ...] = ()
     work: Mapping[int, WorkMonth] = field(default_factory=dict)  # person id -> month (PT-M1a)
+    work_override: Mapping[int, WorkMonth] = field(default_factory=dict)  # test input (PT-M1a)
+    unserved: Mapping[tuple[int, str], float] = field(default_factory=dict)  # PT-M3a flow
     hiring_hook: DelegateHiringHook | None = None  # PT-M1b's, for delegates (PT-M2)
     delegate_actions: tuple[DelegateAction, ...] = ()
 
@@ -105,13 +108,18 @@ def knowledge_progress(ctx: TurnContext) -> TurnContext:
 
 
 def intake_and_staffing(ctx: TurnContext) -> TurnContext:
-    """4. Clients instruct, conflicts are checked, hours are allocated (PT-M3a)."""
-    return ctx
+    """4. Clients instruct, conflicts are checked, hours are allocated (PT-M3a). A person
+    given a month of work as a test input keeps it (`advance_turn`'s `work`)."""
+    month = matters.intake_and_staffing(ctx.state, ctx.rng, ctx.data, ctx.balance)
+    work = {**month.work, **ctx.work_override}
+    return replace(ctx, state=month.state, work=work, unserved=month.unserved).log(*month.log)
 
 
 def work_and_billing(ctx: TurnContext) -> TurnContext:
-    """5. Hours to WIP, progress and outcomes, bills, collections (PT-M3a, PT-M3b)."""
-    return ctx
+    """5. Hours to WIP at standard value, progress and outcomes, relationships (PT-M3a);
+    bills and collections (PT-M3b)."""
+    state, logs = matters.work_phase(ctx.state, ctx.rng, ctx.unserved, ctx.data, ctx.balance)
+    return replace(ctx, state=state).log(*logs)
 
 
 def payroll_and_operating_costs(ctx: TurnContext) -> TurnContext:
@@ -218,6 +226,7 @@ def advance_turn(
         opening_balances=ledger_balances,
         balances=dict(ledger_balances),
         work={w.person_id: w for w in work},
+        work_override={w.person_id: w for w in work},
         hiring_hook=hiring_hook or available_hook(delegate_hiring),
     )
     for _name, phase in PHASES:

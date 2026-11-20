@@ -12,6 +12,7 @@ from sqlalchemy import func, select
 
 from ptk.db import backup, migrate
 from ptk.db.billing_io import write_billing
+from ptk.db.events_io import add_text_requests, write_events, write_pending
 from ptk.db.market_io import write_market
 from ptk.db.models import DecisionLogRow, FirmRow, SaveMetaRow, TurnSnapshotRow
 from ptk.db.org_io import write_delegate_actions
@@ -28,6 +29,7 @@ from ptk.db.state_io import (
     write_people,
     write_turn,
 )
+from ptk.llm.base import LLMAdapter
 from ptk.sim.actions import Action, action_payload, apply_action
 from ptk.sim.calendar import format_turn
 from ptk.sim.data_models import Balance, GameData
@@ -112,8 +114,20 @@ def read_state(path: Path) -> tuple[GameState, dict[tuple[int, str], int]]:
         return load_state(session), ledger_balances(session)
 
 
-def run_turn(path: Path, balance: Balance, data: GameData) -> TurnResult:
-    """Play one month: load, advance, write everything in one transaction (ADR-0004 4)."""
+def run_turn(
+    path: Path,
+    balance: Balance,
+    data: GameData,
+    *,
+    answer_critical: bool = False,
+    adapter: LLMAdapter | None = None,
+) -> TurnResult:
+    """Play one month: load, advance, write everything in one transaction (ADR-0004 4).
+    Then the event service writes next month's events and this month's texts in a
+    transaction of its own (PT-M6); events still pending from an earlier run are written
+    first. `answer_critical`: scripts and the golden seeds answer a written critical event
+    with its first choice; the player's Continue is refused while one waits (spec 15)."""
+    write_pending(path, balance, data, adapter=adapter)
     sessions = make_sessionmaker(shared_engine(path))
     with sessions() as session, session.begin():
         state = load_state(session)
@@ -124,6 +138,7 @@ def run_turn(path: Path, balance: Balance, data: GameData) -> TurnResult:
             balance,
             data,
             ledger_balances(session),
+            answer_critical=answer_critical,
         )
         write_turn(
             session,
@@ -136,6 +151,8 @@ def run_turn(path: Path, balance: Balance, data: GameData) -> TurnResult:
         )
         write_delegate_actions(session, state.turn, result.delegate_actions)
         write_rival_moves(session, state.turn, result.rival_moves)  # PT-M5
+        add_text_requests(session, result.text_requests)
+    write_pending(path, balance, data, adapter=adapter)
     if result.new_state.turn % balance.backups.every_turns == 0:
         backup.periodic_backup_in_background(
             path, result.new_state.turn, balance.backups.keep_periodic
@@ -167,6 +184,7 @@ def run_action(path: Path, action: Action, balance: Balance, data: GameData) -> 
         write_firms(session, outcome.state)
         write_people(session, outcome.state)
         write_market(session, outcome.state.market, append_hours=False)
+        write_events(session, outcome.state.events)
         write_billing(session, outcome.state.billing)
         write_rivals(session, outcome.state.rivals)  # PT-M5
         write_panels(session, outcome.state.market)

@@ -3,27 +3,27 @@
     [
       1,
       "1000_cash",
-      5375340012
+      3813022611
     ],
     [
       1,
       "1100_unbilled_wip",
-      58734350
+      67648350
     ],
     [
       1,
       "1110_wip_provision",
-      -8725186
+      -19211472
     ],
     [
       1,
       "1200_receivables",
-      21925122
+      54347084
     ],
     [
       1,
       "1210_bad_debt_provision",
-      -219248
+      -574863
     ],
     [
       1,
@@ -38,17 +38,17 @@
     [
       1,
       "4000_fees",
-      -6507521413
+      -6794684785
     ],
     [
       1,
       "4100_success_fees",
-      -69913066
+      -35655567
     ],
     [
       1,
       "5000_associate_salaries",
-      578041607
+      750143830
     ],
     [
       1,
@@ -58,7 +58,7 @@
     [
       1,
       "5200_benefits",
-      144510357
+      187535944
     ],
     [
       1,
@@ -68,7 +68,12 @@
     [
       1,
       "6700_write_offs",
-      11477465
+      8419248
+    ],
+    [
+      1,
+      "6900_general_admin",
+      1572659620
     ]
   ],
   "final_turn": 360,
@@ -76,37 +81,37 @@
   "matter_outcomes": [
     [
       "closed",
-      21
+      28
     ],
     [
       "collapsed",
-      3
-    ],
-    [
-      "done",
-      12
-    ],
-    [
-      "lost",
-      13
-    ],
-    [
-      "open",
       5
     ],
     [
+      "done",
+      5
+    ],
+    [
+      "lost",
+      8
+    ],
+    [
+      "open",
+      16
+    ],
+    [
       "won",
-      1
+      6
     ]
   ],
-  "matters": "4e1eadbf7a8a60a5728ba26960179b077fd3022c8da9bb18d3419d5d191b56f6",
+  "matters": "517b4d88fc174a8465b757990629fae786e90162d25eae3f7e5bd3dfccf9ed07",
   "names": [
     "Sarah Williams",
     "Kevin Stewart",
     "Luis Allen",
     "Logan Robinson"
   ],
-  "people": "0f9d8eb3814ca62e10d9dfa3e2acbaeea401698b859ec4b37ecf545478df7f65",
-  "relationships": "6061ca3d554e713a07d46588a2c153d03225995621a059d34837f04d3d4d099a",
-  "sha256": "7f6f7429ff515ada0aa91fdd9baf4576de8e3b008c5f045dbe9f7ff74fb4dabb"
+  "people": "41f3b91b4c44e16ed19b071160b11b0554958efa6e703d6c5b70b8ca5cb84407",
+  "relationships": "ff50eb0e10647756def8d602af94677f70a2564e2bea3d7a647231fc9107d5da",
+  "sha256": "69e6c92209dda78f5a62d342a561e470b3050b9a0541f60b06cd85b5dba266a2"
 }

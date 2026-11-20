@@ -13,6 +13,7 @@
 | `people_gen` | 1 | `(search_id, n)` | Generated people; search 0 is a scenario's starting staff; for a lateral search n = 0 draws the batch size and n ≥ 1 the n-th candidate (PT-M1b) | PT-M1a |
 | `hiring` | 2 | `(offer_id,)` | An offer's acceptance draw | PT-M1b |
 | `morale` | 3 | `(person_id,)` | Monthly morale noise | PT-M1b |
+| `events` | 6 | `()` | The event director's month: the count, the matter draws (per open case matter by id), one draw per pick, one tone draw per queued event | PT-M6 |
 | `founder` | 7 | `(founder_index,)` | A founding partner's build; index 0 is the player's | PT-M1a |
 | `growth` | 8 | `(person_id,)` | Monthly growth noise | PT-M1a |
 | `reveal` | 9 | `(observer_firm_id, person_id)` | Reveal record offsets | PT-M1a |

@@ -3,27 +3,27 @@
     [
       1,
       "1000_cash",
-      5133424009
+      3520739083
     ],
     [
       1,
       "1100_unbilled_wip",
-      198298850
+      22939250
     ],
     [
       1,
       "1110_wip_provision",
-      -93864185
+      -1168647
     ],
     [
       1,
       "1200_receivables",
-      23148349
+      34968069
     ],
     [
       1,
       "1210_bad_debt_provision",
-      -231483
+      -364773
     ],
     [
       1,
@@ -38,17 +38,17 @@
     [
       1,
       "4000_fees",
-      -5586439933
+      -5837886261
     ],
     [
       1,
       "4100_success_fees",
-      -172305628
+      -186092977
     ],
     [
       1,
       "5000_associate_salaries",
-      209291660
+      211356660
     ],
     [
       1,
@@ -58,7 +58,7 @@
     [
       1,
       "5200_benefits",
-      52322910
+      52839160
     ],
     [
       1,
@@ -68,7 +68,12 @@
     [
       1,
       "6700_write_offs",
-      4205451
+      3321619
+    ],
+    [
+      1,
+      "6900_general_admin",
+      1947198817
     ]
   ],
   "final_turn": 360,
@@ -76,11 +81,11 @@
   "matter_outcomes": [
     [
       "closed",
-      25
+      31
     ],
     [
       "collapsed",
-      5
+      2
     ],
     [
       "done",
@@ -88,25 +93,25 @@
     ],
     [
       "lost",
-      3
+      6
     ],
     [
       "open",
-      2
+      1
     ],
     [
       "won",
       5
     ]
   ],
-  "matters": "915bd0e1fba3c40f499398a242d4ce1ad05dfe0f7ae03e133355fea73d7de04d",
+  "matters": "b8706edd2441049b8be3ad8663f17ceac233342c75d68d1d7ad63f1c23b7bc65",
   "names": [
     "James Jackson",
     "Michael Garcia",
     "Megan Brown",
     "Hannah Allen"
   ],
-  "people": "584de7b161b12e30de43db5381f80a9ddfaec3ce91d8434517f1a9d2b58d69d2",
-  "relationships": "4849ac9b50337b793f671954cc74a439b2242e85615ad85f5e8885950694dcdd",
-  "sha256": "bfda9e2ad90d36a330e736c3a08f579525725ccbc32618999c81e4e28efa7d6c"
+  "people": "672b1673412b3743f0dd3180be8daa48833cb44d66a02796f06912e024412ff8",
+  "relationships": "6b4890586a7774e31d3cc7de17e5119d4b91bb945dc213545c5edcf1161234b5",
+  "sha256": "695ebb1fc5403d18913f060a8aa3b9287f440a6277b56e94223167226d69f6bf"
 }

@@ -10,6 +10,7 @@ from sqlalchemy import func, insert, select
 from sqlalchemy.orm import Session
 
 from ptk.db.billing_io import load_billing, write_billing, write_client_book
+from ptk.db.events_io import load_events, write_events
 from ptk.db.inbox import inbox_rows
 from ptk.db.market_io import insert_market, load_market, write_market
 from ptk.db.models import (
@@ -96,6 +97,7 @@ def insert_new(session: Session, state: GameState, entries: tuple[LedgerEntry, .
     write_org(session, state)
     insert_market(session, state.market)
     insert_rivals(session, state.rivals)  # PT-M5
+    write_events(session, state.events)
     write_entries(session, entries)
 
 
@@ -157,6 +159,7 @@ def load_state(session: Session) -> GameState:
             session, row.current_turn, next((f.id for f in firms if f.is_player), None)
         ),
         market=load_market(session, row.current_turn),
+        events=load_events(session),
         searches=tuple(
             _search(r) for r in session.scalars(select(SearchRow).order_by(SearchRow.id))
         ),
@@ -497,6 +500,7 @@ def write_turn(
     write_people(session, new_state)
     write_org(session, new_state)
     write_market(session, new_state.market)
+    write_events(session, new_state.events)
     write_billing(session, new_state.billing)
     write_rivals(session, new_state.rivals)  # PT-M5
     write_panels(session, new_state.market)

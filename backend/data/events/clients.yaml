@@ -1,0 +1,232 @@
+# Client events (spec 15: a GC's demand, a panel review, a fee dispute, a big instruction, a
+# client's crisis). Client relationship effects move the 0-100 score (spec 7.2).
+templates:
+  - id: client_cooling_visit
+    category: client
+    trigger: client_cooling
+    severities: [minor, major]
+    weight: 1.0
+    title: "{client} has gone quiet"
+    body: >-
+      {client} used to send work every month. Lately {gc} answers {person}'s emails a day
+      late and copies another firm on the thread.
+    choices:
+      - key: A
+        label: "Ask {person} to visit {gc}"
+        effects:
+          - { type: relationship_delta, target: client, share: 0.6 }
+          - { type: strain_delta, target: person, share: 0.2 }
+      - key: B
+        label: "Offer a discount on the next matter"
+        effects:
+          - { type: relationship_delta, target: client, share: 0.8 }
+          - { type: cash_delta, target: firm, share: -0.4 }
+      - key: C
+        label: "Give it time"
+        do_nothing: true
+
+  - id: client_cooling_letter
+    category: client
+    trigger: client_cooling
+    severities: [minor]
+    weight: 0.6
+    title: "{gc} is unhappy"
+    body: >-
+      {gc}, general counsel of {client}, tells a mutual friend that {firm} has been slow and
+      expensive this year.
+    choices:
+      - key: A
+        label: "Write to {gc} yourself"
+        effects: [{ type: relationship_delta, target: client, share: 0.4 }]
+      - key: B
+        label: "Invite {gc} to the firm's seminar"
+        effects:
+          - { type: relationship_delta, target: client, share: 0.6 }
+          - { type: cash_delta, target: firm, share: -0.2 }
+
+  - id: big_instruction_team
+    category: client
+    trigger: big_instruction
+    severities: [minor, major]
+    weight: 1.0
+    title: "{client} instructs you on {matter}"
+    body: >-
+      {gc} has chosen {firm} for {matter}, the largest piece of {practice} work {client} has
+      sent you. {gc} wants to meet the team this week.
+    choices:
+      - key: A
+        label: "Staff it as planned and send {person}"
+        effects: [{ type: relationship_delta, target: client, share: 0.3 }]
+      - key: B
+        label: "Clear the decks: the best people on it"
+        effects:
+          - { type: relationship_delta, target: client, share: 0.6 }
+          - { type: strain_delta, target: firm, share: 0.2 }
+
+  - id: gc_demand_ask
+    category: client
+    trigger: gc_demand
+    severities: [minor, major]
+    weight: 1.0
+    title: "{gc} wants more from {firm}"
+    body: >-
+      {client} is your largest client, and {gc} knows it. {gc} asks for a cap on routine fees
+      and a secondee for a quarter, "as a sign of partnership".
+    choices:
+      - key: A
+        label: "Agree to cap routine fees"
+        effects:
+          - { type: relationship_delta, target: client, share: 0.6 }
+          - { type: cash_delta, target: firm, share: -0.3 }
+      - key: B
+        label: "Offer a secondee for a quarter"
+        effects:
+          - { type: relationship_delta, target: client, share: 0.8 }
+          - { type: morale_delta, target: firm, share: -0.2 }
+      - key: C
+        label: "Politely decline both"
+        effects: [{ type: relationship_delta, target: client, share: -0.4 }]
+
+  - id: gc_new_arrival
+    category: client
+    trigger: gc_demand
+    severities: [minor]
+    weight: 0.5
+    title: "A new face at {client}"
+    body: >-
+      {client} has reshuffled its legal department, and {gc} now runs outside counsel. New
+      general counsel often review the panel within a few months.
+    storyline:
+      key: gc_change
+      step: 1
+      title: "{gc} at {client}"
+      summary: "{gc} now runs outside counsel at {client} and may review the panel."
+      next_after_turns: 3
+      next_template: gc_panel_test
+    choices:
+      - key: A
+        label: "Meet {gc} in person"
+        effects: [{ type: relationship_delta, target: client, share: 0.5 }]
+      - key: B
+        label: "Send a welcome note"
+        effects: [{ type: relationship_delta, target: client, share: 0.2 }]
+
+  - id: gc_panel_test
+    category: client
+    trigger: storyline
+    severities: [minor, major]
+    weight: 1.0
+    title: "{gc} tests the panel"
+    body: >-
+      {gc} has asked every panel firm for a proposal on {client}'s next year of work. The
+      incumbents are expected to sharpen their pencils.
+    storyline:
+      key: gc_change
+      step: 2
+      summary: "{gc} asked every panel firm at {client} for a new proposal."
+    choices:
+      - key: A
+        label: "Pitch hard for the work"
+        effects:
+          - { type: relationship_delta, target: client, share: 0.7 }
+          - { type: cash_delta, target: firm, share: -0.3 }
+      - key: B
+        label: "Rely on your record"
+        effects: [{ type: relationship_delta, target: client, share: 0.2 }]
+
+  - id: panel_review_pitch
+    category: client
+    trigger: panel_review
+    severities: [minor, major]
+    weight: 1.0
+    title: "{client} is reviewing its panel"
+    body: >-
+      Every {months} months {client} reviews its outside firms. {gc} has asked {person} for
+      the firm's credentials and a fee proposal by the end of the month.
+    choices:
+      - key: A
+        label: "Prepare a full pitch"
+        effects:
+          - { type: relationship_delta, target: client, share: 0.7 }
+          - { type: cash_delta, target: firm, share: -0.3 }
+          - { type: strain_delta, target: person, share: 0.3 }
+      - key: B
+        label: "Send the standard credentials"
+        effects: [{ type: relationship_delta, target: client, share: 0.2 }]
+      - key: C
+        label: "Offer a discount to stay on"
+        effects:
+          - { type: relationship_delta, target: client, share: 0.8 }
+          - { type: cash_delta, target: firm, share: -0.6 }
+
+  - id: fee_dispute_bill
+    category: client
+    trigger: fee_dispute
+    severities: [minor, major]
+    weight: 1.0
+    title: "{gc} questions the fees on {matter}"
+    body: >-
+      The time on {matter} has run well past the estimate {client} was given. {gc} wants to
+      know why before any more bills arrive.
+    choices:
+      - key: A
+        label: "Write off part of the time"
+        effects:
+          - { type: wip_writedown, target: matter, share: 0.6 }
+          - { type: relationship_delta, target: client, share: 0.4 }
+      - key: B
+        label: "Stand by the time recorded"
+        effects: [{ type: relationship_delta, target: client, share: -0.6 }]
+      - key: C
+        label: "Agree a cap for the rest of the matter"
+        effects:
+          - { type: wip_writedown, target: matter, share: 0.3 }
+          - { type: relationship_delta, target: client, share: 0.2 }
+
+  - id: client_walkout_visit
+    category: client
+    trigger: client_walkout
+    severities: [critical]
+    weight: 1.0
+    title: "{client} threatens to move its work"
+    body: >-
+      {gc} calls {person} to say {client} is "considering its options". {client} is one of the
+      firm's largest sources of fees; losing it would empty several partners' diaries.
+    choices:
+      - key: A
+        label: "Fly out to see {gc} with {person}"
+        effects:
+          - { type: relationship_delta, target: client, share: 0.6 }
+          - { type: cash_delta, target: firm, share: -0.2 }
+          - { type: strain_delta, target: person, share: 0.4 }
+      - key: B
+        label: "Offer a fee holiday on the next matter"
+        effects:
+          - { type: relationship_delta, target: client, share: 0.8 }
+          - { type: cash_delta, target: firm, share: -0.6 }
+      - key: C
+        label: "Let them go if they must"
+        effects:
+          - { type: relationship_delta, target: client, share: -0.5 }
+          - { type: morale_delta, target: firm, share: -0.3 }
+
+  - id: client_walkout_letter
+    category: client
+    trigger: client_walkout
+    severities: [critical]
+    weight: 0.5
+    title: "A letter from {client}"
+    body: >-
+      {gc} writes that {client} will move its work to another firm unless things change. The
+      letter is short and polite, which is the worst kind.
+    choices:
+      - key: A
+        label: "Answer {gc} in person"
+        effects:
+          - { type: relationship_delta, target: client, share: 0.6 }
+          - { type: cash_delta, target: firm, share: -0.2 }
+      - key: B
+        label: "Offer better terms"
+        effects:
+          - { type: relationship_delta, target: client, share: 0.8 }
+          - { type: cash_delta, target: firm, share: -0.6 }

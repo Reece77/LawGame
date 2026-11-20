@@ -1,0 +1,312 @@
+# People events (spec 15: a star associate's counter-offer, a burnout, a departure, an
+# associate's mistake). Shares are fractions of the severity's cap (balance.yaml events.caps);
+# the first choice is what Continue picks for an unanswered event. `restricted` templates are
+# never about a person flagged real (ADR PT-0013).
+templates:
+  - id: low_morale_checkin
+    category: people
+    trigger: low_morale
+    severities: [minor, major]
+    weight: 1.0
+    title: "{person} seems unhappy"
+    body: >-
+      {person} has been quiet in meetings and short with the team. A senior associate
+      mentions that {person} has stopped staying for drinks on Fridays. It may be nothing, or
+      it may be the start of a search for another job.
+    choices:
+      - key: A
+        label: "Take {person} to lunch"
+        effects: [{ type: morale_delta, target: person, share: 0.6 }]
+      - key: B
+        label: "Lighten {person}'s load for a while"
+        effects:
+          - { type: morale_delta, target: person, share: 0.4 }
+          - { type: strain_delta, target: person, share: -0.5 }
+      - key: C
+        label: "Leave it for now"
+        do_nothing: true
+
+  - id: high_strain_warning
+    category: people
+    trigger: high_strain
+    severities: [minor, major]
+    weight: 1.0
+    title: "{person} is running on empty"
+    body: >-
+      {person} has billed late into the night for weeks. The night staff say the light in
+      {person}'s office is the last to go off. The work is good, for now.
+    choices:
+      - key: A
+        label: "Insist on a week off"
+        effects:
+          - { type: strain_delta, target: person, share: -0.8 }
+          - { type: morale_delta, target: person, share: 0.3 }
+      - key: B
+        label: "Thank {person} and keep going"
+        effects:
+          - { type: morale_delta, target: person, share: 0.3 }
+          - { type: strain_delta, target: person, share: 0.3 }
+      - key: C
+        label: "Say nothing"
+        do_nothing: true
+
+  - id: burnout_leave
+    category: people
+    trigger: burnout
+    severities: [minor, major]
+    weight: 1.0
+    restricted: true
+    title: "{person} has hit a wall"
+    body: >-
+      {person} came to see you this morning and could not finish a sentence about the work.
+      {person} is exhausted, and everyone in {unit} can see it.
+    choices:
+      - key: A
+        label: "Send {person} on a month's leave"
+        effects:
+          - { type: strain_delta, target: person, share: -1.0 }
+          - { type: morale_delta, target: person, share: 0.5 }
+      - key: B
+        label: "Bring in contract cover for {person}'s work"
+        effects:
+          - { type: cash_delta, target: firm, share: -0.3 }
+          - { type: modifier, target: person, stat: strain_gain, share: -0.5, months: 6 }
+      - key: C
+        label: "Ask {person} to push through the quarter"
+        effects:
+          - { type: strain_delta, target: person, share: 0.5 }
+          - { type: morale_delta, target: person, share: -0.5 }
+
+  - id: star_headhunter
+    category: people
+    trigger: star_associate
+    severities: [minor, major]
+    weight: 1.0
+    title: "A headhunter is circling {person}"
+    body: >-
+      {person} is one of the best associates at {firm}, and the market knows it. A recruiter
+      has called {person} twice this week; {person} mentioned it, which may be a message.
+    storyline:
+      key: star_flight
+      step: 1
+      title: "Keeping {person}"
+      summary: "A recruiter is calling {person}, one of the firm's best associates."
+      next_after_turns: 2
+      next_template: star_offer
+    choices:
+      - key: A
+        label: "Tell {person} the partnership track is real"
+        effects:
+          - { type: morale_delta, target: person, share: 0.7 }
+          - { type: modifier, target: person, stat: morale_target, share: 0.5, months: 6 }
+      - key: B
+        label: "Raise {person}'s pay now"
+        effects:
+          - { type: salary_change, target: person, share: 0.5 }
+          - { type: morale_delta, target: person, share: 0.5 }
+      - key: C
+        label: "Wait and see"
+        do_nothing: true
+
+  - id: star_offer
+    category: people
+    trigger: storyline
+    severities: [minor, major]
+    weight: 1.0
+    title: "{person} has an offer"
+    body: >-
+      {person} tells you that a rival firm has made an offer: more money and a promise of
+      partnership in three years. {person} has not said yes.
+    storyline:
+      key: star_flight
+      step: 2
+      summary: "{person} has an offer from a rival firm and has not yet answered it."
+      next_after_turns: 2
+      next_template: star_decision
+    choices:
+      - key: A
+        label: "Talk through {person}'s future here"
+        effects: [{ type: morale_delta, target: person, share: 0.5 }]
+      - key: B
+        label: "Match the money"
+        effects:
+          - { type: salary_change, target: person, share: 1.0 }
+          - { type: morale_delta, target: person, share: 0.4 }
+      - key: C
+        label: "Let {person} decide alone"
+        effects: [{ type: morale_delta, target: person, share: -0.3 }]
+
+  - id: star_decision
+    category: people
+    trigger: storyline
+    severities: [major]
+    weight: 1.0
+    title: "{person} decides"
+    body: >-
+      {person} asks for a few minutes at the end of the day. Whatever {person} says next, the
+      associates in {unit} will hear about it by morning.
+    storyline:
+      key: star_flight
+      step: 3
+      summary: "{person} has made a decision about the rival offer."
+    choices:
+      - key: A
+        label: "Make one last case for staying"
+        effects:
+          - { type: salary_change, target: person, share: 0.6 }
+          - { type: morale_delta, target: person, share: 0.6 }
+      - key: B
+        label: "Wish {person} well"
+        effects:
+          - { type: resign, target: person }
+          - { type: morale_delta, target: firm, share: -0.3 }
+
+  - id: tag_noticed_talk
+    category: people
+    trigger: tag_noticed
+    severities: [minor]
+    weight: 0.8
+    title: "Getting to know {person}"
+    body: >-
+      You have learned something new about how {person} works. A coffee might tell you more.
+    choices:
+      - key: A
+        label: "Get to know {person} better"
+        effects:
+          - { type: reveal_tag, target: person }
+          - { type: morale_delta, target: person, share: 0.3 }
+      - key: B
+        label: "Keep it in mind"
+        do_nothing: true
+
+  - id: anniversary_dinner
+    category: people
+    trigger: anniversary
+    severities: [minor]
+    weight: 0.6
+    title: "Another year for {person}"
+    body: >-
+      {person} has been at {firm} another full year this month. Small gestures carry far in a
+      firm that bills by the tenth of an hour.
+    choices:
+      - key: A
+        label: "A note and dinner for two"
+        effects:
+          - { type: morale_delta, target: person, share: 0.8 }
+          - { type: cash_delta, target: firm, share: -0.05 }
+      - key: B
+        label: "A quiet thank-you in the hallway"
+        effects: [{ type: morale_delta, target: person, share: 0.3 }]
+
+  - id: team_clash_matter
+    category: people
+    trigger: team_clash
+    severities: [minor, major]
+    weight: 1.0
+    title: "{person} and {other} have fallen out"
+    body: >-
+      The team on {matter} has split into two camps. {person} and {other} no longer copy each
+      other on emails, and the juniors are caught between them.
+    choices:
+      - key: A
+        label: "Sit them down together"
+        effects:
+          - { type: pair_delta, target: pair, share: 0.6 }
+          - { type: strain_delta, target: person, share: 0.2 }
+      - key: B
+        label: "Split the work between them"
+        effects:
+          - { type: pair_delta, target: pair, share: 0.3 }
+          - { type: hours_pct, target: matter, share: 0.3 }
+      - key: C
+        label: "Let them sort it out"
+        effects: [{ type: pair_delta, target: pair, share: -0.3 }]
+
+  - id: team_bond_matter
+    category: people
+    trigger: team_bond
+    severities: [minor]
+    weight: 0.8
+    title: "{person} and {other} work well together"
+    body: >-
+      {client}'s team keeps mentioning {person} and {other} by name. On {matter} they finish
+      each other's drafts.
+    choices:
+      - key: A
+        label: "Keep them on the same matters"
+        effects:
+          - { type: pair_delta, target: pair, share: 0.5 }
+          - { type: morale_delta, target: person, share: 0.3 }
+          - { type: morale_delta, target: other, share: 0.3 }
+      - key: B
+        label: "Ask {person} to teach {other} the client side"
+        effects: [{ type: growth_boost, target: other, share: 0.5 }]
+
+  - id: associate_error_found
+    category: people
+    trigger: associate_error
+    severities: [minor, major]
+    weight: 1.0
+    restricted: true
+    title: "A mistake caught on {matter}"
+    body: >-
+      A draft from {person} on {matter} had a real error in it. The team caught it before it
+      went to {client}, but it cost a weekend, and {person} knows everyone saw it.
+    choices:
+      - key: A
+        label: "Fix it and write off the time"
+        effects:
+          - { type: wip_writedown, target: matter, share: 0.5 }
+          - { type: strain_delta, target: person, share: 0.3 }
+      - key: B
+        label: "Tell {gc} what happened"
+        effects:
+          - { type: relationship_delta, target: client, share: -0.3 }
+          - { type: morale_delta, target: person, share: 0.3 }
+      - key: C
+        label: "Have {person} redo the work"
+        effects:
+          - { type: hours_pct, target: matter, share: 0.4 }
+          - { type: morale_delta, target: person, share: -0.5 }
+
+  - id: key_exit_crisis
+    category: people
+    trigger: key_exit
+    severities: [critical]
+    weight: 1.0
+    title: "{person} has resigned"
+    body: >-
+      {person}'s letter is on your desk. Clients will call by the end of the week, and
+      everyone in {unit} is watching what you do next.
+    choices:
+      - key: A
+        label: "Make a counter-offer"
+        effects:
+          - { type: retain, target: person }
+          - { type: salary_change, target: person, share: 0.8 }
+      - key: B
+        label: "Let {person} go with thanks"
+        effects: [{ type: morale_delta, target: firm, share: -0.3 }]
+      - key: C
+        label: "Hold {person} to the notice period and protect the clients"
+        effects:
+          - { type: cash_delta, target: firm, share: -0.2 }
+          - { type: morale_delta, target: firm, share: -0.2 }
+
+  - id: quiet_month_people
+    category: people
+    trigger: quiet_month
+    severities: [minor]
+    weight: 1.0
+    title: "Time to catch your breath"
+    body: >-
+      For once nothing is on fire at {firm}. The associates have noticed, and so have you.
+    choices:
+      - key: A
+        label: "Hold a firm offsite"
+        effects:
+          - { type: morale_delta, target: firm, share: 0.6 }
+          - { type: cash_delta, target: firm, share: -0.2 }
+      - key: B
+        label: "Let people leave early on Fridays this month"
+        effects: [{ type: strain_delta, target: firm, share: -0.4 }]

@@ -1,0 +1,108 @@
+# Regulatory events (spec 15: a bar complaint, an audit, a trust-account query) and the
+# critical set from v2's risk systems: a trust-account shortfall and a malpractice claim above
+# the insurance limit (queued by the engine). A bar complaint names a lawyer: restricted.
+templates:
+  - id: annual_audit_notice
+    category: regulatory
+    trigger: annual_audit
+    severities: [minor]
+    weight: 1.0
+    title: "The year's audit begins"
+    body: >-
+      The auditors arrive for {firm}'s year-end review: the client account, the time records
+      and the conflicts log.
+    choices:
+      - key: A
+        label: "Give them everything they ask for"
+        effects:
+          - { type: cash_delta, target: firm, share: -0.2 }
+          - { type: strain_delta, target: firm, share: 0.1 }
+      - key: B
+        label: "Bring in outside help"
+        effects: [{ type: cash_delta, target: firm, share: -0.4 }]
+
+  - id: conflict_surfaced_review
+    category: regulatory
+    trigger: conflict_surfaced
+    severities: [minor, major]
+    weight: 1.0
+    title: "A conflict forces you off {matter}"
+    body: >-
+      A conflict nobody checked has surfaced on {matter}, and {firm} has had to withdraw.
+      {gc} is not amused, and the court noticed.
+    choices:
+      - key: A
+        label: "Apologise to {gc} and tighten your checks"
+        effects:
+          - { type: relationship_delta, target: client, share: 0.4 }
+          - { type: cash_delta, target: firm, share: -0.3 }
+      - key: B
+        label: "Put it down to bad timing"
+        effects:
+          - { type: relationship_delta, target: client, share: -0.3 }
+          - { type: reputation_delta, target: firm, share: -0.3 }
+
+  - id: bar_complaint_filed
+    category: regulatory
+    trigger: bar_complaint
+    severities: [minor, major]
+    weight: 1.0
+    restricted: true
+    title: "A complaint about {matter}"
+    body: >-
+      After the missed deadlines on {matter}, {client} has complained to the bar about the
+      handling of the case. The complaint names {person}.
+    choices:
+      - key: A
+        label: "Cooperate fully with the bar"
+        effects:
+          - { type: cash_delta, target: firm, share: -0.3 }
+          - { type: strain_delta, target: person, share: 0.4 }
+          - { type: relationship_delta, target: client, share: 0.2 }
+      - key: B
+        label: "Settle with {client} quietly"
+        effects:
+          - { type: cash_delta, target: firm, share: -0.6 }
+          - { type: relationship_delta, target: client, share: 0.4 }
+
+  - id: trust_shortfall
+    category: regulatory
+    trigger: trust_shortfall
+    severities: [critical]
+    weight: 1.0
+    title: "A shortfall in the client account"
+    body: >-
+      The month-end reconciliation shows less money in {firm}'s client account than the firm
+      holds for its clients. The rules leave no room for doubt about what comes first.
+    choices:
+      - key: A
+        label: "Make it good from firm money at once"
+        effects:
+          - { type: cash_delta, target: firm, share: -0.8 }
+          - { type: reputation_delta, target: firm, share: 0.2 }
+      - key: B
+        label: "Investigate before you move money"
+        effects:
+          - { type: reputation_delta, target: firm, share: -0.5 }
+          - { type: confidence_delta, target: partnership, share: -0.3 }
+
+  - id: malpractice_claim
+    category: regulatory
+    trigger: malpractice_claim
+    severities: [critical]
+    weight: 1.0
+    title: "A claim above the insurance limit"
+    body: >-
+      A former client has filed a malpractice claim against {firm} for more than the firm's
+      insurance covers. The partners want to know what it means for their capital.
+    choices:
+      - key: A
+        label: "Settle the claim"
+        effects:
+          - { type: cash_delta, target: firm, share: -0.8 }
+          - { type: confidence_delta, target: partnership, share: -0.2 }
+      - key: B
+        label: "Fight it"
+        effects:
+          - { type: reputation_delta, target: firm, share: -0.3 }
+          - { type: strain_delta, target: firm, share: 0.3 }

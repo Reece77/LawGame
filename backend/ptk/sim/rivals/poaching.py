@@ -165,7 +165,9 @@ def resolve_approaches(
             out.append(replace(a, status="lapsed", resolved_turn=turn))
             continue
         odds = answer_odds(state, a, data, balance)
-        draw = float(rng.stream(turn, "rival_poach", *firm.rival_key, ANSWER_KEY, a.made_turn).random())
+        draw = float(
+            rng.stream(turn, "rival_poach", *firm.rival_key, ANSWER_KEY, a.made_turn).random()
+        )
         person = state.person(a.person_id)
         if draw < odds.probability:
             months = NOTICE_MONTHS[member_kind(person.level)]

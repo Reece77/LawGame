@@ -52,13 +52,27 @@ def game(
 
 
 def play(
-    state: GameState, data: GameData, balance: Balance, turns: int, seed: int = 1
+    state: GameState,
+    data: GameData,
+    balance: Balance,
+    turns: int,
+    seed: int = 1,
+    *,
+    write_events: bool = False,
 ) -> tuple[GameState, list[TurnResult]]:
+    """`write_events` (PT-M6): write each turn's events with the mock adapter, as a save does
+    (round trips against a save); without it events stay unwritten and have no effect."""
     results = []
     for _ in range(turns):
-        result = advance_turn(state, Decisions(), RngFactory(seed), balance, data, {})
+        result = advance_turn(
+            state, Decisions(), RngFactory(seed), balance, data, {}, answer_critical=write_events
+        )
         results.append(result)
         state = result.new_state
+        if write_events:
+            from tests.hiring_helpers import mock_events
+
+            state = mock_events(state, balance, data)
     return state, results
 
 

@@ -1,4 +1,4 @@
-"""Load and write the rivals' state (schema v7, PT-M5).
+"""Load and write the rivals' state (schema v8, PT-M5).
 
 The rivals' state (`RivalsState` without its people) is one JSON document in `rival_state`,
 rewritten each turn; a generic codec turns the frozen dataclasses into JSON and back from

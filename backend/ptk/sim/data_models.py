@@ -6,6 +6,12 @@ from typing import Final, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from ptk.sim.events.data import (
+    ColleaguesBalance,
+    EventsBalance,
+    EventTemplate,
+    template_problems,
+)
 from ptk.sim.rivals.data import RivalsBalance, RivalsData, WorldBalance
 
 type AccountType = Literal["asset", "liability", "equity", "income", "expense"]
@@ -871,6 +877,8 @@ class Balance(_Strict):
     relationships: RelationshipsBalance
     cross_sell: CrossSellBalance
     conflicts: ConflictsBalance
+    events: EventsBalance  # PT-M6 (ptk.sim.events.data)
+    colleagues: ColleaguesBalance  # PT-M6: colleague relationships (TST 16.7)
     billing: BillingBalance  # PT-M3b
 
 
@@ -1318,6 +1326,7 @@ class GameData(_Strict):
     clients: ClientsData  # PT-M3a: clients.yaml
     courts: CourtsData  # PT-M3a: courts.yaml
     rivals: RivalsData  # PT-M5: firms.yaml, notables.yaml, judges.yaml
+    event_templates: tuple[EventTemplate, ...] = ()  # PT-M6: events/*.yaml (TST 16.4)
 
     @model_validator(mode="after")
     def _unique(self) -> GameData:
@@ -1346,6 +1355,8 @@ class GameData(_Strict):
                 raise ValueError(f"duplicate {name} keys")
         self._check_references()
         self.rivals.check(set(self.practice_keys), {c.key for c in self.courts.courts})
+        if problems := template_problems(self.event_templates):
+            raise ValueError("event templates: " + "; ".join(problems))
         return self
 
     def _check_references(self) -> None:
@@ -1463,6 +1474,12 @@ class GameData(_Strict):
             if p.key == key:
                 return p
         raise KeyError(f"unknown practice {key!r}")
+
+    def event_template(self, template_id: str) -> EventTemplate:
+        for template in self.event_templates:
+            if template.id == template_id:
+                return template
+        raise KeyError(f"unknown event template {template_id!r}")
 
     def role(self, key: str) -> Role:
         for role in self.roles:

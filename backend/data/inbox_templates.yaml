@@ -31,6 +31,9 @@ templates:
   tag_revealed:
     title: "You noticed something about {name}"
     body: "You have noticed that {name} {reveal_text}."
+  retained: # PT-M6: a counter-offer kept someone who had resigned (TST 23.3)
+    title: "{name} is staying"
+    body: "{name} has withdrawn their notice and is staying at the firm."
   bonuses_paid:
     title: "Year-end bonuses: {total_cents}"
     body: "The firm paid {count} year-end bonuses, {total_cents} in all, {policy} the market."

@@ -139,7 +139,7 @@ def test_save_round_trip_keeps_the_market(save_dir: Path, data: GameData, balanc
     )
     path = saves.open_save(save_dir, "rt")
     for _ in range(9):
-        saves.run_turn(path, balance, data)
+        saves.run_turn(path, balance, data, answer_critical=True)
     loaded, _ = saves.read_state(path)
     # the same months played in memory give the same market
     from ptk.sim.setup import new_game
@@ -153,7 +153,7 @@ def test_save_round_trip_keeps_the_market(save_dir: Path, data: GameData, balanc
         data=data,
         balance=balance,
     ).state
-    played, _ = play(fresh, data, balance, 9, seed=21)
+    played, _ = play(fresh, data, balance, 9, seed=21, write_events=True)
     assert loaded.market == played.market
     assert loaded.firms == played.firms
 

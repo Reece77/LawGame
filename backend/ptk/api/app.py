@@ -20,7 +20,8 @@ from ptk.api.people import make_router
 from ptk.api.screens import make_screens_router
 from ptk.config import get_settings
 from ptk.db import saves
-from ptk.sim.calendar import format_turn
+from ptk.holiday import REASON_TEXT, HolidayError, run_holiday
+from ptk.sim.calendar import format_turn, ym_to_turn
 from ptk.sim.errors import (
     BillingActionError,
     CampusSeasonError,
@@ -50,6 +51,7 @@ from ptk.sim.ledger import CASH
 from ptk.sim.people.founder import FounderSpec
 
 _STATUS: dict[type[SimError], int] = {
+    HolidayError: 400,  # PT-M7a
     SaveNotFoundError: 404,
     NotFoundError: 404,
     InvalidFounderError: 400,
@@ -123,6 +125,24 @@ class NewGameIn(BaseModel):
     difficulty: str = "standard"
     seed: int | None = Field(default=None, ge=0, le=2**64 - 1)
     background: str | None = None  # the founding partner's; None = the scenario's default
+
+
+class HolidayIn(BaseModel):
+    """PT-M7a: Holiday (`months`) or continue until a month (`until_year`, `until_month`)."""
+
+    months: int | None = None
+    until_year: int | None = None
+    until_month: int | None = Field(default=None, ge=1, le=12)
+
+
+class HolidayOut(BaseModel):
+    months_played: int
+    reason: str
+    reason_text: str
+    from_label: str
+    to_label: str
+    max_months: int
+    default_months: int
 
 
 class GameOut(BaseModel):
@@ -228,6 +248,33 @@ def create_app() -> FastAPI:
         path = saves.open_save(get_settings().resolved_save_dir(), slug)
         saves.run_turn(path, loader.balance(), loader.game_data())
         return _game(slug)
+
+    @app.post(
+        "/api/saves/{slug}/holiday",
+        response_model=HolidayOut,
+        responses=errors,
+        operation_id="holiday",
+    )
+    def holiday(slug: str, body: HolidayIn) -> HolidayOut:
+        """PT-M7a: one Continue a month until a stop reason (spec 4.2). 409 while a critical
+        event waits; 400 for months or a date out of range."""
+        path = saves.open_save(get_settings().resolved_save_dir(), slug)
+        balance, data = loader.balance(), loader.game_data()
+        until = None
+        if body.until_year is not None and body.until_month is not None:
+            start = saves.read_state(path)[0].save_meta.start_ym
+            until = ym_to_turn(body.until_year, body.until_month, start)
+        result = run_holiday(path, balance, data, months=body.months, until_turn=until)
+        start = saves.read_state(path)[0].save_meta.start_ym
+        return HolidayOut(
+            months_played=result.months_played,
+            reason=result.reason,
+            reason_text=REASON_TEXT[result.reason],
+            from_label=format_turn(result.start_turn, start),
+            to_label=format_turn(result.end_turn, start),
+            max_months=balance.holiday.max_months,
+            default_months=balance.holiday.default_months,
+        )
 
     app.include_router(make_router(errors))
     app.include_router(recruitment.make_router(errors))

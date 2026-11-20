@@ -53,7 +53,7 @@ def test_wip_at_standard_is_hours_times_rate(
                 continue
             rate = indexed_rate(
                 fx.rate_cents(data.practice(r.practice), people[r.person_id].level, data),
-                before.firm(1).rate_index,  # PT-M7a: the firm's card
+                result.new_state.firm(1).rate_index,  # PT-M7a: the card after January's rise
             )
             assert r.value_cents == round_half_even(r.tenths * rate, fx.TENTHS)
             if r.matter_id is not None:

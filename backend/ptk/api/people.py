@@ -18,6 +18,7 @@ from pydantic import BaseModel
 from ptk import loader
 from ptk.config import get_settings
 from ptk.db import saves
+from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import NotFoundError
 from ptk.sim.people.formulas import current_ability, potential_phrase
@@ -74,6 +75,7 @@ class PersonRowOut(BaseModel):
     burnt_out: bool | None  # own firm only
     morale: float | None  # own firm only, founding partners none (PT-M1b)
     salary_cents: int | None  # own firm only (PT-M1b)
+    pro_bono_hours: float | None = None  # own firm only: this calendar year's (PT-M7a)
 
 
 class PersonOut(PersonRowOut):
@@ -150,7 +152,15 @@ def _row_fields(
         "burnt_out": person.burnt_out if own else None,
         "morale": _morale(state, person.id) if own else None,
         "salary_cents": _salary(state, person.id) if own else None,
+        "pro_bono_hours": _pro_bono(state, person.id) if own else None,
     }
+
+
+def _pro_bono(state: GameState, person_id: int) -> float:
+    """PT-M7a: pro bono hours this calendar year (the save's state after the last month)."""
+    ps = state.person_state(person_id)
+    january = turn_to_ym(state.turn, state.save_meta.start_ym)[1] == 1  # tunable-exempt
+    return 0.0 if january else ps.pro_bono_ytd_tenths / 10
 
 
 def _morale(state: GameState, person_id: int) -> float | None:

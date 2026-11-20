@@ -26,9 +26,10 @@ most free capacity, then (PT-M7a) other practices' people with familiarity
 bill far over budget; they take flow instead). PT-M7a: the rule plans **output**, not
 hours at skill 10: a member's hours are their share of the matter's monthly need divided by
 their expected output an hour (`expected_output`: effective skill on the phase's tasks / 10
-x the strain factor, held to `staffing.output_floor`-`staffing.output_cap`), up to `staffing.plan_fill` of
-their capacity, so a typical team finishes near the planned months. A matter near its end
-plans and takes only the hours its remaining work needs at the team's expected output.
+x the strain factor, held to `staffing.output_floor`-`staffing.output_cap`), up to
+`staffing.plan_fill` of their capacity, so a typical team finishes near the planned
+months. A matter near its end plans and takes only the hours its remaining work needs at
+the team's expected output.
 
 PT-M7a also fills idle capacity: flow a practice's own and familiar people cannot take goes
 to any fee earner with free capacity (`matters.flow_fill`) before it is left unserved; then

@@ -59,30 +59,39 @@ def approaches_last_year(rivals: RivalsState, turn: int) -> int:
     return sum(1 for a in rivals.approaches if a.made_turn > turn - 12)  # tunable-exempt: a year
 
 
-def targets(state: GameState, firm: RivalFirm, data: GameData) -> list[int]:
-    """The player's lawyers this rival could approach, best first: partners and senior
-    associates in a practice it staffs, by book then ability (never the player's own
-    founding partner, nor anyone with an approach pending)."""
-    pending = {a.person_id for a in state.rivals.approaches if a.status == "pending"}
-    staffed = {p.practice for p in firm.pools if p.lawyers >= 1.0}
+def player_targets(state: GameState, data: GameData) -> list[tuple[int, str]]:
+    """The player's lawyers rivals could approach, best first, with their home practice:
+    partners and senior associates (never a founding partner), by book then ability."""
     ranked = []
     for e in state.staff(state.player.id):
-        if e.status != "active" or e.person_id in pending:
+        if e.status != "active":
             continue
         p = state.person(e.person_id)
         if p.founding_partner or p.level not in TARGET_LEVELS:  # founders: PT-M4's flight
             continue
-        if data.role(p.role).practice not in staffed:
+        practice = data.role(p.role).practice
+        if practice is None:
             continue
-        ranked.append((-p.book_cents, -sum(v for _, v in p.skills.items), p.id))
+        ranked.append((-p.book_cents, -sum(v for _, v in p.skills.items), p.id, practice))
     ranked.sort()
-    return [pid for _, _, pid in ranked]
+    return [(pid, practice) for _, _, pid, practice in ranked]
 
 
-def has_target(state: GameState, firm: RivalFirm, data: GameData, balance: Balance) -> bool:
+def targets(state: GameState, firm: RivalFirm, pool: list[tuple[int, str]]) -> list[int]:
+    """Of the pool, those in a practice the rival staffs, without an approach pending."""
+    pending = {a.person_id for a in state.rivals.approaches if a.status == "pending"}
+    staffed = {p.practice for p in firm.pools if p.lawyers >= 1.0}
+    return [pid for pid, practice in pool if practice in staffed and pid not in pending]
+
+
+def has_target(
+    state: GameState, firm: RivalFirm, pool: list[tuple[int, str]], balance: Balance
+) -> bool:
+    if not pool:
+        return False
     if approaches_last_year(state.rivals, state.turn) >= balance.rivals.poach.max_per_year:
         return False
-    return bool(targets(state, firm, data))
+    return bool(targets(state, firm, pool))
 
 
 def pay_of(state: GameState, person_id: int, data: GameData, balance: Balance) -> int:
@@ -94,15 +103,20 @@ def pay_of(state: GameState, person_id: int, data: GameData, balance: Balance) -
 
 
 def make_approach(
-    state: GameState, firm: RivalFirm, gen: np.random.Generator, data: GameData, balance: Balance
+    state: GameState,
+    firm: RivalFirm,
+    gen: np.random.Generator,
+    pool: list[tuple[int, str]],
+    data: GameData,
+    balance: Balance,
 ) -> tuple[GameState, str, int | None]:
     """Draws: the target (one uniform), the premium (one uniform)."""
     pb = balance.rivals.poach
-    pool = targets(state, firm, data)[:3]
+    choices = targets(state, firm, pool)[:3]
     u, prem_u = float(gen.random()), float(gen.random())
-    if not pool:
+    if not choices:
         return state, "", None
-    pid = pool[min(int(u * len(pool)), len(pool) - 1)]
+    pid = choices[min(int(u * len(choices)), len(choices) - 1)]
     premium = pb.offer_premium.lo + prem_u * (pb.offer_premium.hi - pb.offer_premium.lo)
     offer = round(pay_of(state, pid, data, balance) * premium)
     rivals = state.rivals

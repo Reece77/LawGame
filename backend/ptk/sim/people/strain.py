@@ -17,6 +17,7 @@ from ptk.sim.people.models import Person, WorkMonth
 from ptk.sim.rng import RngFactory
 
 TENTHS_PER_HOUR: Final = 10  # tunable-exempt: hours are integer tenths (ADR PT-0005)
+REAL_STRAIN_MARGIN: Final = 1.0  # tunable-exempt: a real person's strain stays below burnout
 
 
 def initial_strain(rng: RngFactory, turn: int, person_id: int, balance: Balance) -> float:
@@ -51,6 +52,8 @@ def strain_month(
     if delta > 0:
         delta *= gain_factor
     value = clamp_strain(person.strain + delta)
+    if person.real:  # ADR PT-0013 (PT-M5): no burnout collapse for a real person
+        value = min(value, cfg.burnout_at - REAL_STRAIN_MARGIN)
     since, last = person.burnout_since, person.last_burnout_turn
     if since is None and value >= cfg.burnout_at:
         since = last = turn

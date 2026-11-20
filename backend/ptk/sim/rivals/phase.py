@@ -22,13 +22,15 @@ from ptk.sim.rivals import boutiques, history, poaching, rfp, roster
 from ptk.sim.rivals.decisions import apply_simple, choose, with_cooldown
 from ptk.sim.rivals.economy import Month, book_month, january, update_demand
 from ptk.sim.rivals.market import appeal_table
-from ptk.sim.rivals.models import RivalFirm, RivalMove, RivalsState, YearRecord
+from ptk.sim.rivals.models import RivalFirm, RivalMove, YearRecord
 from ptk.sim.rivals.people import find_person, key_people
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
 
 DECEMBER = 12  # tunable-exempt
 MOVES_KEPT = 24  # tunable-exempt: months of moves kept in the state (the decision log keeps all)
+STANCE_DECAY = 0.95  # tunable-exempt: a rival's grievance fades by 5% a month
+STANCE_FLOOR = 0.01  # tunable-exempt: below this it is gone
 CASE_KINDS = frozenset({"case", "investigation"})  # tunable-exempt: as PT-M3a's
 REAL_SHARE = 0.6  # tunable-exempt: share of cases where a named rival is opposing counsel [A]
 OPPOSING_BLEND = 0.5  # tunable-exempt: weight of the rival team's craft in opposing quality [A]
@@ -57,10 +59,6 @@ def answer_approaches(state: GameState, rng: RngFactory, data: GameData, balance
     return Phase(state, log=logs)
 
 
-def _with(rivals: RivalsState, firm: RivalFirm) -> RivalsState:
-    return replace(rivals, firms=tuple(firm if f.id == firm.id else f for f in rivals.firms))
-
-
 def decide(state: GameState, rng: RngFactory, data: GameData, balance: Balance) -> Phase:
     if not enabled(state):
         return Phase(state)
@@ -68,21 +66,22 @@ def decide(state: GameState, rng: RngFactory, data: GameData, balance: Balance) 
     entries: list[LedgerEntry] = []
     moves: list[RivalMove] = []
     logs: list[LogItem] = []
+    firms = {f.id: f for f in state.rivals.firms}
+    next_move = state.rivals.next_move_id
+    pool = poaching.player_targets(state, data)  # the player's people rivals may approach
     for firm_id in [f.id for f in state.rivals.active]:
-        firm = state.rivals.firm(firm_id)
-        if firm is None or not firm.active:
-            continue
+        firm = firms[firm_id]
         gen = rng.stream(month.turn, "rival_firm", *firm.rival_key)
         firm = january(firm, month)
         firm = update_demand(firm, float(gen.standard_normal()), month)
-        target = poaching.has_target(state, firm, data, balance)
+        target = poaching.has_target(state, firm, pool, balance)
         for choice in choose(firm, month, gen, target):
             firm = with_cooldown(firm, choice.action, month)
             person_id = None
             if choice.action == "approach_player":
-                state = replace(state, rivals=_with(state.rivals, firm))
-                state, words, person_id = poaching.make_approach(state, firm, gen, data, balance)
-                firm = state.rivals.firm(firm.id) or firm
+                state, words, person_id = poaching.make_approach(
+                    state, firm, gen, pool, data, balance
+                )
                 if person_id is None:
                     continue
                 offer = state.rivals.approaches[-1].offer_cents
@@ -104,21 +103,22 @@ def decide(state: GameState, rng: RngFactory, data: GameData, balance: Balance) 
                 firm, _ = apply_simple(firm, "hire_lateral", month)
             else:
                 firm, words = apply_simple(firm, choice.action, month)
-            rivals, move = history.record(
-                _with(state.rivals, firm),
-                firm,
-                month.turn,
-                choice.action,
-                f"{firm.name} {words}",
-                person_id,
-            )
-            state = replace(state, rivals=rivals)
-            moves.append(move)
+            moves.append(
+                RivalMove(id=next_move, firm_id=firm.id, turn=month.turn, action=choice.action,
+                          detail=f"{firm.name} {words}", person_id=person_id)
+            )  # fmt: skip
+            next_move += 1
         books = book_month(firm, month)
-        state = replace(state, rivals=_with(state.rivals, books.firm))
+        firms[firm.id] = books.firm
         if books.entry is not None:
             entries.append(books.entry)
-    state = replace(state, rivals=appeal_table(state.rivals, data, balance))
+    rivals = replace(
+        state.rivals,
+        firms=tuple(firms[k] for k in sorted(firms)),
+        moves=(*state.rivals.moves, *moves),
+        next_move_id=next_move,
+    )
+    state = replace(state, rivals=appeal_table(rivals, data, balance))
     return Phase(state, entries=tuple(entries), log=tuple(logs), moves=tuple(moves))
 
 
@@ -225,12 +225,17 @@ def market(state: GameState, rng: RngFactory, data: GameData, balance: Balance) 
     state, fallen = history.collapse_hazard(state, rng, month)
     state, founded = boutiques.found(state, rng, month)
     rivals = state.rivals
-    firms = tuple(history.prune_departures(f, month.turn) for f in rivals.firms)
-    if month.ym[1] == DECEMBER:
-        firms = tuple(year_record(f, month.ym[0]) if f.active else f for f in firms)
-    stance = tuple(
-        replace(f, stance=f.stance * 0.95) for f in firms
-    )  # tunable-exempt: decay a month
+    december = month.ym[1] == DECEMBER
+    firms = []
+    for f in rivals.firms:
+        if f.departures and f.departures[0][0] <= month.turn - history.YEAR:
+            f = history.prune_departures(f, month.turn)
+        if f.stance:
+            f = replace(f, stance=f.stance * STANCE_DECAY if f.stance > STANCE_FLOOR else 0.0)
+        if december and f.active:
+            f = year_record(f, month.ym[0])
+        firms.append(f)
+    stance = tuple(firms)
     keep_from = month.turn - MOVES_KEPT
     rivals = replace(
         rivals,

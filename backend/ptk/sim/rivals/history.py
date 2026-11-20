@@ -361,8 +361,10 @@ def collapse_hazard(
         losing = current.kind != "real" and len(current.profit) >= YEAR and current.profit_12m < 0
         if losing:  # boutiques and generated firms losing money for a year (boutiques.py)
             p += month.balance.rivals.boutique.failure_bp / 10_000
+        if p <= 0:
+            continue  # no roll: nothing to draw for (the stream is the month's own)
         gen = streams.rival_fate(rng, month.turn, current.rival_key)
-        if p <= 0 or float(gen.random()) >= p:
+        if float(gen.random()) >= p:
             continue
         state, made = collapse(
             state, current, gen, month, status="failed" if losing else "collapsed"

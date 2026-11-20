@@ -63,6 +63,12 @@ Files copied or ported from Tech Startup Tycoon (`Reece77/Tech_Executive_Tycoon`
 | `backend/ptk/sim/org/rules.py` | `backend/tst/sim/org/rules.py` | ported | — |
 | `backend/ptk/sim/org/actions.py` | `backend/tst/sim/actions/org.py` | ported | — |
 | `backend/ptk/sim/org/delegates.py` | `backend/tst/sim/org/delegates.py` | ported | — |
+| `frontend/src/lib/table.ts` | `frontend/src/lib/table.ts` | AS IS | ba4074bf9854c56cf8b945b9b83a369484a5b3e37b56345e87126c1f0c88dcfb |
+| `frontend/src/components/DataTable.tsx` | `frontend/src/components/DataTable.tsx` | ported | — |
+| `frontend/src/components/ViewsMenu.tsx` | `frontend/src/components/ViewsMenu.tsx` | ported | — |
+| `frontend/src/hooks/useTableViews.ts` | `frontend/src/hooks/useTableViews.ts` | ported | — |
+| `frontend/src/components/Explain.tsx` | `frontend/src/components/Explain.tsx` | ported | — |
+| `frontend/src/lib/explain.ts` | `frontend/src/lib/explain.ts` | ported | — |
 
 Changes in ported files:
 
@@ -101,3 +107,8 @@ Changes in ported files:
 - `backend/ptk/sim/org/rules.py` (PT-M2): units and membership from `GameState.org`; the root's leader is the player's founding partner; no teammate-tag morale, work policy or memo cache; growth multipliers and the practice-group gate added.
 - `backend/ptk/sim/org/actions.py` (PT-M2, from `actions/org.py`): practice groups (one per practice, from 10 lawyers) and teams; co-founding partners may lead; ADR PT-0006 promotions (accelerated class years, no partnership); raises through `interfaces.salary_cents`/`set_salary`; plan owners lead a unit or are recruiting managers; campus targets per group; no founder energy, divisions or policies; one-off morale as nudges.
 - `backend/ptk/sim/org/delegates.py` (PT-M2): every step is a request through PT-M1b's delegate hook (`ptk.sim.interfaces`); energy given and spent through the hook; hires placed from accepted offers; per-search scouting; campus plans; no executives' reuse.
+- `frontend/src/components/DataTable.tsx` (PT-M3c): no glossary `Term` on headers (Partner Track has no glossary yet).
+- `frontend/src/components/ViewsMenu.tsx` (PT-M3c): unchanged but for its header; ported only because the vendoring rename would turn its `tst-` class names into `ptk-` ones.
+- `frontend/src/hooks/useTableViews.ts` (PT-M3c): views in the browser's `localStorage` (`ptk.tableViews`), not `saves/ui_settings.json` through an API; the hook's interface is TST's.
+- `frontend/src/components/Explain.tsx` (PT-M3c): the breakdown, a band and the note only (no 12-month trend or Ask why); Partner Track's `useExplain`.
+- `frontend/src/lib/explain.ts` (PT-M3c): Partner Track's units (hours, ratio, a revealed range, text); `itemText`.

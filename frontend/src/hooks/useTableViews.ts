@@ -42,7 +42,7 @@ const EMPTY: ViewState = { sorting: [], columnVisibility: {}, columnOrder: [] };
 const listeners = new Set<() => void>();
 let cache: { raw: string | null; value: Record<string, TableViews> } | null = null;
 
-function readAll(): Record<string, TableViews> {
+export function readAll(): Record<string, TableViews> {
   const raw = globalThis.localStorage?.getItem(STORAGE_KEY) ?? null;
   if (cache && cache.raw === raw) return cache.value;
   let value: Record<string, TableViews>;
@@ -55,7 +55,7 @@ function readAll(): Record<string, TableViews> {
   return value;
 }
 
-function writeTable(tableId: string, views: TableViews) {
+export function writeTable(tableId: string, views: TableViews) {
   const all = { ...readAll(), [tableId]: views };
   globalThis.localStorage?.setItem(STORAGE_KEY, JSON.stringify(all));
   listeners.forEach((l) => l());

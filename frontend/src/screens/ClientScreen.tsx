@@ -79,9 +79,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       <Text size="xs" c="dimmed">
         {label}
       </Text>
-      <div style={{ whiteSpace: 'normal' }}>
-        {children}
-      </div>
+      <div style={{ whiteSpace: 'normal' }}>{children}</div>
     </div>
   );
 }

@@ -350,7 +350,7 @@ class MarketDemandRow(Base):
     demand_cents: Mapped[int] = mapped_column(BigInteger)  # the last month played
 
 
-# --- Events and the LLM (schema v6, PT-M6) ---------------------------------------------------
+# --- Events and the LLM (schema v7, PT-M6) ---------------------------------------------------
 # Events, storylines, queued events, modifiers and colleague pairs are current state, rewritten
 # each turn and after each answer; the LLM's texts and call log are append-only (a text's words
 # are filled in once, after its turn commits).
@@ -451,3 +451,72 @@ class LLMCallLogRow(Base):
     created_at: Mapped[str] = mapped_column(String(32))  # wall clock: the meter only
     prompt: Mapped[str | None] = mapped_column(Text, nullable=True)  # PTK_LLM_DEBUG=1 only
     response: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+
+# --- Billing (schema v6, PT-M3b). Engagements and bills keep every row (closed ones stay for
+# history; the state loads the open ones); flow accounts and padders are current state;
+# billing_month holds each month's totals; the client book is append-only.
+
+
+class EngagementRow(Base):
+    __tablename__ = "engagement"
+    matter_id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    firm_id: Mapped[int] = mapped_column(ForeignKey("firm.id"), index=True)
+    client_id: Mapped[int] = mapped_column(Integer, index=True)
+    model: Mapped[str] = mapped_column(String(20))
+    closed: Mapped[bool]
+    closed_turn: Mapped[int | None] = mapped_column(Integer, nullable=True, index=True)
+    data_json: Mapped[str] = mapped_column(Text)  # the rest of the Engagement
+
+
+class FlowAccountRow(Base):
+    __tablename__ = "flow_account"
+    firm_id: Mapped[int] = mapped_column(ForeignKey("firm.id"), primary_key=True)
+    client_id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    practice: Mapped[str] = mapped_column(String(40), primary_key=True)
+    data_json: Mapped[str] = mapped_column(Text)
+
+
+class BillRow(Base):
+    __tablename__ = "bill"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    firm_id: Mapped[int] = mapped_column(ForeignKey("firm.id"), index=True)
+    client_id: Mapped[int] = mapped_column(Integer, index=True)
+    matter_id: Mapped[int | None] = mapped_column(Integer, nullable=True, index=True)
+    practice: Mapped[str] = mapped_column(String(40))
+    model: Mapped[str] = mapped_column(String(20))
+    kind: Mapped[str] = mapped_column(String(20))
+    issued_turn: Mapped[int] = mapped_column(Integer, index=True)
+    status: Mapped[str] = mapped_column(String(20), index=True)
+    closed_turn: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    billed_cents: Mapped[int] = mapped_column(BigInteger)
+    data_json: Mapped[str] = mapped_column(Text)  # the whole Bill, dispute included
+
+
+class BillingMonthRow(Base):
+    __tablename__ = "billing_month"
+    firm_id: Mapped[int] = mapped_column(ForeignKey("firm.id"), primary_key=True)
+    turn: Mapped[int] = mapped_column(Integer, primary_key=True)
+    data_json: Mapped[str] = mapped_column(Text)  # MonthTotals
+
+
+class BillingPadderRow(Base):
+    __tablename__ = "billing_padder"
+    person_id: Mapped[int] = mapped_column(Integer, primary_key=True)
+
+
+class ClientBookEntryRow(Base):
+    __tablename__ = "client_book_entry"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    turn: Mapped[int] = mapped_column(Integer, index=True)
+    firm_id: Mapped[int] = mapped_column(ForeignKey("firm.id"), index=True)
+    memo: Mapped[str] = mapped_column(Text)
+
+
+class ClientBookLineRow(Base):
+    __tablename__ = "client_book_line"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    entry_id: Mapped[int] = mapped_column(ForeignKey("client_book_entry.id"), index=True)
+    account: Mapped[str] = mapped_column(String(40))  # C1000_client_bank, C2000_owed_to_clients
+    client_id: Mapped[int] = mapped_column(Integer, index=True)
+    amount_cents: Mapped[int] = mapped_column(BigInteger)

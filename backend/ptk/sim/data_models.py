@@ -374,6 +374,8 @@ ENERGY_ACTIONS: Final = (
     "settlement",
     "conflict_policy",
     "forum",
+    "write_down",  # PT-M3b: a partner writes a matter's next bill down
+    "dispute",  # PT-M3b: answer a billing dispute
 )
 LATERAL_CHANNELS: Final = ("referral", "job_post", "recruiter")
 
@@ -753,6 +755,94 @@ class ConflictsBalance(_Strict):
     hidden_surface_bp: int = Field(ge=0, le=10000)
 
 
+class AgeStep(_Strict):
+    from_months: int = Field(ge=0)
+    value: int = Field(ge=0, le=10000)
+
+
+class BillingBalance(_Strict):
+    """PT-M3b (spec 7.7; ADR PT-0003, PT-0005)."""
+
+    models: dict[str, dict[str, float]]
+    quarterly_bp: int = Field(ge=0, le=10000)
+    discount_base_bp: int = Field(ge=0, le=10000)
+    discount_per_point_bp: int = Field(ge=0, le=10000)
+    discount_max_bp: int = Field(ge=0, le=10000)
+    blended_mult: float = Field(gt=0)
+    cap_mult: tuple[float, float]
+    fixed_mult: tuple[float, float]
+    retainer_mult: tuple[float, float]
+    success_share_bp: int = Field(ge=0, le=10000)
+    success_bonus_bp: int = Field(ge=0)
+    contingency_bp: tuple[int, int]
+    recovery_bp: int = Field(ge=0, le=10000)
+    settlement_fallback_bp: int = Field(ge=0, le=10000)
+    overrun_tolerance: float = Field(ge=0)
+    overrun_writedown: float = Field(ge=0, le=1)
+    writedown_points: float = Field(ge=0)
+    writedown_max_bp: int = Field(ge=0, le=10000)
+    guideline_bp: int = Field(ge=0, le=10000)
+    guideline_per_point_bp: int = Field(ge=0, le=10000)
+    guideline_share: tuple[float, float]
+    days_to_pay: dict[str, float]
+    days_per_point: float = Field(ge=0)
+    days_sigma: float = Field(ge=0)
+    macro_stress: float = Field(gt=0)
+    days_per_month: float = Field(gt=0)
+    short_pay_bp: int = Field(ge=0, le=10000)
+    short_pay_per_point_bp: int = Field(ge=0, le=10000)
+    short_pay_share: tuple[float, float]
+    bankruptcy_bp: dict[str, int]
+    write_off_months: int = Field(gt=0)
+    provision_bp: tuple[AgeStep, ...] = Field(min_length=1)
+    contingency_ev_bp: int = Field(ge=0, le=10000)
+    deposit_bp: int = Field(ge=0, le=10000)
+    deposit_months: int = Field(ge=0)
+    dispute_bp: int = Field(ge=0, le=10000)
+    dispute_temperament: float = Field(ge=0)
+    dispute_padding_mult: float = Field(ge=1)
+    dispute_share: tuple[float, float]
+    dispute_window: int = Field(gt=0)
+    concede_points: float
+    negotiate_share: float = Field(ge=0, le=1)
+    hold_base: float
+    hold_relationship: float
+    hold_fail_points: float
+    padding_share: float = Field(ge=0, le=1)
+    padding_points: float
+
+    @model_validator(mode="after")
+    def _check(self) -> BillingBalance:
+        from ptk.sim.billing.models import BILLING_MODELS
+
+        for kind, mix in self.models.items():
+            if any(k not in BILLING_MODELS for k in mix) or any(w < 0 for w in mix.values()):
+                raise ValueError(f"billing.models.{kind}: unknown model or negative weight")
+            if abs(sum(mix.values()) - 1.0) > 1e-6:  # tunable-exempt: weights sum to 1
+                raise ValueError(f"billing.models.{kind}: weights must sum to 1")
+        for name in (
+            "cap_mult",
+            "fixed_mult",
+            "retainer_mult",
+            "guideline_share",
+            "short_pay_share",
+            "dispute_share",
+            "contingency_bp",
+        ):
+            lo, hi = getattr(self, name)
+            if not 0 <= lo <= hi:
+                raise ValueError(f"billing.{name} must be an ordered non-negative range")
+        if sorted(self.days_to_pay) != ["large", "mid"] or sorted(self.bankruptcy_bp) != [
+            "large",
+            "mid",
+        ]:
+            raise ValueError("billing.days_to_pay and bankruptcy_bp are by size class (large, mid)")
+        steps = [s.from_months for s in self.provision_bp]
+        if steps[0] != 0 or steps != sorted(set(steps)):
+            raise ValueError("billing.provision_bp steps must start at 0 and ascend")
+        return self
+
+
 class Balance(_Strict):
     campaign: CampaignBalance
     backups: BackupBalance
@@ -784,6 +874,7 @@ class Balance(_Strict):
     conflicts: ConflictsBalance
     events: EventsBalance  # PT-M6 (ptk.sim.events.data)
     colleagues: ColleaguesBalance  # PT-M6: colleague relationships (TST 16.7)
+    billing: BillingBalance  # PT-M3b
 
 
 # --- People seed data (PT-M1a) ------------------------------------------------------------

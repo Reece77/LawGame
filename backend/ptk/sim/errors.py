@@ -231,3 +231,14 @@ class CriticalEventOpenError(SimError):
     def __init__(self, message: str, event_id: int) -> None:
         super().__init__(message)
         self.event_id = event_id
+
+
+# --- PT-M3b: billing -----------------------------------------------------------------------
+
+
+class UnknownBillError(NotFoundError):
+    """No such bill for the acting firm."""
+
+
+class BillingActionError(SimError):
+    """A billing action a rule forbids (a write-down out of range, a bill not disputed)."""

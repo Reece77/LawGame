@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 from ptk import loader
 from ptk.api import recruitment
 from ptk.api.events import blocking_event_id, make_events_router
+from ptk.api.finance import make_finance_router
 from ptk.api.matters import make_matters_router
 from ptk.api.org import make_org_router
 from ptk.api.people import make_router
@@ -18,6 +19,7 @@ from ptk.config import get_settings
 from ptk.db import saves
 from ptk.sim.calendar import format_turn
 from ptk.sim.errors import (
+    BillingActionError,
     CampusSeasonError,
     ConflictError,
     CriticalEventOpenError,
@@ -67,6 +69,8 @@ _STATUS: dict[type[SimError], int] = {
     # PT-M6: events
     EventActionError: 409,
     CriticalEventOpenError: 409,
+    # PT-M3b: billing
+    BillingActionError: 409,
 }
 
 
@@ -225,6 +229,7 @@ def create_app() -> FastAPI:
     app.include_router(make_org_router(errors))
     app.include_router(make_matters_router(errors))
     app.include_router(make_events_router(errors))
+    app.include_router(make_finance_router(errors))
     return app
 
 

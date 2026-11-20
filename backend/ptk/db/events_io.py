@@ -1,4 +1,4 @@
-"""Load and write the events state (schema v6, PT-M6), and the event service against a save.
+"""Load and write the events state (schema v7, PT-M6), and the event service against a save.
 
 Events, storylines, queued events, modifiers, colleague pairs and the id counters are current
 state, rewritten in place. `write_pending` runs after a turn commits (and before the next turn,

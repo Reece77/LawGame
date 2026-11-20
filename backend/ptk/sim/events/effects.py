@@ -188,7 +188,7 @@ def apply_choice(
                 matter = replace(matter, merits=matter.merits + value)
                 state = replace(state, market=with_matter(state.market, matter))
             else:
-                state, posted = interfaces.write_down_wip(state, matter.id, value, memo)
+                state, posted = interfaces.write_down_wip(state, matter.id, value, balance)
                 entries += posted
         elif t == "growth_boost" and kind == "person" and ids and ids[0] in staff:
             person = state.person(ids[0])

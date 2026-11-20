@@ -1,8 +1,8 @@
-"""Schema v6 (PT-M6): events, storylines, queued events, modifiers, colleague pairs, the events
+"""Schema v7 (PT-M6): events, storylines, queued events, modifiers, colleague pairs, the events
 id counters, the LLM's read-only texts and its call log.
 
-Revision ID: 0006_events
-Revises: 0005_matters
+Revision ID: 0007_events
+Revises: 0006_billing
 Create Date: 2026-11-20
 """
 
@@ -11,8 +11,8 @@ from __future__ import annotations
 import sqlalchemy as sa
 from alembic import op
 
-revision = "0006_events"
-down_revision = "0005_matters"
+revision = "0007_events"
+down_revision = "0006_billing"
 branch_labels = None
 depends_on = None
 

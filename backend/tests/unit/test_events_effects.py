@@ -1,6 +1,7 @@
 """PT-M6 effects: each effect type moves what it names, clamped to its severity's cap; cash is a
 balanced ledger entry; effects on someone or something gone are skipped; WIP write-downs,
-reputation and confidence go through interfaces' hooks (no-ops until their lanes merge);
+reputation and confidence go through interfaces' hooks (write-downs reach PT-M3b's billing;
+reputation and confidence are no-ops until PT-M5 and PT-M4);
 modifiers start, multiply and expire."""
 
 from __future__ import annotations
@@ -104,7 +105,8 @@ def test_matter_hours_and_merits(base: GameState, data: GameData, balance: Balan
 def test_hooks_are_called_and_no_op(
     base: GameState, data: GameData, balance: Balance, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """WIP write-downs wait for PT-M3b; reputation for PT-M5; confidence for PT-M4."""
+    """Effects through the interfaces hooks: WIP write-downs (PT-M3b, merged), reputation
+    (a no-op until PT-M5) and confidence (a no-op until PT-M4)."""
     m = base.market.open_matters(base.player.id)[0]
     fid = base.player.id
     calls: list[str] = []
@@ -240,3 +242,29 @@ def test_auto_resolve_skips_written_critical(
     assert kept.events.event(event.id).status == "open"  # type: ignore[union-attr]
     done, _, _ = fx.auto_resolve(state, balance, data, critical=True)
     assert done.events.event(event.id).status == "auto"  # type: ignore[union-attr]
+
+
+def test_wip_writedown_goes_through_billing(
+    base: GameState, data: GameData, balance: Balance
+) -> None:
+    """PT-M3b merged: a write-down sets the matter's next-bill write-down (bp), held to
+    billing.writedown_max_bp; matters not billed by the hour are unchanged."""
+    hourly = [
+        e
+        for e in base.billing.engagements
+        if not e.closed and e.model not in ("fixed", "retainer", "contingency")
+    ]
+    assert hourly, "an hourly engagement to write down"
+    e = hourly[0]
+    new, entries = _apply(
+        base, balance, data, Effect("wip_writedown", f"matter:{e.matter_id}", 10.0)
+    )
+    after = new.billing.engagement(e.matter_id)
+    assert after is not None and after.writedown_bp == max(e.writedown_bp, 1000)
+    assert entries == ()  # the ledger moves when the bill goes out
+    other = [x for x in base.billing.engagements if x.model in ("fixed", "retainer", "contingency")]
+    for x in other[:1]:
+        same, _ = _apply(
+            base, balance, data, Effect("wip_writedown", f"matter:{x.matter_id}", 10.0)
+        )
+        assert same.billing == base.billing

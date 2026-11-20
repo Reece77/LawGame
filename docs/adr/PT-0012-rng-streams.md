@@ -13,6 +13,7 @@
 | `people_gen` | 1 | `(search_id, n)` | Generated people; search 0 is a scenario's starting staff; for a lateral search n = 0 draws the batch size and n ≥ 1 the n-th candidate (PT-M1b) | PT-M1a |
 | `hiring` | 2 | `(offer_id,)` | An offer's acceptance draw | PT-M1b |
 | `morale` | 3 | `(person_id,)` | Monthly morale noise | PT-M1b |
+| `events` | 6 | `()` | The event director's month: the count, the matter draws (per open case matter by id), one draw per pick, one tone draw per queued event | PT-M6 |
 | `founder` | 7 | `(founder_index,)` | A founding partner's build; index 0 is the player's | PT-M1a |
 | `growth` | 8 | `(person_id,)` | Monthly growth noise | PT-M1a |
 | `reveal` | 9 | `(observer_firm_id, person_id)` | Reveal record offsets | PT-M1a |
@@ -23,7 +24,7 @@
 | `demand` | 20 | `(region, practice_index)` | Monthly legal demand noise | PT-M3 |
 | `intake` | 21 | `(client_id,)` | New instructions from a client | PT-M3 |
 | `matter` | 22 | `(matter_id,)` | Progress noise, events and the outcome | PT-M3 |
-| `billing` | 23 | `(matter_id,)` or `(client_id, month)` | Bill disputes, write-downs, collection delays | PT-M3 |
+| `billing` | 23 | `(purpose, id)`: `(0, matter_id)` terms, `(1, bill_id)` a bill, `(2, client_id)` a client's month, `(3, bill_id)` a dispute's default answer | A matter's billing terms and money on account; a bill's guideline rejection, dispute, days to pay and short payment; bankruptcy; the default answer to a dispute (one call site, `ptk.sim.billing.formulas.billing_draws`) | PT-M3b |
 | `conflict` | 24 | `(matter_id,)` | A hidden conflict surfacing | PT-M3 |
 | `rfp` | 25 | `(rfp_id,)` | Panel and RFP awards | PT-M5 |
 | `rival_firm` | 26 | `(*rival_key,)` | A rival firm's monthly decision noise | PT-M5 |

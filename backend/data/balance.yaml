@@ -140,6 +140,8 @@ energy: # the founding partner's monthly energy (TST formulas.md 6, M4c values; 
     settlement: 0 # answer a settlement offer
     conflict_policy: 2 # turn conflicts checks on or off
     forum: 0 # choose a new case's forum
+    write_down: 2 # write a matter's next bill down (PT-M3b)
+    dispute: 4 # answer a billing dispute (PT-M3b)
 hiring: # searches and offers (TST formulas.md 7; spec 5.7)
   candidate_shelf_turns: 3 # months a lateral candidate stays open unless hired
   lowball_ratio: 0.85 # offers below this share of the ask are always declined
@@ -457,3 +459,61 @@ colleagues: # relationships between colleagues on the same matter team (TST form
   tag_push: { credit_taker: -3, toxic_high_performer: -4, culture_carrier: 2, politician: -3 } # points a month to every pair the holder is in
   label_bounds: [-50, -20, 20, 60] # hostile at or below the first; strained at or below the second; close from the last
   range: [-100, 100] # relationships stay in this range
+billing: # PT-M3b: WIP, bills, collections, disputes, client money (spec 7.7; ADR PT-0003 2-3, 7; PT-0005)
+  models: # share of named matters by billing model, by matter kind (spec 7.7: hourly the default) [A]
+    deal: { hourly: 0.55, capped: 0.15, fixed: 0.15, success: 0.15 }
+    case: { hourly: 0.60, blended: 0.10, capped: 0.10, success: 0.10, contingency: 0.10 }
+    investigation: { hourly: 0.85, blended: 0.15 }
+    restructuring: { hourly: 1.0 } # court-approved fee applications
+    advisory: { hourly: 0.45, blended: 0.15, fixed: 0.15, retainer: 0.25 }
+    filing: { hourly: 0.40, fixed: 0.60 }
+  quarterly_bp: 2000 # bp of named matters billed quarterly; the rest (and all flow) monthly
+  discount_base_bp: 600 # bp off standard rates at a client's price sensitivity 10
+  discount_per_point_bp: 80 # bp more (less) per price-sensitivity point above (below) 10
+  discount_max_bp: 1500 # bp: the most a client's discount reaches
+  blended_mult: 0.97 # a blended rate is the kind's natural-level rate x this (leverage risk to the client)
+  cap_mult: [0.95, 1.15] # a cap is the matter's expected fees x U(range)
+  fixed_mult: [0.90, 1.10] # a fixed price is the matter's expected fees x U(range)
+  retainer_mult: [0.85, 1.05] # a monthly retainer is expected fees / planned months x U(range), for the planned months; then hourly
+  success_share_bp: 8000 # bp of standard a success-fee matter bills monthly
+  success_bonus_bp: 3500 # bp of expected fees billed on a won case or a closed deal
+  contingency_bp: [2500, 4000] # bp of the recovery the firm takes on a contingency case, uniform
+  recovery_bp: 6000 # bp of the stakes a won case recovers
+  settlement_fallback_bp: 4000 # bp of the stakes a settled case recovers when no offer was seen
+  overrun_tolerance: 0.10 # work at standard above expected fees x (1 + this) is an overrun
+  overrun_writedown: 0.60 # share of an overrun the default rule writes down on each bill (spec 7.7)
+  writedown_points: 0.04 # relationship points per 100 bp of a partner's write-down (keeping the client)
+  writedown_max_bp: 5000 # bp: the most a partner may write a bill down
+  guideline_bp: 1500 # bp chance a bill meets an e-billing guideline rejection, at price sensitivity 10
+  guideline_per_point_bp: 150 # bp of chance per price-sensitivity point above 10
+  guideline_share: [0.01, 0.06] # share of the bill rejected, uniform
+  days_to_pay: { large: 68, mid: 55 } # days a client takes to pay at price sensitivity 10
+  days_per_point: 3.0 # days more per price-sensitivity point above 10
+  days_sigma: 0.30 # LogNormal sigma of a bill's days to pay
+  macro_stress: 1.0 # multiplier on days to pay; a constant until PT-M7's macro
+  days_per_month: 30.4 # days in a month (bills are paid in the month their days run out)
+  short_pay_bp: 3000 # bp chance a client pays a bill short, at price sensitivity 10
+  short_pay_per_point_bp: 150 # bp of chance per price-sensitivity point above 10
+  short_pay_share: [0.04, 0.16] # share of the bill a short payment leaves unpaid (a credit note)
+  bankruptcy_bp: { large: 5, mid: 25 } # bp a month a generated client with open bills goes bankrupt (never a real company)
+  write_off_months: 18 # an open bill this old is written off as a bad debt
+  provision_bp: # bad-debt provision on open bills by age (months since issue), bp of the outstanding
+    - { from_months: 0, value: 100 }
+    - { from_months: 3, value: 500 }
+    - { from_months: 6, value: 2500 }
+    - { from_months: 12, value: 7500 }
+  contingency_ev_bp: 5000 # bp of contingency WIP the provision expects to recover
+  deposit_bp: 2500 # bp chance a mid-size client's new named matter puts money on account
+  deposit_months: 2 # months of a matter's planned fees held on account
+  dispute_bp: 400 # bp chance a bill is disputed, at the GC's temperament 10
+  dispute_temperament: 0.08 # x (10 - temperament) more chance per point below 10 (relative)
+  dispute_padding_mult: 6.0 # a padded bill is this many times likelier to be disputed
+  dispute_share: [0.15, 0.35] # share of a bill disputed, uniform
+  dispute_window: 2 # months a dispute waits for an answer before the default rule negotiates
+  concede_points: 1.0 # relationship points when the firm concedes a dispute
+  negotiate_share: 0.5 # share of the disputed amount credited when the firm negotiates
+  hold_base: 0.0 # logit points that holding firm gets paid in full
+  hold_relationship: 2.0 # logit per unit of (relationship - 50) / 50
+  hold_fail_points: -4.0 # relationship points when holding firm fails (the client is credited in full)
+  padding_share: 0.08 # share of a bill's standard value a padder adds as time not worked
+  padding_points: -8.0 # relationship points when padding comes to light

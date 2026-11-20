@@ -123,7 +123,7 @@ Changes in ported files:
 - `backend/ptk/sim/events/render.py` (PT-M6): client, GC, matter, practice and court placeholders.
 - `backend/ptk/sim/events/triggers.py` (PT-M6): Partner Track's triggers and crises; matter draws on the events stream.
 - `backend/ptk/sim/events/director.py` (PT-M6): matter and client cooldowns; restricted templates never name a real person; engine-queued events; read-only text requests; no press, persona or public names.
-- `backend/ptk/sim/events/effects.py` (PT-M6): law effects; WIP write-downs, reputation and confidence through `ptk.sim.interfaces` hooks (no-ops until PT-M3b, PT-M5, PT-M4); Continue blocked by critical events only; restricted effects never touch a real person.
+- `backend/ptk/sim/events/effects.py` (PT-M6): law effects; WIP write-downs, reputation and confidence through `ptk.sim.interfaces` hooks (write-downs through PT-M3b's next-bill write-down; reputation and confidence no-ops until PT-M5 and PT-M4); Continue blocked by critical events only; restricted effects never touch a real person.
 - `backend/ptk/sim/events/describe.py` (PT-M6): law effects in words; a merits shift only in words.
 - `backend/ptk/sim/events/colleagues.py` (PT-M6, from `people/relationships.py` and the monthly step of `org/relationships.py`): pairs form on matter teams; no W_rel morale term yet.
 - `backend/ptk/sim/events/actions.py` (PT-M6, the choose_event action of `actions/events.py`): Partner Track's effects.

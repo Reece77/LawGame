@@ -148,7 +148,33 @@ Clients and judges are written once at game creation. `relationship`, `matter`, 
 | | `value_cents` | bigint | tenths × rate ÷ 10, rounded half to even once per (person, matter, month); PT-M3b posts it to WIP |
 | `market_demand` | `practice`, `demand_cents` | str, bigint | The last month's New York demand by practice index (`00`..`09`, practices.yaml order), standard value |
 
-## Schema v6 (`0006_events`, PT-M6)
+## Schema v6 (`0006_billing`, PT-M3b)
+
+Billing's books beside the ledger (ADR PT-0003 §2–§3, §7; ADR PT-0005). `engagement` and `bill` keep every row (closed ones stay as history; the state loads open engagements and bills plus those closed in the last turn); `flow_account` and `billing_padder` are current state, rewritten each turn and after each action; `billing_month` holds each month's totals (the state loads the last 12); the client book is append-only. Client funds are derived from the client book and the provisions and deferred income from the ledger, as cash is (ADR-0003). JSON payload columns hold the rest of each frozen sim model (`ptk/sim/billing/models.py`). Billing holds no hidden value.
+
+| Table | Column | Type | Meaning |
+| --- | --- | --- | --- |
+| `engagement` | `matter_id` | int | A named matter's billing terms and unbilled work (one per matter, drawn in the matter's first month, stream `billing` `(0, matter_id)`) |
+| | `firm_id`, `client_id`, `model` | int, int, str | `model`: `hourly`, `blended`, `capped`, `fixed`, `success`, `contingency`, `retainer` (spec §7.7); a retainer becomes `hourly` after its term |
+| | `closed`, `closed_turn` | bool, int null | Closed once the matter's final bill is issued |
+| | `data_json` | text | `opened_turn`, `cycle_months` (1 or 3), `term_months` and `months_billed` (retainers), `discount_bp`, `price_cents` (cap, fixed price or monthly retainer), `rate_cents` (blended rate an hour), `share_bp` (success: share of standard billed monthly; contingency: share of the recovery), `bonus_cents` (success), `wip_cents` and `wip_tenths` (unbilled, standard value), `standard_cents` (all work so far), `billed_cents`, `last_bill_turn`, `writedown_bp` (the partner's write-down on the next bill), `advance_turn` (the month a retainer's advance covers), `offer_bp` (last settlement offer seen), `funds_cents` (money on account for the matter) |
+| `flow_account` | `firm_id`, `client_id`, `practice` | int, int, str | A client's flow work in one practice (ADR PT-0004 §2), billed hourly every month |
+| | `data_json` | text | `wip_cents`, `wip_tenths`, `last_bill_turn` |
+| `bill` | `id` | int | A bill (never reused) |
+| | `firm_id`, `client_id`, `matter_id`, `practice` | int, int, int null, str | `matter_id` null for flow work |
+| | `model`, `kind` | str, str | `kind`: `fees` (a cycle bill), `final`, `retainer_advance` (debits receivables, credits 2200), `success` (bonus, 4100), `contingency` (share of a recovery, paid from the client account) |
+| | `issued_turn`, `status`, `closed_turn` | int, str, int null | `status`: `open`, `disputed`, `paid`, `written_off` |
+| | `billed_cents` | bigint | The invoice |
+| | `data_json` | text | The whole `Bill`: `due_turn` (when the client pays, from its days to pay), `standard_cents` (WIP relieved), `paid_cents`, `credited_cents` (credit notes: disputes, short payments, padding found), `written_off_cents` (bad debts, 6700), `padding_cents` (a padder's time, shown only once found), `short_cents` (what the client will leave unpaid), `dispute` ([amount, raised turn, expires turn, padded] or null) |
+| `billing_month` | `firm_id`, `turn` | int | One month's revenue-chain totals |
+| | `data_json` | text | `worked_cents` (WIP posted), `standard_cents` and `billed_cents` (work billed and its fees: realisation), `invoiced_cents`, `collected_cents`, `credited_cents`, `written_off_cents`, `fees_cents` (accrual revenue), `premium_cents` (4100 above standard), `resolved_billed_cents` and `resolved_paid_cents` (bills closed that month: collection), `billable_tenths`, `capacity_tenths` (utilisation) |
+| `billing_padder` | `person_id` | int | A lead whose padding a dispute has brought to light (no more padding from them) |
+| `client_book_entry` | `id`, `turn`, `firm_id`, `memo` | int, int, int, text | An entry in the client-money book (ADR PT-0003 §7): deposits on account, recoveries received, transfers to the firm for bills (also in the firm's ledger), money returned |
+| `client_book_line` | `id`, `entry_id`, `account`, `client_id`, `amount_cents` | int, int, str, int, bigint | `account`: `C1000_client_bank` (debit) or `C2000_owed_to_clients` (credit), by client; every entry balances, and the bank equals Σ owed at every month end |
+
+`turn_snapshot.kpis_json` gains (PT-M3b): `collections_cents`, `wip_cents`, `receivables_cents`, `utilisation_bp`, `realisation_bp`, `collection_bp`, `lockup_days`, `open_disputes`; `revenue_cents` is now the month's accrual fees.
+
+## Schema v7 (`0007_events`, PT-M6)
 
 Events, storylines, queued events, modifiers, colleague pairs and the id counters are current state, rewritten each turn, after each answer and after the event service writes a turn's events. `llm_text` and `llm_call_log` are append-only (a text's words are filled in once, after its turn commits). JSON payload columns hold the rest of each frozen sim model (`ptk/sim/events/models.py`). A colleague pair's value is hidden (the player sees a label); an event row never stores a trigger's hidden cause, only who and what it is about.
 

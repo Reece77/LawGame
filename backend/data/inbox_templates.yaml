@@ -71,3 +71,13 @@ templates:
   introduction_failed:
     title: "{client} passed on {name}"
     body: "{client} did not take up the introduction in {practice}."
+  # PT-M3b: billing and collections
+  bill_disputed:
+    title: "{client} disputes a bill"
+    body: "{client} disputes {amount_cents} of a {bill_cents} bill. Concede, negotiate or hold firm on the Finance screen; unanswered, the billing team negotiates when the dispute's window closes."
+  padding_found:
+    title: "Padded time found on a bill to {client}"
+    body: "A dispute has brought to light {amount_cents} of time on a bill to {client} that was never worked. The firm has credited it, and the client is not pleased."
+  client_bankrupt:
+    title: "{client} has filed for bankruptcy"
+    body: "{client} has filed for bankruptcy. Its unpaid bills, {lost_cents} in all, have been written off as bad debts."

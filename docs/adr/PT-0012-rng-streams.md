@@ -23,7 +23,7 @@
 | `demand` | 20 | `(region, practice_index)` | Monthly legal demand noise | PT-M3 |
 | `intake` | 21 | `(client_id,)` | New instructions from a client | PT-M3 |
 | `matter` | 22 | `(matter_id,)` | Progress noise, events and the outcome | PT-M3 |
-| `billing` | 23 | `(matter_id,)` or `(client_id, month)` | Bill disputes, write-downs, collection delays | PT-M3 |
+| `billing` | 23 | `(purpose, id)`: `(0, matter_id)` terms, `(1, bill_id)` a bill, `(2, client_id)` a client's month, `(3, bill_id)` a dispute's default answer | A matter's billing terms and money on account; a bill's guideline rejection, dispute, days to pay and short payment; bankruptcy; the default answer to a dispute (one call site, `ptk.sim.billing.formulas.billing_draws`) | PT-M3b |
 | `conflict` | 24 | `(matter_id,)` | A hidden conflict surfacing | PT-M3 |
 | `rfp` | 25 | `(rfp_id,)` | Panel and RFP awards | PT-M5 |
 | `rival_firm` | 26 | `(*rival_key,)` | A rival firm's monthly decision noise | PT-M5 |

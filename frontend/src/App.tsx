@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router';
+import { FinanceScreen } from './screens/FinanceScreen';
 import { GameLayout } from './screens/GameLayout';
 import { InboxScreen } from './screens/InboxScreen';
 import { MainMenu } from './screens/MainMenu';
@@ -26,6 +27,7 @@ export default function App() {
           <Route path="recruitment" element={<RecruitmentScreen />} />
           <Route path="inbox" element={<InboxScreen />} />
           <Route path="org" element={<OrgScreen />} />
+          <Route path="finance" element={<FinanceScreen />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -156,6 +156,11 @@ class Judge:
     last_name: str
     traits: JudgeTraits  # hidden: procedural only
     real: bool = False  # real judges arrive with PT-M5 (ADR PT-0013)
+    from_turn: int = 0  # PT-M5: first turn on the bench
+    until_turn: int | None = None  # PT-M5: first turn off it (None: never leaves)
+
+    def sits(self, turn: int) -> bool:
+        return self.from_turn <= turn and (self.until_turn is None or turn < self.until_turn)
 
 
 @dataclass(frozen=True, slots=True)

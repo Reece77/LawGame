@@ -10,7 +10,7 @@ client's static panel firms, whose appeal is fixed in PT-M3a.
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from functools import lru_cache
 from typing import Final
@@ -144,10 +144,19 @@ def player_share(
     conflicted: bool,
     data: GameData,
     balance: Balance,
+    appeals: Mapping[str, tuple[float, ...]] | None = None,
 ) -> float:
-    """s_f = e^A_f / Σ_g e^A_g over the client's panel (spec 7.1)."""
+    """s_f = e^A_f / Σ_g e^A_g over the client's panel (spec 7.1). `appeals` (PT-M5): the
+    rival firms' live appeal by practice (`RivalsState.appeals`); the static panel appeal
+    stands in for a key it does not hold."""
     if practice not in rel.practices:
         return 0.0
     mine = dmath.exp(player_appeal(client, rel, reputation, conflicted, balance))
-    rivals = sum(dmath.exp(rival_appeal(k, practice, data, balance)) for k in client.panel)
+    index = data.practice_keys.index(practice)
+    rivals = 0.0
+    for k in client.panel:
+        live = appeals.get(k) if appeals is not None else None
+        rivals += dmath.exp(
+            live[index] if live is not None else rival_appeal(k, practice, data, balance)
+        )
     return mine / (mine + rivals)

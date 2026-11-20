@@ -33,9 +33,10 @@ def test_revenue_reconciles_month_by_month(seed: int, data: GameData, balance: B
         def delta(account: str, before=before, balances=balances) -> int:  # type: ignore[no-untyped-def]
             return balances.get((1, account), 0) - before.get((1, account), 0)
 
-        accrual = statements.accrual_pnl(result.ledger_entries)
+        mine = [e for e in result.ledger_entries if e.firm_id == 1]  # PT-M5: rivals post too
+        accrual = statements.accrual_pnl(mine)
         fees = sum(v for a, v in accrual.lines if a.startswith("4"))
-        cash = statements.cash_pnl(result.ledger_entries)
+        cash = statements.cash_pnl(mine)
         # cash view: revenue is collections
         assert cash.revenue_cents == month.collected_cents
         # accrual view: billed (net of credit notes) + ΔWIP - Δprovision - Δdeferred

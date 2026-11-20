@@ -51,6 +51,13 @@ def load_game_data(data_dir: Path) -> GameData:
             market=market,
             clients=_read(data_dir / "clients.yaml"),
             courts=_read(data_dir / "courts.yaml"),
+            rivals={  # PT-M5
+                "firms": _read(data_dir / "firms.yaml"),
+                "people": {
+                    **_read(data_dir / "notables.yaml"),
+                    **_read(data_dir / "judges.yaml"),
+                },
+            },
         )
     except (ValidationError, KeyError, FileNotFoundError) as exc:
         raise InvalidDataError(f"invalid seed data: {exc}") from exc

@@ -6,6 +6,8 @@ from typing import Final, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from ptk.sim.rivals.data import RivalsBalance, RivalsData, WorldBalance
+
 type AccountType = Literal["asset", "liability", "equity", "income", "expense"]
 type PersonKind = Literal["lawyer", "paralegal", "business_services"]
 type Version = Literal["v1", "v2", "v3"]
@@ -369,6 +371,8 @@ ENERGY_ACTIONS: Final = (
     "forum",
     "write_down",  # PT-M3b: a partner writes a matter's next bill down
     "dispute",  # PT-M3b: answer a billing dispute
+    "pitch",  # PT-M5: pitch for an RFP
+    "approach_rival",  # PT-M5: approach a rival's key people
 )
 LATERAL_CHANNELS: Final = ("referral", "job_post", "recruiter")
 
@@ -853,6 +857,8 @@ class Balance(_Strict):
     resign: ResignBalance
     tags: TagRevealBalance
     org: OrgBalance
+    rivals: RivalsBalance  # PT-M5
+    world: WorldBalance  # PT-M5
     clients: ClientsBalance  # PT-M3a
     books: BooksBalance
     appeal: AppealBalance
@@ -1311,6 +1317,7 @@ class GameData(_Strict):
     market: PracticeMarket  # PT-M3a: practices.yaml's rate card, norms, tasks and kinds
     clients: ClientsData  # PT-M3a: clients.yaml
     courts: CourtsData  # PT-M3a: courts.yaml
+    rivals: RivalsData  # PT-M5: firms.yaml, notables.yaml, judges.yaml
 
     @model_validator(mode="after")
     def _unique(self) -> GameData:
@@ -1338,6 +1345,7 @@ class GameData(_Strict):
             if len(keys) != len(set(keys)):
                 raise ValueError(f"duplicate {name} keys")
         self._check_references()
+        self.rivals.check(set(self.practice_keys), {c.key for c in self.courts.courts})
         return self
 
     def _check_references(self) -> None:

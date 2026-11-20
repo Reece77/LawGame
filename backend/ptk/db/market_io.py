@@ -123,6 +123,8 @@ def insert_market(session: Session, market: MarketState) -> None:
                     "last_name": j.last_name,
                     "traits_json": json.dumps(_items(j.traits)),
                     "real": j.real,
+                    "from_turn": j.from_turn,  # PT-M5
+                    "until_turn": j.until_turn,
                 }
                 for j in market.judges
             ],
@@ -354,6 +356,8 @@ def load_market(session: Session, current_turn: int) -> MarketState:
                 last_name=j.last_name,
                 traits=JudgeTraits(_attrs(json.loads(j.traits_json))),
                 real=j.real,
+                from_turn=j.from_turn,
+                until_turn=j.until_turn,
             )
             for j in session.scalars(select(JudgeRow).order_by(JudgeRow.id))
         ),

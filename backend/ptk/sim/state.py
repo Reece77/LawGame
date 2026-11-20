@@ -17,6 +17,7 @@ from ptk.sim.hiring.models import Candidate, Offer, PayPolicy, PersonState, Sear
 from ptk.sim.matters.models import EMPTY_MARKET, MarketState
 from ptk.sim.org.models import EMPTY_ORG, OrgState
 from ptk.sim.people.models import Employment, Person, RevealState
+from ptk.sim.rivals.models import EMPTY_RIVALS, RIVAL_PERSON_BASE, RivalsState
 
 # ADR PT-0007 section 4: a game ends when the campaign completes or the firm dissolves.
 type GameOutcome = Literal["active", "campaign_complete", "dissolved"]
@@ -61,6 +62,7 @@ class GameState:
     org: OrgState = EMPTY_ORG  # units, membership, plans, delegates (PT-M2)
     market: MarketState = EMPTY_MARKET  # clients, relationships, matters, judges (PT-M3a)
     billing: BillingState = EMPTY_BILLING  # WIP, bills, client money, totals (PT-M3b)
+    rivals: RivalsState = EMPTY_RIVALS  # rival firms, their key people, RFPs (PT-M5)
 
     @property
     def ended(self) -> bool:
@@ -157,7 +159,8 @@ class GameState:
         """max + 1 of a table's ids (records are never dropped, so ids are never reused)."""
         ids: Iterable[int]
         if kind == "person":
-            ids = (p.id for p in self.people)
+            # PT-M5: rival people have ids from RIVAL_PERSON_BASE; the player's stay below
+            ids = (p.id for p in self.people if p.id < RIVAL_PERSON_BASE)
         elif kind == "employment":
             ids = (e.id for e in self.employments)
         elif kind == "search":

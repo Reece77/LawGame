@@ -28,6 +28,8 @@ from ptk.sim.org.phase import clear_nudges
 from ptk.sim.org.rules import growth_multipliers
 from ptk.sim.people.models import WorkMonth
 from ptk.sim.people.phase import people_month
+from ptk.sim.rivals import phase as rival_phase
+from ptk.sim.rivals.models import RivalMove
 from ptk.sim.rng import RngFactory
 from ptk.sim.snapshot import TurnSnapshot
 from ptk.sim.state import GameState
@@ -47,6 +49,7 @@ class TurnResult:
     event_requests: tuple[EventRequest, ...]
     delegate_actions: tuple[DelegateAction, ...] = ()  # recomputed on replay (ADR-0015)
     client_book: tuple[ClientBookEntry, ...] = ()  # client-money entries (PT-M3b)
+    rival_moves: tuple[RivalMove, ...] = ()  # rival decisions, recomputed on replay (PT-M5)
 
 
 @dataclass(frozen=True, slots=True)
@@ -68,6 +71,12 @@ class TurnContext:
     hiring_hook: DelegateHiringHook | None = None  # PT-M1b's, for delegates (PT-M2)
     delegate_actions: tuple[DelegateAction, ...] = ()
     client_book: tuple[ClientBookEntry, ...] = ()  # PT-M3b: the client-money book's entries
+    rival_moves: tuple[RivalMove, ...] = ()  # PT-M5
+
+    def take(self, done: rival_phase.Phase) -> TurnContext:
+        """Take a rivals phase's results (PT-M5)."""
+        ctx = replace(self, state=done.state, rival_moves=self.rival_moves + done.moves)
+        return ctx.post(*done.entries).log(*done.log)
 
     @property
     def turn(self) -> int:
@@ -94,7 +103,8 @@ def apply_player_decisions(ctx: TurnContext) -> TurnContext:
     state, left = hiring.end_notices(ctx.state)
     state, entries, resolved = hiring.resolve_offers(state, ctx.rng, ctx.balance, ctx.data)
     state, started = hiring.start_signed(state, ctx.balance, ctx.data)
-    return replace(ctx, state=state).post(*entries).log(*left, *resolved, *started)
+    ctx = replace(ctx, state=state).post(*entries).log(*left, *resolved, *started)
+    return ctx.take(rival_phase.answer_approaches(ctx.state, ctx.rng, ctx.data, ctx.balance))
 
 
 def delegate_and_rival_decisions(ctx: TurnContext) -> TurnContext:
@@ -104,7 +114,8 @@ def delegate_and_rival_decisions(ctx: TurnContext) -> TurnContext:
         ctx.state, ctx.rng, ctx.balance, ctx.data, ctx.balances, ctx.hiring_hook
     )
     ctx = replace(ctx, state=state, delegate_actions=ctx.delegate_actions + taken)
-    return ctx.post(*entries).log(*logs)
+    ctx = ctx.post(*entries).log(*logs)
+    return ctx.take(rival_phase.decide(ctx.state, ctx.rng, ctx.data, ctx.balance))  # PT-M5
 
 
 def knowledge_progress(ctx: TurnContext) -> TurnContext:
@@ -115,6 +126,8 @@ def knowledge_progress(ctx: TurnContext) -> TurnContext:
 def intake_and_staffing(ctx: TurnContext) -> TurnContext:
     """4. Clients instruct, conflicts are checked, hours are allocated (PT-M3a). A person
     given a month of work as a test input keeps it (`advance_turn`'s `work`)."""
+    ctx = ctx.take(rival_phase.rfps_before_intake(ctx.state, ctx.rng, ctx.data, ctx.balance))
+    ctx = ctx.take(rival_phase.after_intake(ctx.state, ctx.rng, ctx.data, ctx.balance))
     month = matters.intake_and_staffing(ctx.state, ctx.rng, ctx.data, ctx.balance)
     work = {**month.work, **ctx.work_override}
     return replace(ctx, state=month.state, work=work, unserved=month.unserved).log(*month.log)
@@ -151,12 +164,15 @@ def people_updates(ctx: TurnContext) -> TurnContext:
         state, ctx.rng, ctx.balance, ctx.data, ctx.work
     )
     state, tags = hiring.monthly_tag_reveals(state, ctx.rng, ctx.balance, ctx.data)
-    return replace(ctx, state=clear_nudges(state)).log(*departures, *tags)
+    ctx = replace(ctx, state=clear_nudges(state)).log(*departures, *tags)
+    return ctx.take(rival_phase.people(ctx.state, ctx.rng, ctx.data, ctx.balance))  # PT-M5
 
 
 def market_and_macro_update(ctx: TurnContext) -> TurnContext:
-    """9. The salary scale moves (PT-M1b: history to 2015); legal demand and rates (PT-M7)."""
-    return replace(ctx, state=hiring.apply_scale(ctx.state, ctx.data))
+    """9. The salary scale moves (PT-M1b: history to 2015); rivals' dated history, collapses
+    and boutiques (PT-M5); legal demand and rates (PT-M7)."""
+    ctx = replace(ctx, state=hiring.apply_scale(ctx.state, ctx.data))
+    return ctx.take(rival_phase.market(ctx.state, ctx.rng, ctx.data, ctx.balance))
 
 
 def stage_checks(ctx: TurnContext) -> TurnContext:
@@ -251,4 +267,5 @@ def advance_turn(
         event_requests=ctx.event_requests,
         delegate_actions=ctx.delegate_actions,
         client_book=ctx.client_book,
+        rival_moves=ctx.rival_moves,
     )

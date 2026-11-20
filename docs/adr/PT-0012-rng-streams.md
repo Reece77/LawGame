@@ -26,8 +26,8 @@
 | `matter` | 22 | `(matter_id,)` | Progress noise, events and the outcome | PT-M3 |
 | `billing` | 23 | `(purpose, id)`: `(0, matter_id)` terms, `(1, bill_id)` a bill, `(2, client_id)` a client's month, `(3, bill_id)` a dispute's default answer | A matter's billing terms and money on account; a bill's guideline rejection, dispute, days to pay and short payment; bankruptcy; the default answer to a dispute (one call site, `ptk.sim.billing.formulas.billing_draws`) | PT-M3b |
 | `conflict` | 24 | `(matter_id,)` | A hidden conflict surfacing | PT-M3 |
-| `rfp` | 25 | `(rfp_id,)` | Panel and RFP awards | PT-M5 |
-| `rival_firm` | 26 | `(*rival_key,)` | A rival firm's monthly decision noise | PT-M5 |
+| `rfp` | 25 | `(0, client_id)` a client's monthly RFP roll; `(1, rfp_id)` an award | A panel review's or big-matter RFP's opening (bidders, practice, size) and award (PT-M5: the opening needed a key before the RFP has an id) | PT-M5 |
+| `rival_firm` | 26 | `(*rival_key,)` | A rival firm's month: its demand shock, then one N(0, 0.1) per action, then the drawn actions' draws | PT-M5 |
 | `lateral` | 27 | `(person_id,)` | A partner's portability realised at a move | PT-M4 |
 | `vote` | 28 | `(vote_id, person_id)` | Each partner's vote noise | PT-M4 |
 | `strain` | 29 | `(person_id,)` | A generated person's starting strain (PT-M1a); burnout events (PT-M6) | PT-M1a |
@@ -36,6 +36,12 @@
 | `macro_law` | 32 | `(indicator_index,)` | Seeded legal indices after 2025 | PT-M10 |
 | `judge_gen` | 33 | `(court_index, n)` | The n-th generated judge of a court (courts.yaml order) at game creation; real judges arrive with PT-M5 | PT-M3a |
 | `book` | 34 | `(founder_index,)` | The clients a founding partner's book of business came from, at game creation | PT-M3a |
+| `rival_gen` | 35 | `(1, n)` a generated firm; `(2, n)` a boutique | A generated firm's making at turn 0; a month's boutique roll and founding (n: boutiques founded so far) | PT-M5 |
+| `rival_people` | 36 | `(*rival_key, n)` | A rival's n-th key person, generated on demand from their member record (a pure function of the seed) | PT-M5 |
+| `real_swap` | 37 | `(1, judge_index)`; `(2, judge_index)` | A real judge's generated name (used when `world.real_people` is off) and traits' spread; the generated judge who succeeds them | PT-M5 |
+| `opposing` | 38 | `(matter_id,)` | A new case's opposing counsel (a named rival or a pool) | PT-M5 |
+| `rival_fate` | 39 | `(*rival_key,)` | A rival's collapse hazard roll (drawn only when the hazard is above zero), then its people's scatter | PT-M5 |
+| `rival_poach` | 40 | `(*rival_key, 0, made_turn)` | The answer to a rival's approach to one of the player's people (TST 15.6's key; PT-M4's flight keeps `poach`) | PT-M5 |
 
 ## Consequences
 

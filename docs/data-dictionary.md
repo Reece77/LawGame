@@ -203,3 +203,16 @@ Events, storylines, queued events, modifiers, colleague pairs and the id counter
 | | `prompt`, `response` | text, null | Only with `PTK_LLM_DEBUG=1` |
 
 `inbox_item` gains templates `event` and `critical_event` (link kind `event`, the event's card) and `llm_text` (a written briefing, letter or memo; headlines show on the Overview instead).
+
+## Schema v8 (`0008_rivals`, PT-M5)
+
+Rival firms are current state in one JSON document, rewritten each turn and after each market action (`ptk/db/rivals_io.py` encodes the frozen models of `ptk/sim/rivals/models.py` from their type hints; floats round-trip exactly). Rival key people are **not stored**: each is generated on demand from its member record (stream `rival_people`, a pure function of the seed), until the player's firm meets them, when their record moves to `person`. Every rival also has a `firm` row (`is_player` false), because ledger entries and the turn log refer to firm ids; rival firms post one balanced entry a month (fees, salaries and costs, the month's profit to drawings, cash unchanged). Client panels (`client.data_json`'s `panel`) are rewritten when RFP awards, mergers and collapses change them. Hidden values in `rival_state` (a firm's demand, AR(1) shock, the player's effects, rate index, cost and capacity; a key person's book) never reach the API.
+
+| Table | Column | Type | Meaning |
+| --- | --- | --- | --- |
+| `rival_state` | `id` | int | Always 1 |
+| | `real_people` | bool | `world.real_people` at game creation (ADR PT-0013): real lawyers' and judges' names, or generated ones with the same draws |
+| | `data_json` | text | `firms` (id, `rival_key`, key, name, personality, kind `real`/`generated`/`boutique`, status `active`/`merged`/`collapsed`/`failed`, `pools` by practice: equity, other partners, associates; revenue per lawyer at capacity, cost per lawyer, demand, rate index, shock, offset, utilisation, the last 12 months' fees and profit, `history` by year: revenue, lawyers, equity partners, PEP; departures, cooldowns, a successor's anchor, stance, `people_made`, `key_target`); `members` (key people: person id, firm, kind, practice, book, level, the generation keys, `notable`, `outside`); `moves` (the last 24 months' decisions and history events); `approaches`; `rfps` (open, and awarded in the last 24 months, with the player's pitch and the winners); `free_agents`; `history_done` (each dated event: `happened`, `called_off` or `forward`); `appeals` (each active rival's NY panel appeal by practice); `opposing` (a case's opposing counsel: matter id, rival key or "" for a pool); id counters |
+| `judge` | `from_turn`, `until_turn` | int, int | The first turn on the bench and the first turn off it (null: never leaves); real judges from `judges.yaml` by their years, then generated successors |
+
+`decision_log` gains rows with `source` `rival`: each rival move's fields, for history only (ADR-0015 5: replay recomputes them). `inbox_item` gains templates `rfp_open`, `rfp_won`, `rfp_lost` (link kind `rfp`), `rival_approach`, `rival_poached`, `rival_approach_declined` and `rival_joined`.

@@ -84,6 +84,8 @@ Files copied or ported from Tech Startup Tycoon (`Reece77/Tech_Executive_Tycoon`
 | `frontend/src/hooks/useTableViews.ts` | `frontend/src/hooks/useTableViews.ts` | ported | — |
 | `frontend/src/components/Explain.tsx` | `frontend/src/components/Explain.tsx` | ported | — |
 | `frontend/src/lib/explain.ts` | `frontend/src/lib/explain.ts` | ported | — |
+| `backend/ptk/sim/rivals/formulas.py` | `backend/tst/sim/rivals/formulas.py` | ported | — |
+| `backend/ptk/sim/rivals/models.py` | `backend/tst/sim/rivals/models.py` | ported | — |
 
 Changes in ported files:
 
@@ -143,3 +145,7 @@ Changes in ported files:
 - `frontend/src/hooks/useTableViews.ts` (PT-M3c): views in the browser's `localStorage` (`ptk.tableViews`), not `saves/ui_settings.json` through an API; the hook's interface is TST's.
 - `frontend/src/components/Explain.tsx` (PT-M3c): the breakdown, a band and the note only (no 12-month trend or Ask why); Partner Track's `useExplain`.
 - `frontend/src/lib/explain.ts` (PT-M3c): Partner Track's units (hours, ratio, a revealed range, text); `itemText`.
+- `backend/ptk/sim/rivals/formulas.py` (PT-M5, from TST @ 121d3180): `utility`, `poach_score`, `poach_probability`, `poach_band` and `rounded_headcount` as TST's; law's needs (a gap over a span); the money label reads margin and the PEP trend, not months of cash; TST's unvested-options term dropped.
+- `backend/ptk/sim/rivals/models.py` (PT-M5, from TST @ 121d3180): `RivalMove`, `Approach` (TST's `PoachApproach`), `FreeAgent` and `stream_key` keep TST's shape; a rival is a `RivalFirm` with practice pools, key people are `Member`s generated on demand.
+
+PT-M5 (rival firms) ported `tst/sim/rivals/formulas.py` and `models.py` from upstream commit **`121d3180`** (2026-11-20, TST at M44), not the commit above: each file's header names it and what changed.

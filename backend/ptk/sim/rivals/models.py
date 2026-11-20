@@ -1,6 +1,6 @@
 """Frozen rival-firm models (spec 10; ADR PT-0008; TST ADR-0010). Never mutate.
 
-Ported in part from backend/tst/sim/rivals/models.py @ 121d3180 (Tech Startup Tycoon):
+Ported from backend/tst/sim/rivals/models.py @ 121d3180 (Tech Startup Tycoon), in part:
 `RivalMove`, `PoachApproach` (as `Approach`), `FreeAgent` and `stream_key` keep TST's shape;
 changed for law: a rival is a `RivalFirm` with pools of lawyers by practice and level instead
 of product workforce pools, and its key people are `Member`s.

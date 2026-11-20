@@ -43,6 +43,8 @@ class Engagement:
     model: BillingModel
     opened_turn: int
     cycle_months: int = 1  # bills issue every this many months
+    term_months: int = 0  # retainer: the months the fee covers; then the matter bills hourly
+    months_billed: int = 0  # retainer: months earned so far
     discount_bp: int = 0  # off standard rates (hourly, capped, success, blended)
     price_cents: int = 0
     rate_cents: int = 0

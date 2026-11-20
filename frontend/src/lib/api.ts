@@ -73,7 +73,7 @@ export function useAdvance(slug: string) {
       unwrap(await api.POST('/api/saves/{slug}/advance', { params: { path: { slug } } })),
     onSuccess: (game) => {
       client.setQueryData(['game', slug], game);
-      for (const key of ['people', 'recruitment', 'inbox', 'payroll', 'org']) {
+      for (const key of ['people', 'recruitment', 'inbox', 'payroll', 'org', 'finance']) {
         void client.invalidateQueries({ queryKey: [key, slug] });
       }
     },
@@ -210,5 +210,64 @@ export function useMarkInboxRead(slug: string) {
     mutationFn: async () =>
       unwrap(await api.POST('/api/saves/{slug}/inbox/read', { params: { path: { slug } } })),
     onSuccess: (items) => client.setQueryData(['inbox', slug], items),
+  });
+}
+
+// --- PT-M3b: finance (KPIs, statements, ageing, bills and disputes, matter money) -------------
+
+export type Finance = Schemas['FinanceOut'];
+export type Bill = Schemas['BillOut'];
+export type MatterMoney = Schemas['MatterMoneyOut'];
+export type DisputeChoice = Schemas['DisputeIn']['choice'];
+
+export const useFinance = (slug: string) =>
+  useQuery({
+    queryKey: ['finance', slug],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/saves/{slug}/finance', { params: { path: { slug } } })),
+  });
+
+export const useBills = (slug: string) =>
+  useQuery({
+    queryKey: ['finance', slug, 'bills'],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/saves/{slug}/finance/bills', { params: { path: { slug } } })),
+  });
+
+export const useMatterMoney = (slug: string) =>
+  useQuery({
+    queryKey: ['finance', slug, 'matters'],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/saves/{slug}/finance/matters', { params: { path: { slug } } })),
+  });
+
+export function useRespondDispute(slug: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: async (a: { billId: number; choice: DisputeChoice }) =>
+      unwrap(
+        await api.POST('/api/saves/{slug}/finance/bills/{bill_id}/dispute', {
+          params: { path: { slug, bill_id: a.billId } },
+          body: { choice: a.choice },
+        }),
+      ),
+    onSuccess: (bills) => {
+      client.setQueryData(['finance', slug, 'bills'], bills);
+      void client.invalidateQueries({ queryKey: ['finance', slug] });
+    },
+  });
+}
+
+export function useWriteDown(slug: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: async (a: { matterId: number; bp: number }) =>
+      unwrap(
+        await api.POST('/api/saves/{slug}/finance/write-down', {
+          params: { path: { slug } },
+          body: { matter_id: a.matterId, bp: a.bp },
+        }),
+      ),
+    onSuccess: (rows) => client.setQueryData(['finance', slug, 'matters'], rows),
   });
 }

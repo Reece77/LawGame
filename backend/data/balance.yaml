@@ -386,13 +386,13 @@ billing: # PT-M3b: WIP, bills, collections, disputes, client money (spec 7.7; AD
     advisory: { hourly: 0.45, blended: 0.15, fixed: 0.15, retainer: 0.25 }
     filing: { hourly: 0.40, fixed: 0.60 }
   quarterly_bp: 2000 # bp of named matters billed quarterly; the rest (and all flow) monthly
-  discount_base_bp: 700 # bp off standard rates at a client's price sensitivity 10
+  discount_base_bp: 600 # bp off standard rates at a client's price sensitivity 10
   discount_per_point_bp: 80 # bp more (less) per price-sensitivity point above (below) 10
   discount_max_bp: 1500 # bp: the most a client's discount reaches
   blended_mult: 0.97 # a blended rate is the kind's natural-level rate x this (leverage risk to the client)
   cap_mult: [0.95, 1.15] # a cap is the matter's expected fees x U(range)
   fixed_mult: [0.90, 1.10] # a fixed price is the matter's expected fees x U(range)
-  retainer_mult: [0.85, 1.05] # a monthly retainer is expected fees / planned months x U(range)
+  retainer_mult: [0.85, 1.05] # a monthly retainer is expected fees / planned months x U(range), for the planned months; then hourly
   success_share_bp: 8000 # bp of standard a success-fee matter bills monthly
   success_bonus_bp: 3500 # bp of expected fees billed on a won case or a closed deal
   contingency_bp: [2500, 4000] # bp of the recovery the firm takes on a contingency case, uniform

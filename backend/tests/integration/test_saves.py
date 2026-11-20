@@ -53,9 +53,7 @@ def test_full_campaign_ends_in_december_2034(
     with make_sessionmaker(shared_engine(path))() as session:
         collected = paid = 0
         for (amount,) in session.execute(
-            select(LedgerLineRow.amount_cents).where(
-                LedgerLineRow.account == CASH
-            )
+            select(LedgerLineRow.amount_cents).where(LedgerLineRow.account == CASH)
         ):
             if amount > 0:
                 collected += amount

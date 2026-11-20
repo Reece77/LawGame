@@ -180,7 +180,9 @@ class _Run:
             )
         elif model == "retainer":
             monthly = fx.uniform(*cfg.retainer_mult, u[2]) / months
-            e = replace(e, price_cents=max(1, times(v.expected_fees_cents, monthly)), discount_bp=0)
+            e = replace(
+                e, price_cents=max(1, times(v.expected_fees_cents, monthly)), term_months=months
+            )
         elif model == "blended":
             rate = times(blended_rate_cents(v.practice, v.kind_key, self.data), cfg.blended_mult)
             e = replace(e, rate_cents=rate)
@@ -608,7 +610,11 @@ class _Run:
                 wip_tenths=0,
                 billed_cents=e.billed_cents + fee,
                 last_bill_turn=self.turn,
+                months_billed=e.months_billed + 1,
             )
+            if e.months_billed >= e.term_months:  # the term is over: the rest bills hourly
+                self.eng[mid] = replace(e, model="hourly", advance_turn=None)
+                continue
             if v.status == "open":  # next month, in advance: debit receivables, credit 2200
                 bill = self.issue(
                     client_id=e.client_id,

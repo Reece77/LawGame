@@ -39,7 +39,14 @@ from ptk.sim.billing.models import (
     FlowAccount,
     MonthTotals,
 )
-from ptk.sim.ledger import BAD_DEBT_PROVISION, DEFERRED_FEES, OWED_TO_CLIENTS, WIP_PROVISION
+from ptk.sim.ledger import (
+    BAD_DEBT_PROVISION,
+    DEFERRED_FEES,
+    OWED_TO_CLIENTS,
+    WIP_PROVISION,
+    LedgerEntry,
+    LedgerLine,
+)
 
 
 def _json(obj: Any) -> str:
@@ -234,3 +241,63 @@ def client_book_balances(session: Session) -> dict[tuple[int, str, int], int]:
         )
     )
     return {(int(f), str(a), int(c)): int(v) for f, a, c, v in rows}
+
+
+# --- Queries for the Finance and Matters screens (read-only) -----------------------------------
+
+
+def firm_entries(session: Session, firm_id: int, first: int, last: int) -> list[LedgerEntry]:
+    """The firm's ledger entries of turns first..last, in posting order."""
+    entries = session.scalars(
+        select(LedgerEntryRow)
+        .where(
+            LedgerEntryRow.firm_id == firm_id,
+            LedgerEntryRow.turn >= first,
+            LedgerEntryRow.turn <= last,
+        )
+        .order_by(LedgerEntryRow.id)
+    ).all()
+    if not entries:
+        return []
+    lines: dict[int, list[LedgerLine]] = {}
+    for ln in session.scalars(
+        select(LedgerLineRow)
+        .where(LedgerLineRow.entry_id.in_([e.id for e in entries]))
+        .order_by(LedgerLineRow.id)
+    ):
+        lines.setdefault(ln.entry_id, []).append(
+            LedgerLine(ln.account, int(ln.amount_cents), ln.practice, ln.office_id)
+        )
+    return [
+        LedgerEntry(turn=e.turn, firm_id=e.firm_id, memo=e.memo, lines=tuple(lines[e.id]))
+        for e in entries
+        if len(lines.get(e.id, ())) >= 2
+    ]
+
+
+def all_engagements(session: Session, firm_id: int) -> list[Engagement]:
+    return [
+        Engagement(**json.loads(r.data_json))
+        for r in session.scalars(
+            select(EngagementRow)
+            .where(EngagementRow.firm_id == firm_id)
+            .order_by(EngagementRow.matter_id)
+        )
+    ]
+
+
+def matter_bills(session: Session, firm_id: int) -> dict[int, tuple[int, int, int]]:
+    """matter id -> (billed, paid, credited + written off) over all its bills."""
+    out: dict[int, tuple[int, int, int]] = {}
+    for r in session.scalars(
+        select(BillRow).where(BillRow.firm_id == firm_id, BillRow.matter_id.is_not(None))
+    ):
+        b = _bill(json.loads(r.data_json))
+        assert b.matter_id is not None
+        billed, paid, lost = out.get(b.matter_id, (0, 0, 0))
+        out[b.matter_id] = (
+            billed + b.billed_cents,
+            paid + b.paid_cents,
+            lost + b.credited_cents + b.written_off_cents,
+        )
+    return out

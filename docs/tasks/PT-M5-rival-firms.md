@@ -58,7 +58,7 @@ Engineering and design details the spec, ADRs and brief left open (session of 20
 25. **Rival measurements outlive the player's firm**: with PT-M4 the unmanaged biglaw spin-out dissolves before 2015 on most seeds (T1's do-nothing), so the T11, conditional-history and history tests play the rivals' own phases (`tests/rivals_support.rivals_month`) after a dissolution.
 
 **Tests and tooling**
-20. **T11 and T12** run without strategy scripts (PT-M7 builds them): T11 with the biglaw spin-out unmanaged on seeds 1-10; T12 on a 150-lawyer grown firm (steady's 2015 size) to December 2015, median of 12 turns, **221 ms** alone (`make check-timing`, a new `timing` marker excluded from the parallel run).
+20. **T11 and T12** run without strategy scripts (PT-M7 builds them): T11 with the biglaw spin-out unmanaged on seeds 1-10 (the rivals' phases go on after the firm dissolves, decision 25); T12 on a 150-lawyer grown firm (steady's 2015 size) with $50M of capital, the rivals' market played to January 2015 and the firm's 12 turns of 2015 timed, alone (`make check-timing`, a new `timing` marker excluded from the parallel run): **144 ms**. Before PT-M4's merge, the same firm played whole turns from 2005 to 2015 measured **221 ms** (more history to carry); after it, an unmanaged firm of that size does not survive the decade.
 21. **Persisted turns**: the rivals' state is one JSON document per save with a content-checked in-process cache; more than 20 entries in a turn go in one bulk insert. A persisted turn is about 150 ms at 2005.
 22. **Golden balances** now include the rivals' books (the golden test fingerprints every balance).
 

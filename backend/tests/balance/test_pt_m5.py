@@ -10,8 +10,8 @@ Conditional history (the brief): a player who hires a third of a historically co
 firm's top partners a year before its date brings the collapse forward on at least 7 of 10
 seeds (Howrey, March 2011; the hire in March 2010).
 
-T12: the median turn at December 2015 is at most 250 ms on a firm of steady's size (150
-lawyers, 12 turns timed), run alone (`make check-timing`).
+T12: the median turn of 2015 is at most 250 ms on a firm of steady's size (150 lawyers, its
+12 turns timed, the rivals' market played to 2015 first), run alone (`make check-timing`).
 """
 
 from __future__ import annotations
@@ -23,11 +23,11 @@ import pytest
 
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
-from ptk.sim.ledger import apply_entries
+from ptk.sim.ledger import CASH, PARTNERS_CAPITAL, apply_entries
 from ptk.sim.rng import RngFactory
 from ptk.sim.turn import advance_turn
 from tests.matters_support import grown_firm, top_up
-from tests.rivals_support import hire_away, play_until, start, turn_of
+from tests.rivals_support import hire_away, play_until, rivals_month, start, turn_of
 
 SEEDS = range(1, 11)
 CHECK_YEARS = (2009, 2015)
@@ -37,6 +37,7 @@ FORWARD_SEEDS = 7  # tunable-exempt: the brief's criterion
 T12_MS = 250  # tunable-exempt: the target
 T12_LAWYERS = 150  # tunable-exempt: steady's size by 2015 (T3's band is 100-250)
 T12_TIMED = 12
+T12_CAPITAL = 5_000_000_000  # tunable-exempt: $50M of partners' capital for the test firm
 
 
 def _pinned(data: GameData, year: int) -> dict[str, int]:
@@ -106,17 +107,29 @@ def test_hiring_away_a_third_brings_a_collapse_forward(data: GameData, balance: 
 
 @pytest.mark.timing
 def test_t12_turn_time_at_december_2015(data: GameData, balance: Balance) -> None:
+    """A 150-lawyer firm's turns in 2015: the rivals' market is played to January 2015
+    (`rivals_month`; an unmanaged firm of this size would not survive a decade, PT-M4's T1),
+    then the firm plays whole turns from there and the last 12 are timed."""
     state = grown_firm(data, balance, T12_LAWYERS, 1)
-    balances: dict[tuple[int, str], int] = {}
+    rng = RngFactory(1)
+    start_2015 = turn_of(state, 2015, 1)
+    while state.turn < start_2015:
+        state = rivals_month(state, rng, data, balance)
+    # a firm this size holds working capital (the helper builds its people, not its books)
+    balances: dict[tuple[int, str], int] = {
+        (1, CASH): T12_CAPITAL,
+        (1, PARTNERS_CAPITAL): -T12_CAPITAL,
+    }
     times = []
     end = turn_of(state, 2016, 1)
-    while state.turn < end:
+    while state.turn < end and not state.ended:
         before = state
         t0 = time.perf_counter()
-        result = advance_turn(state, Decisions(), RngFactory(1), balance, data, balances)
+        result = advance_turn(state, Decisions(), rng, balance, data, balances)
         times.append(time.perf_counter() - t0)
         balances = dict(apply_entries(balances, result.ledger_entries))
         state = top_up(result.new_state, data, balance, before)
+    assert len(times) >= T12_TIMED, "the firm dissolved before December 2015"
     median = statistics.median(times[-T12_TIMED:]) * 1000
     print(f"\nT12: median turn {median:.0f} ms at December 2015 ({T12_LAWYERS} lawyers)")
     assert median <= T12_MS

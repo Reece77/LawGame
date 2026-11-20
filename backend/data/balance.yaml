@@ -439,7 +439,7 @@ events: # event director, effect caps, storylines (TST formulas.md 16, 23; spec 
   cash_gain_share: 0.5 # gains reach at most this share of the cost cap (16.3)
   effect_size_bounds: [0.34, 0.67] # share of the cap: up to the first "a little", above the second "considerably"
   crisis: # critical events from crises (23.3)
-    key_exit_top_fraction: 0.20 # share of non-partner staff by current ability whose resignation is a crisis (partners always are)
+    key_exit_top_fraction: 0.10 # share (rounded down) of non-partner staff by current ability whose resignation is a crisis; partners always are (PT-M6: TST's 0.20 rounded up made any senior associate of a four-person firm a crisis, in 11 of 30 seeds within two years)
     walkout_share: 0.15 # a client with at least this share of the firm's 12-month fees is key
     walkout_below: 25 # relationship score below which a key client threatens to walk
     verdict_months: 24 # months before the same key matter's trial event may come again

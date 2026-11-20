@@ -376,7 +376,7 @@ def key_people(state: GameState, data: GameData, cfg: EventsBalance) -> set[int]
         key=lambda p: (-current_ability(people[p], data), p),
     )
     share = cfg.crisis.key_exit_top_fraction
-    top = set(others[: math.ceil(len(others) * share)]) if others else set()
+    top = set(others[: math.floor(len(others) * share)])  # none in a firm of a few people
     return partners | top
 
 

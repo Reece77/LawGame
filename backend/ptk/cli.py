@@ -12,6 +12,8 @@ from ptk.db import saves
 from ptk.sim.actions import Action
 from ptk.sim.calendar import format_turn
 from ptk.sim.errors import SimError
+from ptk.sim.events.actions import ChooseEvent
+from ptk.sim.events.effects import critical_open
 from ptk.sim.hiring.actions import (
     CloseSearch,
     Interview,
@@ -66,19 +68,61 @@ def new_game_cmd(
 
 
 @app.command()
-def advance(save: str = typer.Option(...), turns: int = typer.Option(1, min=1)) -> None:
+def advance(
+    save: str = typer.Option(...),
+    turns: int = typer.Option(1, min=1),
+    answer_first: bool = typer.Option(
+        False, help="Answer a waiting critical event with its first choice instead of stopping"
+    ),
+) -> None:
     path = saves.open_save(get_settings().resolved_save_dir(), save)
     result = None
     for _ in range(turns):
         state, _balances = saves.read_state(path)
         if state.ended:
             break
-        result = saves.run_turn(path, loader.balance(), loader.game_data())
+        waiting = critical_open(state)
+        if waiting and not answer_first:
+            typer.echo(
+                f"Stopped: answer the critical event {waiting[0].title!r} (id {waiting[0].id})"
+            )
+            break
+        result = saves.run_turn(
+            path, loader.balance(), loader.game_data(), answer_critical=answer_first
+        )
     state, _ = saves.read_state(path)
     typer.echo(
         f"{save}: now {format_turn(state.turn, state.save_meta.start_ym)}"
         f" ({state.save_meta.game_state})" + ("" if result else " (no turn played)")
     )
+
+
+@app.command()
+def events(save: str = typer.Option(...)) -> None:
+    """The month's open events and their choices (PT-M6)."""
+    path = saves.open_save(get_settings().resolved_save_dir(), save)
+    state, _ = saves.read_state(path)
+    from ptk.sim.events.describe import choice_texts
+
+    for event in state.events.open_events(state.player.id):
+        typer.echo(f"[{event.id}] {event.severity}: {event.title}")
+        for choice in event.choices:
+            effects = "; ".join(choice_texts(state, event, choice, loader.balance()))
+            typer.echo(f"   {choice.key}. {choice.label} ({effects})")
+
+
+@app.command()
+def choose(
+    save: str = typer.Option(...), event: int = typer.Option(...), choice: str = typer.Option(...)
+) -> None:
+    """Answer an open event (PT-M6)."""
+    path = saves.open_save(get_settings().resolved_save_dir(), save)
+    try:
+        saves.run_action(path, ChooseEvent(event, choice), loader.balance(), loader.game_data())
+    except SimError as exc:
+        typer.echo(f"error ({exc.code}): {exc.message}", err=True)
+        raise typer.Exit(1) from exc
+    typer.echo(f"Answered event {event} with {choice}")
 
 
 @app.command()

@@ -3789,6 +3789,406 @@
         }
       }
     },
+    "/api/saves/{slug}/events": {
+      "get": {
+        "summary": "List Events",
+        "operationId": "listEvents",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EventOut"
+                  },
+                  "title": "Response Listevents"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/events/{event_id}": {
+      "get": {
+        "summary": "Get Event",
+        "operationId": "getEvent",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/events/{event_id}/choose": {
+      "post": {
+        "summary": "Choose Event",
+        "operationId": "chooseEvent",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChooseIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/texts": {
+      "get": {
+        "summary": "List Texts",
+        "operationId": "listTexts",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/TextKindOut"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kind"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TextOut"
+                  },
+                  "title": "Response Listtexts"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/llm/settings": {
+      "get": {
+        "summary": "Get Llm Settings",
+        "operationId": "getLlmSettings",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LLMSettingsOut"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set Llm Settings",
+        "operationId": "setLlmSettings",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LLMSettingsIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LLMSettingsOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/llm/meter": {
+      "get": {
+        "summary": "Get Llm Meter",
+        "operationId": "getLlmMeter",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeterOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/saves/{slug}/matters/{matter_id}/board": {
       "get": {
         "summary": "Get Board",
@@ -4972,6 +5372,20 @@
         ],
         "title": "ChannelOptionOut"
       },
+      "ChooseIn": {
+        "properties": {
+          "choice": {
+            "type": "string",
+            "pattern": "^[ABC]$",
+            "title": "Choice"
+          }
+        },
+        "type": "object",
+        "required": [
+          "choice"
+        ],
+        "title": "ChooseIn"
+      },
       "ClientOut": {
         "properties": {
           "id": {
@@ -5393,6 +5807,172 @@
         ],
         "title": "ErrorBody"
       },
+      "EventChoiceOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "effects": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Effects"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "effects"
+        ],
+        "title": "EventChoiceOut"
+      },
+      "EventOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "turn": {
+            "type": "integer",
+            "title": "Turn"
+          },
+          "date_label": {
+            "type": "string",
+            "title": "Date Label"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/SeverityOut"
+          },
+          "status": {
+            "$ref": "#/components/schemas/EventStatusOut"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "choices": {
+            "items": {
+              "$ref": "#/components/schemas/EventChoiceOut"
+            },
+            "type": "array",
+            "title": "Choices"
+          },
+          "chosen": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chosen"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "storyline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Storyline"
+          },
+          "people": {
+            "items": {
+              "$ref": "#/components/schemas/EventRefOut"
+            },
+            "type": "array",
+            "title": "People"
+          },
+          "client": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventRefOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "matter": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventRefOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "turn",
+          "date_label",
+          "category",
+          "severity",
+          "status",
+          "title",
+          "body",
+          "choices",
+          "chosen",
+          "source",
+          "storyline",
+          "people",
+          "client",
+          "matter"
+        ],
+        "title": "EventOut"
+      },
+      "EventRefOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "EventRefOut"
+      },
+      "EventStatusOut": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "open",
+          "answered",
+          "auto"
+        ]
+      },
       "ExplainItemOut": {
         "properties": {
           "label": {
@@ -5643,6 +6223,17 @@
           "turns_in_campaign": {
             "type": "integer",
             "title": "Turns In Campaign"
+          },
+          "blocking_event_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Blocking Event Id"
           }
         },
         "type": "object",
@@ -5653,7 +6244,8 @@
           "date_label",
           "cash_cents",
           "game_state",
-          "turns_in_campaign"
+          "turns_in_campaign",
+          "blocking_event_id"
         ],
         "title": "GameOut"
       },
@@ -5892,6 +6484,62 @@
           "open_disputes"
         ],
         "title": "KpisOut"
+      },
+      "LLMSettingsIn": {
+        "properties": {
+          "adapter": {
+            "type": "string",
+            "enum": [
+              "claude",
+              "templates"
+            ],
+            "title": "Adapter"
+          },
+          "monthly_budget_cents": {
+            "type": "integer",
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Monthly Budget Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "adapter",
+          "monthly_budget_cents"
+        ],
+        "title": "LLMSettingsIn"
+      },
+      "LLMSettingsOut": {
+        "properties": {
+          "adapter": {
+            "type": "string",
+            "enum": [
+              "claude",
+              "templates"
+            ],
+            "title": "Adapter"
+          },
+          "monthly_budget_cents": {
+            "type": "integer",
+            "title": "Monthly Budget Cents"
+          },
+          "key_present": {
+            "type": "boolean",
+            "title": "Key Present"
+          },
+          "in_use": {
+            "type": "string",
+            "title": "In Use"
+          }
+        },
+        "type": "object",
+        "required": [
+          "adapter",
+          "monthly_budget_cents",
+          "key_present",
+          "in_use"
+        ],
+        "title": "LLMSettingsOut"
       },
       "LeadIn": {
         "properties": {
@@ -6469,6 +7117,54 @@
           "backgrounds"
         ],
         "title": "MetaOut"
+      },
+      "MeterOut": {
+        "properties": {
+          "month": {
+            "type": "string",
+            "title": "Month"
+          },
+          "spent_cents": {
+            "type": "integer",
+            "title": "Spent Cents"
+          },
+          "budget_cents": {
+            "type": "integer",
+            "title": "Budget Cents"
+          },
+          "calls": {
+            "type": "integer",
+            "title": "Calls"
+          },
+          "events_claude": {
+            "type": "integer",
+            "title": "Events Claude"
+          },
+          "events_rejected": {
+            "type": "integer",
+            "title": "Events Rejected"
+          },
+          "avg_event_cents": {
+            "type": "number",
+            "title": "Avg Event Cents"
+          },
+          "reset_date": {
+            "type": "string",
+            "title": "Reset Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "month",
+          "spent_cents",
+          "budget_cents",
+          "calls",
+          "events_claude",
+          "events_rejected",
+          "avg_event_cents",
+          "reset_date"
+        ],
+        "title": "MeterOut"
       },
       "Metric": {
         "type": "string",
@@ -8602,6 +9298,14 @@
         ],
         "title": "SettlementOut"
       },
+      "SeverityOut": {
+        "type": "string",
+        "enum": [
+          "minor",
+          "major",
+          "critical"
+        ]
+      },
       "SignedOut": {
         "properties": {
           "person_id": {
@@ -8763,6 +9467,48 @@
           "hours_last_month"
         ],
         "title": "TeamMemberOut"
+      },
+      "TextKindOut": {
+        "type": "string",
+        "enum": [
+          "headlines",
+          "matter_brief",
+          "pitch_letter",
+          "partner_memo",
+          "year_end_letter"
+        ]
+      },
+      "TextOut": {
+        "properties": {
+          "turn": {
+            "type": "integer",
+            "title": "Turn"
+          },
+          "date_label": {
+            "type": "string",
+            "title": "Date Label"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/TextKindOut"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          }
+        },
+        "type": "object",
+        "required": [
+          "turn",
+          "date_label",
+          "kind",
+          "text",
+          "source"
+        ],
+        "title": "TextOut"
       },
       "TrendPointOut": {
         "properties": {

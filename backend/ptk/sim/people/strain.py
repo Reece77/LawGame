@@ -32,9 +32,12 @@ def monthly_capacity_tenths(person: Person, balance: Balance) -> float:
     return capacity * (balance.strain.burnout_capacity if person.burnt_out else 1.0)
 
 
-def strain_month(person: Person, turn: int, work: WorkMonth, balance: Balance) -> Person:
+def strain_month(
+    person: Person, turn: int, work: WorkMonth, balance: Balance, gain_factor: float = 1.0
+) -> Person:
     """One month of strain and burnout (spec 5.6). Burnout starts at strain.burnout_at and
-    lasts until strain falls below strain.burnout_exit; a founding partner is no different."""
+    lasts until strain falls below strain.burnout_exit; a founding partner is no different.
+    `gain_factor` (PT-M6): event modifiers on how fast strain builds scale a month's gain."""
     cfg = balance.strain
     delta = strain_delta(
         hours_tenths=work.total_tenths,
@@ -45,6 +48,8 @@ def strain_month(person: Person, turn: int, work: WorkMonth, balance: Balance) -
         rest=work.rest,
         strain=cfg,
     )
+    if delta > 0:
+        delta *= gain_factor
     value = clamp_strain(person.strain + delta)
     since, last = person.burnout_since, person.last_burnout_turn
     if since is None and value >= cfg.burnout_at:

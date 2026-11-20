@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 
 from ptk import loader
 from ptk.api import recruitment
+from ptk.api.events import blocking_event_id, make_events_router
 from ptk.api.finance import make_finance_router
 from ptk.api.matters import make_matters_router
 from ptk.api.org import make_org_router
@@ -22,6 +23,8 @@ from ptk.sim.errors import (
     BillingActionError,
     CampusSeasonError,
     ConflictError,
+    CriticalEventOpenError,
+    EventActionError,
     GameOverError,
     InsufficientCashError,
     InsufficientEnergyError,
@@ -64,6 +67,9 @@ _STATUS: dict[type[SimError], int] = {
     OverCapacityError: 409,
     StaffingError: 400,
     MatterActionError: 409,
+    # PT-M6: events
+    EventActionError: 409,
+    CriticalEventOpenError: 409,
     # PT-M3b: billing
     BillingActionError: 409,
 }
@@ -123,6 +129,7 @@ class GameOut(BaseModel):
     cash_cents: int
     game_state: Literal["active", "campaign_complete", "dissolved"]
     turns_in_campaign: int
+    blocking_event_id: int | None  # PT-M6: a critical event to answer before Continue
 
 
 def _game(slug: str) -> GameOut:
@@ -137,6 +144,7 @@ def _game(slug: str) -> GameOut:
         cash_cents=balances.get((firm.id, CASH), 0),
         game_state=state.save_meta.game_state,
         turns_in_campaign=loader.balance().campaign.standard_turns,
+        blocking_event_id=blocking_event_id(state),
     )
 
 
@@ -221,6 +229,7 @@ def create_app() -> FastAPI:
     app.include_router(recruitment.make_router(errors))
     app.include_router(make_org_router(errors))
     app.include_router(make_matters_router(errors))
+    app.include_router(make_events_router(errors))
     app.include_router(make_screens_router(errors))
     app.include_router(make_finance_router(errors))
     return app

@@ -1,0 +1,61 @@
+# Technology events (spec 15: e-discovery and practice tools from 2005; a client's AI mandate
+# and an AI hallucination in a filing arrive with v2's AI eras, queued by the engine).
+templates:
+  - id: tech_vendor_pilot
+    category: technology
+    trigger: tech_pitch
+    severities: [minor]
+    weight: 1.0
+    title: "A vendor pitches review software"
+    body: >-
+      A software company wants {firm} to pilot its document review platform. The associates
+      who sat through the demo liked it; the partners asked about the price.
+    choices:
+      - key: A
+        label: "Run a three-month pilot"
+        effects:
+          - { type: cash_delta, target: firm, share: -0.3 }
+          - { type: strain_delta, target: firm, share: -0.3 }
+      - key: B
+        label: "Not this year"
+        do_nothing: true
+
+  - id: tech_client_mandate
+    category: technology
+    trigger: tech_pitch
+    severities: [major]
+    weight: 0.4
+    title: "A client wants your systems upgraded"
+    body: >-
+      One of {firm}'s clients has sent a questionnaire on e-discovery, security and billing
+      systems. Firms that score badly will not be on next year's panel.
+    choices:
+      - key: A
+        label: "Invest in a proper platform"
+        effects:
+          - { type: cash_delta, target: firm, share: -0.6 }
+          - { type: reputation_delta, target: firm, share: 0.5 }
+      - key: B
+        label: "Partner with a vendor for now"
+        effects: [{ type: cash_delta, target: firm, share: -0.2 }]
+
+  - id: ai_sanction
+    category: technology
+    trigger: ai_sanction
+    severities: [critical]
+    weight: 1.0
+    title: "A filing cites cases that do not exist"
+    body: >-
+      A brief filed by {firm} cites cases that no court ever decided. The judge has ordered
+      the firm to explain itself.
+    choices:
+      - key: A
+        label: "Self-report and explain to the court"
+        effects:
+          - { type: cash_delta, target: firm, share: -0.5 }
+          - { type: reputation_delta, target: firm, share: -0.2 }
+      - key: B
+        label: "Withdraw and refile quietly"
+        effects:
+          - { type: reputation_delta, target: firm, share: -0.6 }
+          - { type: confidence_delta, target: partnership, share: -0.3 }

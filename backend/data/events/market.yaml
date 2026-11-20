@@ -1,0 +1,79 @@
+# Market events (spec 15: salary-scale moves, a rival's collapse or merger, a client's
+# bankruptcy) and the critical covenant breach (queued by the engine from PT-M4's revolver).
+# Rival firms arrive with PT-M5 and the macro with PT-M7; their events with them.
+templates:
+  - id: scale_move_answer
+    category: market
+    trigger: scale_move
+    severities: [minor, major]
+    weight: 1.0
+    title: "First-year pay moves to {amount}"
+    body: >-
+      The big New York firms have moved the associate scale, with first-years now at {amount}.
+      Your associates read the same blogs you do. (Your pay policy sets what {firm} pays.)
+    choices:
+      - key: A
+        label: "Tell the associates where the firm stands"
+        effects: [{ type: morale_delta, target: firm, share: 0.4 }]
+      - key: B
+        label: "Say nothing"
+        effects: [{ type: morale_delta, target: firm, share: -0.4 }]
+
+  - id: demand_shift_bd
+    category: market
+    trigger: demand_shift
+    severities: [minor, major]
+    weight: 1.0
+    title: "{practice} work is moving"
+    body: >-
+      Demand for {practice} work in the city has moved sharply this month. The partners
+      disagree about whether it lasts.
+    choices:
+      - key: A
+        label: "Shift business development toward it"
+        effects:
+          - { type: cash_delta, target: firm, share: -0.3 }
+          - { type: reputation_delta, target: firm, share: 0.5 }
+      - key: B
+        label: "Hold course"
+        do_nothing: true
+
+  - id: quiet_month_market
+    category: market
+    trigger: quiet_month
+    severities: [minor]
+    weight: 1.0
+    title: "A quiet month on the street"
+    body: >-
+      The legal press has little to say this month, and neither do your rivals. A good month
+      to look after the people who do the work.
+    choices:
+      - key: A
+        label: "Take the partners to dinner"
+        effects:
+          - { type: morale_delta, target: firm, share: 0.5 }
+          - { type: cash_delta, target: firm, share: -0.1 }
+      - key: B
+        label: "Use the time for training"
+        effects: [{ type: strain_delta, target: firm, share: -0.3 }]
+
+  - id: covenant_breach
+    category: market
+    trigger: covenant_breach
+    severities: [critical]
+    weight: 1.0
+    title: "The bank is worried"
+    body: >-
+      {firm}'s lender says the firm is close to breaching a covenant on its revolver and wants
+      a plan within the month.
+    choices:
+      - key: A
+        label: "Ask for a waiver"
+        effects:
+          - { type: cash_delta, target: firm, share: -0.5 }
+          - { type: confidence_delta, target: partnership, share: -0.2 }
+      - key: B
+        label: "Hold back partner draws for a quarter"
+        effects:
+          - { type: cash_delta, target: firm, share: 0.5 }
+          - { type: confidence_delta, target: partnership, share: -0.6 }

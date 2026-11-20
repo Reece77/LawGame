@@ -377,6 +377,88 @@ conflicts: # ADR PT-0009
   waiver_gc: 0.15 # per point of the GC's adaptability + risk appetite - 20, halved
   advance_penalty: -1.5 # logit points for an advance waiver instead of a specific one
   hidden_surface_bp: 300 # bp a month an unchecked conflict comes to light
+events: # event director, effect caps, storylines (TST formulas.md 16, 23; spec 15; PT-M6)
+  count_weights: [0.10, 0.35, 0.35, 0.15, 0.05] # probability of 0, 1, 2, 3, 4 drawn events a month (TST's 0-3 widened: a big firm has more going on)
+  category_repeat_factor: 0.5 # weight multiplier for a category used last month (16.1)
+  template_cooldown_turns: 12 # months before the same template may run again (16.1)
+  person_cooldown_turns: 4 # months before an event may name the same person again (16.1)
+  matter_cooldown_turns: 3 # months before an event may name the same matter again (PT)
+  client_cooldown_turns: 3 # months before an event may name the same client again (PT)
+  critical_gap_turns: 6 # at most one critical event in any this many months (16.1)
+  major_from: 0.5 # trigger strength from which an event is major, below it minor (16.1)
+  light_tone_chance_bp: 1000 # bp chance an event asks for a light or gently satirical touch
+  max_storylines: 3 # storylines active at once (16.6)
+  summary_words: 60 # words in a storyline summary (16.6)
+  body_words: 180 # words in an event body (16.5)
+  recent_summaries: 10 # past event summaries passed to the LLM (16.5)
+  trigger: # when each trigger holds and how strong it is (16.2); strengths are clamped to 0..1
+    low_morale: { below: 35, span: 20 } # morale points: (below - morale) / span
+    high_strain: { at_least: 70, span: 20 } # strain points: (strain - at_least) / span; not in burnout
+    burnout: { strength: 0.7 } # a burnout began this month (restricted, ADR PT-0013)
+    star_associate: { top_fraction: 0.15, tenure_months: 12, strength: 0.4 } # top share of associates by current ability
+    tag_noticed: { strength: 0.4 } # a tag was noticed this month
+    anniversary: { strength: 0.15 } # a whole number of years at the firm
+    team_clash: { at_most: -25, span: 30 } # colleague relationship points: (at_most - value) / span
+    team_bond: { at_least: 30, strength: 0.25 } # colleague relationship points
+    associate_error: { strength: 0.5 } # the team caught an error on a matter this month (restricted)
+    client_cooling: { below: 40, span: 20 } # client relationship score: (below - score) / span
+    big_instruction: { min_cents: 100000000, strength: 0.5 } # a new matter of at least $1m expected fees, or a critical one
+    gc_demand: { strength: 0.3 } # the largest client by 12-month fees asks for something
+    panel_review: { months: 24, strength: 0.4 } # every this many months on a client's panel
+    fee_dispute: { ratio: 1.15, span: 0.35 } # WIP over expected fees: (ratio - 1.15) / span
+    deadline_slip: { strength: 0.4 } # a matter missed a deadline this month
+    deal_on_brink: { months: 3, strength: 0.5 } # a deal this many months under its planned pace
+    settlement_offer: { strength: 0.4 } # the other side made an offer this month
+    matter_won: { min_cents: 50000000, strength: 0.3 } # a critical matter or one of $500k expected fees won or closed
+    matter_lost: { strength: 0.6 } # the same, lost or collapsed
+    credit_dispute: { strength: 0.25 } # two partners: the originator is not the lead
+    partner_retiring: { age: 62, strength: 0.3 } # years of age of a partner thinking of retiring
+    scale_move: { strength: 0.4 } # the market's associate scale moved this month
+    demand_shift: { ratio: 0.08, span: 0.12 } # a practice's demand moved by this share since last month
+    conflict_surfaced: { strength: 0.7 } # a hidden conflict surfaced and the firm was disqualified
+    annual_audit: { months: 1, strength: 0.2 } # the calendar month of the yearly audit
+    bar_complaint: { at_least: 2, strength: 0.6 } # missed deadlines on one matter (restricted)
+    tech_pitch: { strength: 0.12 } # a technology vendor, a client's tech mandate
+    quiet_month: { strength: 0.2 }
+    smoking_gun: { chance: 0.02, strength: 0.6 } # a month, per open case matter
+    judge_ruling: { chance: 0.03, strength: 0.4 } # a month, per open case matter with a judge
+  caps: # largest effect per choice by severity [minor, major, critical] (16.3)
+    morale_delta: [3, 10, 20] # morale points
+    relationship_delta: [3, 8, 15] # client relationship score points (0-100)
+    pair_delta: [10, 20, 40] # colleague relationship points (-100 to 100)
+    cash_delta: [50, 150, 500] # bp of max(cash, cash_revenue_months x monthly fees); gains up to cash_gain_share of it
+    reputation_delta: [1, 3, 6] # reputation points (a placeholder until PT-M5)
+    hours_pct: [5, 15, 30] # percent of a matter's hours needed
+    strain_delta: [3, 8, 15] # strain points (0-100)
+    wip_writedown: [5, 15, 30] # percent of a matter's unbilled WIP (PT-M3b applies it)
+    merits_shift: [0.10, 0.25, 0.50] # logit points of a case's hidden merits (shown in words)
+    confidence_delta: [3, 6, 12] # partners' confidence points (a placeholder until PT-M4)
+    growth_boost: [0.2, 0.5, 1.0] # skill points, once, in the person's first primary skill
+    salary_change: [5, 10, 15] # percent raise, never a cut
+    modifier: [5, 10, 20] # percent change to a stat each month while it runs (23.2)
+  modifier_months: [6, 12, 12] # months; the longest a modifier runs, by severity (23.2)
+  cash_revenue_months: 3 # months of fees in the cash cap base (16.3)
+  cash_gain_share: 0.5 # gains reach at most this share of the cost cap (16.3)
+  effect_size_bounds: [0.34, 0.67] # share of the cap: up to the first "a little", above the second "considerably"
+  crisis: # critical events from crises (23.3)
+    key_exit_top_fraction: 0.10 # share (rounded down) of non-partner staff by current ability whose resignation is a crisis; partners always are (PT-M6: TST's 0.20 rounded up made any senior associate of a four-person firm a crisis, in 11 of 30 seeds within two years)
+    walkout_share: 0.15 # a client with at least this share of the firm's 12-month fees is key
+    walkout_below: 25 # relationship score below which a key client threatens to walk
+    verdict_months: 24 # months before the same key matter's trial event may come again
+  texts: # read-only LLM texts (TST 16.8; spec 15)
+    brief_min_cents: 100000000 # a new matter of at least $1m expected fees gets a briefing
+    briefs_per_month: 2
+    pitch_letters_per_month: 1 # letters to new clients
+    memo_months: [6, 12] # calendar months of the memo to the partners (comp letters in December)
+    year_end_month: 12
+colleagues: # relationships between colleagues on the same matter team (TST formulas.md 16.7)
+  start_base: 15 # points: start = round(start_base - start_per_temperament x |temperament difference|)
+  start_per_temperament: 1.5 # points per temperament point of difference
+  start_clamp: [-20, 15] # points
+  drift: 0.10 # fraction of the way back to the start value each month
+  tag_push: { credit_taker: -3, toxic_high_performer: -4, culture_carrier: 2, politician: -3 } # points a month to every pair the holder is in
+  label_bounds: [-50, -20, 20, 60] # hostile at or below the first; strained at or below the second; close from the last
+  range: [-100, 100] # relationships stay in this range
 billing: # PT-M3b: WIP, bills, collections, disputes, client money (spec 7.7; ADR PT-0003 2-3, 7; PT-0005)
   models: # share of named matters by billing model, by matter kind (spec 7.7: hourly the default) [A]
     deal: { hourly: 0.55, capped: 0.15, fixed: 0.15, success: 0.15 }

@@ -1,0 +1,162 @@
+# Matter events (spec 15: a deadline slip, a smoking-gun document, a settlement offer, a deal
+# on the brink, a judge's ruling) and the critical trial of a key matter. A merits shift moves
+# a case's hidden merits; it is shown only in words.
+templates:
+  - id: deadline_slip_fix
+    category: matter
+    trigger: deadline_slip
+    severities: [minor, major]
+    weight: 1.0
+    title: "A deadline slipped on {matter}"
+    body: >-
+      The team on {matter} missed a filing date this month. {person} has a plan to catch up,
+      and {gc} has already asked what happened.
+    choices:
+      - key: A
+        label: "Apologise to {gc} and catch up"
+        effects:
+          - { type: relationship_delta, target: client, share: -0.2 }
+          - { type: strain_delta, target: person, share: 0.3 }
+      - key: B
+        label: "Bring in contract lawyers to help"
+        effects:
+          - { type: cash_delta, target: firm, share: -0.3 }
+          - { type: strain_delta, target: person, share: -0.2 }
+      - key: C
+        label: "Ask the other side for more time"
+        effects: [{ type: relationship_delta, target: client, share: -0.4 }]
+
+  - id: deal_on_brink
+    category: matter
+    trigger: deal_on_brink
+    severities: [minor, major]
+    weight: 1.0
+    title: "{matter} is on the brink"
+    body: >-
+      {matter} has fallen behind for months, and the other side is threatening to walk.
+      {person} thinks one hard push could still get it signed.
+    choices:
+      - key: A
+        label: "Push the team through the weekends"
+        effects:
+          - { type: strain_delta, target: person, share: 0.5 }
+          - { type: relationship_delta, target: client, share: 0.4 }
+      - key: B
+        label: "Agree a narrower deal"
+        effects:
+          - { type: hours_pct, target: matter, share: -0.5 }
+          - { type: relationship_delta, target: client, share: -0.2 }
+      - key: C
+        label: "Let the timetable slide"
+        effects: [{ type: relationship_delta, target: client, share: -0.4 }]
+
+  - id: settlement_advice
+    category: matter
+    trigger: settlement_offer
+    severities: [minor, major]
+    weight: 1.0
+    title: "An offer to settle {matter}"
+    body: >-
+      The other side in {matter} has put a number on the table. Whether to take it is
+      {client}'s call (you answer it on the matter's page); how you advise {gc} is yours.
+    choices:
+      - key: A
+        label: "Give {gc} a frank recommendation"
+        effects: [{ type: relationship_delta, target: client, share: 0.4 }]
+      - key: B
+        label: "Talk up the case's chances"
+        effects:
+          - { type: relationship_delta, target: client, share: 0.2 }
+          - { type: strain_delta, target: person, share: 0.2 }
+
+  - id: smoking_gun_document
+    category: matter
+    trigger: smoking_gun
+    severities: [minor, major]
+    weight: 1.0
+    title: "A document turns up in {matter}"
+    body: >-
+      A junior reviewing the other side's production in {matter} has found an email that
+      should not exist. {person} wants to know what you think it is worth.
+    choices:
+      - key: A
+        label: "Build the case around it"
+        effects:
+          - { type: merits_shift, target: matter, share: 0.6 }
+          - { type: hours_pct, target: matter, share: 0.3 }
+      - key: B
+        label: "Take it to {gc} at once"
+        effects:
+          - { type: relationship_delta, target: client, share: 0.4 }
+          - { type: merits_shift, target: matter, share: 0.3 }
+      - key: C
+        label: "File it with the rest"
+        do_nothing: true
+
+  - id: judge_ruling_motion
+    category: matter
+    trigger: judge_ruling
+    severities: [minor, major]
+    weight: 1.0
+    title: "A ruling in {matter}"
+    body: >-
+      The {court} has ruled on a motion in {matter}, and the ruling went {client}'s way.
+      {person} sees an opening.
+    choices:
+      - key: A
+        label: "Press the advantage"
+        effects:
+          - { type: merits_shift, target: matter, share: 0.5 }
+          - { type: strain_delta, target: person, share: 0.3 }
+      - key: B
+        label: "Take stock with {gc}"
+        effects:
+          - { type: relationship_delta, target: client, share: 0.3 }
+          - { type: merits_shift, target: matter, share: 0.2 }
+
+  - id: verdict_due_trial
+    category: matter
+    trigger: verdict_due
+    severities: [critical]
+    weight: 1.0
+    follow_up: verdict_aftermath
+    title: "{matter} goes to trial"
+    body: >-
+      {matter} is the most important case in the building, and the trial starts within weeks
+      at the {court}. {client}'s board will read the verdict before its lawyers do. {person}
+      wants your decision on how to play it.
+    choices:
+      - key: A
+        label: "Bring in a jury consultant and run a mock trial"
+        effects:
+          - { type: merits_shift, target: matter, share: 0.6 }
+          - { type: cash_delta, target: firm, share: -0.5 }
+          - { type: follow_up }
+      - key: B
+        label: "Put your strongest advocate beside {person}"
+        effects:
+          - { type: merits_shift, target: matter, share: 0.4 }
+          - { type: strain_delta, target: person, share: 0.6 }
+          - { type: follow_up }
+      - key: C
+        label: "Urge {gc} to settle before trial"
+        effects:
+          - { type: relationship_delta, target: client, share: -0.2 }
+          - { type: hours_pct, target: matter, share: -0.3 }
+
+  - id: verdict_aftermath
+    category: matter
+    trigger: follow_up
+    severities: [minor, major]
+    weight: 1.0
+    title: "After the trial preparations on {matter}"
+    body: >-
+      The trial team on {matter} has been living at the office. {gc} called to say {client}
+      noticed.
+    choices:
+      - key: A
+        label: "Debrief {gc} in person"
+        effects: [{ type: relationship_delta, target: client, share: 0.4 }]
+      - key: B
+        label: "Thank the trial team"
+        effects: [{ type: morale_delta, target: person, share: 0.6 }]

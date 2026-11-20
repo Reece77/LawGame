@@ -163,6 +163,9 @@ def test_intake_is_seeded_and_named_matters_meet_the_threshold(
     assert a.market.matters
     key = key_clients(a.market, a.player.id, balance)
     for m in a.market.matters:
+        if m.pro_bono:  # PT-M7a: pro bono matters have no fees and are not client intake
+            assert m.expected_fees_cents == 0
+            continue
         floor = (
             balance.matters.key_named_min_cents
             if m.client_id in key

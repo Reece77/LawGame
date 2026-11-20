@@ -19,26 +19,43 @@ Every hour is a `HoursRecord` by (person, matter or client flow), so Σ person-h
 
 The default staffing rule (used at intake, by delegates and by scripts): the lead is the
 relationship partner when they practise in the matter's practice, else the practice's
-partner with the most free capacity; the rest of the monthly hours go by the kind's task
+partner with the most free capacity; the rest of the monthly output goes by the kind's task
 levels to the practice's people at each level (nearest level when there is none) with the
-most free capacity.
+most free capacity, then (PT-M7a) other practices' people with familiarity
+`matters.flow_min_familiarity` or more, before the matter slips (unfamiliar people would
+bill far over budget; they take flow instead). PT-M7a: the rule plans **output**, not
+hours at skill 10: a member's hours are their share of the matter's monthly need divided by
+their expected output an hour (`expected_output`: effective skill on the phase's tasks / 10
+x the strain factor, held to `staffing.output_floor`-`staffing.output_cap`), up to `staffing.plan_fill` of
+their capacity, so a typical team finishes near the planned months. A matter near its end
+plans and takes only the hours its remaining work needs at the team's expected output.
+
+PT-M7a also fills idle capacity: flow a practice's own and familiar people cannot take goes
+to any fee earner with free capacity (`matters.flow_fill`) before it is left unserved; then
+pro bono flow (spec 7.8) takes lawyers' remaining free capacity (`pro_bono.flow_fill` x
+capacity), up to the firm's pool (`pro_bono_pool_tenths`). Pro bono records carry
+`PRO_BONO_CLIENT_ID`, no value, and count as substantive work.
 """
 
 from __future__ import annotations
 
+import math
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from typing import Final
 
+from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import PARTNER_LEVELS, Balance, GameData, KindDef
 from ptk.sim.matters import formulas as fx
 from ptk.sim.matters.models import (
+    PRO_BONO_CLIENT_ID,
     HoursRecord,
     MarketState,
     Matter,
     TeamMember,
     TeamRole,
 )
+from ptk.sim.matters.rates import indexed_rate
 from ptk.sim.money import round_half_even
 from ptk.sim.people.models import Person, WorkMonth
 from ptk.sim.people.strain import monthly_capacity_tenths
@@ -75,6 +92,7 @@ def fee_earners(
 ) -> tuple[FeeEarner, ...]:
     """A firm's lawyers and paralegals on its books, by person id."""
     staff = set(state.staff_ids(firm_id))
+    assessing = assessment_tenths(state.market, firm_id, state.turn, balance)
     out = []
     for person in state.people:
         if person.id not in staff:
@@ -84,7 +102,7 @@ def fee_earners(
             continue
         other = (
             balance.matters.partner_other_hours * fx.TENTHS if person.level in PARTNER_LEVELS else 0
-        )
+        ) + assessing.get(person.id, 0)
         out.append(
             FeeEarner(
                 person=person,
@@ -95,6 +113,32 @@ def fee_earners(
             )
         )
     return tuple(out)
+
+
+def assessment_tenths(
+    market: MarketState, firm_id: int, turn: int, balance: Balance
+) -> dict[int, int]:
+    """PT-M7a: non-billable tenths this month of leads who made an early case assessment."""
+    out: dict[int, int] = {}
+    for m in market.open_matters(firm_id):
+        a = m.assessment
+        if a is not None and a.turn == turn and m.lead_id is not None:
+            out[m.lead_id] = out.get(m.lead_id, 0) + balance.assessment.lead_hours * fx.TENTHS
+    return out
+
+
+def expected_output(
+    person: Person, tasks: Mapping[str, float], practice: str, data: GameData, balance: Balance
+) -> float:
+    """PT-M7a: output an hour the default rule expects of a person on a task mix: effective
+    skill / 10 x the strain factor, held to staffing.output_floor-output_cap."""
+    cfg = balance.staffing
+    f = (
+        fx.effective_skill(person, tasks, practice, data, balance)
+        / 10.0
+        * fx.strain_output(person.strain, balance)
+    )
+    return min(cfg.output_cap, max(cfg.output_floor, f))
 
 
 def planned_load(market: MarketState, firm_id: int) -> dict[int, int]:
@@ -113,6 +157,11 @@ def completed_share(matter: Matter, kind: KindDef) -> float:
     return min(1.0, done)
 
 
+def current_tasks(matter: Matter, kind: KindDef) -> Mapping[str, float]:
+    """The task mix of the phase a matter is in (its last phase once all are done)."""
+    return kind.phases[min(matter.phase_index, len(kind.phases) - 1)].tasks
+
+
 def monthly_need(matter: Matter) -> int:
     return max(1, round(matter.hours_needed_tenths / max(1, matter.planned_months)))
 
@@ -129,14 +178,24 @@ def default_team(
     balance: Balance,
     founder_id: int | None,
 ) -> tuple[int | None, tuple[TeamMember, ...]]:
-    """The default staffing rule: (lead id, team) for a matter (module docstring)."""
+    """The default staffing rule: (lead id, team) for a matter (module docstring). Wants are
+    output tenths; each person's hours are their output over `expected_output`."""
     kind = data.market.kinds[matter.kind]
     shares = fx.level_shares(fx.kind_tasks(kind), data)
-    need = monthly_need(matter)
+    tasks = current_tasks(matter, kind)  # output is expected on the phase being worked
+    left_out = math.ceil(matter.hours_needed_tenths * (1.0 - completed_share(matter, kind)))
+    need = min(monthly_need(matter), max(1, left_out))  # PT-M7a: never plan past the end
     step = balance.matters.staff_round_tenths
-    free = {e.id: e.capacity - e.other - load.get(e.id, 0) for e in earners}
+    fill = balance.staffing.plan_fill  # PT-M7a: the rule leaves headroom (strain)
+    free = {e.id: int(fill * e.capacity) - e.other - load.get(e.id, 0) for e in earners}
     pool = [e for e in earners if e.home == matter.practice]
     by_id = {e.id: e for e in earners}
+    factors: dict[int, float] = {}
+
+    def factor(e: FeeEarner) -> float:
+        if e.id not in factors:
+            factors[e.id] = expected_output(e.person, tasks, matter.practice, data, balance)
+        return factors[e.id]
 
     def best(cands: Sequence[FeeEarner]) -> FeeEarner | None:
         return min(cands, key=lambda c: (-free[c.id], c.id)) if cands else None
@@ -159,36 +218,47 @@ def default_team(
     plan: dict[int, int] = {}
     roles: dict[int, TeamRole] = {lead.id: "lead"}
 
-    def give(e: FeeEarner, want: int) -> int:
-        """Plan up to `want` tenths for a person, never beyond their free capacity."""
+    def give(e: FeeEarner, want_output: float) -> float:
+        """Plan the hours for up to `want_output` tenths of output, never beyond the person's
+        free capacity; returns the output planned."""
         room = (max(0, free[e.id]) // step) * step
-        got = min(want, room)
+        got = min(_round_to(want_output / factor(e), step), room)
         if e.id == lead.id:  # the lead is always on the team, at least one step
             got = max(got, step if not plan.get(e.id) else 0)
         if got > 0:
             plan[e.id] = plan.get(e.id, 0) + got
             roles.setdefault(e.id, ROLE_BY_LEVEL[e.level])
             free[e.id] -= got
-        return got
+        return got * factor(e)
 
-    give(lead, _round_to(max(shares[-1], balance.matters.lead_share_min) * need, step))
+    give(lead, max(shares[-1], balance.matters.lead_share_min) * need)
     top = len(fx.LEVEL_BANDS) - 1
+    enough = step / 2  # output left below half a step is not worth another person
+    min_fam = balance.matters.flow_min_familiarity
+    others = [e for e in earners if e.home != matter.practice]
+    pools = (  # PT-M7a: other practices' familiar free people before the matter slips
+        pool,
+        [e for e in others if e.person.familiarity[matter.practice] >= min_fam],
+    )
     for level in range(top - 1, -1, -1):
         if shares[level] <= 0:
             continue
-        remaining = _round_to(shares[level] * need, step)
-        for gap in range(top + 1):
-            cands = sorted(
-                (e for e in pool if abs(e.level - level) == gap and e.level < top),
-                key=lambda e: (-free[e.id], e.id),
-            )
-            for e in cands:
-                if remaining <= 0:
+        remaining = shares[level] * need
+        for candidates in pools:
+            for gap in range(top + 1):
+                cands = sorted(
+                    (e for e in candidates if abs(e.level - level) == gap and e.level < top),
+                    key=lambda e: (-free[e.id], e.id),
+                )
+                for e in cands:
+                    if remaining < enough:
+                        break
+                    remaining -= give(e, remaining)
+                if remaining < enough:
                     break
-                remaining -= give(e, remaining)
-            if remaining <= 0:
+            if remaining < enough:
                 break
-        if remaining > 0:  # no one else is free: the lead takes what they can; the rest slips
+        if remaining >= enough:  # no one else is free: the lead takes what they can; the rest slips
             give(lead, remaining)
     team = tuple(
         TeamMember(person_id=pid, role=roles[pid], planned_tenths=t)
@@ -244,6 +314,7 @@ class MonthHours:
     work: dict[int, WorkMonth]
     # (client, practice) -> unserved share of its flow in the practice; (client, "") -> of all
     unserved: dict[tuple[int, str], float]
+    pro_bono: dict[int, int] = field(default_factory=dict)  # PT-M7a: person -> tenths
 
 
 def _record(
@@ -256,9 +327,23 @@ def _record(
     tasks: Mapping[str, float],
     data: GameData,
     balance: Balance,
+    rate_index: float = 1.0,
 ) -> HoursRecord:
+    if client_id == PRO_BONO_CLIENT_ID:  # PT-M7a (spec 7.8): no value; real responsibility
+        return HoursRecord(
+            turn=turn,
+            person_id=earner.id,
+            client_id=client_id,
+            practice=practice,
+            matter_id=matter_id,
+            tenths=tenths,
+            substantive_tenths=tenths,
+            value_cents=0,
+        )
     sub = fx.substantive_share(tasks, earner.level, data, balance.matters.substantive_window)
-    rate = fx.rate_cents(data.practice(practice), earner.person.level, data)
+    rate = indexed_rate(
+        fx.rate_cents(data.practice(practice), earner.person.level, data), rate_index
+    )
     return HoursRecord(
         turn=turn,
         person_id=earner.id,
@@ -271,6 +356,35 @@ def _record(
     )
 
 
+def credit_hours(state: GameState, firm_id: int, balance: Balance) -> int:
+    """PT-M7a: the firm's pro bono credit policy, hours a year (spec 7.8)."""
+    firm = state.firm(firm_id)
+    return (
+        balance.pro_bono.credit_hours
+        if firm.pro_bono_credit_hours is None
+        else firm.pro_bono_credit_hours
+    )
+
+
+def pro_bono_pool_tenths(lawyers: int, credit: int, balance: Balance) -> int:
+    """PT-M7a: the firm's pro bono flow a month: (uncredited + uptake x credit) / 12 hours a
+    lawyer."""
+    cfg = balance.pro_bono
+    hours = (cfg.uncredited_hours + cfg.uptake * credit) / 12.0  # tunable-exempt: months
+    return round(lawyers * hours * fx.TENTHS)
+
+
+def ytd_before(state: GameState, person_id: int, balance: Balance) -> int:
+    """Pro bono tenths worked earlier this calendar year (0 in January)."""
+    if turn_to_ym(state.turn, state.save_meta.start_ym)[1] == 1:  # tunable-exempt: January
+        return 0
+    return state.person_state(person_id).pro_bono_ytd_tenths
+
+
+def _is_lawyer(e: FeeEarner, data: GameData) -> bool:
+    return data.role(e.person.role).kind == "lawyer"
+
+
 def month_hours(
     state: GameState,
     firm_id: int,
@@ -278,19 +392,33 @@ def month_hours(
     data: GameData,
     balance: Balance,
 ) -> MonthHours:
-    """Allocate the month: named matters first, then flow (module docstring)."""
+    """Allocate the month: named matters first, then flow, then pro bono (module docstring)."""
     turn = state.turn
+    index = state.firm(firm_id).rate_index
     earners = fee_earners(state, firm_id, data, balance)
     by_id = {e.id: e for e in earners}
     cap = {e.id: e.capacity for e in earners}
     matters = [m for m in state.market.open_matters(firm_id) if m.team]
     records: list[HoursRecord] = []
-    # 1. named matters: planned, capped by what the matter still needs and by max load
+    # 1. named matters: planned, capped by what the matter still needs (at the team's expected
+    # output, PT-M7a) and by max load
     wanted: dict[tuple[int, int], int] = {}
     for m in matters:
         kind = data.market.kinds[m.kind]
-        left = round(m.hours_needed_tenths * (1.0 - completed_share(m, kind)))
         plan = {tm.person_id: tm.planned_tenths for tm in m.team if tm.person_id in by_id}
+        tasks = current_tasks(m, kind)
+        planned = sum(plan.values())
+        f_team = (
+            sum(
+                t * expected_output(by_id[pid].person, tasks, m.practice, data, balance)
+                for pid, t in plan.items()
+            )
+            / planned
+            if planned
+            else 1.0
+        )
+        # ceil (PT-M7a): a matter a hair from done rounded to 0 and never finished
+        left = math.ceil(m.hours_needed_tenths * (1.0 - completed_share(m, kind)) / f_team)
         for pid, t in _scale(plan, max(left, 0)).items():
             if t > 0:
                 wanted[(pid, m.id)] = t
@@ -311,15 +439,27 @@ def month_hours(
             min(m.phase_index, len(data.market.kinds[m.kind].phases) - 1)
         ]
         records.append(
-            _record(turn, by_id[pid], m.client_id, m.practice, mid, t, phase.tasks, data, balance)
+            _record(
+                turn,
+                by_id[pid],
+                m.client_id,
+                m.practice,
+                mid,
+                t,
+                phase.tasks,
+                data,
+                balance,
+                index,
+            )
         )
         used[pid] += t
-    # 2. flow, by practice: home pools first, then familiar fee earners
+    # 2. flow, by practice: home pools first, then familiar fee earners, then anyone idle
     fill = balance.matters.flow_fill
     unserved: dict[tuple[int, str], float] = {}
     lost_t: dict[int, float] = {}
     all_t: dict[int, float] = {}
     flow_tasks = data.market.flow_tasks
+    min_fam = balance.matters.flow_min_familiarity
     for practice in data.practice_keys:
         demands = {cid: t for (cid, p), t in flow_tenths.items() if p == practice and t > 0}
         total = sum(demands.values())
@@ -332,8 +472,12 @@ def month_hours(
             [
                 e
                 for e in earners
-                if e.home != practice
-                and e.person.familiarity[practice] >= balance.matters.flow_min_familiarity
+                if e.home != practice and e.person.familiarity[practice] >= min_fam
+            ],
+            [  # PT-M7a: idle capacity takes flow before it is left unserved
+                e
+                for e in earners
+                if e.home != practice and e.person.familiarity[practice] < min_fam
             ],
         )
         for pool in pools:
@@ -360,20 +504,55 @@ def month_hours(
             for cid, t in sorted(_split(served[pid], weights).items()):
                 if t > 0:
                     records.append(
-                        _record(turn, by_id[pid], cid, practice, None, t, flow_tasks, data, balance)
+                        _record(
+                            turn,
+                            by_id[pid],
+                            cid,
+                            practice,
+                            None,
+                            t,
+                            flow_tasks,
+                            data,
+                            balance,
+                            index,
+                        )
                     )
     for cid, wanted_t in all_t.items():  # (client, "") -> its unserved share of all its flow
         unserved[(cid, "")] = lost_t[cid] / wanted_t if wanted_t > 0 else 0.0
+    # 3. PT-M7a: pro bono flow (spec 7.8) takes lawyers' remaining free capacity
+    lawyers = [e for e in earners if _is_lawyer(e, data)]
+    credit = credit_hours(state, firm_id, balance)
+    pool_t = pro_bono_pool_tenths(len(lawyers), credit, balance)
+    pb_fill = balance.pro_bono.flow_fill
+    free_pb = {e.id: max(0, int(pb_fill * cap[e.id]) - used[e.id]) for e in lawyers}
+    room = sum(free_pb.values())
+    if pool_t > 0 and room > 0:
+        for pid, t in sorted(_split(min(pool_t, room), free_pb).items()):
+            if t > 0:
+                e = by_id[pid]
+                records.append(
+                    _record(turn, e, PRO_BONO_CLIENT_ID, e.home, None, t, flow_tasks, data, balance)
+                )
+                used[pid] += t
     records.sort(key=lambda r: (r.person_id, r.matter_id or 0, r.client_id, r.practice))
     work: dict[int, WorkMonth] = {}
+    pro_bono: dict[int, int] = {}
     keys = data.practice_keys
+    cap_t = credit * fx.TENTHS
     for e in earners:
         mine = [r for r in records if r.person_id == e.id]
         by_practice = {p: sum(r.tenths for r in mine if r.practice == p) for p in keys}
+        pb = sum(r.tenths for r in mine if r.client_id == PRO_BONO_CLIENT_ID)
+        before = ytd_before(state, e.id, balance)
+        credited = min(before + pb, cap_t) - min(before, cap_t)
+        if pb:
+            pro_bono[e.id] = pb
         work[e.id] = WorkMonth(
             person_id=e.id,
             practice_tenths=tuple((p, t) for p, t in by_practice.items() if t > 0),
             substantive_tenths=sum(r.substantive_tenths for r in mine),
             other_tenths=e.other,
+            pro_bono_tenths=pb,
+            credited_tenths=credited,
         )
-    return MonthHours(records=tuple(records), work=work, unserved=unserved)
+    return MonthHours(records=tuple(records), work=work, unserved=unserved, pro_bono=pro_bono)

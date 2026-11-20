@@ -65,6 +65,15 @@ templates:
   waiver_refused:
     title: "{client} refused a waiver"
     body: "{client} would not waive the conflict; {matter} is declined."
+  rates_rose: # PT-M7a
+    title: "The rate card moves {pct}"
+    body: "January's rate review moved the firm's standard rates {pct}. The card now stands at {index} times 2005's; clients compare it with the market's."
+  case_assessed: # PT-M7a: early case assessment (spec 7.6)
+    title: "Case assessment: {matter}"
+    body: "{name} assessed the merits of {matter}: {merits}."
+  pro_bono_opened: # PT-M7a (spec 7.8)
+    title: "Pro bono: {matter}"
+    body: "The firm has taken on {matter} pro bono. It needs about {hours} hours over {months} months, with no fees."
   introduction_made:
     title: "{name} introduced to {client}"
     body: "{client} now instructs the firm in {practice}."

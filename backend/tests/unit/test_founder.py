@@ -132,7 +132,7 @@ def test_new_game_people(data: GameData, balance: Balance) -> None:
     assert founder.is_founder and founder.background == "biglaw_ma_partner"
     assert cofounder.founding_partner and not cofounder.is_founder
     assert cofounder.background == "trial_lawyer" and cofounder.age(0) == 46
-    assert (assoc_a.role, assoc_a.level) == ("corporate_ma", "associate_3")
+    assert (assoc_a.role, assoc_a.level) == ("corporate_ma", "associate_4")  # PT-M7a
     assert (assoc_b.role, assoc_b.level) == ("commercial_litigation", "associate_2")
     assert 10 <= assoc_a.strain <= 30 and not assoc_a.founding_partner
     assert state.staff_ids(1) == (1, 2, 3, 4)

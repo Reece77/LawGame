@@ -355,8 +355,8 @@ def billing_matters(
     out: list[MatterBillingView] = []
     turn = state.turn
     for m in state.market.matters:
-        if m.firm_id != firm_id or not (m.is_open or m.closed_turn == turn):
-            continue
+        if m.firm_id != firm_id or not (m.is_open or m.closed_turn == turn) or m.pro_bono:
+            continue  # PT-M7a: pro bono matters are never billed
         out.append(
             MatterBillingView(
                 matter_id=m.id,
@@ -417,14 +417,17 @@ def _done_share(phase_index: int, kind: KindDef) -> float:
     return min(1.0, sum(p.share for p in kind.phases[:phase_index]))
 
 
-def blended_rate_cents(practice: str, kind_key: str, data: GameData) -> int:
+def blended_rate_cents(
+    practice: str, kind_key: str, data: GameData, rate_index: float = 1.0
+) -> int:
     """Cents an hour of a matter kind's task mix staffed at its natural levels (PT-M3a's
-    rate card): the base of a blended-rate engagement."""
+    rate card, times the firm's rate index from PT-M7a): the base of a blended-rate
+    engagement."""
     from ptk.sim.matters import formulas as fx
 
     pdef = data.practice(practice)
     kind = data.market.kinds[pdef.kind(kind_key).kind]
-    return round(fx.blended_rate(pdef, fx.kind_tasks(kind), data))
+    return round(fx.blended_rate(pdef, fx.kind_tasks(kind), data) * rate_index)
 
 
 def billing_client(state: GameState, client_id: int) -> ClientBillingView:
@@ -443,9 +446,15 @@ def billing_client(state: GameState, client_id: int) -> ClientBillingView:
 def month_hours(state: GameState, firm_id: int) -> tuple[HoursRecord, ...]:
     """The hours of the month being played (PT-M3a's records, sorted by person, matter):
     each record's `value_cents` is tenths x rate / 10, rounded once (ADR PT-0005 3)."""
+    from ptk.sim.matters.models import PRO_BONO_CLIENT_ID
+
     staff = set(state.staff_ids(firm_id))
     turn = state.turn
-    return tuple(r for r in state.market.hours if r.turn == turn and r.person_id in staff)
+    return tuple(  # PT-M7a: pro bono hours have no value and are not billable
+        r
+        for r in state.market.hours
+        if r.turn == turn and r.person_id in staff and r.client_id != PRO_BONO_CLIENT_ID
+    )
 
 
 def relationship_partner(state: GameState, client_id: int, firm_id: int) -> int | None:

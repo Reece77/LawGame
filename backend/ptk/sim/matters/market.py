@@ -119,14 +119,15 @@ def player_appeal(
     reputation: float,
     conflicted: bool,
     balance: Balance,
+    price_term: float = 0.0,
 ) -> float:
     """A_f = w_rel R + w_rep Rep + w_price (1 - rate/ref) + w_cap Cap - w_conf Conflict.
 
-    The player's firm charges the practice's card in PT-M3a, so the price term is 0 until
-    rates are set (PT-M7); Cap is minus last month's unserved share of the client's flow;
-    Conflict is 1 while the firm is adverse to the client on an open matter."""
+    The price term (PT-M7a) is 1 - the firm's rate index / the market's (`rates.price_term`):
+    0 for a firm whose card rises with the market; Cap is minus last month's unserved share
+    of the client's flow; Conflict is 1 while the firm is adverse to the client on an open
+    matter."""
     w = appeal_weights(client, balance)
-    price_term = 0.0
     return (
         w.relationship * rel.score / 100.0
         + w.reputation * reputation
@@ -145,13 +146,14 @@ def player_share(
     data: GameData,
     balance: Balance,
     appeals: Mapping[str, tuple[float, ...]] | None = None,
+    price_term: float = 0.0,
 ) -> float:
     """s_f = e^A_f / Σ_g e^A_g over the client's panel (spec 7.1). `appeals` (PT-M5): the
     rival firms' live appeal by practice (`RivalsState.appeals`); the static panel appeal
-    stands in for a key it does not hold."""
+    stands in for a key it does not hold. `price_term` (PT-M7a): `rates.price_term`."""
     if practice not in rel.practices:
         return 0.0
-    mine = dmath.exp(player_appeal(client, rel, reputation, conflicted, balance))
+    mine = dmath.exp(player_appeal(client, rel, reputation, conflicted, balance, price_term))
     index = data.practice_keys.index(practice)
     rivals = 0.0
     for k in client.panel:

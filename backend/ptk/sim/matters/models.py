@@ -25,6 +25,9 @@ type Outcome = Literal["won", "lost", "settled", "closed", "collapsed", "done", 
 type TeamRole = Literal["lead", "senior", "junior", "paralegal"]
 
 TEAM_ROLES: tuple[TeamRole, ...] = ("lead", "senior", "junior", "paralegal")
+# PT-M7a (spec 7.8): pro bono work's client. Hours and named matters for it carry this id; it
+# has no wallet, panel or relationship, and its hours have no value (no WIP, bills or fees).
+PRO_BONO_CLIENT_ID = 0
 
 
 @dataclass(frozen=True, slots=True)
@@ -55,6 +58,52 @@ class Client:
     loyalty: float  # 1-20
     gc: GeneralCounsel
     panel: tuple[str, ...]  # static panel firms' keys (clients.yaml panel_firms), sorted
+
+
+_NEUTRAL = 10.0  # tunable-exempt: a neutral 1-20 trait
+PRO_BONO_CLIENT = Client(
+    id=PRO_BONO_CLIENT_ID,
+    name="Pro bono client",
+    sector="pro_bono",  # not a clients.yaml sector: views label it themselves
+    country="us",
+    real=False,
+    revenue_bn=0.0,
+    size_class="mid",
+    price_sensitivity=_NEUTRAL,
+    loyalty=_NEUTRAL,
+    gc=GeneralCounsel(
+        first_name="Clinic",
+        last_name="Director",
+        birth_turn=0,
+        personality=Personality(
+            tuple(
+                (k, _NEUTRAL)
+                for k in (
+                    "ambition",
+                    "loyalty",
+                    "professionalism",
+                    "temperament",
+                    "adaptability",
+                    "risk_appetite",
+                    "ego",
+                    "integrity",
+                    "sociability",
+                )
+            )
+        ),
+    ),
+    panel=(),
+)
+
+
+@dataclass(frozen=True, slots=True)
+class MeritsAssessment:
+    """PT-M7a: early case assessment (spec 7.6): the merits as the firm now sees them, a
+    revealed range (logit points) that always holds the hidden true merits."""
+
+    turn: int
+    lo: float
+    hi: float
 
 
 @dataclass(frozen=True, slots=True)
@@ -139,6 +188,12 @@ class Matter:
     outcome: Outcome | None = None
     closed_turn: int | None = None
     quality: float | None = None  # 1-20: the team's craft on the result
+    assessment: MeritsAssessment | None = None  # PT-M7a: early case assessment (revealed)
+
+    @property
+    def pro_bono(self) -> bool:
+        """PT-M7a (spec 7.8): work for the pro bono client, with no fees."""
+        return self.client_id == PRO_BONO_CLIENT_ID
 
     @property
     def is_open(self) -> bool:
@@ -207,6 +262,8 @@ class MarketState:
     demand_cents: tuple[int, ...] = ()  # the last month's demand by practice (practices order)
 
     def client(self, client_id: int) -> Client:
+        if client_id == PRO_BONO_CLIENT_ID:  # PT-M7a: never stored with the clients
+            return PRO_BONO_CLIENT
         # ids are 1..n in order (clients are never removed in PT-M3a)
         if 0 < client_id <= len(self.clients) and self.clients[client_id - 1].id == client_id:
             return self.clients[client_id - 1]

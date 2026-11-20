@@ -80,6 +80,7 @@ class PersonState:
     person_id: int
     energy: int | None = None  # the player's founding partner and delegates (TST 6, 13.10)
     morale: float | None = None  # everyone on the books but founding partners (TST 9)
+    pro_bono_ytd_tenths: int = 0  # PT-M7a: pro bono worked this calendar year (spec 7.8)
 
 
 @dataclass(frozen=True, slots=True)

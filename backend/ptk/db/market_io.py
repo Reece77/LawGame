@@ -26,6 +26,8 @@ from ptk.db.models import (
     RelationshipRow,
 )
 from ptk.sim.matters.models import (
+    PRO_BONO_CLIENT,
+    PRO_BONO_CLIENT_ID,
     Appearance,
     Client,
     GeneralCounsel,
@@ -34,6 +36,7 @@ from ptk.sim.matters.models import (
     JudgeTraits,
     MarketState,
     Matter,
+    MeritsAssessment,
     Origination,
     Relationship,
     SettlementOffer,
@@ -109,7 +112,8 @@ def insert_market(session: Session, market: MarketState) -> None:
                 "real": c.real,
                 "data_json": _client_data(c),
             }
-            for c in market.clients
+            # PT-M7a: the pro bono client's row (matters reference it; never loaded back)
+            for c in ((*market.clients, PRO_BONO_CLIENT) if market.clients else ())
         ],
     )
     if market.judges:
@@ -208,6 +212,8 @@ def _matter_data(m: Matter) -> str:
     d["team"] = [[t.person_id, t.role, t.planned_tenths] for t in m.team]
     s = m.settlement
     d["settlement"] = None if s is None else [s.fraction_bp, s.made_turn, s.expires_turn]
+    a = m.assessment  # PT-M7a
+    d["assessment"] = None if a is None else [a.turn, a.lo, a.hi]
     return json.dumps(d)
 
 
@@ -215,6 +221,7 @@ def _matter(row: MatterRow) -> Matter:
     d = json.loads(row.data_json)
     s = d.pop("settlement")
     team = d.pop("team")
+    a = d.pop("assessment", None)  # PT-M7a
     return Matter(
         id=row.id,
         firm_id=row.firm_id,
@@ -225,6 +232,7 @@ def _matter(row: MatterRow) -> Matter:
         closed_turn=row.closed_turn,
         team=tuple(TeamMember(person_id=p, role=r, planned_tenths=t) for p, r, t in team),
         settlement=None if s is None else SettlementOffer(*s),
+        assessment=None if a is None else MeritsAssessment(*a),
         **d,
     )
 
@@ -316,7 +324,7 @@ def load_market(session: Session, current_turn: int) -> MarketState:
             ClientRow.id, ClientRow.name, ClientRow.sector, ClientRow.real, ClientRow.data_json
         ).order_by(ClientRow.id)
     )
-    clients = tuple(_client(*row) for row in rows)
+    clients = tuple(_client(*row) for row in rows if row[0] != PRO_BONO_CLIENT_ID)
     if not clients:
         return MarketState()
     last = session.scalar(select(func.max(HoursLogRow.turn)))

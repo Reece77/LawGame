@@ -160,6 +160,9 @@ energy: # the founding partner's monthly energy (TST formulas.md 6, M4c values; 
     counter: 4 # counter an approach to a partner
     repay_revolver: 0 # repay the revolver from cash
     election_choice: 0 # after losing an election: stay as a partner or hand over
+    case_assessment: 6 # early case assessment on a case (PT-M7a, spec 7.6); the lead also spends assessment.lead_hours
+    pro_bono_policy: 2 # change the firm's pro bono credit policy (PT-M7a, spec 7.8)
+    rate_policy: 2 # change the firm's yearly rate rise (PT-M7a)
 hiring: # searches and offers (TST formulas.md 7; spec 5.7)
   candidate_shelf_turns: 3 # months a lateral candidate stays open unless hired
   lowball_ratio: 0.85 # offers below this share of the ask are always declined
@@ -486,7 +489,7 @@ matters: # intake and staffing (spec 7.4-7.5; ADR PT-0004, PT-0005)
   named_min_cents: 25000000 # $250,000 expected fees: a matter at or above is named (ADR PT-0004 1)
   key_named_min_cents: 20000000 # $200,000: a key client's matter at or above is named (decision, PT-M3a; tuned from $100,000 for the 40-matter target)
   key_clients: 20 # top clients by trailing-12-month fees are key clients (ADR PT-0004 1)
-  flow_fill: 0.9 # share of a person's monthly capacity flow work may fill (after named hours)
+  flow_fill: 0.95 # share of a person's monthly capacity flow work may fill (after named hours)
   max_load: 1.35 # named hours a person may work, as a multiple of monthly capacity (overtime)
   partner_other_hours: 25 # hours a month a partner spends on business development and management
   flow_min_familiarity: 8 # 1-20; outside a practice's own people, flow goes only to people this familiar
@@ -860,3 +863,41 @@ partnership: # PT-M4: capital, draws, comp, PEP, votes, confidence, elections, l
     rival_ambition_min: 12 # partners with ambition at least this may stand against the MP
   stages: [1, 4, 21, 101, 401, 1501] # lawyers at which stages 0-5 begin (spec 3)
   cfo_warning_cooldown: 3 # months between the CFO's warnings
+staffing: # PT-M7a: the default rule plans each member's hours for their expected output (ptk/sim/matters/staffing.py)
+  output_floor: 0.3 # expected output an hour (effective skill / 10 x strain factor) is never planned below this
+  output_cap: 1.3 # nor above this (a strong team still gets enough hours to absorb rework)
+  plan_fill: 0.95 # the rule plans a person's named hours up to this share of monthly capacity (headroom against strain; PT-M3a planned to 1.0)
+pro_bono: # PT-M7a, spec 7.8: work with no fees
+  credit_hours: 50 # the default credit policy: pro bono hours a year that count toward a lawyer's billable target
+  credit_max_hours: 300 # the most the policy may credit, hours a year
+  uncredited_hours: 12 # pro bono hours a lawyer takes on a year with no credit at all
+  uptake: 1.0 # extra pro bono hours a year per credited hour (the firm's pool: (uncredited + uptake x credit) / 12 per lawyer a month)
+  flow_fill: 0.9 # pro bono flow fills free capacity up to this share of monthly capacity (as matters.flow_fill)
+  named_bp_per_lawyer: 50 # bp a month per lawyer that a named pro bono matter arrives (50 lawyers: one every 4 months)
+  named_hours: [150, 600] # hours a named pro bono matter needs, uniform
+  named_months: [4, 12] # its planned months, uniform inclusive
+  named_kinds: # what named pro bono work is; kind is the practice's matter kind it runs as
+    - { practice: commercial_litigation, kind: commercial_case, label: "civil rights case", weight: 0.4 }
+    - { practice: commercial_litigation, kind: dispute_advice, label: "asylum application", weight: 0.3 }
+    - { practice: employment, kind: employment_litigation, label: "workers' rights case", weight: 0.15 }
+    - { practice: corporate_ma, kind: governance, label: "advice to a charity", weight: 0.15 }
+  morale_full_hours: 8 # pro bono hours in a month at which the morale term is full
+  morale_max: 3.0 # morale target points at full pro bono hours (real responsibility early)
+  morale_levels: [associate_1, associate_2, associate_3, associate_4, associate_5, associate_6, associate_7, associate_8] # who the morale term applies to
+  appeal_per_hour: 0.004 # offer score per pro bono hour a lawyer a year (recruiting appeal); 60 hours: +0.24
+  appeal_max: 0.4 # offer score at most from pro bono
+  average_rate: 0.0833 # the firm's pro bono hours per lawyer is a moving average: this share of the gap closed a month (a year's memory)
+assessment: # PT-M7a, early case assessment (spec 7.6): an action that reveals a case's merits as a range
+  lead_hours: 20 # non-billable hours the matter's lead spends this month
+  half_width: 1.2 # logit points: the range's half-width at the lead's assessment skill 10 (merits ~ N(0, outcomes.merits_sd))
+  skill_slope: 0.35 # share of the half-width lost per 10 skill points above 10 (gained below)
+  min_half_width: 0.25 # logit points: never narrower
+  skills: { legal_reasoning: 0.6, advocacy: 0.2, commercial_awareness: 0.2 } # the lead's assessment skill
+  centre_share: 0.6 # the range's centre is within this share of the half-width of the true merits (uniform), so the range always holds them
+rates: # PT-M7a: the firm's yearly rate rise over the practices' 2005 cards; the market's is rivals.rate_inflation
+  rise_min_bp: -1000 # the policy may cut rates up to 10% a year
+  rise_max_bp: 2000 # or raise them up to 20%
+  month: 1 # calendar month the rise takes effect (January)
+holiday: # PT-M7a, spec 4.2: Holiday and continue-until
+  max_months: 36 # most months one holiday plays
+  default_months: 6 # months the Holiday control offers

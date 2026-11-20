@@ -1,11 +1,12 @@
 """Turn phases 4 and 5 for clients and matters (spec 4.1).
 
-Phase 4 (intake and staffing): the month's demand (stream `demand`); conflicted
-instructions past their window are declined; teams lose people who left (a matter whose lead
-left is re-staffed by the default rule); matters the player has not staffed are re-planned
-by the default rule; clients instruct (intake); the month's hours are allocated, named
-matters first, then flow. The result is every fee earner's `WorkMonth`, which
-feeds growth, familiarity, strain (PT-M1a) and the hours morale term (PT-M1b) in phase 8.
+Phase 4 (intake and staffing): January's rate rise (PT-M7a); the month's demand (stream
+`demand`); conflicted instructions past their window are declined; teams lose people who
+left (a matter whose lead left is re-staffed by the default rule); matters the player has not
+staffed are re-planned by the default rule; clients instruct (intake); a named pro bono
+matter may arrive (PT-M7a); the month's hours are allocated, named matters first, then flow,
+then pro bono. The result is every fee earner's `WorkMonth`, which feeds growth, familiarity,
+strain (PT-M1a) and the hours morale term (PT-M1b) in phase 8.
 
 Phase 5 (work): progress, errors, settlement offers and outcomes on named matters; hidden
 conflicts; origination credit; relationships. Hours post to matters' WIP at standard value
@@ -21,7 +22,9 @@ from ptk.sim.data_models import Balance, GameData
 from ptk.sim.log import LogItem
 from ptk.sim.matters.intake import expire_conflicted, intake, with_matter
 from ptk.sim.matters.market import monthly_demand
+from ptk.sim.matters.pro_bono import named_intake, record_month
 from ptk.sim.matters.progress import work_month
+from ptk.sim.matters.rates import yearly_rise
 from ptk.sim.matters.staffing import month_hours, staff_matter
 from ptk.sim.people.models import WorkMonth
 from ptk.sim.rng import RngFactory
@@ -70,17 +73,22 @@ def intake_and_staffing(
     if not state.market.clients:
         return StaffedMonth(state=state, work={}, unserved={}, log=())
     firm_id = state.player.id
+    state, rose = yearly_rise(state, balance)  # PT-M7a: January's rate rise
     demand = monthly_demand(rng, state.turn, state, data)
     state = replace(state, market=replace(state.market, demand_cents=demand))
     state, declined = expire_conflicted(state, firm_id, balance)
     state = prune_teams(state, firm_id, data, balance)
     state = replan(state, firm_id, data, balance)
     result = intake(state, firm_id, rng, demand, data, balance)
-    state = result.state
+    state, pro_bono = named_intake(result.state, rng, data, balance)  # PT-M7a (spec 7.8)
     hours = month_hours(state, firm_id, result.flow_tenths, data, balance)
     state = replace(state, market=replace(state.market, hours=hours.records))
+    state = record_month(state, hours.pro_bono, data, balance)
     return StaffedMonth(
-        state=state, work=hours.work, unserved=hours.unserved, log=(*declined, *result.log)
+        state=state,
+        work=hours.work,
+        unserved=hours.unserved,
+        log=(*rose, *declined, *result.log, *pro_bono),
     )
 
 

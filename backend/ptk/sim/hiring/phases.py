@@ -84,6 +84,7 @@ from ptk.sim.ledger import (
     LedgerLine,
 )
 from ptk.sim.log import LogItem, inbox_item
+from ptk.sim.matters.pro_bono import morale_term as pro_bono_morale
 from ptk.sim.money import Cents, pct_of
 from ptk.sim.people.generator import generate_person, people_gen_stream, weighted_pick
 from ptk.sim.people.models import Employment, Person, RevealState, WorkMonth
@@ -485,7 +486,8 @@ def hours_ratio(person: Person, work: WorkMonth | None, balance: Balance) -> flo
     target = balance.people.levels[person.level].billable_target_hours
     if work is None or target <= 0:
         return None
-    billable = sum(t for _, t in work.practice_tenths)
+    # PT-M7a (spec 7.8): pro bono counts toward the target only as far as the firm credits it
+    billable = sum(t for _, t in work.practice_tenths) - work.pro_bono_tenths + work.credited_tenths
     return billable * MONTHS_PER_YEAR / (target * TENTHS_PER_HOUR)
 
 
@@ -497,7 +499,8 @@ def morale_terms(
     balance: Balance,
     data: GameData,
 ) -> float:
-    """P + interesting work + hours + prospects + the manager term (spec 5.3; TST 9)."""
+    """P + interesting work + hours + prospects + the manager term (spec 5.3; TST 9) + pro
+    bono (PT-M7a, spec 7.8: real responsibility early)."""
     cfg = balance.morale
     city = state.firm(e.firm_id).home_city
     market = market_pay_cents(data, balance, person.level, _ym(state), city)
@@ -507,6 +510,7 @@ def morale_terms(
         + hours_term(hours_ratio(person, work, balance), cfg)
         + prospects_term(person.level, has_sponsor(state, person.id), cfg)  # PT-M4's sponsors
         + manager_morale_term(state, person.id, balance, data)
+        + pro_bono_morale(person.level, work.pro_bono_tenths if work else 0, balance)  # PT-M7a
     )
 
 

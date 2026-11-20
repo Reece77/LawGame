@@ -396,6 +396,10 @@ ENERGY_ACTIONS: Final = (
     "counter",
     "repay_revolver",
     "election_choice",
+    # PT-M7a
+    "case_assessment",  # early case assessment on a case (spec 7.6)
+    "pro_bono_policy",  # the firm's pro bono credit policy (spec 7.8)
+    "rate_policy",  # the firm's yearly rate rise
 )
 LATERAL_CHANNELS: Final = ("referral", "job_post", "recruiter")
 
@@ -679,6 +683,69 @@ class MattersBalance(_Strict):
     substantive_window: int = Field(ge=0)
     max_slip_months: int = Field(ge=0)
     forum_change_turns: int = Field(ge=0)
+
+
+class StaffingBalance(_Strict):
+    """PT-M7a: the default rule plans for each member's expected output an hour."""
+
+    output_floor: float = Field(gt=0, le=1)
+    output_cap: float = Field(ge=1)
+    plan_fill: float = Field(gt=0, le=1.5)
+
+
+class ProBonoKindDef(_Strict):
+    practice: str = Field(pattern=_KEY)
+    kind: str = Field(pattern=_KEY)  # a practices.yaml matter kind key of that practice
+    label: str = Field(min_length=1)
+    weight: float = Field(gt=0)
+
+
+class ProBonoBalance(_Strict):
+    """PT-M7a: pro bono (spec 7.8)."""
+
+    credit_hours: int = Field(ge=0)  # the default credit policy, hours a year
+    credit_max_hours: int = Field(ge=0)
+    uncredited_hours: float = Field(ge=0)
+    uptake: float = Field(ge=0)
+    flow_fill: float = Field(gt=0, le=1.5)
+    named_bp_per_lawyer: float = Field(ge=0)
+    named_hours: Span
+    named_months: tuple[int, int]
+    named_kinds: tuple[ProBonoKindDef, ...] = Field(min_length=1)
+    morale_full_hours: float = Field(gt=0)
+    morale_max: float = Field(ge=0)
+    morale_levels: tuple[str, ...]
+    appeal_per_hour: float = Field(ge=0)
+    appeal_max: float = Field(ge=0)
+    average_rate: float = Field(gt=0, le=1)
+
+
+class AssessmentBalance(_Strict):
+    """PT-M7a: early case assessment (spec 7.6)."""
+
+    lead_hours: int = Field(ge=0)
+    half_width: float = Field(gt=0)  # logit points at the lead's skill 10
+    skill_slope: float = Field(ge=0)  # share of the half-width lost per 10 skill points over 10
+    min_half_width: float = Field(gt=0)
+    skills: dict[str, float]
+    centre_share: float = Field(
+        ge=0, lt=1
+    )  # the true merits sit within this share of the half-width of the centre
+
+
+class RatesBalance(_Strict):
+    """PT-M7a: the firm's yearly rate rise (bp a year; the market's is rivals.rate_inflation)."""
+
+    rise_min_bp: int
+    rise_max_bp: int
+    month: int = Field(ge=1, le=12)
+
+
+class HolidayBalance(_Strict):
+    """PT-M7a: Holiday and continue-until (spec 4.2)."""
+
+    max_months: int = Field(gt=0)
+    default_months: int = Field(gt=0)
 
 
 class OutcomesBalance(_Strict):
@@ -1120,6 +1187,11 @@ class Balance(_Strict):
     colleagues: ColleaguesBalance  # PT-M6: colleague relationships (TST 16.7)
     billing: BillingBalance  # PT-M3b
     partnership: PartnershipBalance  # PT-M4
+    staffing: StaffingBalance  # PT-M7a
+    pro_bono: ProBonoBalance  # PT-M7a
+    assessment: AssessmentBalance  # PT-M7a
+    rates: RatesBalance  # PT-M7a
+    holiday: HolidayBalance  # PT-M7a
 
 
 # --- People seed data (PT-M1a) ------------------------------------------------------------

@@ -47,6 +47,11 @@ class FirmState:
     home_city: str
     pay_policy: PayPolicy = field(default_factory=PayPolicy)  # PT-M1b (spec 5.4)
     conflict_checks: bool = True  # PT-M3a (ADR PT-0009 5): run checks at intake
+    # PT-M7a: pro bono (spec 7.8) and the yearly rate rise
+    pro_bono_credit_hours: int | None = None  # hours a year credited; None: balance default
+    pro_bono_avg_tenths: float = 0.0  # pro bono tenths a lawyer a month, a moving average
+    rate_rise_bp: int | None = None  # each January's rise; None: the market's
+    rate_index: float = 1.0  # the firm's rate card over the practices' 2005 cards
 
 
 @dataclass(frozen=True, slots=True)

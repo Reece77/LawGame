@@ -40,11 +40,18 @@ from ptk.sim.hiring.actions import (
 )
 from ptk.sim.ledger import LedgerBalances
 from ptk.sim.matters.actions import MATTER_ACTION_TYPES, MatterAction, apply_matter_action
+from ptk.sim.partnership.actions import (
+    PARTNERSHIP_ACTION_TYPES,
+    PartnershipAction,
+    apply_partnership_action,
+)
 from ptk.sim.rivals.actions import RIVAL_ACTION_TYPES, RivalAction, apply_rival_action
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
 
-type Action = HiringAction | MatterAction | BillingAction | ChooseEvent | RivalAction
+type Action = (
+    HiringAction | MatterAction | BillingAction | PartnershipAction | ChooseEvent | RivalAction
+)
 
 ACTION_TYPES: dict[str, type[Any]] = {
     "open_search": OpenSearch,
@@ -59,6 +66,7 @@ ACTION_TYPES: dict[str, type[Any]] = {
     **EVENT_ACTION_TYPES,  # PT-M6
     **BILLING_ACTION_TYPES,  # PT-M3b
     **RIVAL_ACTION_TYPES,  # PT-M5
+    **PARTNERSHIP_ACTION_TYPES,  # PT-M4
 }
 
 
@@ -81,6 +89,16 @@ def apply_action(
         return apply_event_action(state, action, balance, data)
     if type(action) in RIVAL_ACTION_TYPES.values():
         return apply_rival_action(state, action, draws, balance, data)  # type: ignore[arg-type]
+    if type(action) in PARTNERSHIP_ACTION_TYPES.values():
+        return apply_partnership_action(
+            state,
+            action,  # type: ignore[arg-type]
+            rng,
+            draws,
+            balance,
+            data,
+            ledger_balances,
+        )
     if type(action) in BILLING_ACTION_TYPES.values():
         return apply_billing_action(state, action, draws, balance)  # type: ignore[arg-type]
     if type(action) in MATTER_ACTION_TYPES.values():

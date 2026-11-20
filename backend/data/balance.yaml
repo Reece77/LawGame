@@ -144,6 +144,22 @@ energy: # the founding partner's monthly energy (TST formulas.md 6, M4c values; 
     dispute: 4 # answer a billing dispute (PT-M3b)
     pitch: 15 # pitch for an RFP (PT-M5, spec 7.2)
     approach_rival: 10 # approach a rival's key people (PT-M5, TST 15.6)
+    propose_terms: 4 # put a change to the partnership agreement to a vote (PT-M4)
+    capital_call: 4 # put a capital call to a vote
+    propose_partner: 4 # propose a candidate in December (equity, income, counsel or not yet)
+    deequity: 6 # put a de-equitisation to a vote
+    lobby: 3 # a lobbying conversation with one partner (one a month each)
+    promise: 0 # promise a partner lockstep points
+    withdraw_vote: 0 # withdraw an open vote
+    draws: 2 # suspend or restore partners' draws
+    comp_round: 1 # set one partner's gate or adjustment in the December comp round
+    sponsor: 1 # name an associate's sponsor
+    lateral_search: 10 # engage a recruiter for lateral partners in a practice
+    diligence: 8 # due diligence on a lateral partner's book
+    lateral_offer: 0 # make a lateral partner an offer
+    counter: 4 # counter an approach to a partner
+    repay_revolver: 0 # repay the revolver from cash
+    election_choice: 0 # after losing an election: stay as a partner or hand over
 hiring: # searches and offers (TST formulas.md 7; spec 5.7)
   candidate_shelf_turns: 3 # months a lateral candidate stays open unless hired
   lowball_ratio: 0.85 # offers below this share of the ask are always declined
@@ -303,7 +319,7 @@ rivals: # rival firms (PT-M5; spec 10; ADR PT-0008). Money is cents a year unles
   appeal_size_min: 0.6
   appeal_size_max: 1.8
   appeal_rep_weight: 0.15 # NY panel appeal points per point of key-partner quality above its start
-  appeal_price_weight: 1.0 # NY panel appeal points per unit of rate index below 1
+  appeal_price_weight: 0.5 # NY panel appeal points per unit of rate index below the rivals' mean (PT-M5 rule 2: 1.0 put PT-M3a's 50-lawyer guard at 40.5 on seed 2; 0.5 gives 40.0)
   appeal_capacity_weight: 2.0 # NY panel appeal points lost per unit of utilisation above 0.95
   pin: # ADR PT-0008 2: real rivals follow their path to December of end_year
     end_year: 2015 # PT-M5 pins to 2015 (the brief); PT-M7 extends to 2025
@@ -698,3 +714,149 @@ billing: # PT-M3b: WIP, bills, collections, disputes, client money (spec 7.7; AD
   hold_fail_points: -4.0 # relationship points when holding firm fails (the client is credited in full)
   padding_share: 0.08 # share of a bill's standard value a padder adds as time not worked
   padding_points: -8.0 # relationship points when padding comes to light
+partnership: # PT-M4: capital, draws, comp, PEP, votes, confidence, elections, laterals, flight (spec 5.5, 5.7, 8; ADR PT-0003, PT-0007)
+  agreement: # the founders' agreement's default terms (spec 8.6); each is changed by a vote (terms_bp)
+    comp_system: modified_lockstep # lockstep, modified_lockstep, eat_what_you_kill, committee (spec 8.5's default)
+    two_tier: false # income partners may be admitted (spec 8.5's two-tier; unlocked at stage 2)
+    voting: per_capita # per_capita (one partner one vote) or points (weighted by comp points)
+    admission_bp: 5001 # bp of votes cast an admission needs: a simple majority (spec 5.5)
+    equity_lockstep_bp: 6667 # bp of votes cast for equity admission at a lockstep firm (spec 5.5: two thirds)
+    terms_bp: 6667 # bp of votes cast to change the agreement or the comp system (spec 8.5: two thirds)
+    capital_call_bp: 5001 # bp of votes cast for a capital call (ADR PT-0007 2)
+    deequity_bp: 5001 # bp of votes cast to de-equitise a partner (spec 5.5)
+    track_years: 8 # class year at which an associate is eligible for partnership (spec 5.5)
+    mp_term_years: 4 # years in a managing partner's term, from stage 2 (ADR PT-0007 3)
+    retirement_age: 65 # years; mandatory retirement (spec 2.5; succession is v2)
+    notice_months: 3 # months a departing partner serves before leaving (spec 8.6)
+    capital_share_bp: 3000 # bp of target comp each equity partner keeps as capital (ADR PT-0003 5)
+    draw_share_bp: 7000 # bp of the budgeted share drawn across the year, monthly (ADR PT-0003 6)
+    retain_bp: 0 # bp of the year's profit held back as a reserve (spec 8.4; prudent firms 500-1000)
+  lockstep: # spec 8.5: points by seniority
+    start_points: 10 # points at admission
+    step_points: 2.5 # points added each January after admission
+    plateau_points: 25 # the most a partner reaches (year 7)
+    founder_points: 25 # a founding partner starts at the plateau
+  modified: # spec 8.5's modified lockstep
+    gate_min_steps: -1 # a partner can be held (or moved back) this many steps in the comp round
+    gate_max_steps: 2 # or moved up this many
+    bonus_pool_bp: 1000 # bp of the pool shared by contribution (the super-point pool)
+  ewyk: { origination: 0.50, working: 0.35, management: 0.15 } # spec 8.5: shares of each credit
+  committee: { origination: 0.4, adjust_max_bp: 3000 } # spec 8.5: origination weight; the most the player moves a share in the comp round (bp of it)
+  management_credit: { mp: 1.0, unit_leader: 0.5 } # management credit units (EWYK, contribution)
+  satisfaction: # spec 8.5: share against contribution and market value
+    ego_weight: 0.04 # relative contribution a partner believes they made, per ego point above 10
+    floor: -1.0 # satisfaction clamp
+    ceiling: 0.5
+  budget: # each equity partner's budgeted share, which their draws follow (ADR PT-0003 6)
+    first_year_margin_bp: 3000 # bp of the founding partners' books the first year's profit is budgeted at
+  capital:
+    pay_in_months: 36 # a new equity partner pays capital in over this many months (ADR PT-0003 5)
+    return_months: 36 # a departed partner's capital is returned over this many months
+  reforecast_months: [3, 6, 9] # calendar months in which budgets (and so draws) are cut to the trailing-12-month profit's run rate, never raised
+  true_up_months: [1, 2, 3, 4] # calendar months in which December's true-up is paid, as cash allows
+  cash_buffer_months: 1.0 # months of costs the firm keeps before paying the true-up or repaying the revolver
+  revolver: # spec 8.4, TST 20.3's lender pattern
+    receivables_bp: 7000 # borrowing base: bp of receivables
+    wip_bp: 4000 # borrowing base: bp of unbilled WIP
+    unsecured_bp: 5000 # the bank lends up to this share of the facility whatever the base (the partners' personal guarantees)
+    facility_of_revenue_bp: 2500 # each January the facility is reset to this share of last year's revenue (floored at the scenario's limit)
+    rate_bp: 650 # annual interest, bp (prime plus a spread, 2005) (6800)
+    leverage_max_bp: 3000 # covenant: drawn at most this share of trailing-12-month revenue
+    min_capital_bp: 5000 # covenant: partners' capital at least this share of the drawn balance
+    departures_max_bp: 2000 # covenant: departed partners' books (12 months) at most this share of revenue
+    cure_months: 3 # consecutive months in breach before the bank calls the revolver
+    call_months: 3 # months the bank gives to repay a called revolver
+    warning_headroom_bp: 2000 # the CFO warns when any covenant is within this share of its limit
+  insolvency_months: 3 # consecutive month ends with cash below zero after the revolver before the firm dissolves (TST 14.7)
+  dissolve_vote_months: 2 # consecutive month ends below zero before restless partners can vote to dissolve
+  dissolve_restless_bp: 5000 # bp of equity partners restless (confidence below restless) for a stricken firm to vote to dissolve
+  confidence: # ADR PT-0007 1, TST 14.6's rule B <- B + rate (T - B)
+    start: 65 # a new partner's confidence in the managing partner
+    rate: 0.2
+    target_base: 55
+    pep_weight: 20 # points for a partner's satisfaction from -1 to +1
+    trend_weight: 10 # points for the firm's PEP run rate against last year's, -100% to +100%
+    mp_weight: 8 # points for the MP's leadership and communication from 1 to 20 (centred on 10)
+    draws_suspended: -12 # points while draws are below the agreement's share
+    bank_trouble: -10 # points while a covenant is breached or the revolver is called
+    departure_hit: -4 # points per equity partner departure in the last 12 months
+    comp_step: 4 # one-off points per lockstep step a partner is moved in the comp round (held: negative)
+    deequity_fear: 10 # one-off points lost by partners whose PEP contribution is below the median, at a de-equitisation
+    supportive: 60 # whip count: at or above
+    restless: 40 # whip count: below
+    range_half_width: 8 # a partner's confidence is shown as a band this many points either side
+    petition_below: 30 # average confidence below this for petition_months brings a no-confidence petition (ADR PT-0007 3)
+    petition_months: 6
+  votes: # ADR PT-0007 2; spec 5.5's utility
+    noise_sd: 0.5 # utility points of noise per partner per vote (stream vote)
+    confidence_weight: 1.0 # utility per (confidence - 50) / 50
+    lobby_points: 0.6 # utility a lobbying conversation adds
+    promise_per_point: 0.25 # utility per promised lockstep point
+    predict_k: 1.0 # a vote's predicted range counts partners within this many utility points of 0 as either way
+    quality_weight: 1.5 # admission: a x candidate quality ((CA mid - quality_ref) / quality_scale)
+    quality_ref: 125
+    quality_scale: 20
+    need_weight: 1.0 # admission: b x practice need (utilisation - need_ref, x2)
+    need_ref: 0.75
+    dilution_weight: 4.0 # admission: c x dilution (new points / total points)
+    income_dilution_bp: 3000 # an income partner's dilution counts at this share of an equity one's
+    sponsor_weight: 1.0 # admission: d x relationship (the sponsor's own vote, and partners of the sponsor's practice at half)
+    terms_weight: 3.0 # comp-system change: utility per relative change in the voter's comp
+    terms_bias: -0.2 # any other change to the agreement: partners prefer the status quo
+    capital_call_weight: 2.0 # capital call: utility lost per call / capital held
+    capital_call_stress: 1.0 # capital call: utility while the firm is short of cash or in breach
+    deequity_weight: 1.5 # de-equitisation: utility per (median contribution - target's) / median
+    election_weight: 2.0 # MP election: utility for the player per (confidence - 50) / 50
+  up_or_out: # spec 5.5
+    sponsor_from: associate_6 # an associate is given a sponsor from this class year
+    leave_months: 12 # an associate told to move on leaves within this many months
+    in_house_bp: 4000 # bp of those who leave that go to a client's in-house team (alumni, v2)
+  income_partner_salary_bp: 10000 # bp of the income-partner band a new income partner is paid
+  flight: # spec 8.7
+    base_bp: 25 # b: bp a month
+    gap_weight: 2.0 # x max(0, (V_mkt - comp) / comp)
+    loyalty_ref: 21 # (loyalty_ref - loyalty) / loyalty_divisor
+    loyalty_divisor: 10
+    contagion: 3.0 # c: x departed_12m / group size
+    confidence_ref: 50 # (1 + max(0, ref - conf) / confidence_divisor)
+    confidence_divisor: 25
+    lockstep_star_mult: 1.3 # star poachability under pure lockstep (spec 8.5)
+    star_book_mult: 2.0 # a star: a book above this many times the firm's median partner book
+    cap_bp: 1500 # the most p_leave reaches a month
+    market_multiple_bp: 4500 # V_mkt = book x this (the lateral market's multiple, constant until PT-M7)
+    min_book_cents: 50000000 # a partner's book is at least this ($500,000) for V_mkt
+    answer_months: 1 # months the firm has to counter an approach
+    guarantee_years: [0, 2] # years the suitor guarantees, uniform
+    offer_mult: [1.0, 1.3] # the suitor offers V_mkt x U(range)
+    stay_base: 0.5 # logit of staying before the comp gap
+    stay_gap_weight: 5.0 # logit per (firm comp with counter - offer) / offer
+    stay_loyalty: 0.15 # logit per loyalty point above 10
+    stay_confidence: 0.03 # logit per confidence point above 50
+    seat_bonus: 0.5 # logit for a seat in the counter
+    guarantee_value: 0.4 # logit per guaranteed year in the counter
+    stay_hint_bands: { lo: 0.35, hi: 0.65 } # likely to go below lo, likely to stay above hi
+    follow_months: [0, 9] # months after leaving that each portable client follows, uniform
+    orphan_drop: 10 # relationship points lost by a client whose partner left without it
+  lateral: # spec 5.7: lateral partners
+    batch: [1, 3] # candidates per lateral partner search
+    search_cost_cents: 2500000 # $25,000 recruiter retainer (6200)
+    fee_bp: 2500 # bp of first-year comp paid to the recruiter on hire (6200)
+    book_cents: [100000000, 600000000] # a lateral partner's book a year, log-uniform ($1M-$6M)
+    book_range_bp: 5000 # the book is shown within +-this share before diligence
+    diligence_range_bp: 1500 # and +-this after
+    diligence_cost_cents: 2000000 # $20,000 of professional fees (6600)
+    comp_of_book_bp: 3500 # their comp demand: bp of their book
+    notice_premium_bp: 300 # bp more demand per month of the agreement's notice period
+    guarantee_years: [0, 3] # years of guarantee they ask for, uniform
+    shelf_turns: 3 # months a lateral candidate stays open
+    accept_k: 6.0 # acceptance logistic: k x (offer / ask - 1) + guarantee_weight x (years offered - asked) + base
+    accept_base: 0.5
+    guarantee_weight: 0.8
+    realised_sd_bp: 2000 # realised portability = hidden portability +- N(0, this), clamped 0-10000
+    arrival_months: [12, 24] # the book arrives over this many months, uniform
+    start_relationship: [40, 60] # 0-100: a following client's starting relationship
+  election: # ADR PT-0007 3
+    stage: 2 # the MP's term starts when the firm reaches this stage
+    rival_ambition_min: 12 # partners with ambition at least this may stand against the MP
+  stages: [1, 4, 21, 101, 401, 1501] # lawyers at which stages 0-5 begin (spec 3)
+  cfo_warning_cooldown: 3 # months between the CFO's warnings

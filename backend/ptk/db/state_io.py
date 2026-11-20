@@ -29,6 +29,7 @@ from ptk.db.models import (
     TurnSnapshotRow,
 )
 from ptk.db.org_io import load_org, write_org
+from ptk.db.partnership_io import load_partnership, write_partnership
 from ptk.db.rivals_io import insert_rivals, load_rivals, write_panels, write_rivals
 from ptk.sim.billing.models import ClientBookEntry
 from ptk.sim.data_models import InboxTemplate
@@ -97,6 +98,7 @@ def insert_new(session: Session, state: GameState, entries: tuple[LedgerEntry, .
     write_org(session, state)
     insert_market(session, state.market)
     insert_rivals(session, state.rivals)  # PT-M5
+    write_partnership(session, state.partnership)
     write_events(session, state.events)
     write_entries(session, entries)
 
@@ -159,6 +161,7 @@ def load_state(session: Session) -> GameState:
             session, row.current_turn, next((f.id for f in firms if f.is_player), None)
         ),
         market=load_market(session, row.current_turn),
+        partnership=load_partnership(session),
         events=load_events(session),
         searches=tuple(
             _search(r) for r in session.scalars(select(SearchRow).order_by(SearchRow.id))
@@ -504,6 +507,7 @@ def write_turn(
     write_billing(session, new_state.billing)
     write_rivals(session, new_state.rivals)  # PT-M5
     write_panels(session, new_state.market)
+    write_partnership(session, new_state.partnership)
 
 
 def write_firms(session: Session, state: GameState) -> None:

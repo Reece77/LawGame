@@ -11,6 +11,7 @@ import { MattersScreen } from './screens/MattersScreen';
 import { NewGameScreen } from './screens/NewGameScreen';
 import { OrgScreen } from './screens/OrgScreen';
 import { OverviewScreen } from './screens/OverviewScreen';
+import { PartnershipScreen } from './screens/PartnershipScreen';
 import { PeopleScreen } from './screens/PeopleScreen';
 import { PersonScreen } from './screens/PersonScreen';
 import { PracticesScreen } from './screens/PracticesScreen';
@@ -42,6 +43,7 @@ export default function App() {
           <Route path="finance" element={<FinanceScreen />} />
           <Route path="market" element={<MarketScreen />} />
           <Route path="market/rivals/:firmId" element={<RivalScreen />} />
+          <Route path="partnership" element={<PartnershipScreen />} />
         </Route>
       </Routes>
     </BrowserRouter>

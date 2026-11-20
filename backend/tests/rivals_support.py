@@ -10,6 +10,7 @@ from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
 from ptk.sim.ledger import apply_entries
 from ptk.sim.people.models import Employment
+from ptk.sim.rivals import phase as rival_phase
 from ptk.sim.rivals.people import person_of, update_member
 from ptk.sim.rng import RngFactory
 from ptk.sim.setup import new_game
@@ -32,12 +33,32 @@ def start(
     ).state
 
 
+def rivals_month(state: GameState, rng: RngFactory, data: GameData, balance: Balance) -> GameState:
+    """The rivals' phases alone (spec 4.1's PT-M5 steps, in order) and the month's end: the
+    rivals' market goes on after the player's unmanaged firm has dissolved (PT-M4: do-nothing
+    fails, T1), so rival measurements do not depend on the player's survival."""
+    for step in (
+        rival_phase.answer_approaches,
+        rival_phase.decide,
+        rival_phase.rfps_before_intake,
+        rival_phase.after_intake,
+        rival_phase.people,
+        rival_phase.market,
+    ):
+        state = step(state, rng, data, balance).state
+    return replace(state, turn=state.turn + 1)
+
+
 def play_until(
     state: GameState, data: GameData, balance: Balance, turn: int, seed: int
 ) -> tuple[GameState, list[TurnResult]]:
+    """Play to `turn`: whole turns while the player's firm lives, then the rivals' months."""
     balances: dict[tuple[int, str], int] = {}
     results = []
     while state.turn < turn:
+        if state.ended:
+            state = rivals_month(state, RngFactory(seed), data, balance)
+            continue
         result = advance_turn(state, Decisions(), RngFactory(seed), balance, data, balances)
         balances = dict(apply_entries(balances, result.ledger_entries))
         results.append(result)

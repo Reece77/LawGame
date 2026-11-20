@@ -524,7 +524,7 @@ class ClientBookLineRow(Base):
     amount_cents: Mapped[int] = mapped_column(BigInteger)
 
 
-# --- Rival firms (schema v8, PT-M5). Current state, rewritten each turn. --------------------
+# --- Rival firms (schema v9, PT-M5). Current state, rewritten each turn. --------------------
 # The rivals' state is one JSON document (firms, key-people membership, moves, approaches,
 # RFPs, free agents, history). Key people are generated from it on demand, never stored.
 
@@ -534,3 +534,12 @@ class RivalStateRow(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)  # always 1
     real_people: Mapped[bool]
     data_json: Mapped[str] = mapped_column(Text)
+
+
+# --- PT-M4: the partnership (schema v8) -----------------------------------------------------
+
+
+class PartnershipRow(Base):
+    __tablename__ = "partnership"
+    firm_id: Mapped[int] = mapped_column(Integer, primary_key=True)  # 0: the id counters
+    data_json: Mapped[str] = mapped_column(Text)  # FirmPartnership (or the counters)

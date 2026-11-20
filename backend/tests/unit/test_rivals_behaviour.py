@@ -85,16 +85,25 @@ def test_the_player_approaches_a_rivals_people_and_hires_one(
     assert firm is not None
     draws = lambda: RngFactory(4).stream(0, "actions", 1)  # noqa: E731
     out = apply_rival_action(state, ApproachRival(founder, firm.id), draws, balance, data)
-    cands = [c for c in out.state.candidates if c.status == "open"]
+    # partners become PT-M4's lateral candidates (a book range, clients, a guarantee ask);
+    # associates would be hiring candidates
+    fp = out.state.partnership.of(1)
+    assert fp is not None
+    laterals = [c for c in fp.laterals if c.status == "open"]
+    cands = [c.person_id for c in out.state.candidates if c.status == "open"]
+    found = [c.person_id for c in laterals] + cands
     lo, hi = balance.rivals.poach.candidates.lo, balance.rivals.poach.candidates.hi
-    assert lo <= len(cands) <= hi
-    for c in cands:
-        member = out.state.rivals.member(c.person_id)
+    assert lo <= len(found) <= hi
+    for c in laterals:
+        assert c.book_lo_cents <= out.state.person(c.person_id).book_cents <= c.book_hi_cents
+        assert c.client_ids and c.ask_cents > 0
+    for pid in found:
+        member = out.state.rivals.member(pid)
         assert member is not None and member.outside and member.firm_id == firm.id
-        assert out.state.reveal(1, c.person_id) is not None  # the firm can scout them
+        assert out.state.reveal(1, pid) is not None  # the firm can scout them
     # a hire takes them off the rival, with its book, at the next phase 8
     state = hire_away(out.state, "skadden", 0.0, data, balance)
-    person = cands[0].person_id
+    person = found[0]
     from ptk.sim.people.models import Employment
 
     state = replace(

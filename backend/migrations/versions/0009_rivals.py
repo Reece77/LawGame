@@ -1,7 +1,7 @@
-"""Schema v8 (PT-M5): rival firms' state, and judges' time on the bench.
+"""Schema v9 (PT-M5): rival firms' state, and judges' time on the bench.
 
-Revision ID: 0008_rivals
-Revises: 0007_events
+Revision ID: 0009_rivals
+Revises: 0008_partnership
 Create Date: 2026-11-20
 """
 
@@ -10,8 +10,8 @@ from __future__ import annotations
 import sqlalchemy as sa
 from alembic import op
 
-revision = "0008_rivals"
-down_revision = "0007_events"
+revision = "0009_rivals"
+down_revision = "0008_partnership"
 branch_labels = None
 depends_on = None
 

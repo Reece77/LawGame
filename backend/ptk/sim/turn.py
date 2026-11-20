@@ -29,6 +29,7 @@ from ptk.sim.money import Cents
 from ptk.sim.org.delegates import DelegateAction, available_hook, run_delegates
 from ptk.sim.org.phase import clear_nudges
 from ptk.sim.org.rules import growth_multipliers
+from ptk.sim.partnership import phase as partnership
 from ptk.sim.people.models import WorkMonth
 from ptk.sim.people.phase import people_month
 from ptk.sim.rivals import phase as rival_phase
@@ -102,7 +103,7 @@ type Phase = Callable[[TurnContext], TurnContext]
 def apply_player_decisions(ctx: TurnContext) -> TurnContext:
     """1. Last month's unanswered events take their first choice (PT-M6); notices end;
     offers resolve; a signed campus class starts (PT-M1b); votes held this month count
-    (PT-M4)."""
+    and lateral partners answer offers (PT-M4)."""
     state, answered, answer_log = effects.auto_resolve(
         ctx.state, ctx.balance, ctx.data, critical=ctx.answer_critical
     )
@@ -110,7 +111,9 @@ def apply_player_decisions(ctx: TurnContext) -> TurnContext:
     state, left = hiring.end_notices(ctx.state)
     state, entries, resolved = hiring.resolve_offers(state, ctx.rng, ctx.balance, ctx.data)
     state, started = hiring.start_signed(state, ctx.balance, ctx.data)
-    ctx = replace(ctx, state=state).post(*entries).log(*left, *resolved, *started)
+    state, voted, votes = partnership.votes_and_offers(state, ctx.rng, ctx.balance, ctx.data)
+    ctx = replace(ctx, state=state).post(*entries, *voted)
+    ctx = ctx.log(*left, *resolved, *started, *votes)
     return ctx.take(rival_phase.answer_approaches(ctx.state, ctx.rng, ctx.data, ctx.balance))
 
 
@@ -157,21 +160,28 @@ def payroll_and_operating_costs(ctx: TurnContext) -> TurnContext:
 
 
 def financing(ctx: TurnContext) -> TurnContext:
-    """7. Revolver, draws, capital, true-up, insolvency (PT-M4)."""
-    return ctx
+    """7. Capital in and out, revolver interest, draws, the December allocation and true-up,
+    the revolver's draws and covenants, insolvency (PT-M4)."""
+    month = partnership.financing(ctx.state, ctx.balances, ctx.balance, ctx.data)
+    return replace(ctx, state=month.state).post(*month.entries).log(*month.log)
 
 
 def people_updates(ctx: TurnContext) -> TurnContext:
     """8. Strain, growth (times the supervising partner's mentoring, PT-M2), familiarity,
     class years, reveals (PT-M1a); morale, resignations and tag reveals (PT-M1b); the org's
-    one-off morale changes are cleared last (PT-M2)."""
+    one-off morale changes are cleared (PT-M2); partner flight, up or out and lateral
+    books (PT-M4)."""
     mentoring = growth_multipliers(ctx.state, ctx.balance)  # TST 13.5, before anyone grows
     state = people_month(ctx.state, ctx.rng, ctx.data, ctx.balance, ctx.work, mentoring)
     state, departures = hiring.morale_and_departures(
         state, ctx.rng, ctx.balance, ctx.data, ctx.work
     )
     state, tags = hiring.monthly_tag_reveals(state, ctx.rng, ctx.balance, ctx.data)
-    ctx = replace(ctx, state=clear_nudges(state)).log(*departures, *tags)
+    state, flight, moves = partnership.people_month(
+        state, ctx.rng, ctx.balance, ctx.data, ctx.balances
+    )
+    ctx = replace(ctx, state=clear_nudges(state)).post(*flight)
+    ctx = ctx.log(*departures, *tags, *moves)
     return ctx.take(rival_phase.people(ctx.state, ctx.rng, ctx.data, ctx.balance))  # PT-M5
 
 
@@ -183,14 +193,20 @@ def market_and_macro_update(ctx: TurnContext) -> TurnContext:
 
 
 def stage_checks(ctx: TurnContext) -> TurnContext:
-    """10. Stages, partner confidence, elections, unlocks (PT-M4)."""
-    return ctx
+    """10. Stages, the month's P&L, partner confidence, petitions and elections, dissolution
+    (PT-M4)."""
+    state, logs = partnership.stage_checks(ctx.state, ctx.rng, ctx.balances, ctx.balance, ctx.data)
+    return replace(ctx, state=state).log(*logs)
 
 
 def snapshot_and_month_end_report(ctx: TurnContext) -> TurnContext:
     """11. KPIs per firm."""
     firms = tuple(
-        firm_snapshot(ctx.state.billing, f.id, ctx.turn, ctx.balances.get((f.id, CASH), 0))
+        partnership.with_kpis(
+            firm_snapshot(ctx.state.billing, f.id, ctx.turn, ctx.balances.get((f.id, CASH), 0)),
+            ctx.state,
+            ctx.balances,
+        )
         for f in ctx.state.firms
     )
     return replace(ctx, snapshot=TurnSnapshot(turn=ctx.turn, firms=firms))

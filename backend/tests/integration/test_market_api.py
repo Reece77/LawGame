@@ -79,7 +79,7 @@ def test_no_hidden_value_in_any_market_schema_or_response(save_dir: Path) -> Non
     client = _client(save_dir, turns=2)
     spec = client.get("/openapi.json").json()
     schemas = _schema_closure(spec, ROOTS)
-    assert {"RivalRowOut", "KeyPersonOut", "RfpOut", "ApproachOut", "NewsOut"} <= schemas
+    assert {"RivalRowOut", "KeyPersonOut", "RfpOut", "RivalApproachOut", "NewsOut"} <= schemas
     for name in schemas:
         props = set(spec["components"]["schemas"][name].get("properties", {}))
         assert not props & FORBIDDEN, (name, props & FORBIDDEN)

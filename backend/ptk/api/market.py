@@ -128,7 +128,7 @@ class RfpOut(BaseModel):
     won: bool | None  # None while open
 
 
-class ApproachOut(BaseModel):
+class RivalApproachOut(BaseModel):
     id: int
     person: FirmRefOut
     firm: FirmRefOut
@@ -141,7 +141,7 @@ class ApproachOut(BaseModel):
 class MarketOut(BaseModel):
     rivals: list[RivalRowOut]
     rfps: list[RfpOut]
-    approaches: list[ApproachOut]
+    approaches: list[RivalApproachOut]
     news: list[NewsOut]
     free_agents: int
     claims: list[str]  # the pitch claims the firm may make
@@ -271,7 +271,7 @@ def market_view(state: GameState, data: GameData, balance: Balance) -> MarketOut
             continue
         firm = state.rivals.firm(a.firm_id)
         approaches.append(
-            ApproachOut(
+            RivalApproachOut(
                 id=a.id,
                 person=_person_ref(state, a.person_id),
                 firm=FirmRefOut(id=a.firm_id, name=firm.name if firm else ""),
@@ -436,7 +436,7 @@ def make_market_router(errors: dict[int | str, dict[str, Any]]) -> APIRouter:
         f"{base}/approaches/{{approach_id}}/counter",
         response_model=MarketOut,
         responses=errors,
-        operation_id="counterApproach",
+        operation_id="counterRivalApproach",
     )
     def counter_approach(slug: str, approach_id: int) -> MarketOut:
         state = _act(slug, lambda a: CounterApproach(a, approach_id))

@@ -18,9 +18,12 @@ from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import SimError
 from ptk.sim.hiring.actions import Interview, MakeOffer, OpenSearch, SetPayPolicy
 from tests.hiring_helpers import start
+from tests.matters_support import solvent
 
 CHANNELS = ("referral", "job_post", "recruiter", "campus")
 ROLES = ("corporate_ma", "commercial_litigation", "paralegal", "ip")
+# PT-M4: the partnership brings cash in through these (its own property tests check them).
+PARTNERSHIP_INFLOWS = frozenset({"Partner capital instalment", "Revolver drawn"})
 POLICIES = (("match", 10_000), ("lag", 8_000), ("lead", 11_000))
 
 
@@ -46,7 +49,8 @@ def test_every_money_movement_balances(
     seed: int,
     months: list[tuple[str, str, float, tuple[str, int]]],
 ) -> None:
-    game = start(data, balance, seed=seed % 1000)
+    # random hiring can bankrupt the firm (PT-M4): this test checks the money, not survival
+    game = start(data, solvent(balance), seed=seed % 1000)
     fid = game.founder_id
     accounts = {a.code for a in data.accounts if a.book == "firm"}
     for channel, role, ratio, (mode, pct) in months:
@@ -93,6 +97,8 @@ def test_every_money_movement_balances(
             collected += cash
         elif entry.memo == "Founding partners' capital":
             capital += cash
+        elif entry.memo in PARTNERSHIP_INFLOWS:
+            capital += cash  # PT-M4: partners' capital instalments and the revolver
         else:
             assert cash <= 0  # PT-M1b moves money out of the firm only
             paid -= cash

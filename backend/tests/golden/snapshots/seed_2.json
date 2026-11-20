@@ -3,27 +3,27 @@
     [
       1,
       "1000_cash",
-      3211527469
+      124005076
     ],
     [
       1,
       "1100_unbilled_wip",
-      57053500
+      206478000
     ],
     [
       1,
       "1110_wip_provision",
-      -16230619
+      -64902786
     ],
     [
       1,
       "1200_receivables",
-      32580823
+      28415509
     ],
     [
       1,
       "1210_bad_debt_provision",
-      -377136
+      -337850
     ],
     [
       1,
@@ -32,48 +32,63 @@
     ],
     [
       1,
+      "2700_partner_current_accounts",
+      -40933288
+    ],
+    [
+      1,
       "3000_partners_capital",
-      -60000000
+      -83071788
+    ],
+    [
+      1,
+      "3100_undistributed_profit",
+      4688073200
+    ],
+    [
+      1,
+      "3200_drawings",
+      0
     ],
     [
       1,
       "4000_fees",
-      -5784560159
+      -5481848072
     ],
     [
       1,
       "4100_success_fees",
-      -32092214
+      -81440384
     ],
     [
       1,
       "5000_associate_salaries",
-      461088915
+      244984355
     ],
     [
       1,
       "5010_bonuses",
-      97250000
+      50250000
     ],
     [
       1,
       "5200_benefits",
-      115272219
+      61246083
     ],
     [
       1,
       "6000_rent",
-      277800000
+      255900000
     ],
     [
       1,
       "6700_write_offs",
-      7054804
+      6276699
     ],
     [
       1,
       "6900_general_admin",
-      1633632398
+      86905246
     ],
     [
       101,
@@ -3261,37 +3276,37 @@
   "matter_outcomes": [
     [
       "closed",
-      21
+      23
     ],
     [
       "collapsed",
-      4
+      2
     ],
     [
       "done",
-      5
+      4
     ],
     [
       "lost",
-      9
+      8
     ],
     [
       "open",
-      20
+      23
     ],
     [
       "won",
       3
     ]
   ],
-  "matters": "f251d06e2db9b76bbc193639f27029348a02189bdbf8af75e4cad7ddd771eeb0",
+  "matters": "7b6bac3ca0c372c82e3bac16b1e8d2270ff257d1779cc081a6a0818e9e3c5c51",
   "names": [
     "Sarah Williams",
     "Kevin Stewart",
     "Luis Allen",
     "Logan Robinson"
   ],
-  "people": "0944bccd714b14ddded12e6be08a52255e6a0a214a37c0d652e0c444fdbfb9fd",
-  "relationships": "4ccabe9cbe9fd060df44f690758a10c2c21d2e3057daf668e60892e67535fc58",
-  "sha256": "8c094d6a243e471edde502dc17f5def10cb3c328fa9219101abdcbe1802c0ebe"
+  "people": "46376d9fd76114e92476e6a10de3eff768f60d6818e16330ebddd94dec661d78",
+  "relationships": "6feac7adcac95b616c290cc9750b74c5b1078958bf351346abd1322826d780da",
+  "sha256": "e8748bb6db33a59fd1c7052e9f2900f63b1277418338e867842e226f314bb734"
 }

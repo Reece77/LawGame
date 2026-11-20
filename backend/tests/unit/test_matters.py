@@ -491,12 +491,17 @@ def test_relationships_move_and_stay_in_range(data: GameData, balance: Balance) 
     played, _ = play(state, data, balance, 24, seed=3)
     before = {r.client_id: r.score for r in state.market.relationships}
     after = {r.client_id: r.score for r in played.market.relationships}
-    assert before.keys() == after.keys() and before != after
+    # PT-M4: a partner who leaves takes their portable clients with them
+    fp = played.partnership.of(played.player.id)
+    assert fp is not None
+    followed = {c for d in fp.departures for c, _ in d.follows}
+    assert after.keys() <= before.keys() and before.keys() - after.keys() <= followed
+    assert before != after
     assert all(0.0 <= v <= 100.0 for v in after.values())
     assert any(o.cents > 0 for o in played.market.originations)
     assert {o.person_id for o in played.market.originations} <= {
         r.partner_id for r in played.market.relationships
-    } | {m.originator_id for m in played.market.matters}
+    } | {m.originator_id for m in played.market.matters} | {d.person_id for d in fp.departures}
 
 
 def test_hours_feed_growth_and_morale_inputs(data: GameData, balance: Balance) -> None:

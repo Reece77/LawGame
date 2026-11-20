@@ -16,6 +16,7 @@ from ptk.sim.hiring.phases import starting_pay
 from ptk.sim.ledger import CASH, PARTNERS_CAPITAL, LedgerEntry
 from ptk.sim.matters.setup import new_market
 from ptk.sim.money import pct_of
+from ptk.sim.partnership.setup import founding_partnership
 from ptk.sim.people.founder import FounderSpec, build_founder
 from ptk.sim.people.generator import generate_person, people_gen_stream
 from ptk.sim.people.models import Employment, Person, RevealState
@@ -89,6 +90,10 @@ def new_game(
     real = balance.world.real_people if real_people is None else real_people
     state = new_rivals(state, RngFactory(master_seed), data, balance, real)
     capital = pct_of(scenario.partners_capital_cents, level.capital_mult_bp)
+    # PT-M4: the founders' agreement, capital accounts and the revolver's facility
+    state = replace(
+        state, partnership=founding_partnership(state, firm.id, capital, scenario, balance)
+    )
     entries: tuple[LedgerEntry, ...] = ()
     if capital:
         entries = (

@@ -1,8 +1,8 @@
 """Poaching both ways (spec 10.2, 8.7; TST formulas.md 15.6, ported).
 
 **Rivals approach the player's people.** A rival whose utility AI picks `approach_player`
-targets one of the player's lawyers in a practice it staffs (partners and senior associates
-first, by book then ability; one draw chooses among the top three) and makes an offer at a
+targets one of the player's counsel or senior associates in a practice it staffs (by book
+then ability; one draw chooses among the top three) and makes an offer at a
 premium over their pay. At most `rivals.poach.max_per_year` approaches reach the player's
 firm in any 12 months. The approach is answered in phase 1 of the next turn (stream `rival_poach`,
 key `(*rival_key, ANSWER_KEY, made_turn)`): p = 1 / (1 + e^(-2 s)) with
@@ -10,8 +10,9 @@ s = 4 (R - 1) + (55 - morale) / 20 - (loyalty - 10) / 10 - 0.5. Accepted: the pe
 notice (`poached`) and joins the rival as a key person when it ends. The player can counter
 before then (`CounterApproach`): a matching raise, and the approach lapses.
 
-PT-M4's flight machinery (spec 8.7) turns a partner's monthly chance of leaving into these
-same offers; until it merges, approaches come only from rivals' own decisions.
+**Partners** leave through PT-M4's flight machinery (spec 8.7): its monthly p_leave turns into
+an approach whose suitor is a live rival (`partnership.flight._suitor_for`), the firm can
+counter there, and a partner who leaves joins that rival (`join_from_player`).
 
 **The player approaches rivals' people.** `ApproachRival` shows 2-4 of one rival's key
 people as candidates of a closed referral search (so no generic batch follows), asking
@@ -32,6 +33,7 @@ from ptk.sim.errors import InvalidActionError
 from ptk.sim.hiring.models import Candidate, Search
 from ptk.sim.hiring.pay import band_cents
 from ptk.sim.log import LogItem, inbox_item
+from ptk.sim.people.models import Person
 from ptk.sim.people.reveal import new_reveal_state
 from ptk.sim.rivals import formulas as f
 from ptk.sim.rivals.decisions import add_partner, remove_lawyer
@@ -48,7 +50,9 @@ from ptk.sim.state import (
 
 ANSWER_KEY = 0  # tunable-exempt: poach stream key part of an approach's answer
 NOTICE_MONTHS = {"partner": 3, "associate": 1}  # tunable-exempt: notice periods [A]
-TARGET_LEVELS = ("equity_partner", "income_partner", "counsel", "senior_associate")
+# Partners leave through PT-M4's flight (spec 8.7's p_leave, approaches from live rivals as
+# suitors); a rival's own approaches go to the firm's counsel and senior associates.
+TARGET_LEVELS = ("counsel", "senior_associate")
 
 
 def _name(p: object) -> str:
@@ -80,6 +84,9 @@ def player_targets(state: GameState, data: GameData) -> list[tuple[int, str]]:
 def targets(state: GameState, firm: RivalFirm, pool: list[tuple[int, str]]) -> list[int]:
     """Of the pool, those in a practice the rival staffs, without an approach pending."""
     pending = {a.person_id for a in state.rivals.approaches if a.status == "pending"}
+    fp = state.partnership.of(state.player.id)
+    if fp is not None:
+        pending |= {a.person_id for a in fp.approaches if a.status in ("open", "countered")}
     staffed = {p.practice for p in firm.pools if p.lawyers >= 1.0}
     return [pid for pid, practice in pool if practice in staffed and pid not in pending]
 
@@ -110,7 +117,7 @@ def make_approach(
     data: GameData,
     balance: Balance,
 ) -> tuple[GameState, str, int | None]:
-    """Draws: the target (one uniform), the premium (one uniform)."""
+    """Draws: the target (one uniform), the premium (one uniform). Answered next month."""
     pb = balance.rivals.poach
     choices = targets(state, firm, pool)[:3]
     u, prem_u = float(gen.random()), float(gen.random())
@@ -237,24 +244,30 @@ def counter(state: GameState, approach_id: int, balance: Balance) -> GameState:
 def join_from_player(
     state: GameState, turn: int, data: GameData
 ) -> tuple[GameState, tuple[LogItem, ...]]:
-    """Phase 8: people whose `poached` notice ended join the rival that approached them."""
+    """Phase 8: people the player's firm lost to a rival join it once their notice ends:
+    those who accepted this module's approaches, and partners who left through PT-M4's
+    flight (an approach or a flight departure) with a rival as their suitor."""
     logs: list[LogItem] = []
-    rivals = state.rivals
-    for a in rivals.approaches:
-        if a.status != "accepted" or state.rivals.member(a.person_id) is not None:
+    moving = [(a.person_id, a.firm_id) for a in state.rivals.approaches if a.status == "accepted"]
+    fp = state.partnership.of(state.player.id)
+    if fp is not None:
+        moving += [(d.person_id, d.suitor_firm_id) for d in fp.departures if d.suitor_firm_id]
+    for person_id, firm_id in moving:
+        if state.rivals.member(person_id) is not None:
             continue
+        player = state.player.id
         e = next(
             (
                 x
                 for x in state.employments
-                if x.person_id == a.person_id and x.end_reason == "poached" and x.status == "ended"
+                if x.person_id == person_id and x.firm_id == player and x.status == "ended"
             ),
             None,
         )
-        firm = state.rivals.firm(a.firm_id)
-        if e is None or firm is None:
+        firm = state.rivals.firm(firm_id)
+        if e is None or firm is None or not firm.active or state.employment_of(person_id):
             continue
-        person = state.person(a.person_id)
+        person = state.person(person_id)
         kind = member_kind(person.level)
         practice = data.role(person.role).practice or "commercial_litigation"
         member = replace(
@@ -307,7 +320,7 @@ def approach_rival(
     chosen = pool[:count]
     if not chosen:
         raise InvalidActionError("that rival has no key people to approach in that practice")
-    return as_candidates(state, chosen, actor_id, data, balance)
+    return as_candidates(state, chosen, actor_id, gen, data, balance)
 
 
 def approach_free_agents(
@@ -324,15 +337,21 @@ def approach_free_agents(
     count = int(gen.integers(int(pb.candidates.lo), int(pb.candidates.hi) + 1))
     if not pool:
         raise InvalidActionError("no free agents are looking for work")
-    return as_candidates(state, pool[:count], actor_id, data, balance)
+    return as_candidates(state, pool[:count], actor_id, gen, data, balance)
 
 
 def as_candidates(
-    state: GameState, chosen: list[Member], actor_id: int, data: GameData, balance: Balance
+    state: GameState,
+    chosen: list[Member],
+    actor_id: int,
+    gen: np.random.Generator,
+    data: GameData,
+    balance: Balance,
 ) -> tuple[GameState, tuple[int, ...]]:
     """A closed referral search (so no generic batch follows) whose candidates are these
-    people, asking `player_ask_premium` over the market. Their records move into
-    GameState.people; key people stay their rival's until hired."""
+    people: partners become PT-M4's lateral candidates (a book range, its clients, an ask and
+    a guarantee); others are hiring candidates asking `player_ask_premium` over the market.
+    Their records move into GameState.people; key people stay their rival's until hired."""
     pb = balance.rivals.poach
     search_id = state.next_id("search")
     role = data.practice_role(chosen[0].practice).key
@@ -352,10 +371,28 @@ def as_candidates(
 
     shelf = balance.hiring.candidate_shelf_turns
     cands, reveals, moved = [], [], []
+    laterals: list[tuple[Member, Person]] = []
     rivals = state.rivals
     for m in chosen:
         person = person_of(state, m, data, balance)
-        level = "income_partner" if person.level == "equity_partner" else person.level
+        if not m.outside:
+            moved.append(person)
+            rivals = _mark_outside(rivals, m)
+        if state.reveal(state.player.id, person.id) is None:
+            reveals.append(
+                new_reveal_state(
+                    observer_firm_id=state.player.id,
+                    person=person,
+                    turn=state.turn,
+                    rng=RngFactory(state.save_meta.master_seed),
+                    data=data,
+                    balance=balance,
+                )
+            )
+        if person.level in PARTNERS and state.partnership.of(state.player.id) is not None:
+            laterals.append((m, person))  # PT-M4's lateral market: books, guarantees
+            continue
+        level = person.level
         market = market_pay_cents(data, balance, level, ym, state.player.home_city)
         ask = round(market * (1 + pb.player_ask_premium) / 1000) * 1000  # tunable-exempt: $1,000s
         cands.append(
@@ -369,37 +406,87 @@ def as_candidates(
                 expires_turn=state.turn + shelf,
             )
         )
-        if state.reveal(state.player.id, person.id) is None:
-            reveals.append(
-                new_reveal_state(
-                    observer_firm_id=state.player.id,
-                    person=person,
-                    turn=state.turn,
-                    rng=RngFactory(state.save_meta.master_seed),
-                    data=data,
-                    balance=balance,
-                )
-            )
-        if not m.outside:
-            moved.append(person)
-            if rivals.member(m.person_id) is not None:
-                rivals = update_member(rivals, replace(m, outside=True))
-            else:  # a free agent
-                rivals = replace(
-                    rivals,
-                    free_agents=tuple(
-                        replace(a, member=replace(a.member, outside=True))
-                        if a.person_id == m.person_id
-                        else a
-                        for a in rivals.free_agents
-                    ),
-                )
     state = replace(state, rivals=rivals)
     if moved:
         state = replace(state, people=tuple(sorted((*state.people, *moved), key=lambda p: p.id)))
     state = with_candidates(state, cands)
     state = with_reveals(state, reveals)
-    return state, tuple(c.person_id for c in cands)
+    for m, person in laterals:
+        state = lateral_candidate(state, m, person, search_id, gen, data, balance)
+    return state, tuple(c.person_id for c in cands) + tuple(p.id for _, p in laterals)
+
+
+PARTNERS = frozenset({"equity_partner", "income_partner"})
+
+
+def _mark_outside(rivals: RivalsState, m: Member) -> RivalsState:
+    if rivals.member(m.person_id) is not None:
+        return update_member(rivals, replace(m, outside=True))
+    return replace(
+        rivals,
+        free_agents=tuple(
+            replace(a, member=replace(a.member, outside=True)) if a.person_id == m.person_id else a
+            for a in rivals.free_agents
+        ),
+    )
+
+
+def lateral_candidate(
+    state: GameState,
+    m: Member,
+    person: Person,
+    search_id: int,
+    gen: np.random.Generator,
+    data: GameData,
+    balance: Balance,
+) -> GameState:
+    """A rival's partner as one of PT-M4's lateral candidates (spec 5.7): their book shown as
+    a range, the clients it comes from (drawn by wallet in their practice, never the firm's
+    own), their ask and the guarantee they want. Draws, in order: the clients, the range's
+    offset, the guarantee years (PT-M4's search, for a person who already exists)."""
+    from ptk.sim.matters.market import client_weight
+    from ptk.sim.money import BP_DENOMINATOR, pct_of
+    from ptk.sim.partnership.common import firm_partnership, put
+    from ptk.sim.partnership.laterals import CLIENT_BOOK_CENTS, book_range
+    from ptk.sim.partnership.models import LateralCandidate, with_lateral
+
+    cfg = balance.partnership.lateral
+    firm_id = state.player.id
+    fp = firm_partnership(state, firm_id)
+    have = {r.client_id for r in state.market.relationships if r.firm_id == firm_id}
+    pool = [c for c in state.market.clients if c.id not in have]
+    adverse = {
+        x.adverse_client_id for x in state.market.open_matters(firm_id) if x.adverse_client_id
+    }
+    book = max(m.book_cents, 1)
+    k = max(1, min(8, round(book / CLIENT_BOOK_CENTS)))  # tunable-exempt: as PT-M4's search
+    weights = np.array([client_weight(c, m.practice, data, balance) for c in pool])
+    clients: tuple[int, ...] = ()
+    if weights.sum() > 0:
+        k = min(k, int((weights > 0).sum()))
+        idx = gen.choice(len(pool), size=k, replace=False, p=weights / weights.sum())
+        clients = tuple(sorted(pool[int(j)].id for j in idx))
+    lo, hi = book_range(book, cfg.book_range_bp, float(gen.uniform(-1.0, 1.0)))
+    ask = pct_of(
+        pct_of(book, cfg.comp_of_book_bp),
+        BP_DENOMINATOR + cfg.notice_premium_bp * fp.agreement.notice_months,
+    )
+    years = int(gen.integers(cfg.guarantee_years[0], cfg.guarantee_years[1] + 1))
+    cand = LateralCandidate(
+        person_id=person.id,
+        firm_id=firm_id,
+        search_id=search_id,
+        practice=m.practice,
+        ask_cents=max(1, ask),
+        guarantee_ask_years=years,
+        book_lo_cents=lo,
+        book_hi_cents=hi,
+        client_ids=clients,
+        conflict_ids=tuple(c for c in clients if c in adverse),
+        created_turn=state.turn,
+        expires_turn=state.turn + cfg.shelf_turns,
+    )
+    return put(state, with_lateral(fp, cand))
 
 
 def hired_by_player(

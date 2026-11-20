@@ -16,6 +16,7 @@ from ptk.db.events_io import add_text_requests, write_events, write_pending
 from ptk.db.market_io import write_market
 from ptk.db.models import DecisionLogRow, FirmRow, SaveMetaRow, TurnSnapshotRow
 from ptk.db.org_io import write_delegate_actions
+from ptk.db.partnership_io import write_partnership
 from ptk.db.rivals_io import write_panels, write_rival_moves, write_rivals
 from ptk.db.session import make_sessionmaker, shared_engine
 from ptk.db.state_io import (
@@ -188,6 +189,7 @@ def run_action(path: Path, action: Action, balance: Balance, data: GameData) -> 
         write_billing(session, outcome.state.billing)
         write_rivals(session, outcome.state.rivals)  # PT-M5
         write_panels(session, outcome.state.market)
+        write_partnership(session, outcome.state.partnership)
         session.add(
             DecisionLogRow(
                 turn=state.turn,

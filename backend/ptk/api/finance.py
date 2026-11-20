@@ -30,7 +30,9 @@ from ptk.sim.billing.models import BillingState, Engagement
 from ptk.sim.calendar import format_turn, turn_to_ym
 from ptk.sim.data_models import GameData
 from ptk.sim.errors import NotFoundError
+from ptk.sim.ledger import UNDISTRIBUTED_PROFIT
 from ptk.sim.money import BP_DENOMINATOR, round_half_even
+from ptk.sim.partnership.common import cumulative_pnl
 from ptk.sim.state import GameState
 
 RECEIVABLE_BUCKETS = ((0, 30), (31, 60), (61, 90), (91, 180), (181, None))  # tunable-exempt: days
@@ -222,6 +224,27 @@ def finance_view(path: Path, state: GameState, data: GameData) -> FinanceOut:
         for a, v in statements.balance_sheet(balances, firm)
         if a in names
     ]
+    # PT-M4: income and cost accounts are never closed; the profit of the years before this
+    # one (less what was allocated to partners, on 3100) is shown as undistributed profit, so
+    # the sheet balances against this year's profit
+    revenue, costs = cumulative_pnl(balances, firm)
+    ytd = next((s.profit_cents for s in statements_out if s.basis == "accrual"), 0)
+    earlier = revenue - costs - ytd
+    if earlier:
+        names3100 = names.get(UNDISTRIBUTED_PROFIT, ("Undistributed profit", "equity"))
+        line = next((x for x in sheet if x.account == UNDISTRIBUTED_PROFIT), None)
+        if line is None:
+            sheet.append(
+                BalanceLineOut(
+                    account=UNDISTRIBUTED_PROFIT,
+                    label=names3100[0],
+                    kind=names3100[1],
+                    amount_cents=earlier,
+                )
+            )
+            sheet.sort(key=lambda x: x.account)
+        else:
+            line.amount_cents += earlier
     latest = snaps[-1][1] if snaps else {}
     kpis = KpisOut(
         revenue_cents=_int(latest.get("revenue_cents")),

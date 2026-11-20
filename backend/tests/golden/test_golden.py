@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections import Counter
 from pathlib import Path
 
 import pytest
@@ -51,8 +52,33 @@ def _fingerprint(path: Path, balance: Balance, data: GameData) -> dict[str, obje
         ]
         for p in state.people
     ]
+    # PT-M3a: same seed, same intake and outcomes
+    matters = [
+        [
+            m.id,
+            m.client_id,
+            m.practice,
+            m.kind_key,
+            m.opened_turn,
+            m.expected_fees_cents,
+            m.status,
+            m.outcome,
+            m.closed_turn,
+            m.worked_tenths,
+            m.wip_cents,
+        ]
+        for m in state.market.matters
+    ]
+    relationships = [
+        [r.client_id, round(r.score, 9), r.fees_12m] for r in state.market.relationships
+    ]
     return {
         "people": hashlib.sha256(json.dumps(people).encode()).hexdigest(),
+        "matters": hashlib.sha256(json.dumps(matters).encode()).hexdigest(),
+        "matter_outcomes": sorted(
+            [o, n] for o, n in Counter(m.outcome or m.status for m in state.market.matters).items()
+        ),
+        "relationships": hashlib.sha256(json.dumps(relationships).encode()).hexdigest(),
         "names": [f"{p.first_name} {p.last_name}" for p in state.people],
         "final_turn": state.turn,
         "game_state": state.save_meta.game_state,

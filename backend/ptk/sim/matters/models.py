@@ -119,6 +119,7 @@ class Matter:
     originator_id: int | None = None
     lead_id: int | None = None
     team: tuple[TeamMember, ...] = ()  # sorted by person id
+    auto_staff: bool = True  # re-planned monthly by the default rule until the player staffs it
     phase_index: int = 0
     phase_progress: float = 0.0  # 0-1 of the current phase
     worked_tenths: int = 0

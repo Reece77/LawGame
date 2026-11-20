@@ -59,7 +59,7 @@ class RateOut(BaseModel):
     cents: int  # an hour
 
 
-class PracticeOut(BaseModel):
+class PracticeMarketOut(BaseModel):
     key: str
     label: str
     short_label: str
@@ -188,7 +188,7 @@ def _name(state: GameState, person_id: int | None) -> RefOut | None:
     return RefOut(id=p.id, name=f"{p.first_name} {p.last_name}")
 
 
-def practices_view(state: GameState, data: GameData, balance: Balance) -> list[PracticeOut]:
+def practices_view(state: GameState, data: GameData, balance: Balance) -> list[PracticeMarketOut]:
     firm = state.player.id
     base = base_monthly_demand(data)
     demand = state.market.demand_cents or base
@@ -203,7 +203,7 @@ def practices_view(state: GameState, data: GameData, balance: Balance) -> list[P
         rels = [r for r in state.market.relationships if r.firm_id == firm and p.key in r.practices]
         hours = [h for h in state.market.hours if h.practice == p.key]
         out.append(
-            PracticeOut(
+            PracticeMarketOut(
                 key=p.key,
                 label=p.label,
                 short_label=p.short_label,
@@ -497,11 +497,11 @@ def make_matters_router(errors: dict[int | str, dict[str, Any]]) -> APIRouter:
 
     @router.get(
         f"{base}/practices",
-        response_model=list[PracticeOut],
+        response_model=list[PracticeMarketOut],
         responses=errors,
         operation_id="listPractices",
     )
-    def list_practices(slug: str) -> list[PracticeOut]:
+    def list_practices(slug: str) -> list[PracticeMarketOut]:
         return practices_view(_state(slug), loader.game_data(), loader.balance())
 
     @router.get(

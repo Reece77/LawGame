@@ -180,6 +180,7 @@ _MATTER_SCALARS = (
     "hidden_conflict",
     "originator_id",
     "lead_id",
+    "auto_staff",
     "phase_index",
     "phase_progress",
     "worked_tenths",

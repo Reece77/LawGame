@@ -33,12 +33,40 @@
   ],
   "final_turn": 360,
   "game_state": "campaign_complete",
+  "matter_outcomes": [
+    [
+      "closed",
+      25
+    ],
+    [
+      "collapsed",
+      5
+    ],
+    [
+      "done",
+      12
+    ],
+    [
+      "lost",
+      3
+    ],
+    [
+      "open",
+      2
+    ],
+    [
+      "won",
+      5
+    ]
+  ],
+  "matters": "915bd0e1fba3c40f499398a242d4ce1ad05dfe0f7ae03e133355fea73d7de04d",
   "names": [
     "James Jackson",
     "Michael Garcia",
     "Megan Brown",
     "Hannah Allen"
   ],
-  "people": "d3772fd0520985366986a7f6a4c67dac332c5a68a33d867b7fec7e9087e3788c",
-  "sha256": "df5a2ab8f9723c22975d33578d3bf07538af652bd00519e65436f686f526ca1d"
+  "people": "584de7b161b12e30de43db5381f80a9ddfaec3ce91d8434517f1a9d2b58d69d2",
+  "relationships": "4849ac9b50337b793f671954cc74a439b2242e85615ad85f5e8885950694dcdd",
+  "sha256": "08e2296df3baa05c54609c4b18d233e863bf49acc413ec8a7b0820935f4ac854"
 }

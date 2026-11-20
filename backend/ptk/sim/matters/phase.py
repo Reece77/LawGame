@@ -2,8 +2,9 @@
 
 Phase 4 (intake and staffing): the month's demand (stream `demand`); conflicted
 instructions past their window are declined; teams lose people who left (a matter whose lead
-left is re-staffed by the default rule); clients instruct (intake); the month's hours are
-allocated, named matters first, then flow. The result is every fee earner's `WorkMonth`, which
+left is re-staffed by the default rule); matters the player has not staffed are re-planned
+by the default rule; clients instruct (intake); the month's hours are allocated, named
+matters first, then flow. The result is every fee earner's `WorkMonth`, which
 feeds growth, familiarity, strain (PT-M1a) and the hours morale term (PT-M1b) in phase 8.
 
 Phase 5 (work): progress, errors, settlement offers and outcomes on named matters; hidden
@@ -52,6 +53,17 @@ def prune_teams(state: GameState, firm_id: int, data: GameData, balance: Balance
     return replace(state, market=market)
 
 
+def replan(state: GameState, firm_id: int, data: GameData, balance: Balance) -> GameState:
+    """Matters the player has not staffed are re-planned by the default rule, by id (the
+    practice leader's month: free capacity goes to matters that need it)."""
+    for m in state.market.open_matters(firm_id):
+        if m.auto_staff:
+            staffed = staff_matter(state, m, data, balance)
+            if staffed != m:
+                state = replace(state, market=with_matter(state.market, staffed))
+    return state
+
+
 def intake_and_staffing(
     state: GameState, rng: RngFactory, data: GameData, balance: Balance
 ) -> StaffedMonth:
@@ -62,6 +74,7 @@ def intake_and_staffing(
     state = replace(state, market=replace(state.market, demand_cents=demand))
     state, declined = expire_conflicted(state, firm_id, balance)
     state = prune_teams(state, firm_id, data, balance)
+    state = replan(state, firm_id, data, balance)
     result = intake(state, firm_id, rng, demand, data, balance)
     state = result.state
     hours = month_hours(state, firm_id, result.flow_tenths, data, balance)

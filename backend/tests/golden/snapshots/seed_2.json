@@ -33,12 +33,40 @@
   ],
   "final_turn": 360,
   "game_state": "campaign_complete",
+  "matter_outcomes": [
+    [
+      "closed",
+      21
+    ],
+    [
+      "collapsed",
+      3
+    ],
+    [
+      "done",
+      12
+    ],
+    [
+      "lost",
+      13
+    ],
+    [
+      "open",
+      5
+    ],
+    [
+      "won",
+      1
+    ]
+  ],
+  "matters": "4e1eadbf7a8a60a5728ba26960179b077fd3022c8da9bb18d3419d5d191b56f6",
   "names": [
     "Sarah Williams",
     "Kevin Stewart",
     "Luis Allen",
     "Logan Robinson"
   ],
-  "people": "323398cca035787f064e00675a391f68906f94aa2fd05f974e898a40f3de5ea9",
-  "sha256": "af4ba9ba4a4a3b70bbe65773c47e1c8e5cffc4e044f1fb25e9f801adb761825d"
+  "people": "0f9d8eb3814ca62e10d9dfa3e2acbaeea401698b859ec4b37ecf545478df7f65",
+  "relationships": "6061ca3d554e713a07d46588a2c153d03225995621a059d34837f04d3d4d099a",
+  "sha256": "6da984ad3362fdb5852d93b0427f3d96d6ea48c4dc85b9742c761d13005f0b00"
 }

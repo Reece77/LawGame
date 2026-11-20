@@ -184,7 +184,9 @@ def _hours(hours: int) -> int:
 def _set_team(
     state: GameState, matter: Matter, team: tuple[TeamMember, ...], lead: int | None
 ) -> GameState:
-    m = replace(matter, team=tuple(sorted(team, key=lambda t: t.person_id)), lead_id=lead)
+    """The player's staffing: the matter leaves the monthly default re-plan."""
+    ordered = tuple(sorted(team, key=lambda t: t.person_id))
+    m = replace(matter, team=ordered, lead_id=lead, auto_staff=False)
     return replace(state, market=with_matter(state.market, m))
 
 
@@ -263,6 +265,7 @@ def default_staffing(
     matter = _matter(state, firm, a.matter_id)
     state = spend_energy(state, a.actor_id, "staff", balance)
     staffed = staff_matter(state, replace(matter, team=(), lead_id=None), data, balance)
+    staffed = replace(staffed, auto_staff=True)
     return Outcome(state=replace(state, market=with_matter(state.market, staffed)))
 
 

@@ -1334,7 +1334,7 @@ export interface components {
             /** Plans */
             plans: components["schemas"]["PlanOut"][];
             /** Open Practices */
-            open_practices: components["schemas"]["ptk__api__org__PracticeOut"][];
+            open_practices: components["schemas"]["PracticeOut"][];
             /** Roles */
             roles: components["schemas"]["RoleOut"][];
             /** Plan Owners */
@@ -1627,6 +1627,42 @@ export interface components {
             /** Last Activity */
             last_activity: string | null;
         };
+        /** PracticeMarketOut */
+        PracticeMarketOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Short Label */
+            short_label: string;
+            /** Driver */
+            driver: string;
+            /** Demand Cents */
+            demand_cents: number;
+            /** Demand Base Cents */
+            demand_base_cents: number;
+            /** Rates */
+            rates: components["schemas"]["RateOut"][];
+            /** Leverage Norm */
+            leverage_norm: number;
+            /** Margin Norm Bp */
+            margin_norm_bp: number;
+            /** Clients */
+            clients: number;
+            /** People */
+            people: number;
+            /** Hours Last Month */
+            hours_last_month: number;
+            /** Value Last Month Cents */
+            value_last_month_cents: number;
+        };
+        /** PracticeOut */
+        PracticeOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+        };
         /** RaiseIn */
         RaiseIn: {
             /** Salary Cents */
@@ -1854,42 +1890,6 @@ export interface components {
              * @default false
              */
             advance?: boolean;
-        };
-        /** PracticeOut */
-        ptk__api__matters__PracticeOut: {
-            /** Key */
-            key: string;
-            /** Label */
-            label: string;
-            /** Short Label */
-            short_label: string;
-            /** Driver */
-            driver: string;
-            /** Demand Cents */
-            demand_cents: number;
-            /** Demand Base Cents */
-            demand_base_cents: number;
-            /** Rates */
-            rates: components["schemas"]["RateOut"][];
-            /** Leverage Norm */
-            leverage_norm: number;
-            /** Margin Norm Bp */
-            margin_norm_bp: number;
-            /** Clients */
-            clients: number;
-            /** People */
-            people: number;
-            /** Hours Last Month */
-            hours_last_month: number;
-            /** Value Last Month Cents */
-            value_last_month_cents: number;
-        };
-        /** PracticeOut */
-        ptk__api__org__PracticeOut: {
-            /** Key */
-            key: string;
-            /** Label */
-            label: string;
         };
     };
     responses: never;
@@ -3820,7 +3820,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ptk__api__matters__PracticeOut"][];
+                    "application/json": components["schemas"]["PracticeMarketOut"][];
                 };
             };
             /** @description Bad Request */

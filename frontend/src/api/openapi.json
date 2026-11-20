@@ -2486,7 +2486,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ptk__api__matters__PracticeOut"
+                    "$ref": "#/components/schemas/PracticeMarketOut"
                   },
                   "title": "Response Listpractices"
                 }
@@ -5489,7 +5489,7 @@
           },
           "open_practices": {
             "items": {
-              "$ref": "#/components/schemas/ptk__api__org__PracticeOut"
+              "$ref": "#/components/schemas/PracticeOut"
             },
             "type": "array",
             "title": "Open Practices"
@@ -6462,6 +6462,100 @@
         ],
         "title": "PlanOut"
       },
+      "PracticeMarketOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "short_label": {
+            "type": "string",
+            "title": "Short Label"
+          },
+          "driver": {
+            "type": "string",
+            "title": "Driver"
+          },
+          "demand_cents": {
+            "type": "integer",
+            "title": "Demand Cents"
+          },
+          "demand_base_cents": {
+            "type": "integer",
+            "title": "Demand Base Cents"
+          },
+          "rates": {
+            "items": {
+              "$ref": "#/components/schemas/RateOut"
+            },
+            "type": "array",
+            "title": "Rates"
+          },
+          "leverage_norm": {
+            "type": "number",
+            "title": "Leverage Norm"
+          },
+          "margin_norm_bp": {
+            "type": "integer",
+            "title": "Margin Norm Bp"
+          },
+          "clients": {
+            "type": "integer",
+            "title": "Clients"
+          },
+          "people": {
+            "type": "integer",
+            "title": "People"
+          },
+          "hours_last_month": {
+            "type": "number",
+            "title": "Hours Last Month"
+          },
+          "value_last_month_cents": {
+            "type": "integer",
+            "title": "Value Last Month Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "short_label",
+          "driver",
+          "demand_cents",
+          "demand_base_cents",
+          "rates",
+          "leverage_norm",
+          "margin_norm_bp",
+          "clients",
+          "people",
+          "hours_last_month",
+          "value_last_month_cents"
+        ],
+        "title": "PracticeMarketOut"
+      },
+      "PracticeOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label"
+        ],
+        "title": "PracticeOut"
+      },
       "RaiseIn": {
         "properties": {
           "salary_cents": {
@@ -7082,100 +7176,6 @@
         },
         "type": "object",
         "title": "WaiverIn"
-      },
-      "ptk__api__matters__PracticeOut": {
-        "properties": {
-          "key": {
-            "type": "string",
-            "title": "Key"
-          },
-          "label": {
-            "type": "string",
-            "title": "Label"
-          },
-          "short_label": {
-            "type": "string",
-            "title": "Short Label"
-          },
-          "driver": {
-            "type": "string",
-            "title": "Driver"
-          },
-          "demand_cents": {
-            "type": "integer",
-            "title": "Demand Cents"
-          },
-          "demand_base_cents": {
-            "type": "integer",
-            "title": "Demand Base Cents"
-          },
-          "rates": {
-            "items": {
-              "$ref": "#/components/schemas/RateOut"
-            },
-            "type": "array",
-            "title": "Rates"
-          },
-          "leverage_norm": {
-            "type": "number",
-            "title": "Leverage Norm"
-          },
-          "margin_norm_bp": {
-            "type": "integer",
-            "title": "Margin Norm Bp"
-          },
-          "clients": {
-            "type": "integer",
-            "title": "Clients"
-          },
-          "people": {
-            "type": "integer",
-            "title": "People"
-          },
-          "hours_last_month": {
-            "type": "number",
-            "title": "Hours Last Month"
-          },
-          "value_last_month_cents": {
-            "type": "integer",
-            "title": "Value Last Month Cents"
-          }
-        },
-        "type": "object",
-        "required": [
-          "key",
-          "label",
-          "short_label",
-          "driver",
-          "demand_cents",
-          "demand_base_cents",
-          "rates",
-          "leverage_norm",
-          "margin_norm_bp",
-          "clients",
-          "people",
-          "hours_last_month",
-          "value_last_month_cents"
-        ],
-        "title": "PracticeOut"
-      },
-      "ptk__api__org__PracticeOut": {
-        "properties": {
-          "key": {
-            "type": "string",
-            "title": "Key"
-          },
-          "label": {
-            "type": "string",
-            "title": "Label"
-          }
-        },
-        "type": "object",
-        "required": [
-          "key",
-          "label"
-        ],
-        "title": "PracticeOut"
       }
     }
   }

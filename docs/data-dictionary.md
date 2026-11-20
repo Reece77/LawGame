@@ -118,3 +118,32 @@ Current-state tables for the org (TST formulas.md §13), written after every tur
 | `org_morale_nudge` | `id`, `person_id`, `turn`, `points`, `reason` | int, int, int, float, str | One-off morale changes from org actions (TST §13.7, §13.8), applied by morale in phase 8 of their turn and then cleared |
 
 `decision_log` is written from PT-M2: one row per org action (`source` `player`, payload the action as JSON with its `kind`) and per delegate step (`source` `delegate`).
+
+## Schema v5 (`0005_matters`, PT-M3a)
+
+Clients and judges are written once at game creation. `relationship`, `matter`, `appearance`, `origination` and `market_demand` are current state, rewritten each turn and after each action. `hours_log` is append-only. JSON payload columns hold the rest of each frozen sim model (`ptk/sim/matters/models.py`); hidden values in them (merits, opposing counsel's quality, judges' traits, GCs' personality) never reach the API (CLAUDE.md §10).
+
+| Table | Column | Type | Meaning |
+| --- | --- | --- | --- |
+| `firm` | `conflict_checks` | bool | The firm runs conflicts checks at intake (ADR PT-0009 §5); off, conflicts open unseen and may surface |
+| `client` | `id` | int | 1..300 are `clients.yaml`'s real clients in file order, then the generated ones (stream `client_gen`) |
+| | `name`, `sector`, `real` | str, str, bool | `sector` is a `clients.yaml` sectors key |
+| | `data_json` | text | `country`, `revenue_bn` (2005 USD bn), `size_class` (`large`/`mid`), `price_sensitivity` and `loyalty` (1–20), `panel` (static panel firm keys), `gc` (first and last name, `birth_turn`, hidden personality) |
+| `judge` | `id`, `court` | int, str | Generated judges, courts.yaml order (stream `judge_gen`) |
+| | `first_name`, `last_name`, `real` | str, str, bool | Real judges arrive with PT-M5 |
+| | `traits_json` | text | Hidden procedural traits 1–20 (`courts.yaml` judge_traits): never a side |
+| `relationship` | `client_id`, `firm_id` | int | The firm on the client's panel (only the player's firm keeps relationships in PT-M3a) |
+| | `score` | float | 0–100 (spec §7.2) |
+| | `partner_id` | int, null | The relationship partner, who earns flow origination credit |
+| | `data_json` | text | `practices` (instructed in), `since_turn`, `last_instructed_turn` (current client within `conflicts.current_months`), `advance_waiver`, `lost_share` (last month's unserved share of its flow), `fees` (standard-value cents, the last 12 months), `intro_turns` (latest introduction per practice) |
+| `matter` | `id`, `firm_id`, `client_id`, `practice` | int, int, int, str | A named matter (ADR PT-0004) |
+| | `status` | str | `open`, `conflicted` (waits for a waiver), `closed`, `declined` |
+| | `opened_turn`, `closed_turn` | int, int null | |
+| | `data_json` | text | `kind_key`, `kind`, `name`; `planned_months`, `expected_fees_cents`, `hours_needed_tenths`; parties (`adverse_client_id`, `adverse_name`); flags `critical`, `flagged`, `checked`, `waiver`, `hidden_conflict`, `auto_staff`; `originator_id`, `lead_id`, `team` ([person, role, planned tenths a month]); progress (`phase_index`, `phase_progress`, `worked_tenths`, `wip_cents` at standard value, `craft_hours`, `craft_weight`, `under_months`); `errors_caught`, `errors_escaped`, `missed_deadlines`; `court`, `judge_id`, `stakes_cents`; hidden `merits` and `opposing_quality`; `settlement` ([fraction bp of stakes, made turn, expires turn] or null); `outcome` (`won`, `lost`, `settled`, `closed`, `collapsed`, `done`, `disqualified`), `quality` |
+| `appearance` | `person_id`, `judge_id`, `tenths` | int | Hours a lawyer has appeared before a judge (motions and trial phases), tenths |
+| `origination` | `person_id`, `year`, `cents` | int, int, bigint | Origination credit a calendar year: standard value of the work from a partner's matters and clients |
+| `hours_log` | `id`, `turn`, `person_id`, `client_id`, `practice` | | Append-only: every month's hours by person and named matter or client flow (ADR PT-0005) |
+| | `matter_id` | int, null | Null for flow work |
+| | `tenths`, `substantive_tenths` | int | Hours, and those at or just above the person's level (learn(h)) |
+| | `value_cents` | bigint | tenths × rate ÷ 10, rounded half to even once per (person, matter, month); PT-M3b posts it to WIP |
+| `market_demand` | `practice`, `demand_cents` | str, bigint | The last month's New York demand by practice index (`00`..`09`, practices.yaml order), standard value |

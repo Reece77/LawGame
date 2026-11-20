@@ -14,7 +14,7 @@ scenarios:
     co_founders: # other founding partners, built like the player's (spec 2.1)
       - { background: trial_lawyer, age: 46 }
     starting_staff: # generated at turn 0 (formulas.md 2 adapted)
-      - { role: corporate_ma, level: associate_3 }
+      - { role: corporate_ma, level: associate_4 } # a fourth-year: eligible at the December 2008 vote at track 8 (PT-M7a)
       - { role: commercial_litigation, level: associate_2 }
   - id: solo_founder
     name: Solo founder

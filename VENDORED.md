@@ -78,6 +78,12 @@ Files copied or ported from Tech Startup Tycoon (`Reece77/Tech_Executive_Tycoon`
 | `backend/ptk/events/drafts.py` | `backend/tst/events/drafts.py` | ported | — |
 | `backend/ptk/events/context.py` | `backend/tst/events/context.py` | ported | — |
 | `backend/ptk/events/service.py` | `backend/tst/events/service.py` | ported | — |
+| `frontend/src/lib/table.ts` | `frontend/src/lib/table.ts` | AS IS | ba4074bf9854c56cf8b945b9b83a369484a5b3e37b56345e87126c1f0c88dcfb |
+| `frontend/src/components/DataTable.tsx` | `frontend/src/components/DataTable.tsx` | ported | — |
+| `frontend/src/components/ViewsMenu.tsx` | `frontend/src/components/ViewsMenu.tsx` | ported | — |
+| `frontend/src/hooks/useTableViews.ts` | `frontend/src/hooks/useTableViews.ts` | ported | — |
+| `frontend/src/components/Explain.tsx` | `frontend/src/components/Explain.tsx` | ported | — |
+| `frontend/src/lib/explain.ts` | `frontend/src/lib/explain.ts` | ported | — |
 
 Changes in ported files:
 
@@ -132,3 +138,8 @@ Changes in ported files:
 - `backend/ptk/events/context.py` (PT-M6): legal state (people as revealed words, public matter facts, clients by relationship score, GCs by name only); the real-person rule in the system prompt; spec 15's text asks.
 - `backend/ptk/events/service.py` (PT-M6): KPIs and text kinds for law; the real-person rule; no lender, public or press cases; `write_pending_events` for in-memory runs.
 - `backend/ptk/sim/hiring/phases.py` (PT-M6): event modifiers multiply a person's morale target.
+- `frontend/src/components/DataTable.tsx` (PT-M3c): no glossary `Term` on headers (Partner Track has no glossary yet).
+- `frontend/src/components/ViewsMenu.tsx` (PT-M3c): unchanged but for its header; ported only because the vendoring rename would turn its `tst-` class names into `ptk-` ones.
+- `frontend/src/hooks/useTableViews.ts` (PT-M3c): views in the browser's `localStorage` (`ptk.tableViews`), not `saves/ui_settings.json` through an API; the hook's interface is TST's.
+- `frontend/src/components/Explain.tsx` (PT-M3c): the breakdown, a band and the note only (no 12-month trend or Ask why); Partner Track's `useExplain`.
+- `frontend/src/lib/explain.ts` (PT-M3c): Partner Track's units (hours, ratio, a revealed range, text); `itemText`.

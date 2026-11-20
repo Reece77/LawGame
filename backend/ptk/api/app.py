@@ -15,6 +15,7 @@ from ptk.api.finance import make_finance_router
 from ptk.api.matters import make_matters_router
 from ptk.api.org import make_org_router
 from ptk.api.people import make_router
+from ptk.api.screens import make_screens_router
 from ptk.config import get_settings
 from ptk.db import saves
 from ptk.sim.calendar import format_turn
@@ -229,6 +230,7 @@ def create_app() -> FastAPI:
     app.include_router(make_org_router(errors))
     app.include_router(make_matters_router(errors))
     app.include_router(make_events_router(errors))
+    app.include_router(make_screens_router(errors))
     app.include_router(make_finance_router(errors))
     return app
 

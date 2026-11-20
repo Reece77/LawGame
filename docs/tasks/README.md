@@ -23,4 +23,5 @@ Each brief is a self-contained prompt for a coding agent, in Tech Startup Tycoon
 | [PT-M4-the-partnership.md](PT-M4-the-partnership.md) | Capital, comp, PEP, votes, elections, laterals, flight | PT-M3b |
 | [PT-M5-rival-firms.md](PT-M5-rival-firms.md) | Real rivals, utility AI, RFPs, poaching, history pin | PT-M3a |
 | [PT-M6-events.md](PT-M6-events.md) | Events and the LLM | PT-M3a |
+| [PT-M7a-v1-gaps.md](PT-M7a-v1-gaps.md) | Scenario fix, staffing for expected output, pro bono, early case assessment, rate rises, Holiday stops | PT-M3a–PT-M6 |
 | [PT-M7-balance-and-v1-close.md](PT-M7-balance-and-v1-close.md) | Strategies, macro history, balance, Holiday, History | all |

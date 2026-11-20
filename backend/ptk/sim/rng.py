@@ -39,6 +39,8 @@ STREAM_IDS: Final = MappingProxyType(
         "matter": 22,  # (matter_id,): a matter's month: judge, progress, errors, outcome (PT-M3a)
         "billing": 23,  # (purpose, id): terms, bills, clients, disputes (PT-M3b; ADR PT-0012)
         "conflict": 24,  # (matter_id,): a hidden conflict surfacing (PT-M3a)
+        "rfp": 25,  # (0, client_id) an RFP's opening roll; (1, rfp_id) its award (PT-M5)
+        "rival_firm": 26,  # (*rival_key,): a rival firm's month: demand shock, decisions (PT-M5)
         "lateral": 27,  # (person_id,): a lateral offer's answer, portability, arrivals (PT-M4)
         "vote": 28,  # (vote_id, person_id): each partner's vote noise (PT-M4)
         "strain": 29,  # (person_id,): a generated person's starting strain (PT-M1a)
@@ -46,6 +48,12 @@ STREAM_IDS: Final = MappingProxyType(
         "client_gen": 31,  # (client_index,): a client, its panel and its general counsel (PT-M3a)
         "judge_gen": 33,  # (court_index, n): the n-th generated judge of a court (PT-M3a)
         "book": 34,  # (founder_index,): the clients a founding partner's book came from (PT-M3a)
+        "rival_gen": 35,  # (*rival_key,): a generated firm or a boutique's founding (PT-M5)
+        "rival_people": 36,  # (*rival_key, n): a rival's n-th key person (PT-M5)
+        "real_swap": 37,  # (kind, index): a real judge's generated name if real people are off
+        "opposing": 38,  # (matter_id,): a case's opposing counsel (PT-M5)
+        "rival_fate": 39,  # (*rival_key,): a rival's collapse hazard and scatter (PT-M5)
+        "rival_poach": 40,  # (*rival_key, 0, made_turn): a rival's approach answered (PT-M5)
         "misc": 99,  # tests only
     }
 )

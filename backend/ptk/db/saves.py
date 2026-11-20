@@ -17,6 +17,7 @@ from ptk.db.market_io import write_market
 from ptk.db.models import DecisionLogRow, FirmRow, SaveMetaRow, TurnSnapshotRow
 from ptk.db.org_io import write_delegate_actions
 from ptk.db.partnership_io import write_partnership
+from ptk.db.rivals_io import write_panels, write_rival_moves, write_rivals
 from ptk.db.session import make_sessionmaker, shared_engine
 from ptk.db.state_io import (
     META_ID,
@@ -74,6 +75,7 @@ def create_save(
     balance: Balance,
     seed: int | None = None,
     founder: FounderSpec | None = None,
+    real_people: bool | None = None,
 ) -> GameState:
     path = save_path(save_dir, slug)
     if path.exists():
@@ -88,6 +90,7 @@ def create_save(
         data=data,
         balance=balance,
         founder=founder,
+        real_people=real_people,
     )
     save_dir.mkdir(parents=True, exist_ok=True)
     migrate.upgrade_new(path)
@@ -148,6 +151,7 @@ def run_turn(
             result.client_book,
         )
         write_delegate_actions(session, state.turn, result.delegate_actions)
+        write_rival_moves(session, state.turn, result.rival_moves)  # PT-M5
         add_text_requests(session, result.text_requests)
     write_pending(path, balance, data, adapter=adapter)
     if result.new_state.turn % balance.backups.every_turns == 0:
@@ -183,6 +187,8 @@ def run_action(path: Path, action: Action, balance: Balance, data: GameData) -> 
         write_market(session, outcome.state.market, append_hours=False)
         write_events(session, outcome.state.events)
         write_billing(session, outcome.state.billing)
+        write_rivals(session, outcome.state.rivals)  # PT-M5
+        write_panels(session, outcome.state.market)
         write_partnership(session, outcome.state.partnership)
         session.add(
             DecisionLogRow(

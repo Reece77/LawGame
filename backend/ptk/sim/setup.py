@@ -22,6 +22,7 @@ from ptk.sim.people.generator import generate_person, people_gen_stream
 from ptk.sim.people.models import Employment, Person, RevealState
 from ptk.sim.people.reveal import apply_knowledge_action, new_reveal_state
 from ptk.sim.people.strain import initial_strain
+from ptk.sim.rivals.setup import new_rivals
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import FirmState, GameState, SaveMeta
 
@@ -46,6 +47,7 @@ def new_game(
     data: GameData,
     balance: Balance,
     founder: FounderSpec | None = None,
+    real_people: bool | None = None,
 ) -> NewGame:
     scenario = data.scenario(scenario_id)
     if scenario is None or not scenario.available:
@@ -84,6 +86,9 @@ def new_game(
     state = replace(
         state, market=new_market(state, firm.id, RngFactory(master_seed), data, balance)
     )
+    # PT-M5: rival firms, their key people and real judges (ADR PT-0013's world.real_people)
+    real = balance.world.real_people if real_people is None else real_people
+    state = new_rivals(state, RngFactory(master_seed), data, balance, real)
     capital = pct_of(scenario.partners_capital_cents, level.capital_mult_bp)
     # PT-M4: the founders' agreement, capital accounts and the revolver's facility
     state = replace(

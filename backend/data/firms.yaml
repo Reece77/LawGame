@@ -1,0 +1,1611 @@
+# Rival firms at fiscal 2005 and their path to 2015 (PT-M5; spec 10.1, 10.3; ADR PT-0008).
+# Sources: docs/research/rivals-2005.md (FY2005, events) and its path pass (the "Path, FY2007-2015"
+# section there: FY2007/2009/2012/2015). Tags in each `src`: S sourced, D derived, A assumed
+# (basis in the dossier); keys such as S1, G09, M3 are the dossier's source and method keys.
+# Money is integer cents (revenue_cents a fiscal year; pep_cents per equity partner).
+#   key: the stable rival key (TST ADR-0013 amendment); client panels carry it.
+#   personality: spec 10.1 [A for every firm]; hq, offices, comp: [A] unless the comp says S.
+#   strong: practices with double weight in the firm's lawyer mix [A], from the dossier's main
+#     practices and clients.yaml's panel strengths.
+#   panel_base: NY panel appeal (logit points), from clients.yaml's panel_firms where listed.
+#   fy2005: the turn-0 figures; path: later fiscal years the history pin follows. DLA Piper is
+#     pinned on its US basis only (FY2005-2009): the verein basis from FY2012 is another firm's
+#     scope (dossier weakness 6). Pinned checks (T11) use only points whose revenue tag is S.
+#   events: dated history (spec 10.3), conditional on the player's effects (ADR PT-0008 2).
+#     outside_merger: a merger with a firm the game does not model (a step in the path);
+#     merger: two rivals become `into`; collapse: the firm dissolves; absorbed: `share` of its
+#     people join `other`; rename: a new name.
+firms:
+- key: skadden
+  name: Skadden, Arps, Slate, Meagher & Flom
+  short: Skadden
+  personality: performance_machine
+  hq: new_york
+  offices: 22
+  comp: modified lockstep [A]
+  strong:
+  - corporate_ma
+  - commercial_litigation
+  - white_collar
+  - capital_markets
+  panel_base: 1.6
+  fy2005:
+    year: 2005
+    revenue_cents: 161000000000
+    lawyers: 1616
+    equity_partners: 386
+    pep_cents: 200000000
+    src: rev S S1; lawyers S S1; EP A M4; PEP S snip S9
+  path:
+  - year: 2007
+    revenue_cents: 217000000000
+    lawyers: 2005
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 210000000000
+    lawyers: 1860
+    src: rev S G09; lawyers S N3
+  - year: 2012
+    revenue_cents: 220600000000
+    lawyers: 1700
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 241000000000
+    lawyers: 1691
+    src: rev S G15; lawyers D M1
+- key: baker_mckenzie
+  name: Baker & McKenzie
+  short: Baker & McKenzie
+  personality: global_verein
+  hq: chicago
+  offices: 70
+  comp: verein, regional pools [S W]
+  strong:
+  - corporate_ma
+  - banking_finance
+  - ip
+  - employment
+  fy2005:
+    year: 2005
+    revenue_cents: 135200000000
+    lawyers: 2984
+    equity_partners: 460
+    pep_cents: 100000000
+    src: rev S S1; lawyers S S1; EP A M4; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 218800000000
+    lawyers: 3700
+    src: rev S G07; lawyers A
+  - year: 2009
+    revenue_cents: 211200000000
+    lawyers: 3800
+    src: rev S S19; lawyers A
+  - year: 2012
+    revenue_cents: 232400000000
+    lawyers: 3805
+    src: rev D M2; lawyers S ABA12
+  - year: 2015
+    revenue_cents: 262000000000
+    lawyers: 5011
+    src: rev S G15; lawyers D M1
+- key: jones_day
+  name: Jones Day
+  short: Jones Day
+  personality: regional_champion
+  hq: cleveland
+  offices: 30
+  comp: closed, discretionary [A]
+  strong:
+  - commercial_litigation
+  - employment
+  - ip
+  panel_base: 1.2
+  fy2005:
+    year: 2005
+    revenue_cents: 128500000000
+    lawyers: 2136
+    equity_partners: 537
+    pep_cents: 110000000
+    src: rev S S1; lawyers S S1; EP A M4; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 144100000000
+    lawyers: 2270
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 152000000000
+    lawyers: 2469
+    src: rev S G09; lawyers S N3
+  - year: 2012
+    revenue_cents: 170900000000
+    lawyers: 2380
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 194000000000
+    lawyers: 2530
+    src: rev S G15; lawyers D M1
+- key: latham
+  name: Latham & Watkins
+  short: Latham
+  personality: performance_machine
+  hq: los_angeles
+  offices: 24
+  comp: modified lockstep [A]
+  strong:
+  - capital_markets
+  - banking_finance
+  - ip
+  panel_base: 1.4
+  fy2005:
+    year: 2005
+    revenue_cents: 141250000000
+    lawyers: 1615
+    equity_partners: 357
+    pep_cents: 190000000
+    src: rev S S1; lawyers S S1; EP A M4; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 200550000000
+    lawyers: 2130
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 182100000000
+    lawyers: 1880
+    src: rev S G09; lawyers S N3
+  - year: 2012
+    revenue_cents: 224200000000
+    lawyers: 2020
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 265000000000
+    lawyers: 2186
+    src: rev S G15; lawyers D M1
+- key: sidley
+  name: Sidley Austin Brown & Wood
+  short: Sidley
+  personality: regional_champion
+  hq: chicago
+  offices: 15
+  comp: two-tier [A]
+  strong:
+  - capital_markets
+  - commercial_litigation
+  - banking_finance
+  fy2005:
+    year: 2005
+    revenue_cents: 112400000000
+    lawyers: 1454
+    equity_partners: 294
+    pep_cents: 130000000
+    src: rev S S1; lawyers S S1; EP A M4; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 138600000000
+    lawyers: 1675
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 135700000000
+    lawyers: 1588
+    src: rev S G09; lawyers S N3
+  - year: 2012
+    revenue_cents: 150400000000
+    lawyers: 1560
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 186000000000
+    lawyers: 1780
+    src: rev S G15; lawyers D M1
+- key: white_case
+  name: White & Case
+  short: White & Case
+  personality: global_verein
+  hq: new_york
+  offices: 37
+  comp: modified lockstep [A]
+  strong:
+  - banking_finance
+  - corporate_ma
+  - commercial_litigation
+  fy2005:
+    year: 2005
+    revenue_cents: 104600000000
+    lawyers: 1744
+    equity_partners: 309
+    pep_cents: 115000000
+    src: rev S S1; lawyers S S1; EP A M4; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 137300000000
+    lawyers: 2170
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 130700000000
+    lawyers: 1890
+    src: rev S G09; lawyers S N3
+  - year: 2012
+    revenue_cents: 139000000000
+    lawyers: 1940
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 152000000000
+    lawyers: 1978
+    src: rev S G15; lawyers D M1
+- key: weil
+  name: Weil, Gotshal & Manges
+  short: Weil
+  personality: performance_machine
+  hq: new_york
+  offices: 18
+  comp: modified lockstep [A]
+  strong:
+  - restructuring
+  - private_equity
+  - ip
+  panel_base: 1.4
+  fy2005:
+    year: 2005
+    revenue_cents: 101650000000
+    lawyers: 1066
+    equity_partners: 192
+    pep_cents: 185000000
+    src: rev S S1; lawyers S S1; EP A M4; PEP S snip S7
+  path:
+  - year: 2007
+    revenue_cents: 117500000000
+    lawyers: 1220
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 123300000000
+    lawyers: 1212
+    src: rev S G09; lawyers S N3
+  - year: 2012
+    revenue_cents: 124200000000
+    lawyers: 1270
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 116000000000
+    lawyers: 1173
+    src: rev S G15; lawyers D M1
+- key: mayer_brown
+  name: Mayer, Brown, Rowe & Maw
+  short: Mayer Brown
+  personality: regional_champion
+  hq: chicago
+  offices: 15
+  comp: two-tier [A]
+  strong:
+  - banking_finance
+  - commercial_litigation
+  - capital_markets
+  fy2005:
+    year: 2005
+    revenue_cents: 98000000000
+    lawyers: 1307
+    equity_partners: 229
+    pep_cents: 120000000
+    src: rev S S1; lawyers S S1; EP A M4; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 118300000000
+    lawyers: 1540
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 111800000000
+    lawyers: 1420
+    src: rev S G09; lawyers A M3
+  - year: 2012
+    revenue_cents: 108400000000
+    lawyers: 1330
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 125000000000
+    lawyers: 1478
+    src: rev S G15; lawyers D M1
+- key: morgan_lewis
+  name: Morgan, Lewis & Bockius
+  short: Morgan Lewis
+  personality: regional_champion
+  hq: philadelphia
+  offices: 20
+  comp: two-tier [A]
+  strong:
+  - employment
+  - commercial_litigation
+  - banking_finance
+  fy2005:
+    year: 2005
+    revenue_cents: 80450000000
+    lawyers: 1176
+    equity_partners: 302
+    pep_cents: 120000000
+    src: rev S S1; lawyers S S1; EP A M4; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 103300000000
+    lawyers: 1365
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 106850000000
+    lawyers: 1290
+    src: rev S G09; lawyers A M3
+  - year: 2012
+    revenue_cents: 124000000000
+    lawyers: 1320
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 184000000000
+    lawyers: 1754
+    src: rev S G15; lawyers D M1
+- key: kirkland
+  name: Kirkland & Ellis
+  short: Kirkland
+  personality: performance_machine
+  hq: chicago
+  offices: 9
+  comp: two-tier [S dossier]
+  strong:
+  - private_equity
+  - restructuring
+  - ip
+  panel_base: 1.4
+  fy2005:
+    year: 2005
+    revenue_cents: 97000000000
+    lawyers: 983
+    equity_partners: 267
+    pep_cents: 200000000
+    src: rev S S1; lawyers S S1; EP A M4; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 131000000000
+    lawyers: 1225
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 142800000000
+    lawyers: 1411
+    src: rev S G09; lawyers S N3
+  - year: 2012
+    revenue_cents: 192100000000
+    lawyers: 1500
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 230000000000
+    lawyers: 1641
+    src: rev S G15; lawyers D M1
+- key: gibson_dunn
+  name: Gibson, Dunn & Crutcher
+  short: Gibson Dunn
+  personality: performance_machine
+  hq: los_angeles
+  offices: 15
+  comp: modified lockstep [A]
+  strong:
+  - commercial_litigation
+  - corporate_ma
+  - white_collar
+  fy2005:
+    year: 2005
+    revenue_cents: 74600000000
+    lawyers: 738
+    equity_partners: 268
+    pep_cents: 170000000
+    src: rev S S1; lawyers S S1; EP A M4; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 90750000000
+    lawyers: 855
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 99500000000
+    lawyers: 900
+    src: rev S G09; lawyers A M3
+  - year: 2012
+    revenue_cents: 129400000000
+    lawyers: 1090
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 153000000000
+    lawyers: 1216
+    src: rev S G15; lawyers D M1
+- key: sullivan_cromwell
+  name: Sullivan & Cromwell
+  short: Sullivan & Cromwell
+  personality: elite_lockstep
+  hq: new_york
+  offices: 12
+  comp: lockstep [A]
+  strong:
+  - corporate_ma
+  - capital_markets
+  - banking_finance
+  panel_base: 1.7
+  fy2005:
+    year: 2005
+    revenue_cents: 87500000000
+    lawyers: 538
+    equity_partners: 179
+    pep_cents: 240000000
+    src: rev S S1; lawyers S S1; EP A M4; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 98500000000
+    lawyers: 605
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 99500000000
+    lawyers: 700
+    src: rev S G09; lawyers S N3
+  - year: 2012
+    revenue_cents: 119700000000
+    lawyers: 730
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 131000000000
+    lawyers: 797
+    src: rev S G15; lawyers D M1
+- key: cravath
+  name: Cravath, Swaine & Moore
+  short: Cravath
+  personality: elite_lockstep
+  hq: new_york
+  offices: 2
+  comp: pure lockstep [A]
+  strong:
+  - corporate_ma
+  - capital_markets
+  - commercial_litigation
+  panel_base: 1.7
+  fy2005:
+    year: 2005
+    revenue_cents: 50050000000
+    lawyers: 391
+    equity_partners: 90
+    pep_cents: 260000000
+    src: rev S S1; lawyers S S1; EP A M4; PEP S snip S3
+  path:
+  - year: 2007
+    revenue_cents: 61050000000
+    lawyers: 465
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 56850000000
+    lawyers: 425
+    src: rev S G09; lawyers A M3
+  - year: 2012
+    revenue_cents: 60700000000
+    lawyers: 440
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 66650000000
+    lawyers: 472
+    src: rev S G15; lawyers D M1
+- key: wachtell
+  name: Wachtell, Lipton, Rosen & Katz
+  short: Wachtell
+  personality: elite_lockstep
+  hq: new_york
+  offices: 1
+  comp: pure lockstep [A]
+  strong:
+  - corporate_ma
+  - restructuring
+  panel_base: 1.4
+  fy2005:
+    year: 2005
+    revenue_cents: 44300000000
+    lawyers: 185
+    equity_partners: 75
+    pep_cents: 380000000
+    src: rev S S1; lawyers S S1; EP A M4; PEP S snip S3
+  path:
+  - year: 2007
+    revenue_cents: 57850000000
+    lawyers: 227
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 58500000000
+    lawyers: 231
+    src: rev S G09; lawyers D N4
+  - year: 2012
+    revenue_cents: 61400000000
+    lawyers: 209
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 83150000000
+    lawyers: 262
+    src: rev S G15; lawyers D M1
+- key: davis_polk
+  name: Davis Polk & Wardwell
+  short: Davis Polk
+  personality: elite_lockstep
+  hq: new_york
+  offices: 8
+  comp: pure lockstep, all-equity [S dossier]
+  strong:
+  - capital_markets
+  - banking_finance
+  - white_collar
+  panel_base: 1.6
+  fy2005:
+    year: 2005
+    revenue_cents: 60450000000
+    lawyers: 529
+    equity_partners: 124
+    pep_cents: 200000000
+    src: rev S S1; lawyers S S1; EP A M4; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 78900000000
+    lawyers: 675
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 84600000000
+    lawyers: 685
+    src: rev S G09; lawyers D N4
+  - year: 2012
+    revenue_cents: 95200000000
+    lawyers: 770
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 110000000000
+    lawyers: 865
+    src: rev S G15; lawyers D M1
+- key: simpson_thacher
+  name: Simpson Thacher & Bartlett
+  short: Simpson Thacher
+  personality: elite_lockstep
+  hq: new_york
+  offices: 9
+  comp: lockstep [A]
+  strong:
+  - private_equity
+  - banking_finance
+  - corporate_ma
+  panel_base: 1.6
+  fy2005:
+    year: 2005
+    revenue_cents: 72700000000
+    lawyers: 647
+    equity_partners: 165
+    pep_cents: 220000000
+    src: rev S S1; lawyers S S1; EP A M4; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 96600000000
+    lawyers: 830
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 87050000000
+    lawyers: 725
+    src: rev S G09; lawyers A M3
+  - year: 2012
+    revenue_cents: 99100000000
+    lawyers: 785
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 127000000000
+    lawyers: 960
+    src: rev S G15; lawyers D M1
+- key: paul_weiss
+  name: Paul, Weiss, Rifkind, Wharton & Garrison
+  short: Paul Weiss
+  personality: elite_lockstep
+  hq: new_york
+  offices: 7
+  comp: modified lockstep [A]
+  strong:
+  - commercial_litigation
+  - real_estate
+  - corporate_ma
+  panel_base: 1.5
+  fy2005:
+    year: 2005
+    revenue_cents: 56300000000
+    lawyers: 546
+    equity_partners: 138
+    pep_cents: 200000000
+    src: rev S S1; lawyers S S1; EP A M4; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 65100000000
+    lawyers: 615
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 66550000000
+    lawyers: 615
+    src: rev S G09; lawyers A M3
+  - year: 2012
+    revenue_cents: 88200000000
+    lawyers: 790
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 110900000000
+    lawyers: 956
+    src: rev S G15; lawyers D M1
+- key: cleary
+  name: Cleary Gottlieb Steen & Hamilton
+  short: Cleary
+  personality: elite_lockstep
+  hq: new_york
+  offices: 12
+  comp: pure lockstep [A]
+  strong:
+  - capital_markets
+  - corporate_ma
+  panel_base: 1.5
+  fy2005:
+    year: 2005
+    revenue_cents: 76000000000
+    lawyers: 833
+    equity_partners: 178
+    pep_cents: 196000000
+    src: rev S S1; lawyers S S1; EP A M4; PEP D S4
+  path:
+  - year: 2007
+    revenue_cents: 89400000000
+    lawyers: 975
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 96500000000
+    lawyers: 992
+    src: rev S G09; lawyers S N3
+  - year: 2012
+    revenue_cents: 112700000000
+    lawyers: 1220
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 121000000000
+    lawyers: 1302
+    src: rev S G15; lawyers D M1
+- key: debevoise
+  name: Debevoise & Plimpton
+  short: Debevoise
+  personality: elite_lockstep
+  hq: new_york
+  offices: 8
+  comp: lockstep, single tier [S dossier]
+  strong:
+  - private_equity
+  - white_collar
+  panel_base: 1.4
+  fy2005:
+    year: 2005
+    revenue_cents: 53550000000
+    lawyers: 579
+    equity_partners: 139
+    pep_cents: 170000000
+    src: rev S S1; lawyers S S1; EP A M4; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 70950000000
+    lawyers: 720
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 66800000000
+    lawyers: 640
+    src: rev S G09; lawyers A M3
+  - year: 2012
+    revenue_cents: 67400000000
+    lawyers: 600
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 75690000000
+    lawyers: 622
+    src: rev S G15; lawyers D M1
+- key: shearman
+  name: Shearman & Sterling
+  short: Shearman
+  personality: elite_lockstep
+  hq: new_york
+  offices: 19
+  comp: modified lockstep [A]
+  strong:
+  - banking_finance
+  - capital_markets
+  panel_base: 1.3
+  fy2005:
+    year: 2005
+    revenue_cents: 83500000000
+    lawyers: 842
+    equity_partners: 181
+    pep_cents: 148000000
+    src: rev S S1; lawyers S S1; EP A M4; PEP S snip S6
+  path:
+  - year: 2007
+    revenue_cents: 92100000000
+    lawyers: 925
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 80100000000
+    lawyers: 800
+    src: rev S G09; lawyers A M3
+  - year: 2012
+    revenue_cents: 75100000000
+    lawyers: 745
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 86030000000
+    lawyers: 846
+    src: rev S G15; lawyers D M1
+- key: milbank
+  name: Milbank, Tweed, Hadley & McCloy
+  short: Milbank
+  personality: elite_lockstep
+  hq: new_york
+  offices: 10
+  comp: lockstep [A]
+  strong:
+  - banking_finance
+  - restructuring
+  panel_base: 1.3
+  fy2005:
+    year: 2005
+    revenue_cents: 49600000000
+    lawyers: 494
+    equity_partners: 133
+    pep_cents: 190000000
+    src: rev S S1; lawyers S S1; EP A M4; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 64250000000
+    lawyers: 615
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 60150000000
+    lawyers: 555
+    src: rev S G09; lawyers A M3
+  - year: 2012
+    revenue_cents: 66200000000
+    lawyers: 580
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 77110000000
+    lawyers: 647
+    src: rev S G15; lawyers D M1
+- key: fried_frank
+  name: Fried, Frank, Harris, Shriver & Jacobson
+  short: Fried Frank
+  personality: elite_lockstep
+  hq: new_york
+  offices: 6
+  comp: modified lockstep [A]
+  strong:
+  - real_estate
+  - corporate_ma
+  panel_base: 1.2
+  fy2005:
+    year: 2005
+    revenue_cents: 39000000000
+    lawyers: 438
+    equity_partners: 98
+    pep_cents: 160000000
+    src: rev S S1; lawyers S S1; EP A M4; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 53750000000
+    lawyers: 560
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 42450000000
+    lawyers: 415
+    src: rev S G09; lawyers A M3
+  - year: 2012
+    revenue_cents: 44100000000
+    lawyers: 390
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 50430000000
+    lawyers: 409
+    src: rev S G15; lawyers D M1
+- key: cadwalader
+  name: Cadwalader, Wickersham & Taft
+  short: Cadwalader
+  personality: performance_machine
+  hq: new_york
+  offices: 5
+  comp: two-tier [A]
+  strong:
+  - capital_markets
+  - banking_finance
+  - restructuring
+  fy2005:
+    year: 2005
+    revenue_cents: 48300000000
+    lawyers: 514
+    equity_partners: 65
+    pep_cents: 230000000
+    src: rev S AS-RPL; lawyers S; EP A M4; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 58700000000
+    lawyers: 615
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 45650000000
+    lawyers: 470
+    src: rev S G09; lawyers A M3
+  - year: 2012
+    revenue_cents: 47000000000
+    lawyers: 470
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 46350000000
+    lawyers: 451
+    src: rev S G15; lawyers D M1
+- key: willkie
+  name: Willkie Farr & Gallagher
+  short: Willkie
+  personality: elite_lockstep
+  hq: new_york
+  offices: 9
+  comp: modified lockstep [A]
+  strong:
+  - private_equity
+  - corporate_ma
+  - restructuring
+  fy2005:
+    year: 2005
+    revenue_cents: 44300000000
+    lawyers: 516
+    equity_partners: 128
+    pep_cents: 180000000
+    src: rev S AS-RPL; lawyers S; EP A M4; PEP S LW-WILLKIE06
+  path:
+  - year: 2007
+    revenue_cents: 60300000000
+    lawyers: 655
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 54950000000
+    lawyers: 560
+    src: rev S G09; lawyers A M3
+  - year: 2012
+    revenue_cents: 52900000000
+    lawyers: 495
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 65800000000
+    lawyers: 565
+    src: rev S G15; lawyers D M1
+- key: proskauer
+  name: Proskauer Rose
+  short: Proskauer
+  personality: performance_machine
+  hq: new_york
+  offices: 8
+  comp: two-tier [A]
+  strong:
+  - employment
+  - real_estate
+  - commercial_litigation
+  fy2005:
+    year: 2005
+    revenue_cents: 45350000000
+    lawyers: 609
+    equity_partners: 141
+    pep_cents: 130000000
+    src: rev S AS-RPL; lawyers S; EP A M4; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 62800000000
+    lawyers: 685
+    src: rev S G07; lawyers S LW-PROSK09
+  - year: 2009
+    revenue_cents: 64300000000
+    lawyers: 700
+    src: rev S G09; lawyers A M3
+  - year: 2012
+    revenue_cents: 74500000000
+    lawyers: 710
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 82230000000
+    lawyers: 698
+    src: rev S G15; lawyers D M1
+- key: dewey_ballantine
+  name: Dewey Ballantine
+  short: Dewey Ballantine
+  personality: elite_lockstep
+  hq: new_york
+  offices: 12
+  comp: modified lockstep [A]
+  strong:
+  - corporate_ma
+  - capital_markets
+  - commercial_litigation
+  fy2005:
+    year: 2005
+    revenue_cents: 39250000000
+    lawyers: 502
+    equity_partners: 102
+    pep_cents: 135000000
+    src: rev S AS-RPL; lawyers S; EP A; PEP A
+  path:
+  - year: 2006
+    revenue_cents: 42200000000
+    lawyers: 530
+    src: 'rev A: FY2007 pre-merger $431M [S G07] trend; lawyers A'
+- key: leboeuf
+  name: LeBoeuf, Lamb, Greene & MacRae
+  short: LeBoeuf
+  personality: volume_mid_market
+  hq: new_york
+  offices: 20
+  comp: two-tier [A]
+  strong:
+  - banking_finance
+  - commercial_litigation
+  - corporate_ma
+  fy2005:
+    year: 2005
+    revenue_cents: 44000000000
+    lawyers: 612
+    equity_partners: 123
+    pep_cents: 125000000
+    src: rev S AS-RPL; lawyers S; EP A; PEP A
+  path:
+  - year: 2006
+    revenue_cents: 52000000000
+    lawyers: 700
+    src: 'rev A: FY2007 pre-merger $577.5M [S G07] trend; lawyers S ABA-DEWEY07 >700'
+- key: ropes_gray
+  name: Ropes & Gray
+  short: Ropes & Gray
+  personality: performance_machine
+  hq: boston
+  offices: 4
+  comp: modified lockstep [A]
+  strong:
+  - private_equity
+  - ip
+  - white_collar
+  fy2005:
+    year: 2005
+    revenue_cents: 55800000000
+    lawyers: 664
+    equity_partners: 213
+    pep_cents: 118000000
+    src: rev S AS-RPL; lawyers S; EP A M4; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 73300000000
+    lawyers: 795
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 78950000000
+    lawyers: 785
+    src: rev S G09; lawyers A M3
+  - year: 2012
+    revenue_cents: 95500000000
+    lawyers: 1100
+    src: rev D M2; lawyers S W-RG headcount
+  - year: 2015
+    revenue_cents: 139000000000
+    lawyers: 1109
+    src: rev S G15; lawyers D M1
+- key: wilmerhale
+  name: Wilmer Cutler Pickering Hale and Dorr
+  short: WilmerHale
+  personality: elite_lockstep
+  hq: washington
+  offices: 12
+  comp: modified lockstep [A]
+  strong:
+  - white_collar
+  - ip
+  - commercial_litigation
+  fy2005:
+    year: 2005
+    revenue_cents: 81500000000
+    lawyers: 964
+    equity_partners: 356
+    pep_cents: 91500000
+    src: rev S AS-RPL; lawyers S; EP A M4; PEP S AS-T20
+  path:
+  - year: 2007
+    revenue_cents: 94400000000
+    lawyers: 1015
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 94100000000
+    lawyers: 990
+    src: rev S G09; lawyers S JDJ-WH10 approx
+  - year: 2012
+    revenue_cents: 108000000000
+    lawyers: 945
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 114000000000
+    lawyers: 897
+    src: rev S G15; lawyers D M1
+- key: covington
+  name: Covington & Burling
+  short: Covington
+  personality: elite_lockstep
+  hq: washington
+  offices: 7
+  comp: modified lockstep [A]
+  strong:
+  - white_collar
+  - commercial_litigation
+  - ip
+  fy2005:
+    year: 2005
+    revenue_cents: 38000000000
+    lawyers: 491
+    equity_partners: 159
+    pep_cents: 110000000
+    src: rev S AS-RPL; lawyers S; EP A M4; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 46700000000
+    lawyers: 580
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 58300000000
+    lawyers: 695
+    src: rev S G09; lawyers A M3
+  - year: 2012
+    revenue_cents: 65500000000
+    lawyers: 735
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 74250000000
+    lawyers: 793
+    src: rev S G15; lawyers S L360-15
+- key: hogan_hartson
+  name: Hogan & Hartson
+  short: Hogan & Hartson
+  personality: regional_champion
+  hq: washington
+  offices: 23
+  comp: modified lockstep [A]
+  strong:
+  - commercial_litigation
+  - ip
+  - corporate_ma
+  fy2005:
+    year: 2005
+    revenue_cents: 70000000000
+    lawyers: 953
+    equity_partners: 264
+    pep_cents: 90000000
+    src: rev S AS-RPL; lawyers S; EP A M4; PEP S AS-T20
+  path:
+  - year: 2007
+    revenue_cents: 88000000000
+    lawyers: 1035
+    src: rev S G07; lawyers D dossier
+  - year: 2009
+    revenue_cents: 86450000000
+    lawyers: 1100
+    src: rev S G09; lawyers A
+  - year: 2012
+    revenue_cents: 165200000000
+    lawyers: 2300
+    src: rev D M2 Hogan Lovells; lawyers A
+  - year: 2015
+    revenue_cents: 182000000000
+    lawyers: 2541
+    src: rev S G15 Hogan Lovells; lawyers D M1
+- key: greenberg_traurig
+  name: Greenberg Traurig
+  short: Greenberg Traurig
+  personality: volume_mid_market
+  hq: miami
+  offices: 30
+  comp: two-tier [A]
+  strong:
+  - real_estate
+  - commercial_litigation
+  - corporate_ma
+  fy2005:
+    year: 2005
+    revenue_cents: 86050000000
+    lawyers: 1334
+    equity_partners: 270
+    pep_cents: 105000000
+    src: rev S AS-RPL; lawyers S; EP A M4; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 120000000000
+    lawyers: 1810
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 117300000000
+    lawyers: 1730
+    src: rev S G09; lawyers A M3
+  - year: 2012
+    revenue_cents: 123600000000
+    lawyers: 1755
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 132100000000
+    lawyers: 1811
+    src: rev S G15; lawyers D M1
+- key: dla_piper
+  name: DLA Piper Rudnick Gray Cary (US)
+  short: DLA Piper
+  personality: global_verein
+  hq: baltimore
+  offices: 23
+  comp: spread 13.5:1 [S dossier]
+  strong:
+  - corporate_ma
+  - real_estate
+  - ip
+  - employment
+  fy2005:
+    year: 2005
+    revenue_cents: 89050000000
+    lawyers: 1303
+    equity_partners: 215
+    pep_cents: 103600000
+    src: rev S AS-RPL; lawyers S; EP A; PEP S snip SNIP-DLA
+  path:
+  - year: 2007
+    revenue_cents: 113450000000
+    lawyers: 1550
+    src: rev S G07 US; lawyers A
+  - year: 2009
+    revenue_cents: 101450000000
+    lawyers: 1450
+    src: rev S G09 US; lawyers A
+- key: quinn_emanuel
+  name: Quinn Emanuel Urquhart Oliver & Hedges
+  short: Quinn Emanuel
+  personality: litigation_boutique
+  hq: los_angeles
+  offices: 4
+  comp: formula [A]
+  strong:
+  - commercial_litigation
+  - ip
+  - white_collar
+  fy2005:
+    year: 2005
+    revenue_cents: 19350000000
+    lawyers: 250
+    equity_partners: 63
+    pep_cents: 194000000
+    src: rev D LABJ-QE07; lawyers A; EP A M4; PEP D
+  path:
+  - year: 2007
+    revenue_cents: 38450000000
+    lawyers: 360
+    src: rev S G07; lawyers A
+  - year: 2009
+    revenue_cents: 41900000000
+    lawyers: 400
+    src: rev S G09 (doubtful); lawyers A
+  - year: 2012
+    revenue_cents: 85260000000
+    lawyers: 697
+    src: rev S ATL-QE13; lawyers D dossier
+  - year: 2015
+    revenue_cents: 104000000000
+    lawyers: 671
+    src: rev S G15; lawyers D M1
+- key: williams_connolly
+  name: Williams & Connolly
+  short: Williams & Connolly
+  personality: litigation_boutique
+  hq: washington
+  offices: 1
+  comp: lockstep [A]
+  strong:
+  - commercial_litigation
+  - white_collar
+  fy2005:
+    year: 2005
+    revenue_cents: 21000000000
+    lawyers: 230
+    equity_partners: 90
+    pep_cents: 100000000
+    src: rev A; lawyers A; EP A; PEP A
+  path:
+  - year: 2009
+    revenue_cents: 30000000000
+    lawyers: 250
+    src: rev A; lawyers A
+  - year: 2012
+    revenue_cents: 33000000000
+    lawyers: 270
+    src: rev D M2; lawyers A
+  - year: 2015
+    revenue_cents: 40300000000
+    lawyers: 302
+    src: rev S G15; lawyers D M1
+- key: boies_schiller
+  name: Boies Schiller & Flexner
+  short: Boies Schiller
+  personality: litigation_boutique
+  hq: armonk
+  offices: 10
+  comp: formula [S TAL-BSF09]
+  strong:
+  - commercial_litigation
+  - white_collar
+  fy2005:
+    year: 2005
+    revenue_cents: 18000000000
+    lawyers: 200
+    equity_partners: 33
+    pep_cents: 200000000
+    src: rev A; lawyers A; EP A; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 25000000000
+    lawyers: 230
+    src: rev D dossier; lawyers A
+  - year: 2009
+    revenue_cents: 31000000000
+    lawyers: 250
+    src: rev A; lawyers A
+  - year: 2012
+    revenue_cents: 32400000000
+    lawyers: 270
+    src: rev D M2; lawyers A
+  - year: 2015
+    revenue_cents: 38000000000
+    lawyers: 310
+    src: rev S snip N11; lawyers A
+- key: wilson_sonsini
+  name: Wilson Sonsini Goodrich & Rosati
+  short: Wilson Sonsini
+  personality: tech_coast
+  hq: palo_alto
+  offices: 8
+  comp: modified lockstep [A]
+  strong:
+  - ip
+  - capital_markets
+  - corporate_ma
+  fy2005:
+    year: 2005
+    revenue_cents: 41200000000
+    lawyers: 548
+    equity_partners: 148
+    pep_cents: 100000000
+    src: rev S AS-RPL; lawyers S; EP A M4; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 53100000000
+    lawyers: 655
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 50100000000
+    lawyers: 575
+    src: rev S G09; lawyers A M3
+  - year: 2012
+    revenue_cents: 53900000000
+    lawyers: 560
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 73500000000
+    lawyers: 700
+    src: rev S G15; lawyers D M1
+- key: cooley
+  name: Cooley Godward
+  short: Cooley
+  personality: tech_coast
+  hq: palo_alto
+  offices: 8
+  comp: modified lockstep [A]
+  strong:
+  - ip
+  - capital_markets
+  - private_equity
+  fy2005:
+    year: 2005
+    revenue_cents: 29800000000
+    lawyers: 413
+    equity_partners: 108
+    pep_cents: 108000000
+    src: rev S AS-RPL; lawyers S; EP A M4; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 48500000000
+    lawyers: 605
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 50700000000
+    lawyers: 575
+    src: rev S G09; lawyers A M3
+  - year: 2012
+    revenue_cents: 62500000000
+    lawyers: 625
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 91200000000
+    lawyers: 811
+    src: rev S G15; lawyers D M1
+- key: heller_ehrman
+  name: Heller Ehrman
+  short: Heller Ehrman
+  personality: tech_coast
+  hq: san_francisco
+  offices: 15
+  comp: modified lockstep [A]
+  strong:
+  - ip
+  - commercial_litigation
+  fy2005:
+    year: 2005
+    revenue_cents: 47500000000
+    lawyers: 590
+    equity_partners: 139
+    pep_cents: 120000000
+    src: rev S AS-RPL; lawyers S; EP A; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 49100000000
+    lawyers: 614
+    src: rev S snip N8; lawyers D N8
+- key: howrey
+  name: Howrey
+  short: Howrey
+  personality: litigation_boutique
+  hq: washington
+  offices: 13
+  comp: modified lockstep [A]
+  strong:
+  - ip
+  - commercial_litigation
+  - white_collar
+  fy2005:
+    year: 2005
+    revenue_cents: 38450000000
+    lawyers: 540
+    equity_partners: 122
+    pep_cents: 110000000
+    src: rev S AS-RPL; lawyers S; EP A; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 47500000000
+    lawyers: 620
+    src: rev S G07; lawyers A
+  - year: 2009
+    revenue_cents: 48000000000
+    lawyers: 683
+    src: rev S G09; lawyers D N9
+- key: bingham
+  name: Bingham McCutchen
+  short: Bingham
+  personality: performance_machine
+  hq: boston
+  offices: 13
+  comp: two-tier [A]
+  strong:
+  - banking_finance
+  - restructuring
+  - commercial_litigation
+  fy2005:
+    year: 2005
+    revenue_cents: 59300000000
+    lawyers: 750
+    equity_partners: 146
+    pep_cents: 130000000
+    src: rev S AS-RPL; lawyers S; EP A; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 74350000000
+    lawyers: 880
+    src: rev S G07; lawyers A
+  - year: 2009
+    revenue_cents: 86000000000
+    lawyers: 930
+    src: rev S G09; lawyers A
+  - year: 2012
+    revenue_cents: 87200000000
+    lawyers: 850
+    src: rev S ATL-QE13; lawyers A W-BM 2014
+  - year: 2013
+    revenue_cents: 76200000000
+    lawyers: 794
+    src: rev D N10; lawyers D N10
+- key: reed_smith
+  name: Reed Smith
+  short: Reed Smith
+  personality: regional_champion
+  hq: pittsburgh
+  offices: 18
+  comp: two-tier [A]
+  strong:
+  - commercial_litigation
+  - banking_finance
+  - real_estate
+  fy2005:
+    year: 2005
+    revenue_cents: 56250000000
+    lawyers: 913
+    equity_partners: 177
+    pep_cents: 102000000
+    src: rev S AS-RPL; lawyers S; EP A M4; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 89200000000
+    lawyers: 1425
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 94200000000
+    lawyers: 1480
+    src: rev S G09; lawyers A M3
+  - year: 2012
+    revenue_cents: 101300000000
+    lawyers: 1550
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 112000000000
+    lawyers: 1672
+    src: rev S G15; lawyers D M1
+- key: kl_gates
+  name: Kirkpatrick & Lockhart Nicholson Graham
+  short: K&L
+  personality: regional_champion
+  hq: pittsburgh
+  offices: 17
+  comp: two-tier [A]
+  strong:
+  - banking_finance
+  - commercial_litigation
+  - real_estate
+  fy2005:
+    year: 2005
+    revenue_cents: 46900000000
+    lawyers: 837
+    equity_partners: 110
+    pep_cents: 90000000
+    src: rev S AS-RPL; lawyers S; EP A M4; PEP A
+  path:
+  - year: 2007
+    revenue_cents: 75500000000
+    lawyers: 1345
+    src: rev S G07; lawyers A M3
+  - year: 2009
+    revenue_cents: 103450000000
+    lawyers: 1840
+    src: rev S G09; lawyers A M3
+  - year: 2012
+    revenue_cents: 108400000000
+    lawyers: 1925
+    src: rev D M2; lawyers A M3
+  - year: 2015
+    revenue_cents: 106000000000
+    lawyers: 1877
+    src: rev S G15; lawyers D M1
+- key: dewey_leboeuf
+  name: Dewey & LeBoeuf
+  short: Dewey & LeBoeuf
+  personality: performance_machine
+  hq: new_york
+  offices: 27
+  comp: two-tier [S dossier]
+  strong:
+  - corporate_ma
+  - banking_finance
+  - commercial_litigation
+  start_ym:
+  - 2007
+  - 10
+  path:
+  - year: 2009
+    revenue_cents: 91400000000
+    lawyers: 1054
+    src: rev S N3; lawyers S N3
+  - year: 2011
+    revenue_cents: 78200000000
+    lawyers: 1040
+    src: rev S ATL-AL12 revised; lawyers S LION-DL12
+  src: successor of Dewey Ballantine and LeBoeuf [S W-DB]
+events:
+- key: kl_preston_gates
+  ym:
+  - 2007
+  - 1
+  kind: outside_merger
+  firm: kl_gates
+  name: K&L Gates
+  short: K&L Gates
+  src: 'S W-KL: merges with Preston Gates & Ellis 1 Jan 2007'
+- key: reed_smith_richards_butler
+  ym:
+  - 2007
+  - 1
+  kind: outside_merger
+  firm: reed_smith
+  src: S W-RS 2007; month A
+- key: cooley_kronish
+  ym:
+  - 2006
+  - 10
+  kind: outside_merger
+  firm: cooley
+  name: Cooley Godward Kronish
+  short: Cooley
+  src: S W-COO 31 Oct 2006
+- key: sidley_rename
+  ym:
+  - 2006
+  - 1
+  kind: rename
+  firm: sidley
+  name: Sidley Austin
+  short: Sidley
+  src: 'A dossier: 2006, month A'
+- key: dla_rename
+  ym:
+  - 2006
+  - 1
+  kind: rename
+  firm: dla_piper
+  name: DLA Piper
+  short: DLA Piper
+  src: S W-DLA 2006; month A
+- key: mayer_brown_rename
+  ym:
+  - 2007
+  - 9
+  kind: rename
+  firm: mayer_brown
+  name: Mayer Brown
+  short: Mayer Brown
+  src: S W 2007; month A
+- key: dewey_leboeuf_merger
+  ym:
+  - 2007
+  - 10
+  kind: merger
+  firm: dewey_ballantine
+  other: leboeuf
+  into: dewey_leboeuf
+  src: 'S W-DB: Dewey & LeBoeuf LLP from 1 Oct 2007'
+- key: heller_dissolution
+  ym:
+  - 2008
+  - 9
+  kind: collapse
+  firm: heller_ehrman
+  src: 'S W-HE: dissolution confirmed 25 Sep 2008, effective 28 Nov 2008'
+- key: hogan_lovells
+  ym:
+  - 2010
+  - 5
+  kind: outside_merger
+  firm: hogan_hartson
+  name: Hogan Lovells
+  short: Hogan Lovells
+  src: 'S W-HL: Hogan Lovells from 1 May 2010'
+- key: quinn_rename
+  ym:
+  - 2010
+  - 3
+  kind: rename
+  firm: quinn_emanuel
+  name: Quinn Emanuel Urquhart & Sullivan
+  short: Quinn Emanuel
+  src: S W-QE Mar 2010
+- key: howrey_dissolution
+  ym:
+  - 2011
+  - 3
+  kind: collapse
+  firm: howrey
+  src: 'S W-HOW: dissolution effective 15 Mar 2011'
+- key: dewey_leboeuf_collapse
+  ym:
+  - 2012
+  - 5
+  kind: collapse
+  firm: dewey_leboeuf
+  src: 'S W-DL: Chapter 11 on 28 May 2012'
+- key: bingham_morgan_lewis
+  ym:
+  - 2014
+  - 11
+  kind: absorbed
+  firm: bingham
+  other: morgan_lewis
+  share: 0.75
+  src: 'S W-BM: 227 of about 300 partners join Morgan Lewis, Nov 2014'

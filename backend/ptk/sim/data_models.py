@@ -12,6 +12,7 @@ from ptk.sim.events.data import (
     EventTemplate,
     template_problems,
 )
+from ptk.sim.rivals.data import RivalsBalance, RivalsData, WorldBalance
 
 type AccountType = Literal["asset", "liability", "equity", "income", "expense"]
 type PersonKind = Literal["lawyer", "paralegal", "business_services"]
@@ -376,6 +377,8 @@ ENERGY_ACTIONS: Final = (
     "forum",
     "write_down",  # PT-M3b: a partner writes a matter's next bill down
     "dispute",  # PT-M3b: answer a billing dispute
+    "pitch",  # PT-M5: pitch for an RFP
+    "approach_rival",  # PT-M5: approach a rival's key people
     # PT-M4: the partnership
     "propose_terms",
     "capital_call",
@@ -1099,6 +1102,8 @@ class Balance(_Strict):
     resign: ResignBalance
     tags: TagRevealBalance
     org: OrgBalance
+    rivals: RivalsBalance  # PT-M5
+    world: WorldBalance  # PT-M5
     clients: ClientsBalance  # PT-M3a
     books: BooksBalance
     appeal: AppealBalance
@@ -1560,6 +1565,7 @@ class GameData(_Strict):
     market: PracticeMarket  # PT-M3a: practices.yaml's rate card, norms, tasks and kinds
     clients: ClientsData  # PT-M3a: clients.yaml
     courts: CourtsData  # PT-M3a: courts.yaml
+    rivals: RivalsData  # PT-M5: firms.yaml, notables.yaml, judges.yaml
     event_templates: tuple[EventTemplate, ...] = ()  # PT-M6: events/*.yaml (TST 16.4)
 
     @model_validator(mode="after")
@@ -1588,6 +1594,7 @@ class GameData(_Strict):
             if len(keys) != len(set(keys)):
                 raise ValueError(f"duplicate {name} keys")
         self._check_references()
+        self.rivals.check(set(self.practice_keys), {c.key for c in self.courts.courts})
         if problems := template_problems(self.event_templates):
             raise ValueError("event templates: " + "; ".join(problems))
         return self

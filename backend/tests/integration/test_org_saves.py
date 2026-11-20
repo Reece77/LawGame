@@ -59,6 +59,7 @@ def test_org_round_trips_through_the_save(save_dir: Path, data: GameData, balanc
     # The decision log holds each action in seq order, and payloads load back.
     with make_sessionmaker(shared_engine(path))() as session:
         rows = session.scalars(select(DecisionLogRow).order_by(DecisionLogRow.id)).all()
+    rows = [r for r in rows if r.source != "rival"]  # PT-M5: rivals' decisions are logged too
     assert [(r.turn, r.seq, r.source) for r in rows] == [(0, i, "player") for i in (1, 2, 3, 4)]
     assert action_from_payload(rows[2].payload_json) == SetLeader(fid, gid, a)
     assert json.loads(rows[0].payload_json)["kind"] == "create_unit"

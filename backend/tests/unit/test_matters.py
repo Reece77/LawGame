@@ -105,7 +105,11 @@ def test_client_universe_is_seeded_and_complete(data: GameData, balance: Balance
     assert len(m.clients) == 300 + balance.clients.generated_count
     assert sum(1 for x in m.clients if x.real) == 300
     assert len({x.name for x in m.clients}) == len(m.clients)
-    assert len(m.judges) == sum(c.judges for c in data.courts.courts)
+    # PT-M5: courts with real judges (judges.yaml) seat them; the others stay generated
+    real_courts = {j.court for j in data.rivals.people.judges}
+    generated = [j for j in m.judges if j.court not in real_courts]
+    assert len(generated) == sum(c.judges for c in data.courts.courts if c.key not in real_courts)
+    assert all(j.real or j.from_turn > 0 for j in m.judges if j.court in real_courts)
     for j in m.judges:
         assert all(1.0 <= v <= 20.0 for _, v in j.traits.items)
         assert set(j.traits.keys()) == {t.key for t in data.courts.judge_traits}
@@ -378,7 +382,7 @@ def test_swapping_the_judge_moves_path_and_time_never_the_side(
 ) -> None:
     state = game(data, balance)
     person = _with_skills(state.person(2), 11.0, "commercial_litigation")
-    judges = [j for j in state.market.judges if j.court == "sdny"]
+    judges = [j for j in state.market.judges if j.court == "sdny" and j.sits(0)]
     moved = 0
     for i in range(200):
         gen = RngFactory(9).stream(0, "misc", i)
@@ -521,4 +525,9 @@ def test_no_negative_item_names_a_real_person(data: GameData, balance: Balance) 
         for item in r.log_items:
             if item.kind in negative:
                 assert not any(n in item.message for n in names)
-    assert all(not j.real for j in played.market.judges)  # real judges arrive with PT-M5
+    judges = {f"{j.first_name} {j.last_name}" for j in played.market.judges if j.real}
+    assert judges  # PT-M5: real judges sit on the modelled courts
+    for r in results:
+        for item in r.log_items:
+            if item.kind in negative:
+                assert not any(n in item.message for n in judges)

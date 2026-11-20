@@ -59,6 +59,13 @@ def load_game_data(data_dir: Path) -> GameData:
             market=market,
             clients=_read(data_dir / "clients.yaml"),
             courts=_read(data_dir / "courts.yaml"),
+            rivals={  # PT-M5
+                "firms": _read(data_dir / "firms.yaml"),
+                "people": {
+                    **_read(data_dir / "notables.yaml"),
+                    **_read(data_dir / "judges.yaml"),
+                },
+            },
             event_templates=_event_templates(data_dir / "events"),
         )
     except (ValidationError, KeyError, FileNotFoundError) as exc:

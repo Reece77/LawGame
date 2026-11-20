@@ -1,0 +1,198 @@
+# judges.yaml: real trial judges of the eight modelled courts, and published court statistics (PT-M5).
+# Purpose: seeds the named judges (ADR PT-0013) who sit from January 2005, and the court-level
+#   figures their procedural traits default to. Judges join and leave on these years until
+#   December 2025; afterwards the engine moves them and new judges are generated.
+# Sources: the research dossier docs/research/judges-2005.md (compiled 2026-11-20). Federal dates are
+#   from Wikipedia's judgeship tables (compiled from the FJC Biographical Directory); court figures
+#   from US Courts Federal Court Management Statistics, 12 months to 30 September 2005 (FCMS).
+# Tags in src: S sourced, D derived (method stated), A assumed (basis stated).
+# Fields: joined = year joined that court; left = year the judge stops hearing cases in the game
+#   (elevated or left the bench as given; where only senior status is given, senior + 5, tagged A);
+#   no `left` = still active in 2025; senior = senior status year (still hears cases).
+#   Judges whose `left` falls before 2005 are omitted (they never sit in the game).
+# Rules (ADR PT-0013): traits are procedural only (docket_speed, trial_appetite, discovery_strictness,
+#   settlement_pressure, summary_judgment, sanctions_strictness; 1-20, 10.5 neutral) and only where a
+#   sourced per-judge fact supports them; every other judge takes court figures plus seeded noise.
+#   No trait ever favours a party, side or outcome. No appointing president, party, ideology or
+#   politics. Leaving is recorded as kind and year only, never its cause.
+
+court_stats:
+  - { court: sdny, disposition_months: 8.8, trial_months: 22.0, trials_per_judgeship: 15, src: "S FCMS Sep 2005" }
+  - { court: edny, disposition_months: 11.6, trial_months: 30.3, trials_per_judgeship: 16, src: "S FCMS Sep 2005" }
+  - { court: ddel, disposition_months: 10.9, trial_months: 23.5, trials_per_judgeship: 20, src: "S FCMS Sep 2005" }
+  - { court: ndcal, disposition_months: 9.8, trial_months: 28.0, trials_per_judgeship: 10, src: "S FCMS Sep 2005" }
+  - { court: edtex, disposition_months: 10.3, trial_months: 15.9, trials_per_judgeship: 21, src: "S FCMS Sep 2005" }
+  - { court: wdtex, disposition_months: 9.3, trial_months: 16.5, trials_per_judgeship: 26, src: "S FCMS Sep 2005" }
+  - { court: all_districts, disposition_months: 9.5, trial_months: 22.5, trials_per_judgeship: 19, src: "S FCMS Sep 2005" }
+  # del_chancery and ny_commercial: no timing statistics were fetched (dossier); no entry.
+judges:
+  # sdny
+  - { court: sdny, name: "Charles L. Brieant", joined: 1971, left: 2008, senior: 2007, src: "S Wikipedia S.D.N.Y. judges table (FJC); left: senior 2007, left the bench 2008" }
+  - { court: sdny, name: "Michael Mukasey", joined: 1987, left: 2006, senior: 2006, src: "S Wikipedia S.D.N.Y. judges table (FJC); left: senior 2006, left the bench 2006" }
+  - { court: sdny, name: "Kimba Wood", joined: 1988, left: 2014, senior: 2009, src: "S Wikipedia S.D.N.Y. judges table (FJC); left A: senior 2009 + 5" }
+  - { court: sdny, name: "Loretta Preska", joined: 1992, left: 2022, senior: 2017, src: "S Wikipedia S.D.N.Y. judges table (FJC); left A: senior 2017 + 5" }
+  - { court: sdny, name: "Deborah Batts", joined: 1994, left: 2020, senior: 2012, src: "S Wikipedia S.D.N.Y. judges table (FJC); left: senior 2012, left the bench 2020" }
+  - { court: sdny, name: "Denise Cote", joined: 1994, left: 2016, senior: 2011, src: "S Wikipedia S.D.N.Y. judges table (FJC); left A: senior 2011 + 5" }
+  - { court: sdny, name: "Denny Chin", joined: 1994, left: 2010, src: "S Wikipedia S.D.N.Y. judges table (FJC); left: elevated 2010" }
+  - { court: sdny, name: "John G. Koeltl", joined: 1994, src: "S Wikipedia S.D.N.Y. judges table (FJC); active in 2025" }
+  - { court: sdny, name: "Lewis A. Kaplan", joined: 1994, left: 2016, senior: 2011, src: "S Wikipedia S.D.N.Y. judges table (FJC); left A: senior 2011 + 5" }
+  - { court: sdny, name: "Shira Scheindlin", joined: 1994, left: 2016, senior: 2011, src: "S Wikipedia S.D.N.Y. judges table (FJC); left: senior 2011, left the bench 2016" }
+  - { court: sdny, name: "Barbara S. Jones", joined: 1995, left: 2013, senior: 2012, src: "S Wikipedia S.D.N.Y. judges table (FJC); left: senior 2012, left the bench 2013" }
+  - { court: sdny, name: "Sidney H. Stein", joined: 1995, left: 2015, senior: 2010, src: "S Wikipedia S.D.N.Y. judges table (FJC); left A: senior 2010 + 5" }
+  - { court: sdny, name: "Jed S. Rakoff", joined: 1996, left: 2015, senior: 2010, src: "S Wikipedia S.D.N.Y. judges table (FJC); left A: senior 2010 + 5" }
+  - { court: sdny, name: "Richard C. Casey", joined: 1997, left: 2007, src: "S Wikipedia S.D.N.Y. judges table (FJC); left: left the bench 2007" }
+  - { court: sdny, name: "Alvin Hellerstein", joined: 1998, left: 2016, senior: 2011, src: "S Wikipedia S.D.N.Y. judges table (FJC); left A: senior 2011 + 5" }
+  - { court: sdny, name: "Colleen McMahon", joined: 1998, left: 2026, senior: 2021, src: "S Wikipedia S.D.N.Y. judges table (FJC); left A: senior 2021 + 5" }
+  - { court: sdny, name: "Richard M. Berman", joined: 1998, left: 2016, senior: 2011, src: "S Wikipedia S.D.N.Y. judges table (FJC); left A: senior 2011 + 5" }
+  - { court: sdny, name: "William H. Pauley III", joined: 1998, left: 2021, senior: 2018, src: "S Wikipedia S.D.N.Y. judges table (FJC); left: senior 2018, left the bench 2021" }
+  - { court: sdny, name: "Naomi Reice Buchwald", joined: 1999, left: 2017, senior: 2012, src: "S Wikipedia S.D.N.Y. judges table (FJC); left A: senior 2012 + 5" }
+  - { court: sdny, name: "Victor Marrero", joined: 1999, left: 2015, senior: 2010, src: "S Wikipedia S.D.N.Y. judges table (FJC); left A: senior 2010 + 5" }
+  - { court: sdny, name: "George B. Daniels", joined: 2000, left: 2026, senior: 2021, src: "S Wikipedia S.D.N.Y. judges table (FJC); left A: senior 2021 + 5" }
+  - { court: sdny, name: "Gerard E. Lynch", joined: 2000, left: 2009, src: "S Wikipedia S.D.N.Y. judges table (FJC); left: elevated 2009" }
+  - { court: sdny, name: "Laura Taylor Swain", joined: 2000, src: "S Wikipedia S.D.N.Y. judges table (FJC); active in 2025" }
+  - { court: sdny, name: "P. Kevin Castel", joined: 2003, left: 2022, senior: 2017, src: "S Wikipedia S.D.N.Y. judges table (FJC); left A: senior 2017 + 5" }
+  - { court: sdny, name: "Richard J. Holwell", joined: 2003, left: 2012, src: "S Wikipedia S.D.N.Y. judges table (FJC); left: left the bench 2012" }
+  - { court: sdny, name: "Stephen C. Robinson", joined: 2003, left: 2010, src: "S Wikipedia S.D.N.Y. judges table (FJC); left: left the bench 2010" }
+  - { court: sdny, name: "Kenneth M. Karas", joined: 2004, src: "S Wikipedia S.D.N.Y. judges table (FJC); active in 2025" }
+  - { court: sdny, name: "Paul A. Crotty", joined: 2005, left: 2020, senior: 2015, src: "S Wikipedia S.D.N.Y. judges table (FJC); left A: senior 2015 + 5" }
+  - { court: sdny, name: "Richard J. Sullivan", joined: 2007, left: 2018, src: "S Wikipedia S.D.N.Y. judges table (FJC); left: elevated 2018" }
+  - { court: sdny, name: "Cathy Seibel", joined: 2008, left: 2030, senior: 2025, src: "S Wikipedia S.D.N.Y. judges table (FJC); left A: senior 2025 + 5" }
+  - { court: sdny, name: "Paul G. Gardephe", joined: 2008, left: 2028, senior: 2023, src: "S Wikipedia S.D.N.Y. judges table (FJC); left A: senior 2023 + 5" }
+  - { court: sdny, name: "Alison Nathan", joined: 2011, left: 2022, src: "S Wikipedia S.D.N.Y. judges table (FJC); left: elevated 2022" }
+  - { court: sdny, name: "Andrew L. Carter Jr.", joined: 2011, src: "S Wikipedia S.D.N.Y. judges table (FJC); active in 2025" }
+  - { court: sdny, name: "Edgardo Ramos", joined: 2011, src: "S Wikipedia S.D.N.Y. judges table (FJC); active in 2025" }
+  - { court: sdny, name: "J. Paul Oetken", joined: 2011, src: "S Wikipedia S.D.N.Y. judges table (FJC); active in 2025" }
+  - { court: sdny, name: "Katherine B. Forrest", joined: 2011, left: 2018, src: "S Wikipedia S.D.N.Y. judges table (FJC); left: left the bench 2018" }
+  - { court: sdny, name: "Paul A. Engelmayer", joined: 2011, src: "S Wikipedia S.D.N.Y. judges table (FJC); active in 2025" }
+  - { court: sdny, name: "Vincent L. Briccetti", joined: 2011, left: 2028, senior: 2023, src: "S Wikipedia S.D.N.Y. judges table (FJC); left A: senior 2023 + 5" }
+  - { court: sdny, name: "Jesse M. Furman", joined: 2012, src: "S Wikipedia S.D.N.Y. judges table (FJC); active in 2025" }
+  - { court: sdny, name: "Lorna G. Schofield", joined: 2012, left: 2030, senior: 2025, src: "S Wikipedia S.D.N.Y. judges table (FJC); left A: senior 2025 + 5" }
+  - { court: sdny, name: "Ronnie Abrams", joined: 2012, src: "S Wikipedia S.D.N.Y. judges table (FJC); active in 2025" }
+  - { court: sdny, name: "Analisa Torres", joined: 2013, src: "S Wikipedia S.D.N.Y. judges table (FJC); active in 2025" }
+  - { court: sdny, name: "Gregory H. Woods", joined: 2013, src: "S Wikipedia S.D.N.Y. judges table (FJC); active in 2025" }
+  - { court: sdny, name: "Katherine Polk Failla", joined: 2013, src: "S Wikipedia S.D.N.Y. judges table (FJC); active in 2025" }
+  - { court: sdny, name: "Nelson S. Román", joined: 2013, src: "S Wikipedia S.D.N.Y. judges table (FJC); active in 2025" }
+  - { court: sdny, name: "Valerie E. Caproni", joined: 2013, left: 2030, senior: 2025, src: "S Wikipedia S.D.N.Y. judges table (FJC); left A: senior 2025 + 5" }
+  - { court: sdny, name: "Vernon S. Broderick", joined: 2013, src: "S Wikipedia S.D.N.Y. judges table (FJC); active in 2025" }
+  # edny
+  - { court: edny, name: "Edward R. Korman", joined: 1985, left: 2012, senior: 2007, src: "S Wikipedia E.D.N.Y. judges table (FJC); left A: senior 2007 + 5" }
+  - { court: edny, name: "Raymond Dearie", joined: 1986, left: 2016, senior: 2011, src: "S Wikipedia E.D.N.Y. judges table (FJC); left A: senior 2011 + 5" }
+  - { court: edny, name: "Carol Amon", joined: 1990, left: 2021, senior: 2016, src: "S Wikipedia E.D.N.Y. judges table (FJC); left A: senior 2016 + 5" }
+  - { court: edny, name: "David G. Trager", joined: 1993, left: 2011, senior: 2006, src: "S Wikipedia E.D.N.Y. judges table (FJC); left: senior 2006, left the bench 2011" }
+  - { court: edny, name: "Joanna Seybert", joined: 1993, left: 2019, senior: 2014, src: "S Wikipedia E.D.N.Y. judges table (FJC); left A: senior 2014 + 5" }
+  - { court: edny, name: "Allyne R. Ross", joined: 1994, left: 2016, senior: 2011, src: "S Wikipedia E.D.N.Y. judges table (FJC); left A: senior 2011 + 5" }
+  - { court: edny, name: "Frederic Block", joined: 1994, left: 2010, senior: 2005, src: "S Wikipedia E.D.N.Y. judges table (FJC); left A: senior 2005 + 5" }
+  - { court: edny, name: "John Gleeson", joined: 1994, left: 2016, src: "S Wikipedia E.D.N.Y. judges table (FJC); left: left the bench 2016" }
+  - { court: edny, name: "Nina Gershon", joined: 1996, left: 2013, senior: 2008, src: "S Wikipedia E.D.N.Y. judges table (FJC); left A: senior 2008 + 5" }
+  - { court: edny, name: "Nicholas Garaufis", joined: 2000, left: 2019, senior: 2014, src: "S Wikipedia E.D.N.Y. judges table (FJC); left A: senior 2014 + 5" }
+  - { court: edny, name: "Sandra J. Feuerstein", joined: 2003, left: 2021, senior: 2015, src: "S Wikipedia E.D.N.Y. judges table (FJC); left: senior 2015, left the bench 2021" }
+  - { court: edny, name: "Dora Irizarry", joined: 2004, left: 2025, senior: 2020, src: "S Wikipedia E.D.N.Y. judges table (FJC); left A: senior 2020 + 5" }
+  - { court: edny, name: "Sandra L. Townes", joined: 2004, left: 2018, senior: 2015, src: "S Wikipedia E.D.N.Y. judges table (FJC); left: senior 2015, left the bench 2018" }
+  - { court: edny, name: "Brian Cogan", joined: 2006, left: 2025, senior: 2020, src: "S Wikipedia E.D.N.Y. judges table (FJC); left A: senior 2020 + 5" }
+  - { court: edny, name: "Eric N. Vitaliano", joined: 2006, left: 2022, senior: 2017, src: "S Wikipedia E.D.N.Y. judges table (FJC); left A: senior 2017 + 5" }
+  - { court: edny, name: "Joseph F. Bianco", joined: 2006, left: 2019, src: "S Wikipedia E.D.N.Y. judges table (FJC); left: elevated 2019" }
+  - { court: edny, name: "Roslynn R. Mauskopf", joined: 2007, left: 2024, src: "S Wikipedia E.D.N.Y. judges table (FJC); left: left the bench 2024" }
+  - { court: edny, name: "Kiyo A. Matsumoto", joined: 2008, left: 2027, senior: 2022, src: "S Wikipedia E.D.N.Y. judges table (FJC); left A: senior 2022 + 5" }
+  - { court: edny, name: "William F. Kuntz II", joined: 2011, left: 2027, senior: 2022, src: "S Wikipedia E.D.N.Y. judges table (FJC); left A: senior 2022 + 5" }
+  - { court: edny, name: "Margo Kitsy Brodie", joined: 2012, src: "S Wikipedia E.D.N.Y. judges table (FJC); active in 2025" }
+  - { court: edny, name: "Pamela K. Chen", joined: 2013, src: "S Wikipedia E.D.N.Y. judges table (FJC); active in 2025" }
+  - { court: edny, name: "Joan Azrack", joined: 2014, left: 2029, senior: 2024, src: "S Wikipedia E.D.N.Y. judges table (FJC); left A: senior 2024 + 5" }
+  - { court: edny, name: "Ann Donnelly", joined: 2015, src: "S Wikipedia E.D.N.Y. judges table (FJC); active in 2025" }
+  - { court: edny, name: "LaShann DeArcy Hall", joined: 2015, src: "S Wikipedia E.D.N.Y. judges table (FJC); active in 2025" }
+  # ddel
+  - { court: ddel, name: "Joseph James Farnan Jr.", joined: 1985, left: 2010, src: "S Wikipedia D. Del. judges table (FJC); left: left the bench 2010" }
+  - { court: ddel, name: "Sue Lewis Robinson", joined: 1991, left: 2017, senior: 2017, src: "S Wikipedia D. Del. judges table (FJC); left: senior 2017, left the bench 2017" }
+  - { court: ddel, name: "Gregory M. Sleet", joined: 1998, left: 2018, senior: 2017, src: "S Wikipedia D. Del. judges table (FJC); left: senior 2017, left the bench 2018" }
+  - { court: ddel, name: "Kent A. Jordan", joined: 2002, left: 2006, src: "S Wikipedia D. Del. judges table (FJC); left: elevated 2006" }
+  - { court: ddel, name: "Leonard P. Stark", joined: 2010, left: 2022, src: "S Wikipedia D. Del. judges table (FJC); left: elevated 2022" }
+  - { court: ddel, name: "Richard G. Andrews", joined: 2011, left: 2028, senior: 2023, src: "S Wikipedia D. Del. judges table (FJC); left A: senior 2023 + 5" }
+  # ndcal
+  - { court: ndcal, name: "William Schwarzer", joined: 1976, left: 2017, senior: 1991, src: "S Wikipedia N.D. Cal. judges table (FJC); left: senior 1991, left the bench 2017" }
+  - { court: ndcal, name: "Marilyn Hall Patel", joined: 1980, left: 2012, senior: 2009, src: "S Wikipedia N.D. Cal. judges table (FJC); left: senior 2009, left the bench 2012" }
+  - { court: ndcal, name: "D. Lowell Jensen", joined: 1986, left: 2014, senior: 1997, src: "S Wikipedia N.D. Cal. judges table (FJC); left: senior 1997, left the bench 2014" }
+  - { court: ndcal, name: "Fern M. Smith", joined: 1988, left: 2005, senior: 2003, src: "S Wikipedia N.D. Cal. judges table (FJC); left: senior 2003, left the bench 2005" }
+  - { court: ndcal, name: "Vaughn Walker", joined: 1989, left: 2011, src: "S Wikipedia N.D. Cal. judges table (FJC); left: left the bench 2011" }
+  - { court: ndcal, name: "James Ware", joined: 1990, left: 2012, src: "S Wikipedia N.D. Cal. judges table (FJC); left: left the bench 2012" }
+  - { court: ndcal, name: "Saundra Brown Armstrong", joined: 1991, left: 2017, senior: 2012, src: "S Wikipedia N.D. Cal. judges table (FJC); left A: senior 2012 + 5" }
+  - { court: ndcal, name: "Ronald Whyte", joined: 1992, left: 2023, senior: 2009, src: "S Wikipedia N.D. Cal. judges table (FJC); left: senior 2009, left the bench 2023" }
+  - { court: ndcal, name: "Claudia Ann Wilken", joined: 1993, left: 2019, senior: 2014, src: "S Wikipedia N.D. Cal. judges table (FJC); left A: senior 2014 + 5" }
+  - { court: ndcal, name: "Maxine M. Chesney", joined: 1995, left: 2014, senior: 2009, src: "S Wikipedia N.D. Cal. judges table (FJC); left A: senior 2009 + 5" }
+  - { court: ndcal, name: "Susan Illston", joined: 1995, left: 2018, senior: 2013, src: "S Wikipedia N.D. Cal. judges table (FJC); left A: senior 2013 + 5" }
+  - { court: ndcal, name: "Charles Breyer", joined: 1997, left: 2016, senior: 2011, src: "S Wikipedia N.D. Cal. judges table (FJC); left A: senior 2011 + 5" }
+  - { court: ndcal, name: "Martin Jenkins", joined: 1997, left: 2008, src: "S Wikipedia N.D. Cal. judges table (FJC); left: left the bench 2008" }
+  - { court: ndcal, name: "Jeremy Fogel", joined: 1998, left: 2018, senior: 2014, src: "S Wikipedia N.D. Cal. judges table (FJC); left: senior 2014, left the bench 2018" }
+  - { court: ndcal, name: "William Alsup", joined: 1999, left: 2026, senior: 2021, src: "S Wikipedia N.D. Cal. judges table (FJC); left A: senior 2021 + 5" }
+  - { court: ndcal, name: "Phyllis J. Hamilton", joined: 2000, left: 2026, senior: 2021, src: "S Wikipedia N.D. Cal. judges table (FJC); left A: senior 2021 + 5" }
+  - { court: ndcal, name: "Jeffrey White", joined: 2002, left: 2026, senior: 2021, src: "S Wikipedia N.D. Cal. judges table (FJC); left A: senior 2021 + 5" }
+  - { court: ndcal, name: "Lucy Koh", joined: 2010, left: 2021, src: "S Wikipedia N.D. Cal. judges table (FJC); left: elevated 2021" }
+  - { court: ndcal, name: "Richard Seeborg", joined: 2010, src: "S Wikipedia N.D. Cal. judges table (FJC); active in 2025" }
+  - { court: ndcal, name: "Edward Davila", joined: 2011, left: 2029, senior: 2024, src: "S Wikipedia N.D. Cal. judges table (FJC); left A: senior 2024 + 5" }
+  - { court: ndcal, name: "Edward M. Chen", joined: 2011, left: 2027, senior: 2022, src: "S Wikipedia N.D. Cal. judges table (FJC); left A: senior 2022 + 5" }
+  - { court: ndcal, name: "Yvonne Gonzalez Rogers", joined: 2011, src: "S Wikipedia N.D. Cal. judges table (FJC); active in 2025" }
+  - { court: ndcal, name: "Jon S. Tigar", joined: 2013, src: "S Wikipedia N.D. Cal. judges table (FJC); active in 2025" }
+  - { court: ndcal, name: "William Orrick III", joined: 2013, left: 2028, senior: 2023, src: "S Wikipedia N.D. Cal. judges table (FJC); left A: senior 2023 + 5" }
+  - { court: ndcal, name: "Beth Labson Freeman", joined: 2014, src: "S Wikipedia N.D. Cal. judges table (FJC); active in 2025" }
+  - { court: ndcal, name: "Haywood Gilliam", joined: 2014, src: "S Wikipedia N.D. Cal. judges table (FJC); active in 2025" }
+  - { court: ndcal, name: "James Donato", joined: 2014, src: "S Wikipedia N.D. Cal. judges table (FJC); active in 2025" }
+  - { court: ndcal, name: "Vince Chhabria", joined: 2014, src: "S Wikipedia N.D. Cal. judges table (FJC); active in 2025" }
+  # edtex
+  - { court: edtex, name: "William Wayne Justice", joined: 1968, left: 2009, senior: 1998, src: "S Wikipedia E.D. Tex. judges table (FJC); left: senior 1998, left the bench 2009" }
+  - { court: edtex, name: "Howell Cobb", joined: 1985, left: 2005, senior: 2001, src: "S Wikipedia E.D. Tex. judges table (FJC); left: senior 2001, left the bench 2005" }
+  - { court: edtex, name: "Paul Neeley Brown", joined: 1985, left: 2012, senior: 2001, src: "S Wikipedia E.D. Tex. judges table (FJC); left: senior 2001, left the bench 2012" }
+  - { court: edtex, name: "Richard A. Schell", joined: 1988, left: 2020, senior: 2015, src: "S Wikipedia E.D. Tex. judges table (FJC); left A: senior 2015 + 5" }
+  - { court: edtex, name: "David Folsom", joined: 1995, left: 2012, src: "S Wikipedia E.D. Tex. judges table (FJC); left: left the bench 2012" }
+  - { court: edtex, name: "Thad Heartfield", joined: 1995, left: 2022, senior: 2010, src: "S Wikipedia E.D. Tex. judges table (FJC); left: senior 2010, left the bench 2022" }
+  - { court: edtex, name: "T. John Ward", joined: 1999, left: 2011, src: "S Wikipedia E.D. Tex. judges table (FJC); left: left the bench 2011" }
+  - { court: edtex, name: "Leonard Davis", joined: 2002, left: 2015, src: "S Wikipedia E.D. Tex. judges table (FJC); left: left the bench 2015" }
+  - { court: edtex, name: "Ron Clark", joined: 2002, left: 2023, senior: 2018, src: "S Wikipedia E.D. Tex. judges table (FJC); left A: senior 2018 + 5" }
+  - { court: edtex, name: "Marcia A. Crone", joined: 2003, src: "S Wikipedia E.D. Tex. judges table (FJC); active in 2025" }
+  - { court: edtex, name: "Michael H. Schneider Sr.", joined: 2004, left: 2016, senior: 2016, src: "S Wikipedia E.D. Tex. judges table (FJC); left: senior 2016, left the bench 2016" }
+  - { court: edtex, name: "J. Rodney Gilstrap", joined: 2011, src: "S Wikipedia E.D. Tex. judges table (FJC); active in 2025" }
+  - { court: edtex, name: "Amos Mazzant", joined: 2014, src: "S Wikipedia E.D. Tex. judges table (FJC); active in 2025" }
+  - { court: edtex, name: "Robert W. Schroeder III", joined: 2014, src: "S Wikipedia E.D. Tex. judges table (FJC); active in 2025" }
+  # wdtex
+  - { court: wdtex, name: "Harry Lee Hudspeth", joined: 1979, left: 2016, senior: 2001, src: "S Wikipedia W.D. Tex. judges table (FJC); left: senior 2001, left the bench 2016" }
+  - { court: wdtex, name: "James Nowlin", joined: 1981, left: 2008, senior: 2003, src: "S Wikipedia W.D. Tex. judges table (FJC); left A: senior 2003 + 5" }
+  - { court: wdtex, name: "Walter Scott Smith Jr.", joined: 1984, left: 2016, src: "S Wikipedia W.D. Tex. judges table (FJC); left: left the bench 2016" }
+  - { court: wdtex, name: "Sam Sparks", joined: 1991, left: 2025, senior: 2017, src: "S Wikipedia W.D. Tex. judges table (FJC); left: senior 2017, left the bench 2025" }
+  - { court: wdtex, name: "David Briones", joined: 1994, left: 2014, senior: 2009, src: "S Wikipedia W.D. Tex. judges table (FJC); left A: senior 2009 + 5" }
+  - { court: wdtex, name: "Orlando Luis Garcia", joined: 1994, src: "S Wikipedia W.D. Tex. judges table (FJC); active in 2025" }
+  - { court: wdtex, name: "Samuel Biery Jr.", joined: 1994, src: "S Wikipedia W.D. Tex. judges table (FJC); active in 2025" }
+  - { court: wdtex, name: "William Royal Furgeson Jr.", joined: 1994, left: 2013, senior: 2008, src: "S Wikipedia W.D. Tex. judges table (FJC); left: senior 2008, left the bench 2013" }
+  - { court: wdtex, name: "Alia Moses", joined: 2002, src: "S Wikipedia W.D. Tex. judges table (FJC); active in 2025" }
+  - { court: wdtex, name: "Philip Ray Martinez", joined: 2002, left: 2021, src: "S Wikipedia W.D. Tex. judges table (FJC); left: left the bench 2021" }
+  - { court: wdtex, name: "Earl Leroy Yeakel III", joined: 2003, left: 2023, src: "S Wikipedia W.D. Tex. judges table (FJC); left: left the bench 2023" }
+  - { court: wdtex, name: "Frank Montalvo", joined: 2003, left: 2027, senior: 2022, src: "S Wikipedia W.D. Tex. judges table (FJC); left A: senior 2022 + 5" }
+  - { court: wdtex, name: "Kathleen Cardone", joined: 2003, src: "S Wikipedia W.D. Tex. judges table (FJC); active in 2025" }
+  - { court: wdtex, name: "Robert A. Junell", joined: 2003, left: 2025, senior: 2015, src: "S Wikipedia W.D. Tex. judges table (FJC); left: senior 2015, left the bench 2025" }
+  - { court: wdtex, name: "Xavier Rodriguez", joined: 2003, src: "S Wikipedia W.D. Tex. judges table (FJC); active in 2025" }
+  - { court: wdtex, name: "David C. Guaderrama", joined: 2012, left: 2028, senior: 2023, src: "S Wikipedia W.D. Tex. judges table (FJC); left A: senior 2023 + 5" }
+  - { court: wdtex, name: "Robert L. Pitman", joined: 2014, src: "S Wikipedia W.D. Tex. judges table (FJC); active in 2025" }
+  # del_chancery
+  - { court: del_chancery, name: "William B. Chandler III", joined: 1989, left: 2011, src: "S Wikipedia Delaware Court of Chancery tables; joined 1989 as Vice Chancellor, Chancellor 1997; left: left the bench 2011" }
+  - { court: del_chancery, name: "Leo E. Strine Jr.", joined: 1998, left: 2014, src: "S Wikipedia Delaware Court of Chancery tables; joined 1998 as Vice Chancellor, Chancellor 2011; left D: elevated 2014" }
+  - { court: del_chancery, name: "Stephen P. Lamb", joined: 1997, left: 2009, src: "S Wikipedia Delaware Court of Chancery tables; left: left the bench 2009" }
+  - { court: del_chancery, name: "John W. Noble", joined: 2000, left: 2016, src: "S Wikipedia Delaware Court of Chancery tables; left: left the bench 2016" }
+  - { court: del_chancery, name: "Donald F. Parsons Jr.", joined: 2003, left: 2015, src: "S Wikipedia Delaware Court of Chancery tables; left: left the bench 2015" }
+  - { court: del_chancery, name: "J. Travis Laster", joined: 2009, src: "S Wikipedia Delaware Court of Chancery tables; active in 2025" }
+  - { court: del_chancery, name: "Sam Glasscock III", joined: 2011, left: 2025, src: "S Wikipedia Delaware Court of Chancery tables; left: left the bench 2025" }
+  - { court: del_chancery, name: "Andre G. Bouchard", joined: 2014, left: 2021, src: "S Wikipedia Delaware Court of Chancery tables; joined 2014 as Chancellor; left: left the bench 2021" }
+  - { court: del_chancery, name: "Tamika Montgomery-Reeves", joined: 2015, left: 2019, src: "S Wikipedia Delaware Court of Chancery tables; left D: elevated 2019" }
+  # ny_commercial
+  - { court: ny_commercial, name: "Herman Cahn", joined: 1995, left: 2008, src: "S Wikipedia NY Supreme Court (Commercial Division); joined 1995 (pilot Commercial Part 1993); left: left the bench 2008" }
+  - { court: ny_commercial, name: "Ira Gammerman", joined: 1995, left: 2008, traits: { docket_speed: 15.0 }, src: "S Wikipedia NY Supreme Court (Commercial Division); joined 1995 (pilot 1993); left A: left the bench c.2008, year not found; trait S: NYLJ 2019-05-15 'New York County's rocket docket'" }
+  - { court: ny_commercial, name: "Charles E. Ramos", joined: 1996, left: 2018, src: "S Wikipedia NY Supreme Court (Commercial Division); left: left the bench 2018" }
+  - { court: ny_commercial, name: "Helen E. Freedman", joined: 1999, left: 2008, src: "D Commercial Division Law Report Jan 2000 ('recent addition'), joined c.1999; left A: left the Division c.2007-09, midpoint 2008 used" }
+  - { court: ny_commercial, name: "Bernard J. Fried", joined: 2004, left: 2014, src: "D NY Slip Op 2005/30617 ('most recently assigned' Feb 2005), joined 2004; left A: left the bench c.2014" }
+  - { court: ny_commercial, name: "Richard B. Lowe III", joined: 2001, left: 2009, src: "S nycourts.gov assignment guidelines (sitting by 2005); joined A: c.2001; left A: left the Division c.2009" }
+  - { court: ny_commercial, name: "Karla Moskowitz", joined: 2005, left: 2008, src: "S nycourts.gov assignment guidelines (sitting by 2005); joined A: first year unknown, 2005 used; left A: elevated c.2008, verify" }
+  - { court: ny_commercial, name: "Shirley Werner Kornreich", joined: 2006, left: 2018, src: "A joined c.2006; left D: left the bench 2018 (nycomdiv.com 2019 'recently retired' panel)" }
+  - { court: ny_commercial, name: "Barbara R. Kapnick", joined: 2008, left: 2016, src: "A joined c.2008 (NYSBA Commercial Division 30 years); left A: elevated c.2016, verify" }
+  - { court: ny_commercial, name: "Eileen Bransten", joined: 2008, left: 2018, src: "S Wikipedia NY Supreme Court (Commercial Division); left: left the bench 2018" }
+  - { court: ny_commercial, name: "Melvin L. Schweitzer", joined: 2009, left: 2018, src: "A joined c.2009; left D: left the bench 2018 (nycomdiv.com 2019 'recently retired' panel)" }
+  - { court: ny_commercial, name: "O. Peter Sherwood", joined: 2010, left: 2021, src: "A joined c.2010; left A: left the Division c.2021" }
+  - { court: ny_commercial, name: "Marcy S. Friedman", joined: 2010, left: 2020, src: "A joined c.2010; left S: left the bench 2020 (schlamstone.com)" }
+  - { court: ny_commercial, name: "Jeffrey K. Oing", joined: 2010, left: 2017, src: "A joined c.2010; left S: elevated 2017 (jdsupra)" }
+  - { court: ny_commercial, name: "Anil C. Singh", joined: 2013, left: 2017, src: "A joined c.2013; left S: elevated 2017 (jdsupra)" }
+  - { court: ny_commercial, name: "Saliann Scarpulla", joined: 2014, left: 2020, src: "S nycourts.gov AD1 biography, joined February 2014; left D: elevated 2020" }
+  - { court: ny_commercial, name: "Barry R. Ostrager", joined: 2014, left: 2022, src: "A joined c.2014; left A: left the bench c.2022" }

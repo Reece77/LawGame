@@ -4,7 +4,7 @@ assets = liabilities + equity once income and expense close to equity."""
 from __future__ import annotations
 
 import pytest
-from hypothesis import given
+from hypothesis import given, settings
 from hypothesis import strategies as st
 
 from ptk.sim.data_models import Balance, GameData
@@ -58,6 +58,9 @@ def test_float_amounts_are_refused() -> None:
         )  # type: ignore[arg-type]
 
 
+# No per-example deadline: creating a game (its client universe and rival firms) takes about
+# 0.2-0.3 s, so the 200 ms default failed by timing alone, on main too (PT-M5 decisions).
+@settings(deadline=None)
 @given(st.integers(0, 2**64 - 1), st.sampled_from(["easy", "standard", "hard", "ironman"]))
 def test_new_game_balance_sheet_balances(
     data: GameData, balance: Balance, seed: int, difficulty: str

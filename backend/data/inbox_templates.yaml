@@ -81,6 +81,28 @@ templates:
   client_bankrupt:
     title: "{client} has filed for bankruptcy"
     body: "{client} has filed for bankruptcy. Its unpaid bills, {lost_cents} in all, have been written off as bad debts."
+  # PT-M5: rival firms, panels and RFPs
+  rfp_open:
+    title: "{client} invites pitches: {kind}"
+    body: "{client} has opened a {kind} covering {practices}. Pitch from the Market screen with a team and your claims before the award in two months."
+  rfp_won:
+    title: "{client} picks the firm"
+    body: "{client} has chosen the firm in its RFP."
+  rfp_lost:
+    title: "{client} goes elsewhere"
+    body: "{client} has chosen other firms in its RFP."
+  rival_approach:
+    title: "{firm} is courting {name}"
+    body: "{firm} has offered {name} {offer_cents} a year to move. Counter on the Market screen this month, or {name} answers next month."
+  rival_poached:
+    title: "{name} is leaving for {firm}"
+    body: "{name} has accepted {firm}'s offer and has given notice."
+  rival_approach_declined:
+    title: "{name} turns down {firm}"
+    body: "{name} has declined {firm}'s approach and is staying."
+  rival_joined:
+    title: "{name} joins {firm}"
+    body: "{name}'s notice is over: they are now at {firm}."
   # PT-M4: the partnership
   profit_allocated:
     title: "The year's profit is allocated: {profit_cents}"

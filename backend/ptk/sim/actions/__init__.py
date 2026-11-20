@@ -3,7 +3,8 @@
 
 Ported from backend/tst/sim/actions/__init__.py @ 02fba2aa (Tech Startup Tycoon) as a
 pattern; changed: hiring actions (PT-M1b), client and matter actions (PT-M3a), billing actions
-(PT-M3b) and the answer to an event (PT-M6); later milestones add theirs here.
+(PT-M3b), the answer to an event (PT-M6) and rival-firm actions (PT-M5); later milestones
+add theirs here.
 
 `apply_action` is pure: it takes the state and returns the new state, any ledger entries and
 log items, all belonging to `state.turn`. Randomness inside a player action uses stream
@@ -44,10 +45,13 @@ from ptk.sim.partnership.actions import (
     PartnershipAction,
     apply_partnership_action,
 )
+from ptk.sim.rivals.actions import RIVAL_ACTION_TYPES, RivalAction, apply_rival_action
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
 
-type Action = HiringAction | MatterAction | BillingAction | PartnershipAction | ChooseEvent
+type Action = (
+    HiringAction | MatterAction | BillingAction | PartnershipAction | ChooseEvent | RivalAction
+)
 
 ACTION_TYPES: dict[str, type[Any]] = {
     "open_search": OpenSearch,
@@ -61,6 +65,7 @@ ACTION_TYPES: dict[str, type[Any]] = {
     **MATTER_ACTION_TYPES,  # PT-M3a
     **EVENT_ACTION_TYPES,  # PT-M6
     **BILLING_ACTION_TYPES,  # PT-M3b
+    **RIVAL_ACTION_TYPES,  # PT-M5
     **PARTNERSHIP_ACTION_TYPES,  # PT-M4
 }
 
@@ -82,6 +87,8 @@ def apply_action(
     draws = lambda: rng.stream(state.turn, "actions", seq)  # noqa: E731
     if isinstance(action, ChooseEvent):
         return apply_event_action(state, action, balance, data)
+    if type(action) in RIVAL_ACTION_TYPES.values():
+        return apply_rival_action(state, action, draws, balance, data)  # type: ignore[arg-type]
     if type(action) in PARTNERSHIP_ACTION_TYPES.values():
         return apply_partnership_action(
             state,

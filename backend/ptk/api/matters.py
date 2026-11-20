@@ -41,6 +41,7 @@ from ptk.sim.matters.intake import key_clients
 from ptk.sim.matters.market import base_monthly_demand, wallets
 from ptk.sim.matters.models import Client, Matter, Relationship
 from ptk.sim.matters.staffing import completed_share, home_practice
+from ptk.sim.rivals.views import name_for_key, opposing_counsel
 from ptk.sim.state import GameState
 
 type MatterStatusOut = Literal["open", "conflicted", "closed", "declined"]
@@ -182,6 +183,8 @@ class MatterOut(MatterRowOut):
     forums: list[str]  # courts the case may move to now (forum choice), else empty
     checked: bool  # conflicts were checked at intake
     waiver: bool
+    opposing_counsel: str | None = None  # PT-M5: the other side's firm (a name, never quality)
+    opposing_firm_id: int | None = None  # a rival firm's page, when it is one
 
 
 class ConflictChecksOut(BaseModel):
@@ -324,7 +327,7 @@ def client_view(state: GameState, client_id: int, data: GameData, balance: Balan
             "general_counsel": GeneralCounselOut(
                 name=f"{gc.first_name} {gc.last_name}", age=(state.turn - gc.birth_turn) // MONTHS
             ),
-            "panel": [data.clients.panel_firm(k).name for k in client.panel],
+            "panel": [name_for_key(state, data, k) for k in client.panel],  # PT-M5: live rivals
             "advance_waiver": rel.advance_waiver,
             "cross_sell": cross,
             "matters": [
@@ -468,6 +471,8 @@ def matter_view(state: GameState, matter_id: int, data: GameData, balance: Balan
             "forums": forums,
             "checked": m.checked,
             "waiver": m.waiver,
+            "opposing_counsel": opposing_counsel(state, m.id)[0],
+            "opposing_firm_id": opposing_counsel(state, m.id)[1],
         }
     )
 

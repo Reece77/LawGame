@@ -142,6 +142,8 @@ energy: # the founding partner's monthly energy (TST formulas.md 6, M4c values; 
     forum: 0 # choose a new case's forum
     write_down: 2 # write a matter's next bill down (PT-M3b)
     dispute: 4 # answer a billing dispute (PT-M3b)
+    pitch: 15 # pitch for an RFP (PT-M5, spec 7.2)
+    approach_rival: 10 # approach a rival's key people (PT-M5, TST 15.6)
     propose_terms: 4 # put a change to the partnership agreement to a vote (PT-M4)
     capital_call: 4 # put a capital call to a vote
     propose_partner: 4 # propose a candidate in December (equity, income, counsel or not yet)
@@ -282,6 +284,185 @@ org: # practice groups, teams and supervision (PT-M2; TST formulas.md 13, ported
     reserve: 20 # energy kept back while interviewing, for a scouting pass (TST: the scout cost)
     max_ratio_bp: 12000 # bp of the ask; highest salary ratio a plan may offer (1.2x)
     plan_owner_roles: [human_resources] # roles that may own a plan without leading a unit (a recruiting manager)
+world: # game settings (ADR PT-0013)
+  real_people: true # default for a new game: real lawyers and judges by name; off swaps in generated names, same draws
+rivals: # rival firms (PT-M5; spec 10; ADR PT-0008). Money is cents a year unless stated; all [A] unless noted
+  first_firm_id: 101 # firm ids from here are rivals (the player's firm is 1)
+  first_person_id: 10000000 # rival people's ids start here (the player's ids stay below)
+  key_partners: 30 # top partners kept as individuals per real rival (ADR PT-0008 3)
+  key_associates: 10 # rising associates kept as individuals per real rival (ADR PT-0008 3)
+  key_book_share: 0.35 # share of a rival's revenue that is its key partners' books [A]
+  book_pareto: 0.6 # book of the n-th key partner ~ n^-a (a few rainmakers) [A]
+  actions_per_month: 2 # spec 10.2: one or two actions a month
+  second_action_min: 0.5 # utility a second action needs in the same month
+  noise_sd: 0.1 # spec 10.2's N(0, 0.1) on each candidate action
+  cooldown_months: { raise_rates: 12, cut_rates: 12, hire_associates: 1, hire_lateral: 2, lift_team: 12, approach_player: 3, open_office: 24, cut_costs: 12, de_equitise: 12 }
+  rate_step: 0.08 # largest rate move in one action (a year's rate card)
+  rate_need_span: 0.06 # an RPL gap of 6% makes the rate need 1
+  rate_elasticity: 0.5 # free play: demand growth lost a year per unit of rate index above 1
+  hire_span: 0.05 # a headcount gap of 5% of lawyers makes the hiring need 1
+  hire_max_monthly: 0.02 # at most 2% of lawyers hired in a month
+  cut_max_monthly: 0.03 # at most 3% laid off in a month
+  lateral_book_cents: 150000000 # $1.5M book a year of a lateral partner hired from the market
+  lateral_portability: 0.5 # share of a lateral's book that follows them to a rival
+  office_demand: 0.03 # free play: an office adds 3% to demand over two years
+  office_cost_cents: 200000000 # $2M a year to run an extra office
+  cost_growth: 0.035 # cost per lawyer grows 3.5% a year (wages and rent) [A]
+  rate_inflation: 0.03 # free play: revenue per lawyer at capacity rises 3% a year (rate cards) [A]
+  market_growth: { 2006: 0.11, 2007: 0.11, 2008: 0.03, 2009: -0.04, 2010: 0.01, 2011: 0.04, 2012: 0.03, 2013: 0.03, 2014: 0.04, 2015: 0.03, 2016: 0.03, 2017: 0.04, 2018: 0.05, 2019: 0.04, 2020: 0.02, 2021: 0.12, 2022: 0.02, 2023: 0.05, 2024: 0.07, 2025: 0.06 } # nominal Am Law 100 revenue growth by fiscal year [A from the trade press' aggregate reports]: generated firms always, real ones after the pin
+  market_growth_after: 0.04 # nominal growth a year after the table
+  cut_costs_margin: 0.22 # cut costs when the profit margin falls below 22%
+  de_equitise_pep: 0.9 # de-equitise when PEP falls below 90% of last year's
+  approach_need: 0.6 # need of approach_player when the rival has a target at the player's firm
+  appeal_size_base: 1.0 # NY panel appeal (logit points) of a $100M firm not in clients.yaml's panel_firms [A]
+  appeal_size_slope: 0.5 # points per tenfold revenue: $500M 1.35, $1.6B 1.6, near the static panel firms' 1.2-1.7
+  appeal_size_min: 0.6
+  appeal_size_max: 1.8
+  appeal_rep_weight: 0.15 # NY panel appeal points per point of key-partner quality above its start
+  appeal_price_weight: 0.5 # NY panel appeal points per unit of rate index below the rivals' mean (PT-M5 rule 2: 1.0 put PT-M3a's 50-lawyer guard at 40.5 on seed 2; 0.5 gives 40.0)
+  appeal_capacity_weight: 2.0 # NY panel appeal points lost per unit of utilisation above 0.95
+  pin: # ADR PT-0008 2: real rivals follow their path to December of end_year
+    end_year: 2015 # PT-M5 pins to 2015 (the brief); PT-M7 extends to 2025
+    band: 0.15 # T11: within +-15% of the path in December 2009 and 2015
+    noise_sd: 0.012 # monthly AR(1) shock to demand, log points
+    noise_phi: 0.85 # AR(1) persistence: stationary sd = 0.012 / sqrt(1 - 0.85^2) = 2.3%
+    recovery_per_year: 0.2 # share of the player's effect on a rival it wins back in a year
+  collapse:
+    window_months: 36 # a dated collapse's firm is fragile this many months before its date
+    base_bp: 0 # monthly hazard in the window with no departures (history keeps its date)
+    departed_threshold: 0.15 # key partners gone in 12 months, share; hazard grows above it
+    departed_slope_bp: 120 # hazard bp a month per point (1%) of departed share above the threshold
+    other_mult: 0.05 # other firms' hazard multiplier (healthy firms rarely collapse)
+    merger_calloff_share: 0.33 # a dated merger is called off if either side lost this share
+    scatter_player_share: 0.2 # of a collapse's key people, the share who become free agents
+    free_agent_months: 6
+  poach: # TST formulas.md 15.6, for law (spec 8.7's approaches)
+    salary_weight: 4.0 # s = 4 (R - 1) + ...
+    morale_mid: 55
+    morale_divisor: 20
+    loyalty_mid: 10
+    loyalty_divisor: 10
+    leave_penalty: -0.5 # leaving an employer
+    poachability_divisor: 10 # hidden trait poachability: + (p - 10) / 10 to the score
+    steepness: 2.0 # p = 1 / (1 + e^(-2 s))
+    bands: { lo: 0.2, hi: 0.5 } # likely to stay / might go / likely to go
+    offer_premium: { lo: 1.15, hi: 1.4 } # a rival's offer over the person's pay, uniform
+    max_per_year: 4 # approaches to the player's people a year, all rivals together
+    player_ask_premium: 0.3 # a rival's key person asks 30% over market pay to move
+    candidates: { lo: 2, hi: 4 } # key people one "approach a rival" search shows
+  rfp: # spec 7.2: panels and RFPs (stream rfp)
+    review_years: 3 # large clients review panels every 3 years
+    bidders: { lo: 2, hi: 4 } # rivals bidding beside the incumbents
+    matter_rfp_bp: 30 # monthly chance (bp) a large client runs an RFP for a big matter
+    matter_min_cents: 300000000 # $3M: a big matter's expected fees, at least
+    pitch_months: 2 # months from the RFP to the award
+    w_pitch: 0.25 # logit points per point of pitch quality above 10
+    w_claim: 0.2 # logit points per substantiated claim
+    w_incumbent: 0.8 # incumbency
+    w_relationship: 1.5 # times the player's relationship / 100
+    noise_sd: 0.5 # logit noise on each bid
+    team_max: 6
+    player_reputation_min: 0.5 # invited without a relationship when its best partner's familiarity is this high (0-1)
+    start_score: 35 # a new relationship's score after an RFP win
+  boutique: # TST 15.4's startups for law: partner groups leave to found boutiques
+    monthly_bp: 15 # chance a month that some large rival's partner group leaves (all rivals together, bp)
+    partners: { lo: 2, hi: 6 }
+    associates_per_partner: 1.5
+    book_share: 0.6 # share of the founders' books that follows them
+    failure_bp: 150 # monthly hazard while the boutique's profit is negative
+    growth_bias: { lo: -0.02, hi: 0.15 } # demand growth a year beside the market, uniform
+    max_alive: 40
+  generated: # spec 10.1: generated regional and mid-market firms
+    count: 120
+    revenue_cents: { lo: 3000000000, hi: 40000000000 } # $30M-$400M FY2005
+    revenue_median_cents: 9000000000 # $90M median (Am Law 200 tail and below) [A]
+    revenue_sigma: 0.7
+    rpl_cents: { lo: 35000000, hi: 60000000 } # $350k-$600k revenue per lawyer
+    personalities: { regional_champion: 0.35, volume_mid_market: 0.4, litigation_boutique: 0.15, tech_coast: 0.1 }
+    ny_share: 0.4 # share with a New York office (panel-eligible)
+    key_partners: 5
+    key_associates: 2
+  standing_ca: # a real notable's current-ability range from public standing (ADR PT-0013), uniform
+    elite: { lo: 175, hi: 195 }
+    leading: { lo: 160, hi: 180 }
+    strong: { lo: 145, hi: 168 }
+  judge_trait_sd: 2.0 # a real judge's procedural traits spread around their court's published figures (1-20 points) [A]: no per-judge statistics were found
+  notable_familiarity: 17 # a real notable's familiarity with their home practice, at least (1-20)
+  retire_age: 68 # rival people retire at this age (real people by their year, then by age)
+  career_start_age: 25 # a notable's age at career start (no birth date is recorded, PT-0013)
+  personalities: # spec 10.1 and 10.2: utility weights and shape [A]
+    elite_lockstep:
+      label: Elite lockstep
+      weights: { raise_rates: 1.2, cut_rates: 0.4, hire_associates: 1.0, hire_lateral: 0.3, lift_team: 0.1, approach_player: 0.2, open_office: 0.4, cut_costs: 0.6, de_equitise: 0.2 }
+      equity_share: 0.24
+      partner_share: 0.30
+      utilisation: 0.85
+      growth_bias: 0.0
+      fragility: 0.5
+      mix: { corporate_ma: 0.22, private_equity: 0.1, capital_markets: 0.14, banking_finance: 0.12, restructuring: 0.06, commercial_litigation: 0.18, white_collar: 0.06, ip: 0.03, employment: 0.03, real_estate: 0.06 }
+    performance_machine:
+      label: Performance machine
+      weights: { raise_rates: 1.0, cut_rates: 0.5, hire_associates: 1.0, hire_lateral: 1.4, lift_team: 1.0, approach_player: 1.2, open_office: 0.8, cut_costs: 1.0, de_equitise: 1.0 }
+      equity_share: 0.2
+      partner_share: 0.36
+      utilisation: 0.85
+      growth_bias: 0.03
+      fragility: 1.0
+      mix: { corporate_ma: 0.18, private_equity: 0.14, capital_markets: 0.1, banking_finance: 0.1, restructuring: 0.07, commercial_litigation: 0.2, white_collar: 0.06, ip: 0.07, employment: 0.03, real_estate: 0.05 }
+    global_verein:
+      label: Global verein
+      weights: { raise_rates: 0.7, cut_rates: 0.8, hire_associates: 1.0, hire_lateral: 1.0, lift_team: 0.8, approach_player: 0.6, open_office: 1.4, cut_costs: 0.8, de_equitise: 0.6 }
+      equity_share: 0.22
+      partner_share: 0.4
+      utilisation: 0.82
+      growth_bias: 0.02
+      fragility: 0.8
+      mix: { corporate_ma: 0.18, private_equity: 0.05, capital_markets: 0.08, banking_finance: 0.12, restructuring: 0.05, commercial_litigation: 0.18, white_collar: 0.04, ip: 0.1, employment: 0.1, real_estate: 0.1 }
+    litigation_boutique:
+      label: Litigation boutique
+      weights: { raise_rates: 1.0, cut_rates: 0.3, hire_associates: 1.0, hire_lateral: 0.8, lift_team: 0.4, approach_player: 0.8, open_office: 0.6, cut_costs: 0.6, de_equitise: 0.3 }
+      equity_share: 0.28
+      partner_share: 0.36
+      utilisation: 0.87
+      growth_bias: 0.04
+      fragility: 1.0
+      mix: { corporate_ma: 0.0, private_equity: 0.0, capital_markets: 0.0, banking_finance: 0.0, restructuring: 0.04, commercial_litigation: 0.6, white_collar: 0.2, ip: 0.14, employment: 0.02, real_estate: 0.0 }
+    tech_coast:
+      label: Tech coast
+      weights: { raise_rates: 0.8, cut_rates: 0.8, hire_associates: 1.1, hire_lateral: 1.0, lift_team: 0.6, approach_player: 0.6, open_office: 1.0, cut_costs: 1.2, de_equitise: 0.5 }
+      equity_share: 0.25
+      partner_share: 0.34
+      utilisation: 0.83
+      growth_bias: 0.03
+      fragility: 1.2
+      mix: { corporate_ma: 0.22, private_equity: 0.08, capital_markets: 0.12, banking_finance: 0.04, restructuring: 0.02, commercial_litigation: 0.16, white_collar: 0.04, ip: 0.24, employment: 0.05, real_estate: 0.03 }
+    regional_champion:
+      label: Regional champion
+      weights: { raise_rates: 0.7, cut_rates: 0.8, hire_associates: 1.0, hire_lateral: 1.1, lift_team: 0.8, approach_player: 0.6, open_office: 1.2, cut_costs: 0.9, de_equitise: 0.6 }
+      equity_share: 0.24
+      partner_share: 0.4
+      utilisation: 0.83
+      growth_bias: 0.02
+      fragility: 0.8
+      mix: { corporate_ma: 0.16, private_equity: 0.05, capital_markets: 0.06, banking_finance: 0.1, restructuring: 0.06, commercial_litigation: 0.24, white_collar: 0.06, ip: 0.09, employment: 0.09, real_estate: 0.09 }
+    volume_mid_market:
+      label: Volume mid-market
+      weights: { raise_rates: 0.4, cut_rates: 1.2, hire_associates: 1.2, hire_lateral: 0.7, lift_team: 0.5, approach_player: 0.5, open_office: 0.8, cut_costs: 1.2, de_equitise: 0.8 }
+      equity_share: 0.2
+      partner_share: 0.42
+      utilisation: 0.88
+      growth_bias: 0.0
+      fragility: 1.0
+      mix: { corporate_ma: 0.1, private_equity: 0.02, capital_markets: 0.02, banking_finance: 0.08, restructuring: 0.05, commercial_litigation: 0.3, white_collar: 0.03, ip: 0.06, employment: 0.2, real_estate: 0.14 }
+    big_four_legal:
+      label: Big Four legal
+      weights: { raise_rates: 0.3, cut_rates: 1.2, hire_associates: 1.2, hire_lateral: 1.0, lift_team: 1.0, approach_player: 0.6, open_office: 1.4, cut_costs: 1.0, de_equitise: 0.5 }
+      equity_share: 0.15
+      partner_share: 0.3
+      utilisation: 0.8
+      growth_bias: 0.05
+      fragility: 0.3
+      mix: { corporate_ma: 0.2, private_equity: 0.05, capital_markets: 0.05, banking_finance: 0.1, restructuring: 0.05, commercial_litigation: 0.1, white_collar: 0.05, ip: 0.05, employment: 0.2, real_estate: 0.15 }
 clients: # the client universe (spec 7.1, 7.3; PT-M3a)
   generated_count: 700 # generated clients beside clients.yaml's 300 real ones (stream client_gen)
   size_exponent: 0.7 # wallet weight = revenue_bn ^ this x sector intensity x mix (diminishing with size)

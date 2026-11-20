@@ -4845,6 +4845,476 @@
         }
       }
     },
+    "/api/saves/{slug}/market": {
+      "get": {
+        "summary": "Get Market",
+        "operationId": "getMarket",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/rivals/{firm_id}": {
+      "get": {
+        "summary": "Get Rival",
+        "operationId": "getRival",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "firm_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Firm Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RivalOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/rfps/{rfp_id}/pitch": {
+      "post": {
+        "summary": "Pitch Rfp",
+        "operationId": "pitchRfp",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "rfp_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Rfp Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PitchIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/rivals/{firm_id}/approach": {
+      "post": {
+        "summary": "Approach Rival",
+        "operationId": "approachRival",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "firm_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Firm Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApproachRivalIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/market/free-agents/approach": {
+      "post": {
+        "summary": "Approach Free Agents",
+        "operationId": "approachFreeAgents",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/approaches/{approach_id}/counter": {
+      "post": {
+        "summary": "Counter Approach",
+        "operationId": "counterRivalApproach",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "approach_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Approach Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/saves/{slug}/partnership": {
       "get": {
         "summary": "Get Partnership",
@@ -6310,6 +6780,23 @@
           "stay_label"
         ],
         "title": "ApproachOut"
+      },
+      "ApproachRivalIn": {
+        "properties": {
+          "practice": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Practice"
+          }
+        },
+        "type": "object",
+        "title": "ApproachRivalIn"
       },
       "AssignIn": {
         "properties": {
@@ -7821,6 +8308,24 @@
         ],
         "title": "FinanceOut"
       },
+      "FirmRefOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "FirmRefOut"
+      },
       "ForumIn": {
         "properties": {
           "court": {
@@ -8043,6 +8548,44 @@
           "practice"
         ],
         "title": "IntroduceIn"
+      },
+      "KeyPersonOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "practice": {
+            "type": "string",
+            "title": "Practice"
+          },
+          "real": {
+            "type": "boolean",
+            "title": "Real"
+          },
+          "met": {
+            "type": "boolean",
+            "title": "Met"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "level",
+          "practice",
+          "real",
+          "met"
+        ],
+        "title": "KeyPersonOut"
       },
       "KpisOut": {
         "properties": {
@@ -8319,6 +8862,64 @@
         ],
         "title": "LeaderIn"
       },
+      "MarketOut": {
+        "properties": {
+          "rivals": {
+            "items": {
+              "$ref": "#/components/schemas/RivalRowOut"
+            },
+            "type": "array",
+            "title": "Rivals"
+          },
+          "rfps": {
+            "items": {
+              "$ref": "#/components/schemas/RfpOut"
+            },
+            "type": "array",
+            "title": "Rfps"
+          },
+          "approaches": {
+            "items": {
+              "$ref": "#/components/schemas/RivalApproachOut"
+            },
+            "type": "array",
+            "title": "Approaches"
+          },
+          "news": {
+            "items": {
+              "$ref": "#/components/schemas/NewsOut"
+            },
+            "type": "array",
+            "title": "News"
+          },
+          "free_agents": {
+            "type": "integer",
+            "title": "Free Agents"
+          },
+          "claims": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Claims"
+          },
+          "real_people": {
+            "type": "boolean",
+            "title": "Real People"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rivals",
+          "rfps",
+          "approaches",
+          "news",
+          "free_agents",
+          "claims",
+          "real_people"
+        ],
+        "title": "MarketOut"
+      },
       "MatterEventOut": {
         "properties": {
           "id": {
@@ -8594,6 +9195,28 @@
           "waiver": {
             "type": "boolean",
             "title": "Waiver"
+          },
+          "opposing_counsel": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Opposing Counsel"
+          },
+          "opposing_firm_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Opposing Firm Id"
           }
         },
         "type": "object",
@@ -9035,6 +9658,38 @@
           "firm_name"
         ],
         "title": "NewGameIn"
+      },
+      "NewsOut": {
+        "properties": {
+          "turn": {
+            "type": "integer",
+            "title": "Turn"
+          },
+          "date_label": {
+            "type": "string",
+            "title": "Date Label"
+          },
+          "firm": {
+            "$ref": "#/components/schemas/FirmRefOut"
+          },
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "turn",
+          "date_label",
+          "firm",
+          "action",
+          "text"
+        ],
+        "title": "NewsOut"
       },
       "OfferIn": {
         "properties": {
@@ -10671,6 +11326,31 @@
         ],
         "title": "PhaseOut"
       },
+      "PitchIn": {
+        "properties": {
+          "team": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Team"
+          },
+          "claims": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Claims",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "team"
+        ],
+        "title": "PitchIn"
+      },
       "PlanChannel": {
         "type": "string",
         "enum": [
@@ -10920,6 +11600,29 @@
           "lines"
         ],
         "title": "PnlOut"
+      },
+      "PracticeHeadcountOut": {
+        "properties": {
+          "practice": {
+            "type": "string",
+            "title": "Practice"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "lawyers": {
+            "type": "integer",
+            "title": "Lawyers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "practice",
+          "label",
+          "lawyers"
+        ],
+        "title": "PracticeHeadcountOut"
       },
       "PracticeIn": {
         "properties": {
@@ -11479,12 +12182,416 @@
         ],
         "title": "RevolverOut"
       },
+      "RfpOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "client": {
+            "$ref": "#/components/schemas/FirmRefOut"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "panel",
+              "matter"
+            ],
+            "title": "Kind"
+          },
+          "practices": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Practices"
+          },
+          "opened_label": {
+            "type": "string",
+            "title": "Opened Label"
+          },
+          "award_label": {
+            "type": "string",
+            "title": "Award Label"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "awarded"
+            ],
+            "title": "Status"
+          },
+          "seats": {
+            "type": "integer",
+            "title": "Seats"
+          },
+          "incumbent": {
+            "type": "boolean",
+            "title": "Incumbent"
+          },
+          "contenders": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Contenders"
+          },
+          "pitched": {
+            "type": "boolean",
+            "title": "Pitched"
+          },
+          "team": {
+            "items": {
+              "$ref": "#/components/schemas/FirmRefOut"
+            },
+            "type": "array",
+            "title": "Team"
+          },
+          "claims": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Claims"
+          },
+          "won": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Won"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "client",
+          "kind",
+          "practices",
+          "opened_label",
+          "award_label",
+          "status",
+          "seats",
+          "incumbent",
+          "contenders",
+          "pitched",
+          "team",
+          "claims",
+          "won"
+        ],
+        "title": "RfpOut"
+      },
       "RiskOut": {
         "type": "string",
         "enum": [
           "low",
           "medium",
           "high"
+        ]
+      },
+      "RivalApproachOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "person": {
+            "$ref": "#/components/schemas/FirmRefOut"
+          },
+          "firm": {
+            "$ref": "#/components/schemas/FirmRefOut"
+          },
+          "offer_cents": {
+            "type": "integer",
+            "title": "Offer Cents"
+          },
+          "made_label": {
+            "type": "string",
+            "title": "Made Label"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "odds": {
+            "type": "string",
+            "title": "Odds"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "person",
+          "firm",
+          "offer_cents",
+          "made_label",
+          "status",
+          "odds"
+        ],
+        "title": "RivalApproachOut"
+      },
+      "RivalOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "short": {
+            "type": "string",
+            "title": "Short"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "real",
+              "generated",
+              "boutique"
+            ],
+            "title": "Kind"
+          },
+          "personality": {
+            "type": "string",
+            "title": "Personality"
+          },
+          "status": {
+            "$ref": "#/components/schemas/RivalStatusOut"
+          },
+          "hq": {
+            "type": "string",
+            "title": "Hq"
+          },
+          "offices": {
+            "type": "integer",
+            "title": "Offices"
+          },
+          "ny_office": {
+            "type": "boolean",
+            "title": "Ny Office"
+          },
+          "revenue_cents": {
+            "type": "integer",
+            "title": "Revenue Cents"
+          },
+          "lawyers": {
+            "type": "integer",
+            "title": "Lawyers"
+          },
+          "pep_cents": {
+            "type": "integer",
+            "title": "Pep Cents"
+          },
+          "money": {
+            "type": "string",
+            "title": "Money"
+          },
+          "stance": {
+            "type": "string",
+            "title": "Stance"
+          },
+          "key_people": {
+            "type": "integer",
+            "title": "Key People"
+          },
+          "on_panels": {
+            "type": "integer",
+            "title": "On Panels"
+          },
+          "comp": {
+            "type": "string",
+            "title": "Comp"
+          },
+          "founded_label": {
+            "type": "string",
+            "title": "Founded Label"
+          },
+          "ended_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ended Label"
+          },
+          "successor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Successor"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/YearOut"
+            },
+            "type": "array",
+            "title": "History"
+          },
+          "practices": {
+            "items": {
+              "$ref": "#/components/schemas/PracticeHeadcountOut"
+            },
+            "type": "array",
+            "title": "Practices"
+          },
+          "people": {
+            "items": {
+              "$ref": "#/components/schemas/KeyPersonOut"
+            },
+            "type": "array",
+            "title": "People"
+          },
+          "news": {
+            "items": {
+              "$ref": "#/components/schemas/NewsOut"
+            },
+            "type": "array",
+            "title": "News"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "short",
+          "kind",
+          "personality",
+          "status",
+          "hq",
+          "offices",
+          "ny_office",
+          "revenue_cents",
+          "lawyers",
+          "pep_cents",
+          "money",
+          "stance",
+          "key_people",
+          "on_panels",
+          "comp",
+          "founded_label",
+          "ended_label",
+          "successor",
+          "history",
+          "practices",
+          "people",
+          "news"
+        ],
+        "title": "RivalOut"
+      },
+      "RivalRowOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "short": {
+            "type": "string",
+            "title": "Short"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "real",
+              "generated",
+              "boutique"
+            ],
+            "title": "Kind"
+          },
+          "personality": {
+            "type": "string",
+            "title": "Personality"
+          },
+          "status": {
+            "$ref": "#/components/schemas/RivalStatusOut"
+          },
+          "hq": {
+            "type": "string",
+            "title": "Hq"
+          },
+          "offices": {
+            "type": "integer",
+            "title": "Offices"
+          },
+          "ny_office": {
+            "type": "boolean",
+            "title": "Ny Office"
+          },
+          "revenue_cents": {
+            "type": "integer",
+            "title": "Revenue Cents"
+          },
+          "lawyers": {
+            "type": "integer",
+            "title": "Lawyers"
+          },
+          "pep_cents": {
+            "type": "integer",
+            "title": "Pep Cents"
+          },
+          "money": {
+            "type": "string",
+            "title": "Money"
+          },
+          "stance": {
+            "type": "string",
+            "title": "Stance"
+          },
+          "key_people": {
+            "type": "integer",
+            "title": "Key People"
+          },
+          "on_panels": {
+            "type": "integer",
+            "title": "On Panels"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "short",
+          "kind",
+          "personality",
+          "status",
+          "hq",
+          "offices",
+          "ny_office",
+          "revenue_cents",
+          "lawyers",
+          "pep_cents",
+          "money",
+          "stance",
+          "key_people",
+          "on_panels"
+        ],
+        "title": "RivalRowOut"
+      },
+      "RivalStatusOut": {
+        "type": "string",
+        "enum": [
+          "active",
+          "merged",
+          "collapsed",
+          "failed"
         ]
       },
       "RoleOptionOut": {
@@ -12207,6 +13314,39 @@
           "bp"
         ],
         "title": "WriteDownIn"
+      },
+      "YearOut": {
+        "properties": {
+          "year": {
+            "type": "integer",
+            "title": "Year"
+          },
+          "revenue_cents": {
+            "type": "integer",
+            "title": "Revenue Cents"
+          },
+          "lawyers": {
+            "type": "integer",
+            "title": "Lawyers"
+          },
+          "equity_partners": {
+            "type": "integer",
+            "title": "Equity Partners"
+          },
+          "pep_cents": {
+            "type": "integer",
+            "title": "Pep Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "year",
+          "revenue_cents",
+          "lawyers",
+          "equity_partners",
+          "pep_cents"
+        ],
+        "title": "YearOut"
       }
     }
   }

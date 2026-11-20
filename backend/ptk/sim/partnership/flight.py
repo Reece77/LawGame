@@ -447,6 +447,21 @@ def depart_partner(
                     amount=settle,
                 )
             )
+        # PT-M5 (integration fix): an overdraft beyond their capital is not recovered; the
+        # remaining partners bear it (3100 down, 2700 back to zero), so the partners' tally
+        # and the ledger agree once the leaver is gone
+        short = -current - settle
+        if short:
+            entries.append(
+                LedgerEntry.transfer(
+                    turn=turn,
+                    firm_id=firm,
+                    memo="Leaver's unrecovered overdraft borne by the partners",
+                    debit=UNDISTRIBUTED_PROFIT,
+                    credit=PARTNER_CURRENT,
+                    amount=short,
+                )
+            )
     fp = with_capital_return(without_partner(fp, person_id), ret)
     # clients: the portable share follows; the rest pass to a colleague
     practice = home_practice(person, data)
@@ -581,7 +596,20 @@ def clients_follow(state: GameState) -> tuple[GameState, tuple[LogItem, ...]]:
 # --- Phase 8 --------------------------------------------------------------------------------
 
 
-def _suitor_for(gen: np.random.Generator, practice: str, data: GameData) -> Suitor:
+def _suitor_for(
+    gen: np.random.Generator, practice: str, data: GameData, state: GameState
+) -> Suitor:
+    """PT-M5: a live rival firm with a New York office and lawyers in the practice, by its
+    lawyers there (one draw, as before); the static panel firms without rivals."""
+    rivals = [
+        f
+        for f in state.rivals.active
+        if f.ny_office and f.kind != "boutique" and f.pool(practice).lawyers >= 1.0
+    ]
+    if rivals:
+        w = np.array([f.pool(practice).lawyers for f in rivals])
+        j = int(gen.choice(len(rivals), p=w / w.sum()))
+        return Suitor(rivals[j].key, rivals[j].name, rivals[j].id)
     firms = data.clients.panel_firms
     weights = np.array([2.0 if practice in f.strong else 1.0 for f in firms])
     i = int(gen.choice(len(firms), p=weights / weights.sum()))
@@ -641,7 +669,7 @@ def flight_month(
             if busy or roll >= chance:
                 continue
             person = state.person(p.person_id)
-            suitor = _suitor_for(gen, home_practice(person, data), data)
+            suitor = _suitor_for(gen, home_practice(person, data), data, state)
             lo, hi = cfg.offer_mult
             market = FLIGHT_HOOK.market_value_cents(state, p.person_id, balance, data)
             offer = round(market * float(gen.uniform(lo, hi)))

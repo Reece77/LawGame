@@ -233,6 +233,7 @@ def intake(
     key = key_clients(market, firm_id, balance)
     keys = data.practice_keys
     reps = {p: firm_reputation(state, firm_id, p) for p in keys}
+    appeals = dict(state.rivals.appeals) or None  # PT-M5: rival firms' live appeal
     flow_fees: dict[tuple[int, str], float] = {}
     logs: list[LogItem] = []
     named_min = balance.matters.named_min_cents
@@ -246,7 +247,7 @@ def intake(
         for p in rel.practices:
             practice = data.practice(p)
             fees = shares.wallet(client.id, keys.index(p), demand) * player_share(
-                client, rel, p, reps[p], False, data, balance
+                client, rel, p, reps[p], False, data, balance, appeals
             )
             if fees <= 0:
                 continue

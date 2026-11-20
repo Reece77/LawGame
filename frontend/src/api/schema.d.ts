@@ -1008,6 +1008,108 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/saves/{slug}/market": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Market */
+        get: operations["getMarket"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/rivals/{firm_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Rival */
+        get: operations["getRival"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/rfps/{rfp_id}/pitch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Pitch Rfp */
+        post: operations["pitchRfp"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/rivals/{firm_id}/approach": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approach Rival */
+        post: operations["approachRival"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/market/free-agents/approach": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approach Free Agents */
+        post: operations["approachFreeAgents"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/approaches/{approach_id}/counter": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Counter Approach */
+        post: operations["counterRivalApproach"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/saves/{slug}/partnership": {
         parameters: {
             query?: never;
@@ -1345,6 +1447,11 @@ export interface components {
             counter_seat: boolean;
             /** Stay Label */
             stay_label: string;
+        };
+        /** ApproachRivalIn */
+        ApproachRivalIn: {
+            /** Practice */
+            practice?: string | null;
         };
         /** AssignIn */
         AssignIn: {
@@ -1872,6 +1979,13 @@ export interface components {
             /** Receivables Ageing */
             receivables_ageing: components["schemas"]["AgeBucketOut"][];
         };
+        /** FirmRefOut */
+        FirmRefOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+        };
         /** ForumIn */
         ForumIn: {
             /** Court */
@@ -1947,6 +2061,21 @@ export interface components {
             practice: string;
             /** Introducer Id */
             introducer_id?: number | null;
+        };
+        /** KeyPersonOut */
+        KeyPersonOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Level */
+            level: string;
+            /** Practice */
+            practice: string;
+            /** Real */
+            real: boolean;
+            /** Met */
+            met: boolean;
         };
         /** KpisOut */
         KpisOut: {
@@ -2046,6 +2175,23 @@ export interface components {
             /** Person Id */
             person_id: number | null;
         };
+        /** MarketOut */
+        MarketOut: {
+            /** Rivals */
+            rivals: components["schemas"]["RivalRowOut"][];
+            /** Rfps */
+            rfps: components["schemas"]["RfpOut"][];
+            /** Approaches */
+            approaches: components["schemas"]["RivalApproachOut"][];
+            /** News */
+            news: components["schemas"]["NewsOut"][];
+            /** Free Agents */
+            free_agents: number;
+            /** Claims */
+            claims: string[];
+            /** Real People */
+            real_people: boolean;
+        };
         /** MatterEventOut */
         MatterEventOut: {
             /** Id */
@@ -2143,6 +2289,10 @@ export interface components {
             checked: boolean;
             /** Waiver */
             waiver: boolean;
+            /** Opposing Counsel */
+            opposing_counsel?: string | null;
+            /** Opposing Firm Id */
+            opposing_firm_id?: number | null;
         };
         /** MatterRowOut */
         MatterRowOut: {
@@ -2268,6 +2418,18 @@ export interface components {
             seed?: number | null;
             /** Background */
             background?: string | null;
+        };
+        /** NewsOut */
+        NewsOut: {
+            /** Turn */
+            turn: number;
+            /** Date Label */
+            date_label: string;
+            firm: components["schemas"]["FirmRefOut"];
+            /** Action */
+            action: string;
+            /** Text */
+            text: string;
         };
         /** OfferIn */
         OfferIn: {
@@ -2765,6 +2927,16 @@ export interface components {
              */
             state: "done" | "current" | "next";
         };
+        /** PitchIn */
+        PitchIn: {
+            /** Team */
+            team: number[];
+            /**
+             * Claims
+             * @default []
+             */
+            claims?: string[];
+        };
         /** @enum {string} */
         PlanChannel: "job_post" | "recruiter" | "referral" | "campus" | "any";
         /** @enum {string} */
@@ -2849,6 +3021,15 @@ export interface components {
             profit_cents: number;
             /** Lines */
             lines: components["schemas"]["PnlLineOut"][];
+        };
+        /** PracticeHeadcountOut */
+        PracticeHeadcountOut: {
+            /** Practice */
+            practice: string;
+            /** Label */
+            label: string;
+            /** Lawyers */
+            lawyers: number;
         };
         /** PracticeIn */
         PracticeIn: {
@@ -3045,8 +3226,151 @@ export interface components {
             /** Covenants */
             covenants: components["schemas"]["CovenantOut"][];
         };
+        /** RfpOut */
+        RfpOut: {
+            /** Id */
+            id: number;
+            client: components["schemas"]["FirmRefOut"];
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "panel" | "matter";
+            /** Practices */
+            practices: string[];
+            /** Opened Label */
+            opened_label: string;
+            /** Award Label */
+            award_label: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "open" | "awarded";
+            /** Seats */
+            seats: number;
+            /** Incumbent */
+            incumbent: boolean;
+            /** Contenders */
+            contenders: string[];
+            /** Pitched */
+            pitched: boolean;
+            /** Team */
+            team: components["schemas"]["FirmRefOut"][];
+            /** Claims */
+            claims: string[];
+            /** Won */
+            won: boolean | null;
+        };
         /** @enum {string} */
         RiskOut: "low" | "medium" | "high";
+        /** RivalApproachOut */
+        RivalApproachOut: {
+            /** Id */
+            id: number;
+            person: components["schemas"]["FirmRefOut"];
+            firm: components["schemas"]["FirmRefOut"];
+            /** Offer Cents */
+            offer_cents: number;
+            /** Made Label */
+            made_label: string;
+            /** Status */
+            status: string;
+            /** Odds */
+            odds: string;
+        };
+        /** RivalOut */
+        RivalOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Short */
+            short: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "real" | "generated" | "boutique";
+            /** Personality */
+            personality: string;
+            status: components["schemas"]["RivalStatusOut"];
+            /** Hq */
+            hq: string;
+            /** Offices */
+            offices: number;
+            /** Ny Office */
+            ny_office: boolean;
+            /** Revenue Cents */
+            revenue_cents: number;
+            /** Lawyers */
+            lawyers: number;
+            /** Pep Cents */
+            pep_cents: number;
+            /** Money */
+            money: string;
+            /** Stance */
+            stance: string;
+            /** Key People */
+            key_people: number;
+            /** On Panels */
+            on_panels: number;
+            /** Comp */
+            comp: string;
+            /** Founded Label */
+            founded_label: string;
+            /** Ended Label */
+            ended_label: string | null;
+            /** Successor */
+            successor: string | null;
+            /** History */
+            history: components["schemas"]["YearOut"][];
+            /** Practices */
+            practices: components["schemas"]["PracticeHeadcountOut"][];
+            /** People */
+            people: components["schemas"]["KeyPersonOut"][];
+            /** News */
+            news: components["schemas"]["NewsOut"][];
+        };
+        /** RivalRowOut */
+        RivalRowOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Short */
+            short: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "real" | "generated" | "boutique";
+            /** Personality */
+            personality: string;
+            status: components["schemas"]["RivalStatusOut"];
+            /** Hq */
+            hq: string;
+            /** Offices */
+            offices: number;
+            /** Ny Office */
+            ny_office: boolean;
+            /** Revenue Cents */
+            revenue_cents: number;
+            /** Lawyers */
+            lawyers: number;
+            /** Pep Cents */
+            pep_cents: number;
+            /** Money */
+            money: string;
+            /** Stance */
+            stance: string;
+            /** Key People */
+            key_people: number;
+            /** On Panels */
+            on_panels: number;
+        };
+        /** @enum {string} */
+        RivalStatusOut: "active" | "merged" | "collapsed" | "failed";
         /** RoleOptionOut */
         RoleOptionOut: {
             /** Key */
@@ -3301,6 +3625,19 @@ export interface components {
             matter_id: number;
             /** Bp */
             bp: number;
+        };
+        /** YearOut */
+        YearOut: {
+            /** Year */
+            year: number;
+            /** Revenue Cents */
+            revenue_cents: number;
+            /** Lawyers */
+            lawyers: number;
+            /** Equity Partners */
+            equity_partners: number;
+            /** Pep Cents */
+            pep_cents: number;
         };
     };
     responses: never;
@@ -6941,6 +7278,366 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BillOut"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getMarket: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MarketOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getRival: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                firm_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RivalOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    pitchRfp: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                rfp_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PitchIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MarketOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    approachRival: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                firm_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApproachRivalIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MarketOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    approachFreeAgents: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MarketOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    counterRivalApproach: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                approach_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MarketOut"];
                 };
             };
             /** @description Bad Request */

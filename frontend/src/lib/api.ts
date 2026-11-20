@@ -607,6 +607,84 @@ export function useSetLlmSettings() {
   });
 }
 
+// --- PT-M5: the market (rival firms, RFPs, approaches) ---------------------------------------
+
+export type MarketView = Schemas['MarketOut'];
+export type RivalRow = Schemas['RivalRowOut'];
+export type RivalDetail = Schemas['RivalOut'];
+export type Rfp = Schemas['RfpOut'];
+export type RivalApproach = Schemas['RivalApproachOut'];
+export type MarketNews = Schemas['NewsOut'];
+export type KeyPerson = Schemas['KeyPersonOut'];
+
+export const useMarket = (slug: string) =>
+  useQuery({
+    queryKey: ['market', slug],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/saves/{slug}/market', { params: { path: { slug } } })),
+  });
+
+export const useRival = (slug: string, firmId: number) =>
+  useQuery({
+    queryKey: ['market', slug, 'rival', firmId],
+    queryFn: async () =>
+      unwrap(
+        await api.GET('/api/saves/{slug}/rivals/{firm_id}', {
+          params: { path: { slug, firm_id: firmId } },
+        }),
+      ),
+  });
+
+function useMarketMutation<T>(slug: string, run: (body: T) => Promise<MarketView>) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: run,
+    onSuccess: (view) => {
+      client.setQueryData(['market', slug], view);
+      for (const key of ['market', 'game', 'inbox', 'recruitment', 'people']) {
+        void client.invalidateQueries({ queryKey: [key, slug] });
+      }
+    },
+  });
+}
+
+export const usePitchRfp = (slug: string) =>
+  useMarketMutation(slug, async (body: { rfp_id: number; team: number[]; claims: string[] }) =>
+    unwrap(
+      await api.POST('/api/saves/{slug}/rfps/{rfp_id}/pitch', {
+        params: { path: { slug, rfp_id: body.rfp_id } },
+        body: { team: body.team, claims: body.claims },
+      }),
+    ),
+  );
+
+export const useApproachRival = (slug: string) =>
+  useMarketMutation(slug, async (body: { firm_id: number; practice: string | null }) =>
+    unwrap(
+      await api.POST('/api/saves/{slug}/rivals/{firm_id}/approach', {
+        params: { path: { slug, firm_id: body.firm_id } },
+        body: { practice: body.practice },
+      }),
+    ),
+  );
+
+export const useApproachFreeAgents = (slug: string) =>
+  useMarketMutation(slug, async () =>
+    unwrap(
+      await api.POST('/api/saves/{slug}/market/free-agents/approach', {
+        params: { path: { slug } },
+      }),
+    ),
+  );
+
+export const useCounterApproach = (slug: string) =>
+  useMarketMutation(slug, async (approachId: number) =>
+    unwrap(
+      await api.POST('/api/saves/{slug}/approaches/{approach_id}/counter', {
+        params: { path: { slug, approach_id: approachId } },
+      }),
+    ),
+  );
 // --- PT-M4: the partnership ------------------------------------------------------------------
 
 export type Partnership = Schemas['PartnershipOut'];

@@ -156,7 +156,7 @@ def team_month(
 def assign_judge(
     matter: Matter, market: MarketState, u: float, data: GameData, balance: Balance
 ) -> Matter:
-    judges = [j for j in market.judges if j.court == matter.court]
+    judges = [j for j in market.judges if j.court == matter.court and j.sits(matter.opened_turn)]
     if not judges:
         return matter
     judge = judges[min(int(u * len(judges)), len(judges) - 1)]

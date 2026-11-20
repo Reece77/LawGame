@@ -6,7 +6,7 @@ import json
 from collections.abc import Mapping
 from dataclasses import replace
 
-from sqlalchemy import func, select
+from sqlalchemy import func, insert, select
 from sqlalchemy.orm import Session
 
 from ptk.db.billing_io import load_billing, write_billing, write_client_book
@@ -30,6 +30,7 @@ from ptk.db.models import (
 )
 from ptk.db.org_io import load_org, write_org
 from ptk.db.partnership_io import load_partnership, write_partnership
+from ptk.db.rivals_io import insert_rivals, load_rivals, write_panels, write_rivals
 from ptk.sim.billing.models import ClientBookEntry
 from ptk.sim.data_models import InboxTemplate
 from ptk.sim.hiring.models import Candidate, Offer, PayPolicy, PersonState, Search
@@ -96,6 +97,7 @@ def insert_new(session: Session, state: GameState, entries: tuple[LedgerEntry, .
     write_people(session, state)
     write_org(session, state)
     insert_market(session, state.market)
+    insert_rivals(session, state.rivals)  # PT-M5
     write_partnership(session, state.partnership)
     write_events(session, state.events)
     write_entries(session, entries)
@@ -114,6 +116,8 @@ def load_state(session: Session) -> GameState:
         game_state=row.game_state,  # type: ignore[arg-type]
         ended_turn=row.ended_turn,
     )
+    rivals = load_rivals(session)  # PT-M5: rival firms' rows are not the player's firms
+    rival_ids = {f.id for f in rivals.firms}
     firms = tuple(
         FirmState(
             id=f.id,
@@ -126,6 +130,7 @@ def load_state(session: Session) -> GameState:
             conflict_checks=f.conflict_checks,
         )
         for f in session.scalars(select(FirmRow).order_by(FirmRow.id))
+        if f.id not in rival_ids
     )
     return GameState(
         save_meta=meta,
@@ -170,6 +175,7 @@ def load_state(session: Session) -> GameState:
             PersonState(person_id=r.person_id, energy=r.energy, morale=r.morale)
             for r in session.scalars(select(PersonStateRow).order_by(PersonStateRow.person_id))
         ),
+        rivals=rivals,
     )
 
 
@@ -408,6 +414,9 @@ def ledger_balances(session: Session) -> dict[tuple[int, str], Cents]:
 
 
 def write_entries(session: Session, entries: tuple[LedgerEntry, ...]) -> None:
+    if len(entries) > BULK_ENTRIES:  # PT-M5: rivals post an entry each a month
+        _bulk_entries(session, entries)
+        return
     for entry in entries:
         row = LedgerEntryRow(turn=entry.turn, firm_id=entry.firm_id, memo=entry.memo)
         session.add(row)
@@ -422,6 +431,36 @@ def write_entries(session: Session, entries: tuple[LedgerEntry, ...]) -> None:
             )
             for line in entry.lines
         )
+
+
+BULK_ENTRIES = 20  # tunable-exempt: entries above which one bulk insert is faster
+
+
+def _bulk_entries(session: Session, entries: tuple[LedgerEntry, ...]) -> None:
+    """The same rows as one entry at a time, in order, with ids assigned here."""
+    session.flush()
+    first = (session.scalar(select(func.max(LedgerEntryRow.id))) or 0) + 1
+    session.execute(
+        insert(LedgerEntryRow),
+        [
+            {"id": first + i, "turn": e.turn, "firm_id": e.firm_id, "memo": e.memo}
+            for i, e in enumerate(entries)
+        ],
+    )
+    session.execute(
+        insert(LedgerLineRow),
+        [
+            {
+                "entry_id": first + i,
+                "account": line.account,
+                "amount_cents": line.amount,
+                "practice": line.practice,
+                "office_id": line.office_id,
+            }
+            for i, e in enumerate(entries)
+            for line in e.lines
+        ],
+    )
 
 
 def write_log(
@@ -466,6 +505,8 @@ def write_turn(
     write_market(session, new_state.market)
     write_events(session, new_state.events)
     write_billing(session, new_state.billing)
+    write_rivals(session, new_state.rivals)  # PT-M5
+    write_panels(session, new_state.market)
     write_partnership(session, new_state.partnership)
 
 

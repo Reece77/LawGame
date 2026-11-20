@@ -292,6 +292,8 @@ class JudgeRow(Base):
     last_name: Mapped[str] = mapped_column(String(40))
     traits_json: Mapped[str] = mapped_column(Text)  # hidden procedural traits
     real: Mapped[bool]
+    from_turn: Mapped[int] = mapped_column(Integer, default=0)  # PT-M5: on the bench from
+    until_turn: Mapped[int | None] = mapped_column(Integer, nullable=True)  # PT-M5: off it from
 
 
 class RelationshipRow(Base):
@@ -520,6 +522,18 @@ class ClientBookLineRow(Base):
     account: Mapped[str] = mapped_column(String(40))  # C1000_client_bank, C2000_owed_to_clients
     client_id: Mapped[int] = mapped_column(Integer, index=True)
     amount_cents: Mapped[int] = mapped_column(BigInteger)
+
+
+# --- Rival firms (schema v9, PT-M5). Current state, rewritten each turn. --------------------
+# The rivals' state is one JSON document (firms, key-people membership, moves, approaches,
+# RFPs, free agents, history). Key people are generated from it on demand, never stored.
+
+
+class RivalStateRow(Base):
+    __tablename__ = "rival_state"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)  # always 1
+    real_people: Mapped[bool]
+    data_json: Mapped[str] = mapped_column(Text)
 
 
 # --- PT-M4: the partnership (schema v8) -----------------------------------------------------

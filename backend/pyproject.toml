@@ -74,3 +74,6 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+markers = [
+    "timing: turn-time budgets; run alone without xdist (`make check-timing`, PT-M5 T12)",
+]

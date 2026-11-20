@@ -609,3 +609,10 @@ def partner_flight() -> PartnerFlightHook:
     from ptk.sim.partnership.flight import FLIGHT_HOOK
 
     return FLIGHT_HOOK
+
+
+def has_sponsor(state: GameState, person_id: int) -> bool:
+    """Whether an associate has a partnership sponsor (spec 5.3's prospects term, 5.5)."""
+    firm = state.employer_of(person_id)
+    fp = state.partnership.of(firm) if firm is not None else None
+    return fp is not None and fp.sponsor_of(person_id) is not None

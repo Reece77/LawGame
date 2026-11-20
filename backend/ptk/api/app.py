@@ -13,6 +13,7 @@ from ptk.api import recruitment
 from ptk.api.finance import make_finance_router
 from ptk.api.matters import make_matters_router
 from ptk.api.org import make_org_router
+from ptk.api.partnership import make_partnership_router
 from ptk.api.people import make_router
 from ptk.config import get_settings
 from ptk.db import saves
@@ -32,6 +33,7 @@ from ptk.sim.errors import (
     NotFoundError,
     OfferExistsError,
     OverCapacityError,
+    PartnershipError,
     SaveExistsError,
     SaveNotFoundError,
     SimError,
@@ -58,6 +60,7 @@ _STATUS: dict[type[SimError], int] = {
     InterviewRequiredError: 409,
     OfferExistsError: 409,
     CampusSeasonError: 409,
+    PartnershipError: 409,  # PT-M4: a partnership rule (votes, comp, capital, laterals)
     # PT-M3a: clients and matters
     ConflictError: 409,
     OverCapacityError: 409,
@@ -221,6 +224,7 @@ def create_app() -> FastAPI:
     app.include_router(make_org_router(errors))
     app.include_router(make_matters_router(errors))
     app.include_router(make_finance_router(errors))
+    app.include_router(make_partnership_router(errors))
     return app
 
 

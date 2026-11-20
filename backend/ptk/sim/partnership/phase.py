@@ -19,16 +19,18 @@ from ptk.sim.interfaces import month_hours
 from ptk.sim.ledger import AccountCode, LedgerEntry
 from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.partnership import formulas as fx
-from ptk.sim.partnership.books import MoneyMonth, financing_month
+from ptk.sim.partnership.books import MoneyMonth, drawn_cents, financing_month
 from ptk.sim.partnership.careers import assign_sponsors, december, moving_on_month
 from ptk.sim.partnership.common import cumulative_pnl, lawyers, put
 from ptk.sim.partnership.election import election_month
 from ptk.sim.partnership.flight import flight_month, with_hint
 from ptk.sim.partnership.governance import confidence_month, resolve_votes
+from ptk.sim.partnership.kpis import explain, leverage_bp
 from ptk.sim.partnership.laterals import books_arrive
 from ptk.sim.partnership.laterals import resolve_offers as resolve_lateral_offers
 from ptk.sim.partnership.models import PnlPoint, with_approach, with_partner
 from ptk.sim.rng import RngFactory
+from ptk.sim.snapshot import FirmSnapshot
 from ptk.sim.state import GameState, with_firm
 
 PNL_POINTS = 13  # tunable-exempt: twelve months of differences
@@ -105,6 +107,25 @@ def partners_dissolve(state: GameState, balance: Balance) -> tuple[GameState, tu
                 inbox_item(state.turn, fp.firm_id, "partners_dissolve", link_kind="finance")
             )
     return state, tuple(logs)
+
+
+def with_kpis(
+    snap: FirmSnapshot, state: GameState, balances: Mapping[tuple[int, AccountCode], int]
+) -> FirmSnapshot:
+    """Phase 11: the partnership's KPIs on a firm's snapshot."""
+    fp = state.partnership.of(snap.firm_id)
+    if fp is None:
+        return snap
+    e = explain(state, fp)
+    return replace(
+        snap,
+        pep_cents=e.pep_cents,
+        rpl_cents=e.rpl_cents,
+        margin_bp=e.margin_bp,
+        leverage_bp=leverage_bp(e),
+        equity_partners=len(fp.equity_partners),
+        revolver_cents=drawn_cents(balances, snap.firm_id),
+    )
 
 
 def financing(

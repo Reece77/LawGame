@@ -932,6 +932,7 @@ class CapitalBalance(_Strict):
 class RevolverBalance(_Strict):
     receivables_bp: int = Field(ge=0, le=10000)
     wip_bp: int = Field(ge=0, le=10000)
+    unsecured_bp: int = Field(ge=0, le=10000)
     facility_of_revenue_bp: int = Field(ge=0)
     rate_bp: int = Field(ge=0)
     leverage_max_bp: int = Field(gt=0)

@@ -67,7 +67,7 @@ from ptk.sim.hiring.rules import (
     offer_pitch,
     prestige,
 )
-from ptk.sim.interfaces import manager_morale_term
+from ptk.sim.interfaces import has_sponsor, manager_morale_term
 from ptk.sim.ledger import (
     BENEFITS,
     BONUSES,
@@ -502,7 +502,7 @@ def morale_terms(
         pay_term(e.salary_cents, market, cfg)
         + interest_term(favoured_interests(person, data, balance), cfg)
         + hours_term(hours_ratio(person, work, balance), cfg)
-        + prospects_term(person.level, False, cfg)  # sponsors arrive with PT-M4
+        + prospects_term(person.level, has_sponsor(state, person.id), cfg)  # PT-M4's sponsors
         + manager_morale_term(state, person.id, balance, data)
     )
 

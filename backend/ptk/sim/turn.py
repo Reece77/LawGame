@@ -179,7 +179,11 @@ def stage_checks(ctx: TurnContext) -> TurnContext:
 def snapshot_and_month_end_report(ctx: TurnContext) -> TurnContext:
     """11. KPIs per firm."""
     firms = tuple(
-        firm_snapshot(ctx.state.billing, f.id, ctx.turn, ctx.balances.get((f.id, CASH), 0))
+        partnership.with_kpis(
+            firm_snapshot(ctx.state.billing, f.id, ctx.turn, ctx.balances.get((f.id, CASH), 0)),
+            ctx.state,
+            ctx.balances,
+        )
         for f in ctx.state.firms
     )
     return replace(ctx, snapshot=TurnSnapshot(turn=ctx.turn, firms=firms))

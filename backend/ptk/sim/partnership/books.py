@@ -115,7 +115,10 @@ def headroom_cents(
     nothing once the bank has called the revolver."""
     if fp.called_turn is not None:
         return 0
-    base = fx.borrowing_base_cents(receivables, wip, balance.partnership.revolver)
+    cfg = balance.partnership.revolver
+    base = max(
+        fx.borrowing_base_cents(receivables, wip, cfg), pct_of(fp.facility_cents, cfg.unsecured_bp)
+    )
     return max(0, min(fp.facility_cents, base) - drawn)
 
 
@@ -175,6 +178,14 @@ def financing_month(
         firm = fp0.firm_id
         fp = fp0
         del fp0
+        # 0. each January the bank resets the facility to a share of last year's revenue
+        if month == 1 and fp.last_revenue_cents:
+            scenario = data.scenario(state.save_meta.scenario_id)
+            floor = scenario.revolver_limit_cents if scenario else 0
+            sized = pct_of(
+                fp.last_revenue_cents, balance.partnership.revolver.facility_of_revenue_bp
+            )
+            fp = replace(fp, facility_cents=max(floor, sized))
         # 1. capital instalments
         for p in fp.partners:
             due = min(p.capital_instalment_cents, p.capital_required_cents - p.capital_cents)

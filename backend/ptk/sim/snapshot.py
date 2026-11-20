@@ -24,6 +24,13 @@ class FirmSnapshot:
     collection_bp: int | None = None  # collected / invoiced, trailing 12 months
     lockup_days: int | None = None  # (WIP + receivables) / trailing daily fees
     open_disputes: int = 0
+    # PT-M4: the partnership (spec 8.1-8.2), trailing twelve months (ptk.sim.partnership.kpis)
+    pep_cents: int | None = None
+    rpl_cents: int | None = None
+    margin_bp: int | None = None
+    leverage_bp: int | None = None  # lawyers per equity partner x 10,000
+    equity_partners: int = 0
+    revolver_cents: Cents = 0  # drawn at month end
 
     def kpis(self) -> dict[str, int | float | None]:
         return {
@@ -37,6 +44,12 @@ class FirmSnapshot:
             "collection_bp": self.collection_bp,
             "lockup_days": self.lockup_days,
             "open_disputes": self.open_disputes,
+            "pep_cents": self.pep_cents,
+            "rpl_cents": self.rpl_cents,
+            "margin_bp": self.margin_bp,
+            "leverage_bp": self.leverage_bp,
+            "equity_partners": self.equity_partners,
+            "revolver_cents": self.revolver_cents,
         }
 
 

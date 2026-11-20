@@ -3788,6 +3788,257 @@
           }
         }
       }
+    },
+    "/api/saves/{slug}/matters/{matter_id}/board": {
+      "get": {
+        "summary": "Get Board",
+        "operationId": "getStaffingBoard",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "matter_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Matter Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffingBoardOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/practices/screen": {
+      "get": {
+        "summary": "List Practices Screen",
+        "operationId": "listPracticesScreen",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PracticeScreenOut"
+                  },
+                  "title": "Response Listpracticesscreen"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/explain/{metric}": {
+      "get": {
+        "summary": "Get Explain",
+        "operationId": "explain",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "metric",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "utilisation",
+                "realisation",
+                "matter_margin",
+                "outlook"
+              ],
+              "type": "string",
+              "title": "Metric"
+            }
+          },
+          {
+            "name": "entity",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Entity"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExplainOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -3882,6 +4133,86 @@
           "description"
         ],
         "title": "BackgroundOut"
+      },
+      "BoardPersonOut": {
+        "properties": {
+          "person": {
+            "$ref": "#/components/schemas/RefOut"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "role_label": {
+            "type": "string",
+            "title": "Role Label"
+          },
+          "home_practice": {
+            "type": "string",
+            "title": "Home Practice"
+          },
+          "familiarity": {
+            "$ref": "#/components/schemas/RangeOut"
+          },
+          "capacity_hours": {
+            "type": "number",
+            "title": "Capacity Hours"
+          },
+          "planned_hours": {
+            "type": "number",
+            "title": "Planned Hours"
+          },
+          "free_hours": {
+            "type": "number",
+            "title": "Free Hours"
+          },
+          "hours_last_month": {
+            "type": "number",
+            "title": "Hours Last Month"
+          },
+          "strain": {
+            "type": "number",
+            "title": "Strain"
+          },
+          "burnt_out": {
+            "type": "boolean",
+            "title": "Burnt Out"
+          },
+          "on_team": {
+            "type": "boolean",
+            "title": "On Team"
+          },
+          "planned_here": {
+            "type": "number",
+            "title": "Planned Here"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person",
+          "level",
+          "role_label",
+          "home_practice",
+          "familiarity",
+          "capacity_hours",
+          "planned_hours",
+          "free_hours",
+          "hours_last_month",
+          "strain",
+          "burnt_out",
+          "on_team",
+          "planned_here",
+          "warnings"
+        ],
+        "title": "BoardPersonOut",
+        "description": "One fee earner on the staffing board, as the firm sees them."
       },
       "CampusOut": {
         "properties": {
@@ -4149,6 +4480,12 @@
           "wallet_estimate": {
             "$ref": "#/components/schemas/RangeCentsOut"
           },
+          "share_estimate": {
+            "$ref": "#/components/schemas/RangeBpOut"
+          },
+          "panel_status": {
+            "$ref": "#/components/schemas/PanelStatusOut"
+          },
           "general_counsel": {
             "$ref": "#/components/schemas/GeneralCounselOut"
           },
@@ -4192,6 +4529,8 @@
           "key_client",
           "open_matters",
           "wallet_estimate",
+          "share_estimate",
+          "panel_status",
           "general_counsel",
           "panel",
           "advance_waiver",
@@ -4261,6 +4600,12 @@
           },
           "wallet_estimate": {
             "$ref": "#/components/schemas/RangeCentsOut"
+          },
+          "share_estimate": {
+            "$ref": "#/components/schemas/RangeBpOut"
+          },
+          "panel_status": {
+            "$ref": "#/components/schemas/PanelStatusOut"
           }
         },
         "type": "object",
@@ -4276,7 +4621,9 @@
           "fees_12m_cents",
           "key_client",
           "open_matters",
-          "wallet_estimate"
+          "wallet_estimate",
+          "share_estimate",
+          "panel_status"
         ],
         "title": "ClientRowOut"
       },
@@ -4450,6 +4797,119 @@
           "message"
         ],
         "title": "ErrorBody"
+      },
+      "ExplainItemOut": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount"
+          },
+          "unit": {
+            "$ref": "#/components/schemas/Unit"
+          },
+          "text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text"
+          },
+          "range": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RangeOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "amount",
+          "unit"
+        ],
+        "title": "ExplainItemOut"
+      },
+      "ExplainOut": {
+        "properties": {
+          "metric": {
+            "$ref": "#/components/schemas/Metric"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "subject": {
+            "type": "string",
+            "title": "Subject"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "unit": {
+            "$ref": "#/components/schemas/Unit"
+          },
+          "band": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Band"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ExplainItemOut"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "metric",
+          "label",
+          "subject",
+          "value",
+          "unit",
+          "band",
+          "items",
+          "note"
+        ],
+        "title": "ExplainOut"
       },
       "FamiliarityOut": {
         "properties": {
@@ -4728,6 +5188,34 @@
         ],
         "title": "LeaderIn"
       },
+      "MatterEventOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "date_label": {
+            "type": "string",
+            "title": "Date Label"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "date_label",
+          "title",
+          "body"
+        ],
+        "title": "MatterEventOut"
+      },
       "MatterOut": {
         "properties": {
           "id": {
@@ -4872,6 +5360,16 @@
               }
             ]
           },
+          "risk": {
+            "$ref": "#/components/schemas/RiskOut"
+          },
+          "risk_notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Risk Notes"
+          },
           "team": {
             "items": {
               "$ref": "#/components/schemas/TeamMemberOut"
@@ -4930,6 +5428,8 @@
           "errors_caught",
           "missed_deadlines",
           "settlement",
+          "risk",
+          "risk_notes",
           "team",
           "phases",
           "forums",
@@ -5081,6 +5581,16 @@
                 "type": "null"
               }
             ]
+          },
+          "risk": {
+            "$ref": "#/components/schemas/RiskOut"
+          },
+          "risk_notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Risk Notes"
           }
         },
         "type": "object",
@@ -5110,7 +5620,9 @@
           "judge",
           "errors_caught",
           "missed_deadlines",
-          "settlement"
+          "settlement",
+          "risk",
+          "risk_notes"
         ],
         "title": "MatterRowOut"
       },
@@ -5154,6 +5666,15 @@
           "backgrounds"
         ],
         "title": "MetaOut"
+      },
+      "Metric": {
+        "type": "string",
+        "enum": [
+          "utilisation",
+          "realisation",
+          "matter_margin",
+          "outlook"
+        ]
       },
       "MoveUnitIn": {
         "properties": {
@@ -5612,6 +6133,14 @@
           "campus_target"
         ],
         "title": "OrgUnitOut"
+      },
+      "PanelStatusOut": {
+        "type": "string",
+        "enum": [
+          "key",
+          "active",
+          "dormant"
+        ]
       },
       "PayPolicyIn": {
         "properties": {
@@ -6556,6 +7085,139 @@
         ],
         "title": "PracticeOut"
       },
+      "PracticeRateOut": {
+        "properties": {
+          "band": {
+            "type": "string",
+            "title": "Band"
+          },
+          "card_cents": {
+            "type": "integer",
+            "title": "Card Cents"
+          },
+          "ours_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ours Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "band",
+          "card_cents",
+          "ours_cents"
+        ],
+        "title": "PracticeRateOut"
+      },
+      "PracticeScreenOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "short_label": {
+            "type": "string",
+            "title": "Short Label"
+          },
+          "demand_trend": {
+            "items": {
+              "$ref": "#/components/schemas/TrendPointOut"
+            },
+            "type": "array",
+            "title": "Demand Trend"
+          },
+          "demand_cents": {
+            "type": "integer",
+            "title": "Demand Cents"
+          },
+          "revenue_cents": {
+            "type": "integer",
+            "title": "Revenue Cents"
+          },
+          "share_bp": {
+            "type": "integer",
+            "title": "Share Bp"
+          },
+          "lawyers": {
+            "type": "integer",
+            "title": "Lawyers"
+          },
+          "partners": {
+            "type": "integer",
+            "title": "Partners"
+          },
+          "capacity_hours": {
+            "type": "number",
+            "title": "Capacity Hours"
+          },
+          "hours_last_month": {
+            "type": "number",
+            "title": "Hours Last Month"
+          },
+          "utilisation_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Utilisation Bp"
+          },
+          "leverage": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Leverage"
+          },
+          "leverage_norm": {
+            "type": "number",
+            "title": "Leverage Norm"
+          },
+          "rates": {
+            "items": {
+              "$ref": "#/components/schemas/PracticeRateOut"
+            },
+            "type": "array",
+            "title": "Rates"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "short_label",
+          "demand_trend",
+          "demand_cents",
+          "revenue_cents",
+          "share_bp",
+          "lawyers",
+          "partners",
+          "capacity_hours",
+          "hours_last_month",
+          "utilisation_bp",
+          "leverage",
+          "leverage_norm",
+          "rates"
+        ],
+        "title": "PracticeScreenOut"
+      },
       "RaiseIn": {
         "properties": {
           "salary_cents": {
@@ -6568,6 +7230,24 @@
           "salary_cents"
         ],
         "title": "RaiseIn"
+      },
+      "RangeBpOut": {
+        "properties": {
+          "lo": {
+            "type": "integer",
+            "title": "Lo"
+          },
+          "hi": {
+            "type": "integer",
+            "title": "Hi"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lo",
+          "hi"
+        ],
+        "title": "RangeBpOut"
       },
       "RangeCentsOut": {
         "properties": {
@@ -6756,6 +7436,14 @@
           "name"
         ],
         "title": "RenameUnitIn"
+      },
+      "RiskOut": {
+        "type": "string",
+        "enum": [
+          "low",
+          "medium",
+          "high"
+        ]
       },
       "RoleOptionOut": {
         "properties": {
@@ -7036,6 +7724,45 @@
         ],
         "title": "SignedOut"
       },
+      "StaffingBoardOut": {
+        "properties": {
+          "matter_id": {
+            "type": "integer",
+            "title": "Matter Id"
+          },
+          "practice": {
+            "type": "string",
+            "title": "Practice"
+          },
+          "practice_label": {
+            "type": "string",
+            "title": "Practice Label"
+          },
+          "people": {
+            "items": {
+              "$ref": "#/components/schemas/BoardPersonOut"
+            },
+            "type": "array",
+            "title": "People"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/MatterEventOut"
+            },
+            "type": "array",
+            "title": "Events"
+          }
+        },
+        "type": "object",
+        "required": [
+          "matter_id",
+          "practice",
+          "practice_label",
+          "people",
+          "events"
+        ],
+        "title": "StaffingBoardOut"
+      },
       "SupervisorLabel": {
         "type": "string",
         "enum": [
@@ -7125,6 +7852,35 @@
           "hours_last_month"
         ],
         "title": "TeamMemberOut"
+      },
+      "TrendPointOut": {
+        "properties": {
+          "date_label": {
+            "type": "string",
+            "title": "Date Label"
+          },
+          "cents": {
+            "type": "integer",
+            "title": "Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date_label",
+          "cents"
+        ],
+        "title": "TrendPointOut"
+      },
+      "Unit": {
+        "type": "string",
+        "enum": [
+          "cents",
+          "hours",
+          "percent",
+          "ratio",
+          "text",
+          "range"
+        ]
       },
       "ValidationError": {
         "properties": {

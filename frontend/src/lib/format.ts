@@ -117,3 +117,19 @@ export function scoreNote(s: {
   ].join(', ');
   return s.last_december == null ? parts : `${parts}; last December ${s.last_december}`;
 }
+
+/** Hours from the API (tenths become a float): 1118 -> "1,118 h", 61.5 -> "61.5 h". */
+export function formatHours(hours: number): string {
+  const rounded = Math.round(hours * 10) / 10;
+  const text = Number.isInteger(rounded)
+    ? groupFormat.format(rounded)
+    : new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(
+        rounded,
+      );
+  return `${text} h`;
+}
+
+/** Basis points as a whole-ish percent for tables: 7685 -> "76.9%", 9 -> "0.1%". */
+export function formatBpShort(bp: number): string {
+  return `${(bp / 100).toFixed(1)}%`;
+}

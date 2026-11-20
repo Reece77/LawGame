@@ -190,7 +190,8 @@ def test_follow_up_is_queued(base: GameState, data: GameData, balance: Balance) 
         matter_id=m.id,
         template_id="verdict_due_trial",
     )
-    (queued,) = new.events.queued
+    # PT-M4's engine events may already be waiting in the base state
+    (queued,) = [q for q in new.events.queued if q not in base.events.queued]
     assert queued.template_id == "verdict_aftermath" and queued.due_turn == base.turn + 1
 
 

@@ -87,6 +87,7 @@ export function useAdvance(slug: string) {
         'explain',
         'events',
         'texts',
+        'partnership',
       ]) {
         void client.invalidateQueries({ queryKey: [key, slug] });
       }
@@ -602,6 +603,152 @@ export function useSetLlmSettings() {
     onSuccess: (settings) => {
       client.setQueryData(['llm-settings'], settings);
       void client.invalidateQueries({ queryKey: ['llm-meter'] });
+    },
+  });
+}
+
+// --- PT-M4: the partnership ------------------------------------------------------------------
+
+export type Partnership = Schemas['PartnershipOut'];
+export type PartnerRow = Schemas['PartnerOut'];
+export type VoteRow = Schemas['VoteOut'];
+export type CandidateRow = Schemas['PartnerCandidateOut'];
+export type ApproachRow = Schemas['ApproachOut'];
+export type LateralRow = Schemas['LateralOut'];
+export type Track = Schemas['ProposeIn']['track'];
+
+export const usePartnership = (slug: string) =>
+  useQuery({
+    queryKey: ['partnership', slug],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/saves/{slug}/partnership', { params: { path: { slug } } })),
+  });
+
+// Every partnership action returns the whole screen's data (ADR-0014: one action each).
+export type PartnershipAction =
+  | { kind: 'terms'; term: string; value: string | number | boolean }
+  | { kind: 'capital_call'; amount_cents: number }
+  | { kind: 'propose'; person_id: number; track: Track; sponsor_id?: number | null }
+  | { kind: 'lobby'; person_id: number }
+  | { kind: 'draws'; suspended: boolean }
+  | { kind: 'comp_round'; person_id: number; gate_steps: number; adjust_bp: number }
+  | { kind: 'lateral_search'; practice: string }
+  | { kind: 'diligence'; person_id: number }
+  | {
+      kind: 'lateral_offer';
+      person_id: number;
+      comp_cents: number;
+      guarantee_years: number;
+      equity: boolean;
+    }
+  | { kind: 'counter'; approach_id: number; comp_cents: number; guarantee_years: number }
+  | { kind: 'repay'; amount_cents: number }
+  | { kind: 'withdraw'; vote_id: number }
+  | { kind: 'election'; choice: 'stay' | 'hand_over'; successor_id?: number | null };
+
+async function runPartnershipAction(slug: string, a: PartnershipAction): Promise<Partnership> {
+  const path = { slug };
+  switch (a.kind) {
+    case 'terms':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/partnership/terms', {
+          params: { path },
+          body: { term: a.term, value: a.value },
+        }),
+      );
+    case 'capital_call':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/partnership/capital-call', {
+          params: { path },
+          body: { amount_cents: a.amount_cents },
+        }),
+      );
+    case 'propose':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/partnership/propose', {
+          params: { path },
+          body: { person_id: a.person_id, track: a.track, sponsor_id: a.sponsor_id ?? null },
+        }),
+      );
+    case 'lobby':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/partnership/lobby', {
+          params: { path },
+          body: { person_id: a.person_id },
+        }),
+      );
+    case 'draws':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/partnership/draws', {
+          params: { path },
+          body: { suspended: a.suspended },
+        }),
+      );
+    case 'comp_round':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/partnership/comp-round', {
+          params: { path },
+          body: { person_id: a.person_id, gate_steps: a.gate_steps, adjust_bp: a.adjust_bp },
+        }),
+      );
+    case 'lateral_search':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/partnership/laterals/search', {
+          params: { path },
+          body: { practice: a.practice },
+        }),
+      );
+    case 'diligence':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/partnership/laterals/{person_id}/diligence', {
+          params: { path: { slug, person_id: a.person_id } },
+        }),
+      );
+    case 'lateral_offer':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/partnership/laterals/{person_id}/offer', {
+          params: { path: { slug, person_id: a.person_id } },
+          body: { comp_cents: a.comp_cents, guarantee_years: a.guarantee_years, equity: a.equity },
+        }),
+      );
+    case 'counter':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/partnership/approaches/{approach_id}/counter', {
+          params: { path: { slug, approach_id: a.approach_id } },
+          body: { comp_cents: a.comp_cents, guarantee_years: a.guarantee_years },
+        }),
+      );
+    case 'repay':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/partnership/revolver/repay', {
+          params: { path },
+          body: { amount_cents: a.amount_cents },
+        }),
+      );
+    case 'withdraw':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/partnership/votes/{vote_id}/withdraw', {
+          params: { path: { slug, vote_id: a.vote_id } },
+        }),
+      );
+    case 'election':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/partnership/election', {
+          params: { path },
+          body: { choice: a.choice, successor_id: a.successor_id ?? null },
+        }),
+      );
+  }
+}
+
+export function usePartnershipAction(slug: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (a: PartnershipAction) => runPartnershipAction(slug, a),
+    onSuccess: (data) => {
+      client.setQueryData(['partnership', slug], data);
+      void client.invalidateQueries({ queryKey: ['game', slug] });
+      void client.invalidateQueries({ queryKey: ['finance', slug] });
     },
   });
 }

@@ -6,8 +6,9 @@ test('bills go out and the Finance screen shows the revenue chain', async ({ pag
   await page.getByRole('button', { name: 'Found the firm' }).click();
   await expect(page.getByTestId('date')).toHaveText('Jan 2005');
 
-  // Three months: hours post to WIP, bills issue, the first clients pay.
-  for (const month of ['Feb 2005', 'Mar 2005', 'Apr 2005']) {
+  // Four months: hours post to WIP, bills issue, the first clients pay (a client takes about
+  // two months, so a third month alone can pass with no payment on an unlucky seed).
+  for (const month of ['Feb 2005', 'Mar 2005', 'Apr 2005', 'May 2005']) {
     await page.getByRole('button', { name: 'Continue' }).click();
     await expect(page.getByTestId('date')).toHaveText(month);
   }

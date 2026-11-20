@@ -15,6 +15,7 @@ type LinkKind = Literal[
     "search",  # PT-M1b
     "matter",  # PT-M3a: a named matter
     "client",  # PT-M3a
+    "partnership",  # PT-M4: the Partnership screen
 ]  # appended by each milestone that links a new screen
 type ParamValue = str | int
 

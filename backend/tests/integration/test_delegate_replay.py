@@ -20,6 +20,7 @@ from ptk.llm.settings import LLMSettings
 from ptk.sim import turn as turn_module
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
+from ptk.sim.ledger import apply_entries
 from ptk.sim.org.actions import CreatePlan, CreateUnit, MovePerson, SetLeader, apply_org_action
 from ptk.sim.rng import RngFactory
 from ptk.sim.setup import new_game
@@ -88,10 +89,13 @@ def test_replay_recomputes_delegate_actions(
     # Replay from the starting state with a fresh hiring world: player actions are inputs,
     # delegate actions are recomputed.
     replayed = FakeHiring(seed=SEED)
-    state = new_game(
+    game = new_game(
         name="replay", firm_name="Replay LLP", master_seed=SEED, scenario_id="group_lift",
         difficulty="standard", data=data, balance=balance,
-    ).state  # fmt: skip
+    )  # fmt: skip
+    state = game.state
+    # PT-M4: the partnership reads cash, so the replay carries the ledger as the save did
+    ledger = apply_entries({}, game.ledger_entries)
     rng = RngFactory(SEED)
     writer = Writer(MockLLMAdapter(), LLMSettings(), lambda: 1_000_000.0)
     for t in range(TURNS):
@@ -101,8 +105,16 @@ def test_replay_recomputes_delegate_actions(
                     state, action_from_payload(r.payload_json), balance, data
                 ).state
         result = advance_turn(
-            state, Decisions(), rng, balance, data, {}, hiring_hook=replayed, answer_critical=True
+            state,
+            Decisions(),
+            rng,
+            balance,
+            data,
+            ledger,
+            hiring_hook=replayed,
+            answer_critical=True,
         )
+        ledger = apply_entries(ledger, result.ledger_entries)
         recomputed = [json.loads(json.dumps(a.payload())) for a in result.delegate_actions]
         assert recomputed == logged[t], f"turn {t}"
         # PT-M6: the event service writes the month's events after the turn, as the save did

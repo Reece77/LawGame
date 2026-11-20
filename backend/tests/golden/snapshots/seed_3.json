@@ -3,27 +3,27 @@
     [
       1,
       "1000_cash",
-      3520739083
+      178494541
     ],
     [
       1,
       "1100_unbilled_wip",
-      22939250
+      28278350
     ],
     [
       1,
       "1110_wip_provision",
-      -1168647
+      -1331687
     ],
     [
       1,
       "1200_receivables",
-      34968069
+      14184069
     ],
     [
       1,
       "1210_bad_debt_provision",
-      -364773
+      -141842
     ],
     [
       1,
@@ -32,23 +32,38 @@
     ],
     [
       1,
+      "2700_partner_current_accounts",
+      -56395981
+    ],
+    [
+      1,
       "3000_partners_capital",
-      -60000000
+      -122098560
+    ],
+    [
+      1,
+      "3100_undistributed_profit",
+      5431072240
+    ],
+    [
+      1,
+      "3200_drawings",
+      0
     ],
     [
       1,
       "4000_fees",
-      -5837886261
+      -5969925190
     ],
     [
       1,
       "4100_success_fees",
-      -186092977
+      -184681857
     ],
     [
       1,
       "5000_associate_salaries",
-      211356660
+      206409994
     ],
     [
       1,
@@ -58,22 +73,22 @@
     [
       1,
       "5200_benefits",
-      52839160
+      51602494
     ],
     [
       1,
       "6000_rent",
-      251400000
+      250800000
     ],
     [
       1,
       "6700_write_offs",
-      3321619
+      5291263
     ],
     [
       1,
       "6900_general_admin",
-      1947198817
+      127692166
     ]
   ],
   "final_turn": 360,
@@ -85,11 +100,11 @@
     ],
     [
       "collapsed",
-      2
+      3
     ],
     [
       "done",
-      12
+      11
     ],
     [
       "lost",
@@ -97,21 +112,21 @@
     ],
     [
       "open",
-      1
+      2
     ],
     [
       "won",
-      5
+      4
     ]
   ],
-  "matters": "b8706edd2441049b8be3ad8663f17ceac233342c75d68d1d7ad63f1c23b7bc65",
+  "matters": "899cc82ac5ca01ba7d6055b11789c3b8b87b8890b5a356150261daecab27ce67",
   "names": [
     "James Jackson",
     "Michael Garcia",
     "Megan Brown",
     "Hannah Allen"
   ],
-  "people": "672b1673412b3743f0dd3180be8daa48833cb44d66a02796f06912e024412ff8",
-  "relationships": "6b4890586a7774e31d3cc7de17e5119d4b91bb945dc213545c5edcf1161234b5",
-  "sha256": "695ebb1fc5403d18913f060a8aa3b9287f440a6277b56e94223167226d69f6bf"
+  "people": "2a78ad6879ae286cfa663920de7e9f55d67fd6d716ade50cf9b9240e81928e21",
+  "relationships": "2baf7026a20357bf06765d3b1ef90121677eb07b8e3a2d17a068fc95bfbdb32a",
+  "sha256": "08b475407be63492d6115e031f968a2609d49615a929ca381ff93c364bb9f0f1"
 }

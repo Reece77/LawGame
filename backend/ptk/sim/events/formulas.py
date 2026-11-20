@@ -7,6 +7,7 @@ loan effects.
 
 from __future__ import annotations
 
+import math
 from fractions import Fraction
 
 from ptk.sim.events.data import NON_NEGATIVE, VALUELESS, EventsBalance, Severity, TriggerBalance
@@ -98,7 +99,10 @@ def _clamped_cents(
 ) -> float:
     """Cash clamped to its cap and rounded half-to-even once, as whole cents (ADR-0003)."""
     cap = cash_cap(severity, events, base, gain=value > 0)
-    return float(round(max(-cap, min(cap, value))))
+    cents = round(max(-cap, min(cap, value)))
+    # rounding must not carry a value past its cap (a cap under a cent: PT-M4 fix)
+    whole = math.floor(cap)
+    return float(max(-whole, min(whole, cents)))
 
 
 def clamp_effect(

@@ -1008,6 +1008,295 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/saves/{slug}/partnership": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Partnership */
+        get: operations["getPartnership"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/partnership/terms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Propose Terms */
+        post: operations["proposeTerms"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/partnership/capital-call": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Capital Call */
+        post: operations["capitalCall"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/partnership/propose": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Propose */
+        post: operations["proposePartner"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/partnership/deequitise": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Deequitise */
+        post: operations["deequitise"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/partnership/lobby": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Lobby */
+        post: operations["lobbyPartner"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/partnership/promise": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Promise */
+        post: operations["promisePoints"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/partnership/votes/{vote_id}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Withdraw */
+        post: operations["withdrawVote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/partnership/draws": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Draws */
+        post: operations["setDraws"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/partnership/comp-round": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Comp Round */
+        post: operations["setCompRound"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/partnership/sponsor": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sponsor */
+        post: operations["setSponsor"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/partnership/laterals/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Lateral Search */
+        post: operations["searchLateralPartners"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/partnership/laterals/{person_id}/diligence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Diligence */
+        post: operations["lateralDiligence"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/partnership/laterals/{person_id}/offer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Lateral Offer */
+        post: operations["lateralOffer"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/partnership/approaches/{approach_id}/counter": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Counter */
+        post: operations["counterApproach"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/partnership/revolver/repay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Repay */
+        post: operations["repayRevolver"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/partnership/election": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Election */
+        post: operations["electionChoice"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1020,6 +1309,42 @@ export interface components {
             amount_cents: number;
             /** Count */
             count: number;
+        };
+        /** AmountIn */
+        AmountIn: {
+            /** Amount Cents */
+            amount_cents: number;
+        };
+        /** ApproachOut */
+        ApproachOut: {
+            /** Approach Id */
+            approach_id: number;
+            /** Person Id */
+            person_id: number;
+            /** Name */
+            name: string;
+            /** Suitor */
+            suitor: string;
+            /** Offer Comp Cents */
+            offer_comp_cents: number;
+            /** Guarantee Years */
+            guarantee_years: number;
+            /** Respond By Label */
+            respond_by_label: string;
+            /** Status */
+            status: string;
+            /** Countered */
+            countered: boolean;
+            /** Counter Comp Cents */
+            counter_comp_cents: number;
+            /** Counter Points */
+            counter_points: number;
+            /** Counter Guarantee Years */
+            counter_guarantee_years: number;
+            /** Counter Seat */
+            counter_seat: boolean;
+            /** Stay Label */
+            stay_label: string;
         };
         /** AssignIn */
         AssignIn: {
@@ -1268,6 +1593,21 @@ export interface components {
             share_estimate: components["schemas"]["RangeBpOut"];
             panel_status: components["schemas"]["PanelStatusOut"];
         };
+        /** CompRoundIn */
+        CompRoundIn: {
+            /** Person Id */
+            person_id: number;
+            /**
+             * Gate Steps
+             * @default 0
+             */
+            gate_steps?: number;
+            /**
+             * Adjust Bp
+             * @default 0
+             */
+            adjust_bp?: number;
+        };
         /** ConflictChecksIn */
         ConflictChecksIn: {
             /** Enabled */
@@ -1286,6 +1626,44 @@ export interface components {
             account: string;
             /** Amount Cents */
             amount_cents: number;
+        };
+        /** CounterIn */
+        CounterIn: {
+            /**
+             * Comp Cents
+             * @default 0
+             */
+            comp_cents?: number;
+            /**
+             * Points
+             * @default 0
+             */
+            points?: number;
+            /**
+             * Guarantee Years
+             * @default 0
+             */
+            guarantee_years?: number;
+            /**
+             * Seat
+             * @default false
+             */
+            seat?: boolean;
+        };
+        /** CovenantOut */
+        CovenantOut: {
+            /** Name */
+            name: string;
+            /** Value Cents */
+            value_cents: number;
+            /** Limit Cents */
+            limit_cents: number;
+            /** Floor */
+            floor: boolean;
+            /** Holds */
+            holds: boolean;
+            /** Near */
+            near: boolean;
         };
         /** CreateUnitIn */
         CreateUnitIn: {
@@ -1315,6 +1693,35 @@ export interface components {
             /** Colleagues */
             colleagues: components["schemas"]["RefOut"][];
         };
+        /** DeequitiseIn */
+        DeequitiseIn: {
+            /** Person Id */
+            person_id: number;
+            /**
+             * Mode
+             * @enum {string}
+             */
+            mode: "income" | "out";
+        };
+        /** DepartureOut */
+        DepartureOut: {
+            /** Person Id */
+            person_id: number;
+            /** Name */
+            name: string;
+            /** Practice */
+            practice: string;
+            /** Reason */
+            reason: string;
+            /** Destination */
+            destination: string | null;
+            /** Label */
+            label: string;
+            /** Leave Label */
+            leave_label: string;
+            /** Clients Following */
+            clients_following: number;
+        };
         /** DifficultyOut */
         DifficultyOut: {
             /** Id */
@@ -1338,6 +1745,21 @@ export interface components {
             raised_label: string;
             /** Expires Label */
             expires_label: string;
+        };
+        /** DrawsIn */
+        DrawsIn: {
+            /** Suspended */
+            suspended: boolean;
+        };
+        /** ElectionIn */
+        ElectionIn: {
+            /**
+             * Choice
+             * @enum {string}
+             */
+            choice: "stay" | "hand_over";
+            /** Successor Id */
+            successor_id?: number | null;
         };
         /** ErrorBody */
         ErrorBody: {
@@ -1572,6 +1994,47 @@ export interface components {
             key_present: boolean;
             /** In Use */
             in_use: string;
+        };
+        /** LateralOfferIn */
+        LateralOfferIn: {
+            /** Comp Cents */
+            comp_cents: number;
+            /**
+             * Guarantee Years
+             * @default 0
+             */
+            guarantee_years?: number;
+            /**
+             * Equity
+             * @default true
+             */
+            equity?: boolean;
+        };
+        /** LateralOut */
+        LateralOut: {
+            /** Person Id */
+            person_id: number;
+            /** Name */
+            name: string;
+            /** Practice */
+            practice: string;
+            /** Ask Cents */
+            ask_cents: number;
+            /** Guarantee Ask Years */
+            guarantee_ask_years: number;
+            book: components["schemas"]["RangeOut"];
+            /** Diligence */
+            diligence: boolean;
+            /** Clients */
+            clients: string[];
+            /** Conflicts */
+            conflicts: number | null;
+            /** Status */
+            status: string;
+            /** Offer Comp Cents */
+            offer_comp_cents: number;
+            /** Expires Label */
+            expires_label: string;
         };
         /** LeadIn */
         LeadIn: {
@@ -1927,6 +2390,143 @@ export interface components {
         };
         /** @enum {string} */
         PanelStatusOut: "key" | "active" | "dormant";
+        /** PartnerCandidateOut */
+        PartnerCandidateOut: {
+            /** Person Id */
+            person_id: number;
+            /** Name */
+            name: string;
+            /** Level */
+            level: string;
+            /** Practice */
+            practice: string;
+            /** Sponsor Id */
+            sponsor_id: number | null;
+            /** Sponsor Name */
+            sponsor_name: string | null;
+            /** Tracks */
+            tracks: string[];
+            /** Proposed */
+            proposed: string | null;
+            /** Rating */
+            rating: number;
+            business_development: components["schemas"]["RangeOut"];
+            client_care: components["schemas"]["RangeOut"];
+            /** Relationships */
+            relationships: number;
+            /** Practice Need Bp */
+            practice_need_bp: number;
+            /** Moving On Label */
+            moving_on_label: string | null;
+        };
+        /** PartnerOut */
+        PartnerOut: {
+            /** Person Id */
+            person_id: number;
+            /** Name */
+            name: string;
+            /** Practice */
+            practice: string;
+            /**
+             * Klass
+             * @enum {string}
+             */
+            klass: "equity" | "income";
+            /** Is Mp */
+            is_mp: boolean;
+            /** Is You */
+            is_you: boolean;
+            /** Points */
+            points: number;
+            /** Admitted Label */
+            admitted_label: string;
+            /** Comp Last Cents */
+            comp_last_cents: number;
+            /** Budget Cents */
+            budget_cents: number;
+            /** Projected Comp Cents */
+            projected_comp_cents: number;
+            /** Drawn Ytd Cents */
+            drawn_ytd_cents: number;
+            /** Capital Cents */
+            capital_cents: number;
+            /** Capital Required Cents */
+            capital_required_cents: number;
+            /** Current Cents */
+            current_cents: number;
+            /** Guarantee Cents */
+            guarantee_cents: number;
+            /** Guarantee Until Label */
+            guarantee_until_label: string | null;
+            /** Origination Cents */
+            origination_cents: number;
+            /** Working Cents */
+            working_cents: number;
+            /** Contribution Bp */
+            contribution_bp: number;
+            market_band: components["schemas"]["RangeOut"];
+            /** Confidence Label */
+            confidence_label: string;
+            confidence_range: components["schemas"]["RangeOut"];
+            /** Gate Steps */
+            gate_steps: number;
+            /** Adjust Bp */
+            adjust_bp: number;
+            /** Promised Points */
+            promised_points: number;
+            /** Lobbied */
+            lobbied: boolean;
+        };
+        /** PartnershipOut */
+        PartnershipOut: {
+            /** Stage */
+            stage: number;
+            /** Practices */
+            practices: components["schemas"]["PracticeOut"][];
+            /** Mp Name */
+            mp_name: string | null;
+            /** You Are Mp */
+            you_are_mp: boolean;
+            /** Election Choice Pending */
+            election_choice_pending: boolean;
+            /** Term Ends Label */
+            term_ends_label: string | null;
+            /** December */
+            december: boolean;
+            /** Comp System */
+            comp_system: string;
+            /** Agreement */
+            agreement: components["schemas"]["TermOut"][];
+            whip: components["schemas"]["WhipOut"];
+            /** Partners */
+            partners: components["schemas"]["PartnerOut"][];
+            /** Votes */
+            votes: components["schemas"]["VoteOut"][];
+            /** Candidates */
+            candidates: components["schemas"]["PartnerCandidateOut"][];
+            /** Approaches */
+            approaches: components["schemas"]["ApproachOut"][];
+            /** Departures */
+            departures: components["schemas"]["DepartureOut"][];
+            /** Laterals */
+            laterals: components["schemas"]["LateralOut"][];
+            /** Draws Suspended */
+            draws_suspended: boolean;
+            /** Capital Cents */
+            capital_cents: number;
+            /** Capital Returns Cents */
+            capital_returns_cents: number;
+            /** True Up Owed Cents */
+            true_up_owed_cents: number;
+            /** Cash Cents */
+            cash_cents: number;
+            /** Last Profit Cents */
+            last_profit_cents: number | null;
+            /** Last Pep Cents */
+            last_pep_cents: number | null;
+            revolver: components["schemas"]["RevolverOut"];
+            explain: components["schemas"]["PepExplainOut"];
+        };
         /** PayPolicyIn */
         PayPolicyIn: {
             /**
@@ -1973,6 +2573,38 @@ export interface components {
             bonus_month_label: string;
             /** Bonus Estimate Cents */
             bonus_estimate_cents: number;
+        };
+        /** PepExplainOut */
+        PepExplainOut: {
+            /** Pep Cents */
+            pep_cents: number | null;
+            /** Rpl Cents */
+            rpl_cents: number | null;
+            /** Margin Bp */
+            margin_bp: number | null;
+            /** Leverage */
+            leverage: number | null;
+            /** Revenue Cents */
+            revenue_cents: number;
+            /** Profit Cents */
+            profit_cents: number;
+            /** Lawyers */
+            lawyers: number;
+            /** Equity Partners */
+            equity_partners: number;
+            /** Hours Per Lawyer */
+            hours_per_lawyer: number | null;
+            /** Average Rate Cents */
+            average_rate_cents: number | null;
+            /** Realisation Bp */
+            realisation_bp: number | null;
+            /** Collection Bp */
+            collection_bp: number | null;
+        };
+        /** PersonIn */
+        PersonIn: {
+            /** Person Id */
+            person_id: number;
         };
         /**
          * PersonOrgOut
@@ -2218,6 +2850,11 @@ export interface components {
             /** Lines */
             lines: components["schemas"]["PnlLineOut"][];
         };
+        /** PracticeIn */
+        PracticeIn: {
+            /** Practice */
+            practice: string;
+        };
         /** PracticeMarketOut */
         PracticeMarketOut: {
             /** Key */
@@ -2296,6 +2933,25 @@ export interface components {
             /** Rates */
             rates: components["schemas"]["PracticeRateOut"][];
         };
+        /** PromiseIn */
+        PromiseIn: {
+            /** Person Id */
+            person_id: number;
+            /** Points */
+            points: number;
+        };
+        /** ProposeIn */
+        ProposeIn: {
+            /** Person Id */
+            person_id: number;
+            /**
+             * Track
+             * @enum {string}
+             */
+            track: "equity" | "income" | "counsel" | "not_this_year";
+            /** Sponsor Id */
+            sponsor_id?: number | null;
+        };
         /** RaiseIn */
         RaiseIn: {
             /** Salary Cents */
@@ -2371,6 +3027,23 @@ export interface components {
         RenameUnitIn: {
             /** Name */
             name: string;
+        };
+        /** RevolverOut */
+        RevolverOut: {
+            /** Facility Cents */
+            facility_cents: number;
+            /** Drawn Cents */
+            drawn_cents: number;
+            /** Headroom Cents */
+            headroom_cents: number;
+            /** Rate Bp */
+            rate_bp: number;
+            /** Breach Months */
+            breach_months: number;
+            /** Called */
+            called: boolean;
+            /** Covenants */
+            covenants: components["schemas"]["CovenantOut"][];
         };
         /** @enum {string} */
         RiskOut: "low" | "medium" | "high";
@@ -2479,6 +3152,13 @@ export interface components {
             /** Start Label */
             start_label: string;
         };
+        /** SponsorIn */
+        SponsorIn: {
+            /** Person Id */
+            person_id: number;
+            /** Sponsor Id */
+            sponsor_id: number;
+        };
         /** StaffingBoardOut */
         StaffingBoardOut: {
             /** Matter Id */
@@ -2527,6 +3207,20 @@ export interface components {
             /** Hours Last Month */
             hours_last_month: number;
         };
+        /** TermOut */
+        TermOut: {
+            /** Term */
+            term: string;
+            /** Value */
+            value: string | number | boolean;
+        };
+        /** TermsIn */
+        TermsIn: {
+            /** Term */
+            term: string;
+            /** Value */
+            value: string | number | boolean;
+        };
         /** @enum {string} */
         TextKindOut: "headlines" | "matter_brief" | "pitch_letter" | "partner_memo" | "year_end_letter";
         /** TextOut */
@@ -2563,6 +3257,30 @@ export interface components {
             /** Context */
             ctx?: Record<string, never>;
         };
+        /** VoteOut */
+        VoteOut: {
+            /** Vote Id */
+            vote_id: number;
+            /** Kind */
+            kind: string;
+            /** Title */
+            title: string;
+            /** Status */
+            status: string;
+            /** Opened Label */
+            opened_label: string;
+            /** Threshold Bp */
+            threshold_bp: number;
+            predicted_yes: components["schemas"]["RangeOut"] | null;
+            /** Total Weight */
+            total_weight: number;
+            /** Needed Weight */
+            needed_weight: number;
+            /** Yes Weight */
+            yes_weight: number;
+            /** No Weight */
+            no_weight: number;
+        };
         /** WaiverIn */
         WaiverIn: {
             /**
@@ -2570,6 +3288,12 @@ export interface components {
              * @default false
              */
             advance?: boolean;
+        };
+        /** WhipOut */
+        WhipOut: {
+            supportive: components["schemas"]["RangeOut"];
+            neutral: components["schemas"]["RangeOut"];
+            restless: components["schemas"]["RangeOut"];
         };
         /** WriteDownIn */
         WriteDownIn: {
@@ -6217,6 +6941,1052 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BillOut"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getPartnership: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnershipOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    proposeTerms: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TermsIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnershipOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    capitalCall: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AmountIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnershipOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    proposePartner: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProposeIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnershipOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    deequitise: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeequitiseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnershipOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    lobbyPartner: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PersonIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnershipOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    promisePoints: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PromiseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnershipOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    withdrawVote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                vote_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnershipOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    setDraws: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DrawsIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnershipOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    setCompRound: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CompRoundIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnershipOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    setSponsor: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SponsorIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnershipOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    searchLateralPartners: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PracticeIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnershipOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    lateralDiligence: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                person_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnershipOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    lateralOffer: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                person_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LateralOfferIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnershipOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    counterApproach: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                approach_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CounterIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnershipOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    repayRevolver: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AmountIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnershipOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    electionChoice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ElectionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnershipOut"];
                 };
             };
             /** @description Bad Request */

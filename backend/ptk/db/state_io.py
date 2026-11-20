@@ -29,6 +29,7 @@ from ptk.db.models import (
     TurnSnapshotRow,
 )
 from ptk.db.org_io import load_org, write_org
+from ptk.db.partnership_io import load_partnership, write_partnership
 from ptk.sim.billing.models import ClientBookEntry
 from ptk.sim.data_models import InboxTemplate
 from ptk.sim.hiring.models import Candidate, Offer, PayPolicy, PersonState, Search
@@ -95,6 +96,7 @@ def insert_new(session: Session, state: GameState, entries: tuple[LedgerEntry, .
     write_people(session, state)
     write_org(session, state)
     insert_market(session, state.market)
+    write_partnership(session, state.partnership)
     write_events(session, state.events)
     write_entries(session, entries)
 
@@ -154,6 +156,7 @@ def load_state(session: Session) -> GameState:
             session, row.current_turn, next((f.id for f in firms if f.is_player), None)
         ),
         market=load_market(session, row.current_turn),
+        partnership=load_partnership(session),
         events=load_events(session),
         searches=tuple(
             _search(r) for r in session.scalars(select(SearchRow).order_by(SearchRow.id))
@@ -463,6 +466,7 @@ def write_turn(
     write_market(session, new_state.market)
     write_events(session, new_state.events)
     write_billing(session, new_state.billing)
+    write_partnership(session, new_state.partnership)
 
 
 def write_firms(session: Session, state: GameState) -> None:

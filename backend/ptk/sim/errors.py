@@ -242,3 +242,27 @@ class UnknownBillError(NotFoundError):
 
 class BillingActionError(SimError):
     """A billing action a rule forbids (a write-down out of range, a bill not disputed)."""
+
+
+# --- PT-M4: the partnership ------------------------------------------------------------------
+
+
+class PartnershipError(SimError):
+    """A partnership rule forbids the action (votes, comp, capital, laterals, flight)."""
+
+    code = "partnership_rule"
+
+
+class NotManagingPartnerError(PartnershipError):
+    """Only the managing partner may do this (ADR PT-0007 3: a player who lost the election
+    keeps their own practice and votes)."""
+
+    code = "not_managing_partner"
+
+
+class UnknownVoteError(NotFoundError):
+    code = "unknown_vote"
+
+
+class UnknownApproachError(NotFoundError):
+    code = "unknown_approach"

@@ -3,7 +3,7 @@
     [
       1,
       "1000_cash",
-      3804175020
+      167289623
     ],
     [
       1,
@@ -32,8 +32,23 @@
     ],
     [
       1,
+      "2700_partner_current_accounts",
+      -86597819
+    ],
+    [
+      1,
       "3000_partners_capital",
-      -60000000
+      -80691804
+    ],
+    [
+      1,
+      "3100_undistributed_profit",
+      5843175406
+    ],
+    [
+      1,
+      "3200_drawings",
+      0
     ],
     [
       1,
@@ -73,7 +88,7 @@
     [
       1,
       "6900_general_admin",
-      2205762679
+      106762293
     ]
   ],
   "final_turn": 360,
@@ -113,5 +128,5 @@
   ],
   "people": "198eb3ff5e06a2f02b9c4de539ec6fb15db9aede1cccd1ab4805361fc9c6cf05",
   "relationships": "25cb9eb616ddcccdd7bdde14558b90ea5f6491510051757fe3f3710c25a6e8cc",
-  "sha256": "d613c41478dd3c41592cc2b3e458908cfb2e3ad594386eac63b289142d42d667"
+  "sha256": "6fea65cc6d07b3c52046ecf366130010550084b1f81d964180117e1899a5b55c"
 }

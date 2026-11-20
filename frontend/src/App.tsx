@@ -10,6 +10,7 @@ import { MattersScreen } from './screens/MattersScreen';
 import { NewGameScreen } from './screens/NewGameScreen';
 import { OrgScreen } from './screens/OrgScreen';
 import { OverviewScreen } from './screens/OverviewScreen';
+import { PartnershipScreen } from './screens/PartnershipScreen';
 import { PeopleScreen } from './screens/PeopleScreen';
 import { PersonScreen } from './screens/PersonScreen';
 import { PracticesScreen } from './screens/PracticesScreen';
@@ -38,6 +39,7 @@ export default function App() {
           <Route path="clients/:clientId" element={<ClientScreen />} />
           <Route path="practices" element={<PracticesScreen />} />
           <Route path="finance" element={<FinanceScreen />} />
+          <Route path="partnership" element={<PartnershipScreen />} />
         </Route>
       </Routes>
     </BrowserRouter>

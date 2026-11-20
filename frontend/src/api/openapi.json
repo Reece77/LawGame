@@ -4844,6 +4844,1355 @@
           }
         }
       }
+    },
+    "/api/saves/{slug}/partnership": {
+      "get": {
+        "summary": "Get Partnership",
+        "operationId": "getPartnership",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnershipOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/partnership/terms": {
+      "post": {
+        "summary": "Propose Terms",
+        "operationId": "proposeTerms",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TermsIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnershipOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/partnership/capital-call": {
+      "post": {
+        "summary": "Capital Call",
+        "operationId": "capitalCall",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AmountIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnershipOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/partnership/propose": {
+      "post": {
+        "summary": "Propose",
+        "operationId": "proposePartner",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProposeIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnershipOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/partnership/deequitise": {
+      "post": {
+        "summary": "Deequitise",
+        "operationId": "deequitise",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeequitiseIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnershipOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/partnership/lobby": {
+      "post": {
+        "summary": "Lobby",
+        "operationId": "lobbyPartner",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PersonIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnershipOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/partnership/promise": {
+      "post": {
+        "summary": "Promise",
+        "operationId": "promisePoints",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PromiseIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnershipOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/partnership/votes/{vote_id}/withdraw": {
+      "post": {
+        "summary": "Withdraw",
+        "operationId": "withdrawVote",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "vote_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Vote Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnershipOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/partnership/draws": {
+      "post": {
+        "summary": "Draws",
+        "operationId": "setDraws",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrawsIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnershipOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/partnership/comp-round": {
+      "post": {
+        "summary": "Comp Round",
+        "operationId": "setCompRound",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompRoundIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnershipOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/partnership/sponsor": {
+      "post": {
+        "summary": "Sponsor",
+        "operationId": "setSponsor",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SponsorIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnershipOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/partnership/laterals/search": {
+      "post": {
+        "summary": "Lateral Search",
+        "operationId": "searchLateralPartners",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PracticeIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnershipOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/partnership/laterals/{person_id}/diligence": {
+      "post": {
+        "summary": "Diligence",
+        "operationId": "lateralDiligence",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Person Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnershipOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/partnership/laterals/{person_id}/offer": {
+      "post": {
+        "summary": "Lateral Offer",
+        "operationId": "lateralOffer",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Person Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LateralOfferIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnershipOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/partnership/approaches/{approach_id}/counter": {
+      "post": {
+        "summary": "Counter",
+        "operationId": "counterApproach",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "approach_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Approach Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CounterIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnershipOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/partnership/revolver/repay": {
+      "post": {
+        "summary": "Repay",
+        "operationId": "repayRevolver",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AmountIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnershipOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/partnership/election": {
+      "post": {
+        "summary": "Election",
+        "operationId": "electionChoice",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ElectionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnershipOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -4870,6 +6219,97 @@
           "count"
         ],
         "title": "AgeBucketOut"
+      },
+      "AmountIn": {
+        "properties": {
+          "amount_cents": {
+            "type": "integer",
+            "title": "Amount Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "amount_cents"
+        ],
+        "title": "AmountIn"
+      },
+      "ApproachOut": {
+        "properties": {
+          "approach_id": {
+            "type": "integer",
+            "title": "Approach Id"
+          },
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "suitor": {
+            "type": "string",
+            "title": "Suitor"
+          },
+          "offer_comp_cents": {
+            "type": "integer",
+            "title": "Offer Comp Cents"
+          },
+          "guarantee_years": {
+            "type": "integer",
+            "title": "Guarantee Years"
+          },
+          "respond_by_label": {
+            "type": "string",
+            "title": "Respond By Label"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "countered": {
+            "type": "boolean",
+            "title": "Countered"
+          },
+          "counter_comp_cents": {
+            "type": "integer",
+            "title": "Counter Comp Cents"
+          },
+          "counter_points": {
+            "type": "number",
+            "title": "Counter Points"
+          },
+          "counter_guarantee_years": {
+            "type": "integer",
+            "title": "Counter Guarantee Years"
+          },
+          "counter_seat": {
+            "type": "boolean",
+            "title": "Counter Seat"
+          },
+          "stay_label": {
+            "type": "string",
+            "title": "Stay Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "approach_id",
+          "person_id",
+          "name",
+          "suitor",
+          "offer_comp_cents",
+          "guarantee_years",
+          "respond_by_label",
+          "status",
+          "countered",
+          "counter_comp_cents",
+          "counter_points",
+          "counter_guarantee_years",
+          "counter_seat",
+          "stay_label"
+        ],
+        "title": "ApproachOut"
       },
       "AssignIn": {
         "properties": {
@@ -5595,6 +7035,29 @@
         ],
         "title": "ClientRowOut"
       },
+      "CompRoundIn": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "gate_steps": {
+            "type": "integer",
+            "title": "Gate Steps",
+            "default": 0
+          },
+          "adjust_bp": {
+            "type": "integer",
+            "title": "Adjust Bp",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id"
+        ],
+        "title": "CompRoundIn"
+      },
       "ConflictChecksIn": {
         "properties": {
           "enabled": {
@@ -5643,6 +7106,70 @@
           "amount_cents"
         ],
         "title": "CostLineOut"
+      },
+      "CounterIn": {
+        "properties": {
+          "comp_cents": {
+            "type": "integer",
+            "title": "Comp Cents",
+            "default": 0
+          },
+          "points": {
+            "type": "number",
+            "title": "Points",
+            "default": 0.0
+          },
+          "guarantee_years": {
+            "type": "integer",
+            "title": "Guarantee Years",
+            "default": 0
+          },
+          "seat": {
+            "type": "boolean",
+            "title": "Seat",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "CounterIn"
+      },
+      "CovenantOut": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "value_cents": {
+            "type": "integer",
+            "title": "Value Cents"
+          },
+          "limit_cents": {
+            "type": "integer",
+            "title": "Limit Cents"
+          },
+          "floor": {
+            "type": "boolean",
+            "title": "Floor"
+          },
+          "holds": {
+            "type": "boolean",
+            "title": "Holds"
+          },
+          "near": {
+            "type": "boolean",
+            "title": "Near"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "value_cents",
+          "limit_cents",
+          "floor",
+          "holds",
+          "near"
+        ],
+        "title": "CovenantOut"
       },
       "CreateUnitIn": {
         "properties": {
@@ -5730,6 +7257,83 @@
         ],
         "title": "CrossSellOut"
       },
+      "DeequitiseIn": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "income",
+              "out"
+            ],
+            "title": "Mode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "mode"
+        ],
+        "title": "DeequitiseIn"
+      },
+      "DepartureOut": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "practice": {
+            "type": "string",
+            "title": "Practice"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "destination": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "leave_label": {
+            "type": "string",
+            "title": "Leave Label"
+          },
+          "clients_following": {
+            "type": "integer",
+            "title": "Clients Following"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "name",
+          "practice",
+          "reason",
+          "destination",
+          "label",
+          "leave_label",
+          "clients_following"
+        ],
+        "title": "DepartureOut"
+      },
       "DifficultyOut": {
         "properties": {
           "id": {
@@ -5788,6 +7392,47 @@
           "expires_label"
         ],
         "title": "DisputeOut"
+      },
+      "DrawsIn": {
+        "properties": {
+          "suspended": {
+            "type": "boolean",
+            "title": "Suspended"
+          }
+        },
+        "type": "object",
+        "required": [
+          "suspended"
+        ],
+        "title": "DrawsIn"
+      },
+      "ElectionIn": {
+        "properties": {
+          "choice": {
+            "type": "string",
+            "enum": [
+              "stay",
+              "hand_over"
+            ],
+            "title": "Choice"
+          },
+          "successor_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Successor Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "choice"
+        ],
+        "title": "ElectionIn"
       },
       "ErrorBody": {
         "properties": {
@@ -6540,6 +8185,106 @@
           "in_use"
         ],
         "title": "LLMSettingsOut"
+      },
+      "LateralOfferIn": {
+        "properties": {
+          "comp_cents": {
+            "type": "integer",
+            "title": "Comp Cents"
+          },
+          "guarantee_years": {
+            "type": "integer",
+            "title": "Guarantee Years",
+            "default": 0
+          },
+          "equity": {
+            "type": "boolean",
+            "title": "Equity",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "comp_cents"
+        ],
+        "title": "LateralOfferIn"
+      },
+      "LateralOut": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "practice": {
+            "type": "string",
+            "title": "Practice"
+          },
+          "ask_cents": {
+            "type": "integer",
+            "title": "Ask Cents"
+          },
+          "guarantee_ask_years": {
+            "type": "integer",
+            "title": "Guarantee Ask Years"
+          },
+          "book": {
+            "$ref": "#/components/schemas/RangeOut"
+          },
+          "diligence": {
+            "type": "boolean",
+            "title": "Diligence"
+          },
+          "clients": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Clients"
+          },
+          "conflicts": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conflicts"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "offer_comp_cents": {
+            "type": "integer",
+            "title": "Offer Comp Cents"
+          },
+          "expires_label": {
+            "type": "string",
+            "title": "Expires Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "name",
+          "practice",
+          "ask_cents",
+          "guarantee_ask_years",
+          "book",
+          "diligence",
+          "clients",
+          "conflicts",
+          "status",
+          "offer_comp_cents",
+          "expires_label"
+        ],
+        "title": "LateralOut"
       },
       "LeadIn": {
         "properties": {
@@ -7681,6 +9426,447 @@
           "dormant"
         ]
       },
+      "PartnerCandidateOut": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "practice": {
+            "type": "string",
+            "title": "Practice"
+          },
+          "sponsor_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sponsor Id"
+          },
+          "sponsor_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sponsor Name"
+          },
+          "tracks": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tracks"
+          },
+          "proposed": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proposed"
+          },
+          "rating": {
+            "type": "number",
+            "title": "Rating"
+          },
+          "business_development": {
+            "$ref": "#/components/schemas/RangeOut"
+          },
+          "client_care": {
+            "$ref": "#/components/schemas/RangeOut"
+          },
+          "relationships": {
+            "type": "integer",
+            "title": "Relationships"
+          },
+          "practice_need_bp": {
+            "type": "integer",
+            "title": "Practice Need Bp"
+          },
+          "moving_on_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Moving On Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "name",
+          "level",
+          "practice",
+          "sponsor_id",
+          "sponsor_name",
+          "tracks",
+          "proposed",
+          "rating",
+          "business_development",
+          "client_care",
+          "relationships",
+          "practice_need_bp",
+          "moving_on_label"
+        ],
+        "title": "PartnerCandidateOut"
+      },
+      "PartnerOut": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "practice": {
+            "type": "string",
+            "title": "Practice"
+          },
+          "klass": {
+            "type": "string",
+            "enum": [
+              "equity",
+              "income"
+            ],
+            "title": "Klass"
+          },
+          "is_mp": {
+            "type": "boolean",
+            "title": "Is Mp"
+          },
+          "is_you": {
+            "type": "boolean",
+            "title": "Is You"
+          },
+          "points": {
+            "type": "number",
+            "title": "Points"
+          },
+          "admitted_label": {
+            "type": "string",
+            "title": "Admitted Label"
+          },
+          "comp_last_cents": {
+            "type": "integer",
+            "title": "Comp Last Cents"
+          },
+          "budget_cents": {
+            "type": "integer",
+            "title": "Budget Cents"
+          },
+          "projected_comp_cents": {
+            "type": "integer",
+            "title": "Projected Comp Cents"
+          },
+          "drawn_ytd_cents": {
+            "type": "integer",
+            "title": "Drawn Ytd Cents"
+          },
+          "capital_cents": {
+            "type": "integer",
+            "title": "Capital Cents"
+          },
+          "capital_required_cents": {
+            "type": "integer",
+            "title": "Capital Required Cents"
+          },
+          "current_cents": {
+            "type": "integer",
+            "title": "Current Cents"
+          },
+          "guarantee_cents": {
+            "type": "integer",
+            "title": "Guarantee Cents"
+          },
+          "guarantee_until_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Guarantee Until Label"
+          },
+          "origination_cents": {
+            "type": "integer",
+            "title": "Origination Cents"
+          },
+          "working_cents": {
+            "type": "integer",
+            "title": "Working Cents"
+          },
+          "contribution_bp": {
+            "type": "integer",
+            "title": "Contribution Bp"
+          },
+          "market_band": {
+            "$ref": "#/components/schemas/RangeOut"
+          },
+          "confidence_label": {
+            "type": "string",
+            "title": "Confidence Label"
+          },
+          "confidence_range": {
+            "$ref": "#/components/schemas/RangeOut"
+          },
+          "gate_steps": {
+            "type": "integer",
+            "title": "Gate Steps"
+          },
+          "adjust_bp": {
+            "type": "integer",
+            "title": "Adjust Bp"
+          },
+          "promised_points": {
+            "type": "number",
+            "title": "Promised Points"
+          },
+          "lobbied": {
+            "type": "boolean",
+            "title": "Lobbied"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "name",
+          "practice",
+          "klass",
+          "is_mp",
+          "is_you",
+          "points",
+          "admitted_label",
+          "comp_last_cents",
+          "budget_cents",
+          "projected_comp_cents",
+          "drawn_ytd_cents",
+          "capital_cents",
+          "capital_required_cents",
+          "current_cents",
+          "guarantee_cents",
+          "guarantee_until_label",
+          "origination_cents",
+          "working_cents",
+          "contribution_bp",
+          "market_band",
+          "confidence_label",
+          "confidence_range",
+          "gate_steps",
+          "adjust_bp",
+          "promised_points",
+          "lobbied"
+        ],
+        "title": "PartnerOut"
+      },
+      "PartnershipOut": {
+        "properties": {
+          "stage": {
+            "type": "integer",
+            "title": "Stage"
+          },
+          "practices": {
+            "items": {
+              "$ref": "#/components/schemas/PracticeOut"
+            },
+            "type": "array",
+            "title": "Practices"
+          },
+          "mp_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mp Name"
+          },
+          "you_are_mp": {
+            "type": "boolean",
+            "title": "You Are Mp"
+          },
+          "election_choice_pending": {
+            "type": "boolean",
+            "title": "Election Choice Pending"
+          },
+          "term_ends_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Term Ends Label"
+          },
+          "december": {
+            "type": "boolean",
+            "title": "December"
+          },
+          "comp_system": {
+            "type": "string",
+            "title": "Comp System"
+          },
+          "agreement": {
+            "items": {
+              "$ref": "#/components/schemas/TermOut"
+            },
+            "type": "array",
+            "title": "Agreement"
+          },
+          "whip": {
+            "$ref": "#/components/schemas/WhipOut"
+          },
+          "partners": {
+            "items": {
+              "$ref": "#/components/schemas/PartnerOut"
+            },
+            "type": "array",
+            "title": "Partners"
+          },
+          "votes": {
+            "items": {
+              "$ref": "#/components/schemas/VoteOut"
+            },
+            "type": "array",
+            "title": "Votes"
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/PartnerCandidateOut"
+            },
+            "type": "array",
+            "title": "Candidates"
+          },
+          "approaches": {
+            "items": {
+              "$ref": "#/components/schemas/ApproachOut"
+            },
+            "type": "array",
+            "title": "Approaches"
+          },
+          "departures": {
+            "items": {
+              "$ref": "#/components/schemas/DepartureOut"
+            },
+            "type": "array",
+            "title": "Departures"
+          },
+          "laterals": {
+            "items": {
+              "$ref": "#/components/schemas/LateralOut"
+            },
+            "type": "array",
+            "title": "Laterals"
+          },
+          "draws_suspended": {
+            "type": "boolean",
+            "title": "Draws Suspended"
+          },
+          "capital_cents": {
+            "type": "integer",
+            "title": "Capital Cents"
+          },
+          "capital_returns_cents": {
+            "type": "integer",
+            "title": "Capital Returns Cents"
+          },
+          "true_up_owed_cents": {
+            "type": "integer",
+            "title": "True Up Owed Cents"
+          },
+          "cash_cents": {
+            "type": "integer",
+            "title": "Cash Cents"
+          },
+          "last_profit_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Profit Cents"
+          },
+          "last_pep_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Pep Cents"
+          },
+          "revolver": {
+            "$ref": "#/components/schemas/RevolverOut"
+          },
+          "explain": {
+            "$ref": "#/components/schemas/PepExplainOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "stage",
+          "practices",
+          "mp_name",
+          "you_are_mp",
+          "election_choice_pending",
+          "term_ends_label",
+          "december",
+          "comp_system",
+          "agreement",
+          "whip",
+          "partners",
+          "votes",
+          "candidates",
+          "approaches",
+          "departures",
+          "laterals",
+          "draws_suspended",
+          "capital_cents",
+          "capital_returns_cents",
+          "true_up_owed_cents",
+          "cash_cents",
+          "last_profit_cents",
+          "last_pep_cents",
+          "revolver",
+          "explain"
+        ],
+        "title": "PartnershipOut"
+      },
       "PayPolicyIn": {
         "properties": {
           "mode": {
@@ -7783,6 +9969,143 @@
         ],
         "title": "PayrollOut",
         "description": "This month's phase-6 costs as they stand (the Overview's payroll panel)."
+      },
+      "PepExplainOut": {
+        "properties": {
+          "pep_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pep Cents"
+          },
+          "rpl_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rpl Cents"
+          },
+          "margin_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Margin Bp"
+          },
+          "leverage": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Leverage"
+          },
+          "revenue_cents": {
+            "type": "integer",
+            "title": "Revenue Cents"
+          },
+          "profit_cents": {
+            "type": "integer",
+            "title": "Profit Cents"
+          },
+          "lawyers": {
+            "type": "number",
+            "title": "Lawyers"
+          },
+          "equity_partners": {
+            "type": "number",
+            "title": "Equity Partners"
+          },
+          "hours_per_lawyer": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hours Per Lawyer"
+          },
+          "average_rate_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Average Rate Cents"
+          },
+          "realisation_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Realisation Bp"
+          },
+          "collection_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Collection Bp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pep_cents",
+          "rpl_cents",
+          "margin_bp",
+          "leverage",
+          "revenue_cents",
+          "profit_cents",
+          "lawyers",
+          "equity_partners",
+          "hours_per_lawyer",
+          "average_rate_cents",
+          "realisation_bp",
+          "collection_bp"
+        ],
+        "title": "PepExplainOut"
+      },
+      "PersonIn": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id"
+        ],
+        "title": "PersonIn"
       },
       "PersonOrgOut": {
         "properties": {
@@ -8598,6 +10921,19 @@
         ],
         "title": "PnlOut"
       },
+      "PracticeIn": {
+        "properties": {
+          "practice": {
+            "type": "string",
+            "title": "Practice"
+          }
+        },
+        "type": "object",
+        "required": [
+          "practice"
+        ],
+        "title": "PracticeIn"
+      },
       "PracticeMarketOut": {
         "properties": {
           "key": {
@@ -8825,6 +11161,59 @@
         ],
         "title": "PracticeScreenOut"
       },
+      "PromiseIn": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "points": {
+            "type": "number",
+            "title": "Points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "points"
+        ],
+        "title": "PromiseIn"
+      },
+      "ProposeIn": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "track": {
+            "type": "string",
+            "enum": [
+              "equity",
+              "income",
+              "counsel",
+              "not_this_year"
+            ],
+            "title": "Track"
+          },
+          "sponsor_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sponsor Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "track"
+        ],
+        "title": "ProposeIn"
+      },
       "RaiseIn": {
         "properties": {
           "salary_cents": {
@@ -9043,6 +11432,52 @@
           "name"
         ],
         "title": "RenameUnitIn"
+      },
+      "RevolverOut": {
+        "properties": {
+          "facility_cents": {
+            "type": "integer",
+            "title": "Facility Cents"
+          },
+          "drawn_cents": {
+            "type": "integer",
+            "title": "Drawn Cents"
+          },
+          "headroom_cents": {
+            "type": "integer",
+            "title": "Headroom Cents"
+          },
+          "rate_bp": {
+            "type": "integer",
+            "title": "Rate Bp"
+          },
+          "breach_months": {
+            "type": "integer",
+            "title": "Breach Months"
+          },
+          "called": {
+            "type": "boolean",
+            "title": "Called"
+          },
+          "covenants": {
+            "items": {
+              "$ref": "#/components/schemas/CovenantOut"
+            },
+            "type": "array",
+            "title": "Covenants"
+          }
+        },
+        "type": "object",
+        "required": [
+          "facility_cents",
+          "drawn_cents",
+          "headroom_cents",
+          "rate_bp",
+          "breach_months",
+          "called",
+          "covenants"
+        ],
+        "title": "RevolverOut"
       },
       "RiskOut": {
         "type": "string",
@@ -9339,6 +11774,24 @@
         ],
         "title": "SignedOut"
       },
+      "SponsorIn": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "sponsor_id": {
+            "type": "integer",
+            "title": "Sponsor Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "sponsor_id"
+        ],
+        "title": "SponsorIn"
+      },
       "StaffingBoardOut": {
         "properties": {
           "matter_id": {
@@ -9468,6 +11921,62 @@
         ],
         "title": "TeamMemberOut"
       },
+      "TermOut": {
+        "properties": {
+          "term": {
+            "type": "string",
+            "title": "Term"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "boolean"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "term",
+          "value"
+        ],
+        "title": "TermOut"
+      },
+      "TermsIn": {
+        "properties": {
+          "term": {
+            "type": "string",
+            "title": "Term"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "boolean"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "term",
+          "value"
+        ],
+        "title": "TermsIn"
+      },
       "TextKindOut": {
         "type": "string",
         "enum": [
@@ -9579,6 +12088,75 @@
         ],
         "title": "ValidationError"
       },
+      "VoteOut": {
+        "properties": {
+          "vote_id": {
+            "type": "integer",
+            "title": "Vote Id"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "opened_label": {
+            "type": "string",
+            "title": "Opened Label"
+          },
+          "threshold_bp": {
+            "type": "integer",
+            "title": "Threshold Bp"
+          },
+          "predicted_yes": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RangeOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "total_weight": {
+            "type": "number",
+            "title": "Total Weight"
+          },
+          "needed_weight": {
+            "type": "number",
+            "title": "Needed Weight"
+          },
+          "yes_weight": {
+            "type": "number",
+            "title": "Yes Weight"
+          },
+          "no_weight": {
+            "type": "number",
+            "title": "No Weight"
+          }
+        },
+        "type": "object",
+        "required": [
+          "vote_id",
+          "kind",
+          "title",
+          "status",
+          "opened_label",
+          "threshold_bp",
+          "predicted_yes",
+          "total_weight",
+          "needed_weight",
+          "yes_weight",
+          "no_weight"
+        ],
+        "title": "VoteOut"
+      },
       "WaiverIn": {
         "properties": {
           "advance": {
@@ -9589,6 +12167,26 @@
         },
         "type": "object",
         "title": "WaiverIn"
+      },
+      "WhipOut": {
+        "properties": {
+          "supportive": {
+            "$ref": "#/components/schemas/RangeOut"
+          },
+          "neutral": {
+            "$ref": "#/components/schemas/RangeOut"
+          },
+          "restless": {
+            "$ref": "#/components/schemas/RangeOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "supportive",
+          "neutral",
+          "restless"
+        ],
+        "title": "WhipOut"
       },
       "WriteDownIn": {
         "properties": {

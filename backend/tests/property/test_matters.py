@@ -26,7 +26,7 @@ from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
 from ptk.sim.turn import advance_turn
 from tests.conftest import DATA_DIR
-from tests.matters_support import game, grown_firm
+from tests.matters_support import game, grown_firm, solvent
 
 DATA = load_game_data(DATA_DIR)
 BALANCE = load_balance(DATA_DIR)
@@ -96,7 +96,9 @@ def test_hours_reconcile_and_no_open_conflict(
         for m in [x for x in state.market.matters if x.status == "conflicted"]:
             state = _act(state, SeekWaiver(founder, m.id), month * 100 + 99)
         assert open_conflicts(state.market, state.player.id, state.turn, BALANCE) == []
-        state = advance_turn(state, Decisions(), RngFactory(seed), BALANCE, DATA, {}).new_state
+        state = advance_turn(
+            state, Decisions(), RngFactory(seed), solvent(BALANCE), DATA, {}
+        ).new_state
         assert open_conflicts(state.market, state.player.id, state.turn, BALANCE) == []
         for r in state.market.relationships:
             assert 0.0 <= r.score <= 100.0 and 0.0 <= r.lost_share <= 1.0
@@ -113,7 +115,9 @@ def test_unchecked_conflicts_are_flagged_hidden(seed: int) -> None:
     state = game(DATA, BALANCE, seed=seed, scenario="group_lift")
     state = replace(state, firms=tuple(replace(f, conflict_checks=False) for f in state.firms))
     for _ in range(12):
-        state = advance_turn(state, Decisions(), RngFactory(seed), BALANCE, DATA, {}).new_state
+        state = advance_turn(
+            state, Decisions(), RngFactory(seed), solvent(BALANCE), DATA, {}
+        ).new_state
         assert open_conflicts(state.market, state.player.id, state.turn, BALANCE) == []
         assert all(not m.checked for m in state.market.matters if m.status != "declined")
 
@@ -158,7 +162,9 @@ def test_no_open_conflict_in_a_conflict_heavy_world(seed: int, months: int, ask:
             for m in [x for x in state.market.matters if x.status == "conflicted"]:
                 state = _act(state, SeekWaiver(founder, m.id, advance=month % 2 == 0), month + 1)
                 assert open_conflicts(state.market, state.player.id, state.turn, SMALL) == []
-        state = advance_turn(state, Decisions(), RngFactory(seed), SMALL, HEAVY, {}).new_state
+        state = advance_turn(
+            state, Decisions(), RngFactory(seed), solvent(SMALL), HEAVY, {}
+        ).new_state
         assert open_conflicts(state.market, state.player.id, state.turn, SMALL) == []
         seen = sum(
             1 for m in state.market.matters if m.status in ("conflicted", "declined") or m.waiver

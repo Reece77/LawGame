@@ -17,10 +17,12 @@ from ptk.sim.events.models import EMPTY_EVENTS, EventsState
 from ptk.sim.hiring.models import Candidate, Offer, PayPolicy, PersonState, Search
 from ptk.sim.matters.models import EMPTY_MARKET, MarketState
 from ptk.sim.org.models import EMPTY_ORG, OrgState
+from ptk.sim.partnership.models import EMPTY_PARTNERSHIP, PartnershipState
 from ptk.sim.people.models import Employment, Person, RevealState
 
 # ADR PT-0007 section 4: a game ends when the campaign completes or the firm dissolves.
-type GameOutcome = Literal["active", "campaign_complete", "dissolved"]
+# Ironman (ADR PT-0007 3): losing the MP election is final.
+type GameOutcome = Literal["active", "campaign_complete", "dissolved", "election_lost"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -63,6 +65,7 @@ class GameState:
     market: MarketState = EMPTY_MARKET  # clients, relationships, matters, judges (PT-M3a)
     events: EventsState = EMPTY_EVENTS  # events, storylines, modifiers, colleagues (PT-M6)
     billing: BillingState = EMPTY_BILLING  # WIP, bills, client money, totals (PT-M3b)
+    partnership: PartnershipState = EMPTY_PARTNERSHIP  # capital, comp, votes, flight (PT-M4)
 
     @property
     def ended(self) -> bool:

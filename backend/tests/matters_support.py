@@ -9,6 +9,7 @@ from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
 from ptk.sim.hiring.models import PersonState
 from ptk.sim.hiring.phases import firm_pay_cents, starting_pay
+from ptk.sim.ledger import apply_entries
 from ptk.sim.matters.intake import with_relationship
 from ptk.sim.matters.market import base_monthly_demand, firm_reputation, player_share, wallets
 from ptk.sim.matters.models import Relationship
@@ -59,14 +60,27 @@ def play(
     seed: int = 1,
     *,
     write_events: bool = False,
+    ledger: dict[tuple[int, str], int] | None = None,
 ) -> tuple[GameState, list[TurnResult]]:
     """`write_events` (PT-M6): write each turn's events with the mock adapter, as a save does
-    (round trips against a save); without it events stay unwritten and have no effect."""
+    (round trips against a save); without it events stay unwritten and have no effect.
+    `ledger` (PT-M4): carry these opening balances turn to turn, under the real balance (a
+    round trip against a save); without it each turn starts from no balances and the firm
+    cannot go insolvent."""
     results = []
+    carried = None if ledger is None else dict(ledger)
     for _ in range(turns):
         result = advance_turn(
-            state, Decisions(), RngFactory(seed), balance, data, {}, answer_critical=write_events
+            state,
+            Decisions(),
+            RngFactory(seed),
+            balance if carried is not None else solvent(balance),
+            data,
+            carried if carried is not None else {},
+            answer_critical=write_events,
         )
+        if carried is not None:
+            carried = apply_entries(carried, result.ledger_entries)
         results.append(result)
         state = result.new_state
         if write_events:
@@ -208,3 +222,13 @@ def top_up(state: GameState, data: GameData, balance: Balance, like: GameState) 
         moods.append(PersonState(person_id=pid, morale=balance.morale.new_hire))
     state = replace(state, people=tuple(people), employments=tuple(employments))
     return with_person_states(state, moods)
+
+
+def solvent(balance: Balance) -> Balance:
+    """The balance with PT-M4's insolvency switched off: for tests of matters and billing that
+    play a firm without carrying (or funding) its ledger, so cash runs below zero."""
+    revolver = balance.partnership.revolver.model_copy(update={"cure_months": 10**6})
+    p = balance.partnership.model_copy(
+        update={"insolvency_months": 10**6, "dissolve_vote_months": 10**6, "revolver": revolver}
+    )
+    return balance.model_copy(update={"partnership": p})

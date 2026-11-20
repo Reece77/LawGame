@@ -45,6 +45,11 @@ BAD_DEBT_PROVISION: Final = "1210_bad_debt_provision"
 DEFERRED_FEES: Final = "2200_deferred_fees"
 SUCCESS_FEES: Final = "4100_success_fees"
 WRITE_OFFS: Final = "6700_write_offs"
+# PT-M4: the partnership (ADR PT-0003 sections 5-6; spec 8.4).
+REVOLVER: Final = "2300_revolver"
+PARTNER_CURRENT: Final = "2700_partner_current_accounts"
+INTEREST: Final = "6800_interest"
+PROFESSIONAL_FEES: Final = "6600_professional_fees"
 # The client-money book's accounts (never in a firm entry).
 CLIENT_BANK: Final = "C1000_client_bank"
 OWED_TO_CLIENTS: Final = "C2000_owed_to_clients"
@@ -69,6 +74,10 @@ ENGINE_ACCOUNTS: Final = (
     DEFERRED_FEES,
     SUCCESS_FEES,
     WRITE_OFFS,
+    REVOLVER,
+    PARTNER_CURRENT,
+    INTEREST,
+    PROFESSIONAL_FEES,
 )
 
 

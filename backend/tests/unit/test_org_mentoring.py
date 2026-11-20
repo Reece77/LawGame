@@ -13,6 +13,7 @@ from ptk.sim.people.models import WorkMonth, role_ability
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
 from ptk.sim.turn import advance_turn
+from tests.matters_support import solvent
 from tests.org_support import FIRM, act, founder, game, staff, with_skills, with_tags
 
 
@@ -64,7 +65,9 @@ def _grow(
     state, _, junior = _led_team(data, balance, mentoring, mentor_tag)
     rng = RngFactory(state.save_meta.master_seed)
     for _ in range(months):
-        state = advance_turn(state, Decisions(), rng, balance, data, {}, _work(state)).new_state
+        state = advance_turn(
+            state, Decisions(), rng, solvent(balance), data, {}, _work(state)
+        ).new_state
     person = state.person(junior)
     return role_ability(person.skills, data.role(person.role))
 

@@ -56,7 +56,7 @@ def play(
 ) -> tuple[GameState, list[TurnResult]]:
     results = []
     for _ in range(turns):
-        result = advance_turn(state, Decisions(), RngFactory(seed), balance, data, {})
+        result = advance_turn(state, Decisions(), RngFactory(seed), solvent(balance), data, {})
         results.append(result)
         state = result.new_state
     return state, results
@@ -194,3 +194,13 @@ def top_up(state: GameState, data: GameData, balance: Balance, like: GameState) 
         moods.append(PersonState(person_id=pid, morale=balance.morale.new_hire))
     state = replace(state, people=tuple(people), employments=tuple(employments))
     return with_person_states(state, moods)
+
+
+def solvent(balance: Balance) -> Balance:
+    """The balance with PT-M4's insolvency switched off: for tests of matters and billing that
+    play a firm without carrying (or funding) its ledger, so cash runs below zero."""
+    revolver = balance.partnership.revolver.model_copy(update={"cure_months": 10**6})
+    p = balance.partnership.model_copy(
+        update={"insolvency_months": 10**6, "dissolve_vote_months": 10**6, "revolver": revolver}
+    )
+    return balance.model_copy(update={"partnership": p})

@@ -78,3 +78,85 @@ templates:
   client_bankrupt:
     title: "{client} has filed for bankruptcy"
     body: "{client} has filed for bankruptcy. Its unpaid bills, {lost_cents} in all, have been written off as bad debts."
+  # PT-M4: the partnership
+  profit_allocated:
+    title: "The year's profit is allocated: {profit_cents}"
+    body: "{profit_cents} of profit has been allocated to {partners} equity partners. Their true-ups are paid from January to April as cash allows."
+  covenant_breach:
+    title: "Covenant breach: {covenant}"
+    body: "The bank's {covenant} covenant is breached. Cure it within {months} months or the bank will call the revolver."
+  revolver_called:
+    title: "The bank has called the revolver"
+    body: "The bank has called the revolver ({drawn_cents} drawn). It must be repaid within {months} months."
+  revolver_default:
+    title: "The firm cannot repay the bank"
+    body: "The called revolver is past due ({drawn_cents} outstanding). {months} more month ends in default and the bank forces the firm to dissolve."
+  cfo_warning:
+    title: "The finance team warns: {covenant}"
+    body: "The {covenant} covenant is close to its limit or breached, with {drawn_cents} drawn on the revolver. Consider stopping guarantees and draws, a capital call, or repaying the bank."
+  insolvent:
+    title: "The firm is out of cash"
+    body: "Cash is {cash_cents} after the revolver. {months} more month ends like this and the firm dissolves."
+  firm_dissolved:
+    title: "The firm has dissolved"
+    body: "The partnership could not pay its debts and has dissolved. The game is over."
+  stage_reached:
+    title: "The firm reaches stage {stage}"
+    body: "With its growth the firm has reached a new stage."
+  vote_result:
+    title: "Vote {result}: {title}"
+    body: "The partnership voted on {title}: {yes} for, {no} against. The motion {result}."
+  partner_admitted:
+    title: "{name} is made up"
+    body: "{name} joins the partnership as {track} partner from January."
+  partner_deequitised:
+    title: "{name} is de-equitised"
+    body: "{name} moves to income partner. Their capital and current account are repaid over three years. Other partners have noticed."
+  told_to_move_on:
+    title: "{name} was not made up"
+    body: "{name} was not admitted this year and has been told to move on. They will leave within the year unless made counsel."
+  moved_on:
+    title: "{name} moves on"
+    body: "{name} has left for {destination}."
+  partner_approached:
+    title: "{suitor} approaches {name}"
+    body: "{suitor} has offered {name} {offer_cents} a year, with {years} years guaranteed. Counter on the Partnership screen before the end of next month."
+  partner_stayed:
+    title: "{name} stays"
+    body: "{name} has turned down {suitor} and stays with the firm."
+  partner_leaving:
+    title: "{name} is leaving for {destination}"
+    body: "{name} has resigned from the partnership for {destination}. {clients} of their clients are expected to follow over the coming months; their capital is repaid over three years."
+  client_followed:
+    title: "{client} follows {name}"
+    body: "{client} has moved its work to follow {name}."
+  lateral_candidates:
+    title: "{count} lateral partners for {practice}"
+    body: "The recruiter has found {count} partners open to a move. Their books are shown as ranges until diligence."
+  lateral_declined:
+    title: "{name} declined your offer"
+    body: "{name} has decided not to join."
+  lateral_joined:
+    title: "{name} joins as partner"
+    body: "{name} joins the partnership on {comp_cents} a year, guaranteed for {years} years. Their clients will follow over the next one to two years."
+  client_arrived:
+    title: "{client} follows {name} to the firm"
+    body: "{client} has instructed the firm, following {name}."
+  partners_dissolve:
+    title: "The partners vote to dissolve"
+    body: "With the firm out of money and most partners restless, the partnership has voted to dissolve. The game is over."
+  mp_term_set:
+    title: "The managing partner's term"
+    body: "As the firm grows, the agreement now sets a {years}-year term for the managing partner, after which the partners elect one."
+  mp_unopposed:
+    title: "Re-elected unopposed"
+    body: "No partner stood against you: you begin a new term as managing partner."
+  election_won:
+    title: "You are re-elected managing partner"
+    body: "The partners re-elected you over {rival}."
+  election_lost:
+    title: "You lost the election to {rival}"
+    body: "{rival} is the new managing partner. Stay on as a partner (your practice and your votes) and stand again at the next term's end, or hand over to a partner and play them."
+  election_lost_again:
+    title: "{rival} keeps the managing partnership"
+    body: "The partners kept {rival} as managing partner."

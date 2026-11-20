@@ -417,3 +417,12 @@ class ClientBookLineRow(Base):
     account: Mapped[str] = mapped_column(String(40))  # C1000_client_bank, C2000_owed_to_clients
     client_id: Mapped[int] = mapped_column(Integer, index=True)
     amount_cents: Mapped[int] = mapped_column(BigInteger)
+
+
+# --- PT-M4: the partnership (schema v7) -----------------------------------------------------
+
+
+class PartnershipRow(Base):
+    __tablename__ = "partnership"
+    firm_id: Mapped[int] = mapped_column(Integer, primary_key=True)  # 0: the id counters
+    data_json: Mapped[str] = mapped_column(Text)  # FirmPartnership (or the counters)

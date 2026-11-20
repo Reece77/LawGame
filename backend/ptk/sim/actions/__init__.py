@@ -39,10 +39,15 @@ from ptk.sim.hiring.actions import (
 )
 from ptk.sim.ledger import LedgerBalances
 from ptk.sim.matters.actions import MATTER_ACTION_TYPES, MatterAction, apply_matter_action
+from ptk.sim.partnership.actions import (
+    PARTNERSHIP_ACTION_TYPES,
+    PartnershipAction,
+    apply_partnership_action,
+)
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
 
-type Action = HiringAction | MatterAction | BillingAction
+type Action = HiringAction | MatterAction | BillingAction | PartnershipAction
 
 ACTION_TYPES: dict[str, type[Any]] = {
     "open_search": OpenSearch,
@@ -55,6 +60,7 @@ ACTION_TYPES: dict[str, type[Any]] = {
     "set_pay_policy": SetPayPolicy,
     **MATTER_ACTION_TYPES,  # PT-M3a
     **BILLING_ACTION_TYPES,  # PT-M3b
+    **PARTNERSHIP_ACTION_TYPES,  # PT-M4
 }
 
 
@@ -73,6 +79,16 @@ def apply_action(
     if state.ended:
         raise GameOverError("the game is over")
     draws = lambda: rng.stream(state.turn, "actions", seq)  # noqa: E731
+    if type(action) in PARTNERSHIP_ACTION_TYPES.values():
+        return apply_partnership_action(
+            state,
+            action,  # type: ignore[arg-type]
+            rng,
+            draws,
+            balance,
+            data,
+            ledger_balances,
+        )
     if type(action) in BILLING_ACTION_TYPES.values():
         return apply_billing_action(state, action, draws, balance)  # type: ignore[arg-type]
     if type(action) in MATTER_ACTION_TYPES.values():

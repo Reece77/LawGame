@@ -15,6 +15,7 @@ from ptk.db.billing_io import write_billing
 from ptk.db.market_io import write_market
 from ptk.db.models import DecisionLogRow, FirmRow, SaveMetaRow, TurnSnapshotRow
 from ptk.db.org_io import write_delegate_actions
+from ptk.db.partnership_io import write_partnership
 from ptk.db.session import make_sessionmaker, shared_engine
 from ptk.db.state_io import (
     META_ID,
@@ -164,6 +165,7 @@ def run_action(path: Path, action: Action, balance: Balance, data: GameData) -> 
         write_people(session, outcome.state)
         write_market(session, outcome.state.market, append_hours=False)
         write_billing(session, outcome.state.billing)
+        write_partnership(session, outcome.state.partnership)
         session.add(
             DecisionLogRow(
                 turn=state.turn,

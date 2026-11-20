@@ -369,6 +369,23 @@ ENERGY_ACTIONS: Final = (
     "forum",
     "write_down",  # PT-M3b: a partner writes a matter's next bill down
     "dispute",  # PT-M3b: answer a billing dispute
+    # PT-M4: the partnership
+    "propose_terms",
+    "capital_call",
+    "propose_partner",
+    "deequity",
+    "lobby",
+    "promise",
+    "withdraw_vote",
+    "draws",
+    "comp_round",
+    "sponsor",
+    "lateral_search",
+    "diligence",
+    "lateral_offer",
+    "counter",
+    "repay_revolver",
+    "election_choice",
 )
 LATERAL_CHANNELS: Final = ("referral", "job_post", "recruiter")
 
@@ -836,6 +853,227 @@ class BillingBalance(_Strict):
         return self
 
 
+# --- PT-M4: the partnership (spec 5.5, 5.7, 8; ADR PT-0003, PT-0007) -------------------------
+
+type CompSystem = Literal["lockstep", "modified_lockstep", "eat_what_you_kill", "committee"]
+COMP_SYSTEMS: Final[tuple[CompSystem, ...]] = (
+    "lockstep",
+    "modified_lockstep",
+    "eat_what_you_kill",
+    "committee",
+)
+type VotingRule = Literal["per_capita", "points"]
+
+
+class AgreementTerms(_Strict):
+    """The partnership agreement's terms (spec 8.6): the founders' defaults, then voted."""
+
+    comp_system: CompSystem
+    two_tier: bool
+    voting: VotingRule
+    admission_bp: int = Field(gt=0, le=10000)
+    equity_lockstep_bp: int = Field(gt=0, le=10000)
+    terms_bp: int = Field(gt=0, le=10000)
+    capital_call_bp: int = Field(gt=0, le=10000)
+    deequity_bp: int = Field(gt=0, le=10000)
+    track_years: int = Field(ge=6, le=12)
+    mp_term_years: int = Field(ge=1, le=10)
+    retirement_age: int = Field(ge=55, le=80)
+    notice_months: int = Field(ge=0, le=12)
+    capital_share_bp: int = Field(ge=0, le=10000)
+    draw_share_bp: int = Field(ge=0, le=10000)
+    retain_bp: int = Field(ge=0, le=5000)
+
+
+class LockstepBalance(_Strict):
+    start_points: float = Field(gt=0)
+    step_points: float = Field(ge=0)
+    plateau_points: float = Field(gt=0)
+    founder_points: float = Field(gt=0)
+
+
+class ModifiedLockstepBalance(_Strict):
+    gate_min_steps: int = Field(le=0)
+    gate_max_steps: int = Field(ge=0)
+    bonus_pool_bp: int = Field(ge=0, le=10000)
+
+
+class EwykBalance(_Strict):
+    origination: float = Field(ge=0)
+    working: float = Field(ge=0)
+    management: float = Field(ge=0)
+
+
+class CommitteeBalance(_Strict):
+    origination: float = Field(ge=0, le=1)
+    adjust_max_bp: int = Field(ge=0, le=10000)
+
+
+class ManagementCredit(_Strict):
+    mp: float = Field(ge=0)
+    unit_leader: float = Field(ge=0)
+
+
+class SatisfactionBalance(_Strict):
+    ego_weight: float = Field(ge=0)
+    floor: float
+    ceiling: float
+
+
+class BudgetBalance(_Strict):
+    first_year_margin_bp: int = Field(ge=0, le=10000)
+
+
+class CapitalBalance(_Strict):
+    pay_in_months: int = Field(gt=0)
+    return_months: int = Field(gt=0)
+
+
+class RevolverBalance(_Strict):
+    receivables_bp: int = Field(ge=0, le=10000)
+    wip_bp: int = Field(ge=0, le=10000)
+    facility_of_revenue_bp: int = Field(ge=0)
+    rate_bp: int = Field(ge=0)
+    leverage_max_bp: int = Field(gt=0)
+    min_capital_bp: int = Field(ge=0)
+    departures_max_bp: int = Field(gt=0)
+    cure_months: int = Field(gt=0)
+    call_months: int = Field(gt=0)
+    warning_headroom_bp: int = Field(ge=0, le=10000)
+
+
+class ConfidenceBalance(_Strict):
+    start: float = Field(ge=0, le=100)
+    rate: float = Field(gt=0, le=1)
+    target_base: float
+    pep_weight: float
+    trend_weight: float
+    mp_weight: float
+    draws_suspended: float
+    bank_trouble: float
+    departure_hit: float
+    comp_step: float
+    deequity_fear: float
+    supportive: float
+    restless: float
+    range_half_width: float = Field(ge=0)
+    petition_below: float
+    petition_months: int = Field(gt=0)
+
+
+class VotesBalance(_Strict):
+    noise_sd: float = Field(ge=0)
+    confidence_weight: float
+    lobby_points: float
+    promise_per_point: float
+    predict_k: float = Field(ge=0)
+    quality_weight: float
+    quality_ref: float
+    quality_scale: float = Field(gt=0)
+    need_weight: float
+    need_ref: float
+    dilution_weight: float
+    income_dilution_bp: int = Field(ge=0, le=10000)
+    sponsor_weight: float
+    terms_weight: float
+    terms_bias: float
+    capital_call_weight: float
+    capital_call_stress: float
+    deequity_weight: float
+    election_weight: float
+
+
+class UpOrOutBalance(_Strict):
+    sponsor_from: str
+    leave_months: int = Field(gt=0)
+    in_house_bp: int = Field(ge=0, le=10000)
+
+
+class StayHintBands(_Strict):
+    lo: float = Field(ge=0, le=1)
+    hi: float = Field(ge=0, le=1)
+
+
+class FlightBalance(_Strict):
+    base_bp: float = Field(ge=0)
+    gap_weight: float = Field(ge=0)
+    loyalty_ref: float
+    loyalty_divisor: float = Field(gt=0)
+    contagion: float = Field(ge=0)
+    confidence_ref: float
+    confidence_divisor: float = Field(gt=0)
+    lockstep_star_mult: float = Field(gt=0)
+    star_book_mult: float = Field(gt=0)
+    cap_bp: int = Field(ge=0, le=10000)
+    market_multiple_bp: int = Field(ge=0)
+    min_book_cents: int = Field(ge=0)
+    answer_months: int = Field(gt=0)
+    guarantee_years: tuple[int, int]
+    offer_mult: tuple[float, float]
+    stay_base: float
+    stay_gap_weight: float
+    stay_loyalty: float
+    stay_confidence: float
+    seat_bonus: float
+    guarantee_value: float
+    stay_hint_bands: StayHintBands
+    follow_months: tuple[int, int]
+    orphan_drop: float = Field(ge=0)
+
+
+class LateralPartnerBalance(_Strict):
+    batch: tuple[int, int]
+    search_cost_cents: int = Field(ge=0)
+    fee_bp: int = Field(ge=0, le=10000)
+    book_cents: tuple[int, int]
+    book_range_bp: int = Field(ge=0, le=10000)
+    diligence_range_bp: int = Field(ge=0, le=10000)
+    diligence_cost_cents: int = Field(ge=0)
+    comp_of_book_bp: int = Field(gt=0)
+    notice_premium_bp: int = Field(ge=0)
+    guarantee_years: tuple[int, int]
+    shelf_turns: int = Field(gt=0)
+    accept_k: float = Field(gt=0)
+    accept_base: float
+    guarantee_weight: float
+    realised_sd_bp: int = Field(ge=0)
+    arrival_months: tuple[int, int]
+    start_relationship: tuple[float, float]
+
+
+class ElectionBalance(_Strict):
+    stage: int = Field(ge=0, le=5)
+    rival_ambition_min: float
+
+
+class PartnershipBalance(_Strict):
+    agreement: AgreementTerms
+    lockstep: LockstepBalance
+    modified: ModifiedLockstepBalance
+    ewyk: EwykBalance
+    committee: CommitteeBalance
+    management_credit: ManagementCredit
+    satisfaction: SatisfactionBalance
+    budget: BudgetBalance
+    capital: CapitalBalance
+    reforecast_months: tuple[int, ...]
+    true_up_months: tuple[int, ...]
+    cash_buffer_months: float = Field(ge=0)
+    revolver: RevolverBalance
+    insolvency_months: int = Field(gt=0)
+    dissolve_vote_months: int = Field(gt=0)
+    dissolve_restless_bp: int = Field(ge=0, le=10000)
+    confidence: ConfidenceBalance
+    votes: VotesBalance
+    up_or_out: UpOrOutBalance
+    income_partner_salary_bp: int = Field(gt=0)
+    flight: FlightBalance
+    lateral: LateralPartnerBalance
+    election: ElectionBalance
+    stages: tuple[int, ...] = Field(min_length=6, max_length=6)
+    cfo_warning_cooldown: int = Field(ge=0)
+
+
 class Balance(_Strict):
     campaign: CampaignBalance
     backups: BackupBalance
@@ -866,6 +1104,7 @@ class Balance(_Strict):
     cross_sell: CrossSellBalance
     conflicts: ConflictsBalance
     billing: BillingBalance  # PT-M3b
+    partnership: PartnershipBalance  # PT-M4
 
 
 # --- People seed data (PT-M1a) ------------------------------------------------------------

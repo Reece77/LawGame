@@ -322,6 +322,7 @@ def practices_screen(state: GameState, data: GameData, balance: Balance) -> list
 
 # --- Explain ---------------------------------------------------------------------------------
 
+
 def _item(label: str, amount: float | None, unit: Unit, text: str | None = None) -> ExplainItemOut:
     return ExplainItemOut(label=label, amount=amount, unit=unit, text=text)
 

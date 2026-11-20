@@ -2462,10 +2462,1371 @@
           }
         }
       }
+    },
+    "/api/saves/{slug}/practices": {
+      "get": {
+        "summary": "List Practices",
+        "operationId": "listPractices",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ptk__api__matters__PracticeOut"
+                  },
+                  "title": "Response Listpractices"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/clients": {
+      "get": {
+        "summary": "List Clients",
+        "operationId": "listClients",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClientRowOut"
+                  },
+                  "title": "Response Listclients"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/clients/{client_id}": {
+      "get": {
+        "summary": "Get Client",
+        "operationId": "getClient",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "client_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Client Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/clients/{client_id}/introduce": {
+      "post": {
+        "summary": "Introduce",
+        "operationId": "introduce",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "client_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Client Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IntroduceIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/matters": {
+      "get": {
+        "summary": "List Matters",
+        "operationId": "listMatters",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "open",
+                "conflicted",
+                "closed",
+                "declined",
+                "all"
+              ],
+              "type": "string",
+              "default": "open",
+              "title": "Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MatterRowOut"
+                  },
+                  "title": "Response Listmatters"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/matters/{matter_id}": {
+      "get": {
+        "summary": "Get Matter",
+        "operationId": "getMatter",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "matter_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Matter Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatterOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/matters/{matter_id}/team": {
+      "post": {
+        "summary": "Assign",
+        "operationId": "assignToMatter",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "matter_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Matter Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatterOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/matters/{matter_id}/team/{person_id}": {
+      "put": {
+        "summary": "Set Hours",
+        "operationId": "setMatterHours",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "matter_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Matter Id"
+            }
+          },
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Person Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HoursIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatterOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove",
+        "operationId": "removeFromMatter",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "matter_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Matter Id"
+            }
+          },
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Person Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatterOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/matters/{matter_id}/lead": {
+      "post": {
+        "summary": "Set Lead",
+        "operationId": "setMatterLead",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "matter_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Matter Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeadIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatterOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/matters/{matter_id}/default-staffing": {
+      "post": {
+        "summary": "Default Staffing",
+        "operationId": "defaultStaffing",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "matter_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Matter Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatterOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/matters/{matter_id}/waiver": {
+      "post": {
+        "summary": "Seek Waiver",
+        "operationId": "seekWaiver",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "matter_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Matter Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WaiverIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatterOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/matters/{matter_id}/settlement": {
+      "post": {
+        "summary": "Respond Settlement",
+        "operationId": "respondSettlement",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "matter_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Matter Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SettlementIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatterOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/matters/{matter_id}/forum": {
+      "post": {
+        "summary": "Choose Forum",
+        "operationId": "chooseForum",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "matter_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Matter Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForumIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatterOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/conflict-checks": {
+      "get": {
+        "summary": "Get Checks",
+        "operationId": "getConflictChecks",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConflictChecksOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set Checks",
+        "operationId": "setConflictChecks",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConflictChecksIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConflictChecksOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AssignIn": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "hours": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Hours"
+          },
+          "role": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "senior",
+                  "junior",
+                  "paralegal"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "hours"
+        ],
+        "title": "AssignIn"
+      },
       "AttributeOut": {
         "properties": {
           "key": {
@@ -2726,6 +4087,225 @@
         ],
         "title": "ChannelOptionOut"
       },
+      "ClientOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "sector": {
+            "type": "string",
+            "title": "Sector"
+          },
+          "real": {
+            "type": "boolean",
+            "title": "Real"
+          },
+          "size_class": {
+            "type": "string",
+            "enum": [
+              "large",
+              "mid"
+            ],
+            "title": "Size Class"
+          },
+          "relationship": {
+            "type": "integer",
+            "title": "Relationship"
+          },
+          "partner": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RefOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "practices": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Practices"
+          },
+          "fees_12m_cents": {
+            "type": "integer",
+            "title": "Fees 12M Cents"
+          },
+          "key_client": {
+            "type": "boolean",
+            "title": "Key Client"
+          },
+          "open_matters": {
+            "type": "integer",
+            "title": "Open Matters"
+          },
+          "wallet_estimate": {
+            "$ref": "#/components/schemas/RangeCentsOut"
+          },
+          "general_counsel": {
+            "$ref": "#/components/schemas/GeneralCounselOut"
+          },
+          "panel": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Panel"
+          },
+          "advance_waiver": {
+            "type": "boolean",
+            "title": "Advance Waiver"
+          },
+          "cross_sell": {
+            "items": {
+              "$ref": "#/components/schemas/CrossSellOut"
+            },
+            "type": "array",
+            "title": "Cross Sell"
+          },
+          "matters": {
+            "items": {
+              "$ref": "#/components/schemas/MatterRowOut"
+            },
+            "type": "array",
+            "title": "Matters"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "sector",
+          "real",
+          "size_class",
+          "relationship",
+          "partner",
+          "practices",
+          "fees_12m_cents",
+          "key_client",
+          "open_matters",
+          "wallet_estimate",
+          "general_counsel",
+          "panel",
+          "advance_waiver",
+          "cross_sell",
+          "matters"
+        ],
+        "title": "ClientOut"
+      },
+      "ClientRowOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "sector": {
+            "type": "string",
+            "title": "Sector"
+          },
+          "real": {
+            "type": "boolean",
+            "title": "Real"
+          },
+          "size_class": {
+            "type": "string",
+            "enum": [
+              "large",
+              "mid"
+            ],
+            "title": "Size Class"
+          },
+          "relationship": {
+            "type": "integer",
+            "title": "Relationship"
+          },
+          "partner": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RefOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "practices": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Practices"
+          },
+          "fees_12m_cents": {
+            "type": "integer",
+            "title": "Fees 12M Cents"
+          },
+          "key_client": {
+            "type": "boolean",
+            "title": "Key Client"
+          },
+          "open_matters": {
+            "type": "integer",
+            "title": "Open Matters"
+          },
+          "wallet_estimate": {
+            "$ref": "#/components/schemas/RangeCentsOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "sector",
+          "real",
+          "size_class",
+          "relationship",
+          "partner",
+          "practices",
+          "fees_12m_cents",
+          "key_client",
+          "open_matters",
+          "wallet_estimate"
+        ],
+        "title": "ClientRowOut"
+      },
+      "ConflictChecksIn": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          }
+        },
+        "type": "object",
+        "required": [
+          "enabled"
+        ],
+        "title": "ConflictChecksIn"
+      },
+      "ConflictChecksOut": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          }
+        },
+        "type": "object",
+        "required": [
+          "enabled"
+        ],
+        "title": "ConflictChecksOut"
+      },
       "CostLineOut": {
         "properties": {
           "label": {
@@ -2799,6 +4379,42 @@
         ],
         "title": "CreateUnitIn"
       },
+      "CrossSellOut": {
+        "properties": {
+          "practice": {
+            "type": "string",
+            "title": "Practice"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "affinity": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ],
+            "title": "Affinity"
+          },
+          "colleagues": {
+            "items": {
+              "$ref": "#/components/schemas/RefOut"
+            },
+            "type": "array",
+            "title": "Colleagues"
+          }
+        },
+        "type": "object",
+        "required": [
+          "practice",
+          "label",
+          "affinity",
+          "colleagues"
+        ],
+        "title": "CrossSellOut"
+      },
       "DifficultyOut": {
         "properties": {
           "id": {
@@ -2868,6 +4484,19 @@
         ],
         "title": "FamiliarityOut"
       },
+      "ForumIn": {
+        "properties": {
+          "court": {
+            "type": "string",
+            "title": "Court"
+          }
+        },
+        "type": "object",
+        "required": [
+          "court"
+        ],
+        "title": "ForumIn"
+      },
       "GameOut": {
         "properties": {
           "slug": {
@@ -2916,6 +4545,24 @@
         ],
         "title": "GameOut"
       },
+      "GeneralCounselOut": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "age": {
+            "type": "integer",
+            "title": "Age"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "age"
+        ],
+        "title": "GeneralCounselOut"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -2937,6 +4584,20 @@
           "job_post",
           "referral"
         ]
+      },
+      "HoursIn": {
+        "properties": {
+          "hours": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Hours"
+          }
+        },
+        "type": "object",
+        "required": [
+          "hours"
+        ],
+        "title": "HoursIn"
       },
       "InboxItemOut": {
         "properties": {
@@ -3005,6 +4666,48 @@
         ],
         "title": "InboxItemOut"
       },
+      "IntroduceIn": {
+        "properties": {
+          "colleague_id": {
+            "type": "integer",
+            "title": "Colleague Id"
+          },
+          "practice": {
+            "type": "string",
+            "title": "Practice"
+          },
+          "introducer_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Introducer Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "colleague_id",
+          "practice"
+        ],
+        "title": "IntroduceIn"
+      },
+      "LeadIn": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id"
+        ],
+        "title": "LeadIn"
+      },
       "LeaderIn": {
         "properties": {
           "person_id": {
@@ -3024,6 +4727,401 @@
           "person_id"
         ],
         "title": "LeaderIn"
+      },
+      "MatterOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "client": {
+            "$ref": "#/components/schemas/RefOut"
+          },
+          "practice": {
+            "type": "string",
+            "title": "Practice"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "kind_label": {
+            "type": "string",
+            "title": "Kind Label"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MatterStatusOut"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome"
+          },
+          "lead": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RefOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "phase": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phase"
+          },
+          "progress_pct": {
+            "type": "integer",
+            "title": "Progress Pct"
+          },
+          "opened_label": {
+            "type": "string",
+            "title": "Opened Label"
+          },
+          "due_label": {
+            "type": "string",
+            "title": "Due Label"
+          },
+          "overdue": {
+            "type": "boolean",
+            "title": "Overdue"
+          },
+          "budget_hours": {
+            "type": "number",
+            "title": "Budget Hours"
+          },
+          "worked_hours": {
+            "type": "number",
+            "title": "Worked Hours"
+          },
+          "hours_last_month": {
+            "type": "number",
+            "title": "Hours Last Month"
+          },
+          "expected_fees_cents": {
+            "type": "integer",
+            "title": "Expected Fees Cents"
+          },
+          "wip_cents": {
+            "type": "integer",
+            "title": "Wip Cents"
+          },
+          "critical": {
+            "type": "boolean",
+            "title": "Critical"
+          },
+          "adverse": {
+            "type": "string",
+            "title": "Adverse"
+          },
+          "court": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Court"
+          },
+          "judge": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Judge"
+          },
+          "errors_caught": {
+            "type": "integer",
+            "title": "Errors Caught"
+          },
+          "missed_deadlines": {
+            "type": "integer",
+            "title": "Missed Deadlines"
+          },
+          "settlement": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SettlementOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "team": {
+            "items": {
+              "$ref": "#/components/schemas/TeamMemberOut"
+            },
+            "type": "array",
+            "title": "Team"
+          },
+          "phases": {
+            "items": {
+              "$ref": "#/components/schemas/PhaseOut"
+            },
+            "type": "array",
+            "title": "Phases"
+          },
+          "forums": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Forums"
+          },
+          "checked": {
+            "type": "boolean",
+            "title": "Checked"
+          },
+          "waiver": {
+            "type": "boolean",
+            "title": "Waiver"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "client",
+          "practice",
+          "kind",
+          "kind_label",
+          "status",
+          "outcome",
+          "lead",
+          "phase",
+          "progress_pct",
+          "opened_label",
+          "due_label",
+          "overdue",
+          "budget_hours",
+          "worked_hours",
+          "hours_last_month",
+          "expected_fees_cents",
+          "wip_cents",
+          "critical",
+          "adverse",
+          "court",
+          "judge",
+          "errors_caught",
+          "missed_deadlines",
+          "settlement",
+          "team",
+          "phases",
+          "forums",
+          "checked",
+          "waiver"
+        ],
+        "title": "MatterOut"
+      },
+      "MatterRowOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "client": {
+            "$ref": "#/components/schemas/RefOut"
+          },
+          "practice": {
+            "type": "string",
+            "title": "Practice"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "kind_label": {
+            "type": "string",
+            "title": "Kind Label"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MatterStatusOut"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome"
+          },
+          "lead": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RefOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "phase": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phase"
+          },
+          "progress_pct": {
+            "type": "integer",
+            "title": "Progress Pct"
+          },
+          "opened_label": {
+            "type": "string",
+            "title": "Opened Label"
+          },
+          "due_label": {
+            "type": "string",
+            "title": "Due Label"
+          },
+          "overdue": {
+            "type": "boolean",
+            "title": "Overdue"
+          },
+          "budget_hours": {
+            "type": "number",
+            "title": "Budget Hours"
+          },
+          "worked_hours": {
+            "type": "number",
+            "title": "Worked Hours"
+          },
+          "hours_last_month": {
+            "type": "number",
+            "title": "Hours Last Month"
+          },
+          "expected_fees_cents": {
+            "type": "integer",
+            "title": "Expected Fees Cents"
+          },
+          "wip_cents": {
+            "type": "integer",
+            "title": "Wip Cents"
+          },
+          "critical": {
+            "type": "boolean",
+            "title": "Critical"
+          },
+          "adverse": {
+            "type": "string",
+            "title": "Adverse"
+          },
+          "court": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Court"
+          },
+          "judge": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Judge"
+          },
+          "errors_caught": {
+            "type": "integer",
+            "title": "Errors Caught"
+          },
+          "missed_deadlines": {
+            "type": "integer",
+            "title": "Missed Deadlines"
+          },
+          "settlement": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SettlementOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "client",
+          "practice",
+          "kind",
+          "kind_label",
+          "status",
+          "outcome",
+          "lead",
+          "phase",
+          "progress_pct",
+          "opened_label",
+          "due_label",
+          "overdue",
+          "budget_hours",
+          "worked_hours",
+          "hours_last_month",
+          "expected_fees_cents",
+          "wip_cents",
+          "critical",
+          "adverse",
+          "court",
+          "judge",
+          "errors_caught",
+          "missed_deadlines",
+          "settlement"
+        ],
+        "title": "MatterRowOut"
+      },
+      "MatterStatusOut": {
+        "type": "string",
+        "enum": [
+          "open",
+          "conflicted",
+          "closed",
+          "declined"
+        ]
       },
       "MetaOut": {
         "properties": {
@@ -3391,7 +5489,7 @@
           },
           "open_practices": {
             "items": {
-              "$ref": "#/components/schemas/PracticeOut"
+              "$ref": "#/components/schemas/ptk__api__org__PracticeOut"
             },
             "type": "array",
             "title": "Open Practices"
@@ -4154,6 +6252,34 @@
         ],
         "title": "PersonUnitIn"
       },
+      "PhaseOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "share_pct": {
+            "type": "integer",
+            "title": "Share Pct"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "done",
+              "current",
+              "next"
+            ],
+            "title": "State"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "share_pct",
+          "state"
+        ],
+        "title": "PhaseOut"
+      },
       "PlanChannel": {
         "type": "string",
         "enum": [
@@ -4336,24 +6462,6 @@
         ],
         "title": "PlanOut"
       },
-      "PracticeOut": {
-        "properties": {
-          "key": {
-            "type": "string",
-            "title": "Key"
-          },
-          "label": {
-            "type": "string",
-            "title": "Label"
-          }
-        },
-        "type": "object",
-        "required": [
-          "key",
-          "label"
-        ],
-        "title": "PracticeOut"
-      },
       "RaiseIn": {
         "properties": {
           "salary_cents": {
@@ -4366,6 +6474,24 @@
           "salary_cents"
         ],
         "title": "RaiseIn"
+      },
+      "RangeCentsOut": {
+        "properties": {
+          "lo": {
+            "type": "integer",
+            "title": "Lo"
+          },
+          "hi": {
+            "type": "integer",
+            "title": "Hi"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lo",
+          "hi"
+        ],
+        "title": "RangeCentsOut"
       },
       "RangeOut": {
         "properties": {
@@ -4384,6 +6510,24 @@
           "hi"
         ],
         "title": "RangeOut"
+      },
+      "RateOut": {
+        "properties": {
+          "band": {
+            "type": "string",
+            "title": "Band"
+          },
+          "cents": {
+            "type": "integer",
+            "title": "Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "band",
+          "cents"
+        ],
+        "title": "RateOut"
       },
       "RecruitmentOut": {
         "properties": {
@@ -4487,6 +6631,24 @@
           "school_tiers"
         ],
         "title": "RecruitmentOut"
+      },
+      "RefOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "RefOut"
       },
       "RenameUnitIn": {
         "properties": {
@@ -4716,6 +6878,37 @@
         ],
         "title": "SearchOut"
       },
+      "SettlementIn": {
+        "properties": {
+          "accept": {
+            "type": "boolean",
+            "title": "Accept"
+          }
+        },
+        "type": "object",
+        "required": [
+          "accept"
+        ],
+        "title": "SettlementIn"
+      },
+      "SettlementOut": {
+        "properties": {
+          "offer_cents": {
+            "type": "integer",
+            "title": "Offer Cents"
+          },
+          "expires_label": {
+            "type": "string",
+            "title": "Expires Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "offer_cents",
+          "expires_label"
+        ],
+        "title": "SettlementOut"
+      },
       "SignedOut": {
         "properties": {
           "person_id": {
@@ -4807,6 +7000,38 @@
         ],
         "title": "TagOut"
       },
+      "TeamMemberOut": {
+        "properties": {
+          "person": {
+            "$ref": "#/components/schemas/RefOut"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "planned_hours": {
+            "type": "number",
+            "title": "Planned Hours"
+          },
+          "hours_last_month": {
+            "type": "number",
+            "title": "Hours Last Month"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person",
+          "role",
+          "level",
+          "planned_hours",
+          "hours_last_month"
+        ],
+        "title": "TeamMemberOut"
+      },
       "ValidationError": {
         "properties": {
           "loc": {
@@ -4846,6 +7071,111 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "WaiverIn": {
+        "properties": {
+          "advance": {
+            "type": "boolean",
+            "title": "Advance",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "WaiverIn"
+      },
+      "ptk__api__matters__PracticeOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "short_label": {
+            "type": "string",
+            "title": "Short Label"
+          },
+          "driver": {
+            "type": "string",
+            "title": "Driver"
+          },
+          "demand_cents": {
+            "type": "integer",
+            "title": "Demand Cents"
+          },
+          "demand_base_cents": {
+            "type": "integer",
+            "title": "Demand Base Cents"
+          },
+          "rates": {
+            "items": {
+              "$ref": "#/components/schemas/RateOut"
+            },
+            "type": "array",
+            "title": "Rates"
+          },
+          "leverage_norm": {
+            "type": "number",
+            "title": "Leverage Norm"
+          },
+          "margin_norm_bp": {
+            "type": "integer",
+            "title": "Margin Norm Bp"
+          },
+          "clients": {
+            "type": "integer",
+            "title": "Clients"
+          },
+          "people": {
+            "type": "integer",
+            "title": "People"
+          },
+          "hours_last_month": {
+            "type": "number",
+            "title": "Hours Last Month"
+          },
+          "value_last_month_cents": {
+            "type": "integer",
+            "title": "Value Last Month Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "short_label",
+          "driver",
+          "demand_cents",
+          "demand_base_cents",
+          "rates",
+          "leverage_norm",
+          "margin_norm_bp",
+          "clients",
+          "people",
+          "hours_last_month",
+          "value_last_month_cents"
+        ],
+        "title": "PracticeOut"
+      },
+      "ptk__api__org__PracticeOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label"
+        ],
+        "title": "PracticeOut"
       }
     }
   }

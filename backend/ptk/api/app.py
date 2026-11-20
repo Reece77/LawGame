@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 
 from ptk import loader
 from ptk.api import recruitment
+from ptk.api.matters import make_matters_router
 from ptk.api.org import make_org_router
 from ptk.api.people import make_router
 from ptk.config import get_settings
@@ -17,6 +18,7 @@ from ptk.db import saves
 from ptk.sim.calendar import format_turn
 from ptk.sim.errors import (
     CampusSeasonError,
+    ConflictError,
     GameOverError,
     InsufficientCashError,
     InsufficientEnergyError,
@@ -24,11 +26,14 @@ from ptk.sim.errors import (
     InvalidActionError,
     InvalidFounderError,
     InvalidSaveNameError,
+    MatterActionError,
     NotFoundError,
     OfferExistsError,
+    OverCapacityError,
     SaveExistsError,
     SaveNotFoundError,
     SimError,
+    StaffingError,
     UnknownDifficultyError,
     UnknownScenarioError,
 )
@@ -51,6 +56,11 @@ _STATUS: dict[type[SimError], int] = {
     InterviewRequiredError: 409,
     OfferExistsError: 409,
     CampusSeasonError: 409,
+    # PT-M3a: clients and matters
+    ConflictError: 409,
+    OverCapacityError: 409,
+    StaffingError: 400,
+    MatterActionError: 409,
 }
 
 
@@ -205,6 +215,7 @@ def create_app() -> FastAPI:
     app.include_router(make_router(errors))
     app.include_router(recruitment.make_router(errors))
     app.include_router(make_org_router(errors))
+    app.include_router(make_matters_router(errors))
     return app
 
 

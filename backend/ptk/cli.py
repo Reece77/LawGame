@@ -1,4 +1,4 @@
-"""Headless commands: new-game, advance, inspect, people, hire, saves."""
+"""Headless commands: new-game, advance, inspect, people, hire, matters, staff, saves."""
 
 from __future__ import annotations
 
@@ -23,12 +23,21 @@ from ptk.sim.hiring.actions import (
     WithdrawOffer,
 )
 from ptk.sim.ledger import CASH
+from ptk.sim.matters.actions import (
+    AssignToMatter,
+    DefaultStaffing,
+    RemoveFromMatter,
+    SetMatterHours,
+    SetMatterLead,
+)
 from ptk.sim.money import cents, format_money
 from ptk.sim.people.founder import FounderSpec
 
 app = typer.Typer(no_args_is_help=True, add_completion=False)
 hire_app = typer.Typer(no_args_is_help=True, help="Recruitment: searches, interviews, offers, pay")
 app.add_typer(hire_app, name="hire")
+staff_app = typer.Typer(no_args_is_help=True, help="Named matters' teams (spec 7.5)")
+app.add_typer(staff_app, name="staff")
 
 
 @app.command("new-game")
@@ -211,6 +220,113 @@ def hire_pay(
 ) -> None:
     """The firm's pay policy against the market scale (spec 5.4)."""
     _act(save, lambda a: SetPayPolicy(a, mode, pct * 100))  # type: ignore[arg-type]
+
+
+# --- Matters and staffing (PT-M3a) ---------------------------------------------------------
+
+
+def _print_matters(save: str, status: str) -> None:
+    from ptk.api.matters import matters_view
+
+    path = saves.open_save(get_settings().resolved_save_dir(), save)
+    state, _ = saves.read_state(path)
+    rows = matters_view(state, loader.game_data(), status)
+    if not rows:
+        typer.echo("no matters")
+    for m in rows:
+        lead = m.lead.name if m.lead else "-"
+        offer = f"\toffer {format_money(m.settlement.offer_cents)}" if m.settlement else ""
+        typer.echo(
+            f"matter {m.id}\t{m.name}\t{m.status}{'/' + m.outcome if m.outcome else ''}"
+            f"\t{m.phase or '-'} {m.progress_pct}%\tlead {lead}"
+            f"\t{m.worked_hours:.0f}/{m.budget_hours:.0f}h\tWIP {format_money(m.wip_cents)}"
+            f"\tdue {m.due_label}{offer}"
+        )
+
+
+@app.command()
+def matters(
+    save: str = typer.Option(...),
+    status: str = typer.Option("open", help="open, conflicted, closed, declined or all"),
+) -> None:
+    """Named matters: phase, progress, lead, hours against budget, WIP at standard value."""
+    _print_matters(save, status)
+
+
+def _print_team(save: str, matter: int) -> None:
+    from ptk.api.matters import matter_view
+
+    path = saves.open_save(get_settings().resolved_save_dir(), save)
+    state, _ = saves.read_state(path)
+    view = matter_view(state, matter, loader.game_data(), loader.balance())
+    typer.echo(f"{view.name}\t{view.status}\t{view.phase or '-'} {view.progress_pct}%")
+    for t in view.team:
+        typer.echo(
+            f"  {t.person.id}\t{t.person.name}\t{t.role}\t{t.level}"
+            f"\tplanned {t.planned_hours:.0f}h\tlast month {t.hours_last_month:.0f}h"
+        )
+
+
+def _staff(save: str, matter: int, make: Callable[[int], Action]) -> None:
+    path = saves.open_save(get_settings().resolved_save_dir(), save)
+    state, _ = saves.read_state(path)
+    founder = next(p.id for p in state.people if p.is_founder)
+    try:
+        saves.run_action(path, make(founder), loader.balance(), loader.game_data())
+    except SimError as exc:
+        typer.echo(f"error ({exc.code}): {exc.message}", err=True)
+        raise typer.Exit(1) from exc
+    _print_team(save, matter)
+
+
+@staff_app.command("show")
+def staff_show(save: str = typer.Option(...), matter: int = typer.Option(...)) -> None:
+    """A matter's team with planned and last month's hours."""
+    _print_team(save, matter)
+
+
+@staff_app.command("assign")
+def staff_assign(
+    save: str = typer.Option(...),
+    matter: int = typer.Option(...),
+    person: int = typer.Option(...),
+    hours: int = typer.Option(..., help="planned hours a month"),
+) -> None:
+    """Add a person to a matter's team."""
+    _staff(save, matter, lambda a: AssignToMatter(a, matter, person, hours))
+
+
+@staff_app.command("hours")
+def staff_hours(
+    save: str = typer.Option(...),
+    matter: int = typer.Option(...),
+    person: int = typer.Option(...),
+    hours: int = typer.Option(...),
+) -> None:
+    """Change a team member's planned hours a month."""
+    _staff(save, matter, lambda a: SetMatterHours(a, matter, person, hours))
+
+
+@staff_app.command("remove")
+def staff_remove(
+    save: str = typer.Option(...), matter: int = typer.Option(...), person: int = typer.Option(...)
+) -> None:
+    """Take a person off a matter (not the lead)."""
+    _staff(save, matter, lambda a: RemoveFromMatter(a, matter, person))
+
+
+@staff_app.command("lead")
+def staff_lead(
+    save: str = typer.Option(...), matter: int = typer.Option(...), person: int = typer.Option(...)
+) -> None:
+    """Make a partner the matter's lead."""
+    _staff(save, matter, lambda a: SetMatterLead(a, matter, person))
+
+
+@staff_app.command("default")
+def staff_default(save: str = typer.Option(...), matter: int = typer.Option(...)) -> None:
+    """Re-staff a matter by the default rule."""
+    _staff(save, matter, lambda a: DefaultStaffing(a, matter))
 
 
 @app.command("saves")

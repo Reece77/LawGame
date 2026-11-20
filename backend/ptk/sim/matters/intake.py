@@ -119,7 +119,8 @@ def new_matter(
     hours = max(fx.TENTHS, round(size_cents * fx.TENTHS / rate))
     if court is not None:
         months = max(1, round(months * data.courts.court(court).pace))
-    label = kind.label if adverse_id is None else f"{kind.label}, {adverse_name}"
+    against = adverse_id is not None and kind.kind in CASE_KINDS
+    label = f"{kind.label}, {adverse_name}" if against else kind.label
     return Matter(
         id=matter_id,
         firm_id=firm_id,

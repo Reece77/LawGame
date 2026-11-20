@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { continueMonth } from './helpers';
+import { continueMonth } from './helpers.js';
 
 // PT-M5: the Market screen lists the real rivals at their 2005 size; a rival's page shows
 // its key people (real notables among them); approaching them makes them the firm's

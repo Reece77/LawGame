@@ -76,6 +76,11 @@ export function MatterScreen() {
               Critical
             </Badge>
           )}
+          {m.pro_bono && (
+            <Badge color="teal" variant="light" data-testid="pro-bono-badge">
+              Pro bono
+            </Badge>
+          )}
         </Group>
         <Text c="dimmed" size="sm">
           <Link to={`/game/${slug}/clients/${m.client.id}`}>{m.client.name}</Link> · {m.kind_label}
@@ -135,6 +140,27 @@ export function MatterScreen() {
         </Alert>
       )}
       {m.forums.length > 0 && <ForumPanel m={m} run={run} />}
+      {(m.can_assess || m.assessed_merits) && (
+        <Alert color="gray" title="Early case assessment" data-testid="assessment">
+          <Group justify="space-between">
+            <Text size="sm">
+              {m.assessed_merits
+                ? `Merits as assessed: ${m.assessed_merits}.`
+                : 'The lead can assess the merits this month (energy and some of their hours).'}
+            </Text>
+            {m.can_assess && (
+              <Button
+                size="xs"
+                loading={action.isPending}
+                onClick={() => run({ kind: 'assess' })}
+                data-testid="assess-case"
+              >
+                Assess the case
+              </Button>
+            )}
+          </Group>
+        </Alert>
+      )}
       <PhaseTimeline m={m} />
       {board.data && (
         <StaffingBoardPanel

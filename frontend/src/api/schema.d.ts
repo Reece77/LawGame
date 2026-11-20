@@ -69,6 +69,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/saves/{slug}/holiday": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Holiday
+         * @description PT-M7a: one Continue a month until a stop reason (spec 4.2). 409 while a critical
+         *     event waits; 400 for months or a date out of range.
+         */
+        post: operations["holiday"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/saves/{slug}/people": {
         parameters: {
             query?: never;
@@ -745,6 +766,77 @@ export interface paths {
         put?: never;
         /** Choose Forum */
         post: operations["chooseForum"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/matters/{matter_id}/assessment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Assess Case
+         * @description PT-M7a: early case assessment (energy and the lead's hours this month).
+         */
+        post: operations["assessCase"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/policies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Policies */
+        get: operations["getFirmPolicies"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/policies/pro-bono": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Set Pro Bono */
+        put: operations["setProBonoCredit"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/policies/rates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Set Rates */
+        put: operations["setRatePolicy"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1979,6 +2071,30 @@ export interface components {
             /** Receivables Ageing */
             receivables_ageing: components["schemas"]["AgeBucketOut"][];
         };
+        /**
+         * FirmPoliciesOut
+         * @description PT-M7a: the Org screen's firm policies: pro bono credit (spec 7.8) and rates.
+         */
+        FirmPoliciesOut: {
+            /** Pro Bono Credit Hours */
+            pro_bono_credit_hours: number;
+            /** Pro Bono Credit Max Hours */
+            pro_bono_credit_max_hours: number;
+            /** Pro Bono Hours Per Lawyer */
+            pro_bono_hours_per_lawyer: number;
+            /** Rate Rise Bp */
+            rate_rise_bp: number | null;
+            /** Market Rise Bp */
+            market_rise_bp: number;
+            /** Rate Rise Min Bp */
+            rate_rise_min_bp: number;
+            /** Rate Rise Max Bp */
+            rate_rise_max_bp: number;
+            /** Rate Index Bp */
+            rate_index_bp: number;
+            /** Market Index Bp */
+            market_index_bp: number;
+        };
         /** FirmRefOut */
         FirmRefOut: {
             /** Id */
@@ -2027,6 +2143,35 @@ export interface components {
         };
         /** @enum {string} */
         HiringChannel: "campus" | "recruiter" | "job_post" | "referral";
+        /**
+         * HolidayIn
+         * @description PT-M7a: Holiday (`months`) or continue until a month (`until_year`, `until_month`).
+         */
+        HolidayIn: {
+            /** Months */
+            months?: number | null;
+            /** Until Year */
+            until_year?: number | null;
+            /** Until Month */
+            until_month?: number | null;
+        };
+        /** HolidayOut */
+        HolidayOut: {
+            /** Months Played */
+            months_played: number;
+            /** Reason */
+            reason: string;
+            /** Reason Text */
+            reason_text: string;
+            /** From Label */
+            from_label: string;
+            /** To Label */
+            to_label: string;
+            /** Max Months */
+            max_months: number;
+            /** Default Months */
+            default_months: number;
+        };
         /** HoursIn */
         HoursIn: {
             /** Hours */
@@ -2279,6 +2424,11 @@ export interface components {
             risk: components["schemas"]["RiskOut"];
             /** Risk Notes */
             risk_notes: string[];
+            /**
+             * Pro Bono
+             * @default false
+             */
+            pro_bono?: boolean;
             /** Team */
             team: components["schemas"]["TeamMemberOut"][];
             /** Phases */
@@ -2293,6 +2443,13 @@ export interface components {
             opposing_counsel?: string | null;
             /** Opposing Firm Id */
             opposing_firm_id?: number | null;
+            /** Assessed Merits */
+            assessed_merits?: string | null;
+            /**
+             * Can Assess
+             * @default false
+             */
+            can_assess?: boolean;
         };
         /** MatterRowOut */
         MatterRowOut: {
@@ -2347,6 +2504,11 @@ export interface components {
             risk: components["schemas"]["RiskOut"];
             /** Risk Notes */
             risk_notes: string[];
+            /**
+             * Pro Bono
+             * @default false
+             */
+            pro_bono?: boolean;
         };
         /** @enum {string} */
         MatterStatusOut: "open" | "conflicted" | "closed" | "declined";
@@ -2831,6 +2993,8 @@ export interface components {
             morale: number | null;
             /** Salary Cents */
             salary_cents: number | null;
+            /** Pro Bono Hours */
+            pro_bono_hours?: number | null;
             /** First Name */
             first_name: string;
             /** Last Name */
@@ -2909,6 +3073,8 @@ export interface components {
             morale: number | null;
             /** Salary Cents */
             salary_cents: number | null;
+            /** Pro Bono Hours */
+            pro_bono_hours?: number | null;
         };
         /** PersonUnitIn */
         PersonUnitIn: {
@@ -3114,6 +3280,11 @@ export interface components {
             /** Rates */
             rates: components["schemas"]["PracticeRateOut"][];
         };
+        /** ProBonoCreditIn */
+        ProBonoCreditIn: {
+            /** Hours */
+            hours: number;
+        };
         /** PromiseIn */
         PromiseIn: {
             /** Person Id */
@@ -3165,6 +3336,11 @@ export interface components {
             band: string;
             /** Cents */
             cents: number;
+        };
+        /** RatePolicyIn */
+        RatePolicyIn: {
+            /** Rise Bp */
+            rise_bp: number | null;
         };
         /** RecruitmentOut */
         RecruitmentOut: {
@@ -3824,6 +4000,68 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GameOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    holiday: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HolidayIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HolidayOut"];
                 };
             };
             /** @description Bad Request */
@@ -6366,6 +6604,247 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MatterOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    assessCase: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                matter_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MatterOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getFirmPolicies: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FirmPoliciesOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    setProBonoCredit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProBonoCreditIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FirmPoliciesOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    setRatePolicy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RatePolicyIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FirmPoliciesOut"];
                 };
             };
             /** @description Bad Request */

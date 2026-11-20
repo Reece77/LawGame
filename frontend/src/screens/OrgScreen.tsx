@@ -15,6 +15,7 @@ import {
 import { createColumnHelper, tableFeatures, useTable } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router';
+import { FirmPolicies } from '../components/FirmPolicies';
 import { humanize } from '../lib/format';
 import {
   supervisorColor,
@@ -85,6 +86,7 @@ export function OrgScreen() {
         <MemberTable members={o.root_members} org={o} slug={slug} act={action.mutate} />
       </Panel>
       <Plans org={o} act={action.mutate} busy={action.isPending} />
+      <FirmPolicies slug={slug} />
     </Stack>
   );
 }

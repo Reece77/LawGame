@@ -58,10 +58,11 @@ Recorded by the PT-M8 session (2026-11-21). Engineering choices and the gaps the
 13. **The practice save** opens at the stage its lawyers give (`ptk/practice.py`), as phase 10 would set it at the month's end, so `pt-2008`'s stage-2 seats can be filled at once (the manual check).
 14. **Acceptance measurement.** The PGL and pitch runs (`tests/balance/test_pt_m8.py`, nightly) use the grown 110-lawyer (100 for pitches) firm with resignations and partner flight off (`tests.seats_support.steady`): the grown fixture sheds a fifth of its people a year on main as here (12 months from 110 lawyers: 88 on both), which empties the seats the comparison needs. The PGL comparison sets every group's leader alike and pools the groups, because a group already at capacity cannot show the diary effect and choosing the slack group would pick the answer. Readings: morale 7.2 points and utilisation 3.3 points better (median of seeds 1-10); pitches a quarter median 2.0 at `pitches.base` 0.35, raised to 0.45 (this milestone's key) for margin.
 
+15. **Balance scripts fill seats** (decision rule 2). With every seat left vacant from stage 2, `make balance` read T3.revenue $57.10M (FAIL; main $63.87M) and steady's lawyers 45.5 (main 53, a known miss). A sensible player fills an open seat, so every script but do-nothing now appoints the best displayed-fit candidate to each vacant seat each month (`ptk/balance/seats.py`, called from `report.play` and the state cache's runner; no game code). After: T3.revenue $61.22M (ok), T4.pyramid $1.03M (ok; main $1.80M was a known miss), T5.standard 10% (ok; main a known miss), T6.attrition 20.5%, T7 all ok, T11 ok. T6.partners reads 7.7% on main and here (rule 3: not this milestone's; PT-M7b runs next). T12 (printed only) 274 ms against main's 256 ms on this machine, both over 250; its gate `make check-timing` passes.
+
 ## Follow-ups
 
 - Move `exco_elected` into PT-M4's `Agreement` and its terms vote now that lane A's ownership lapses (decision 5).
 - The partners' meeting as a PT-M6 event trigger (a restless committee), and executive events (TST 24.3).
 - A rate card per practice, so a pricing pitch can move one practice (decision 10).
 - Offices (PT-M11) give the office managing partner seats instances; the CKO's effect waits for PT-M12's knowledge systems.
-- The balance scripts (`ptk/balance/strategies.py`) do not yet appoint seats: a firm reaching stage 2 in the nightly runs carries vacant-seat penalties (see the nightly readings in CHANGELOG).

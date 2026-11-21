@@ -517,13 +517,27 @@ class PayPolicyLimits(_Strict):
     max_bp: int = Field(gt=0)
 
 
+OVERHEADS: Final = ("support_staff", "technology", "insurance", "general_admin")
+
+
 class PayBalance(_Strict):
     benefits_bp: int = Field(ge=0)
     rent_per_head_cents: int = Field(ge=0)
+    # PT-M7: a month's overhead per lawyer on the books by kind (spec 6's margin norms)
+    overhead_per_lawyer_cents: dict[str, int]
     city_bp: dict[str, int]
     policy: PayPolicyLimits
     bonus_month: int = Field(ge=1, le=12)
     discretionary_bonus_bp: dict[str, int]
+
+    @model_validator(mode="after")
+    def _overheads(self) -> PayBalance:
+        if (
+            sorted(self.overhead_per_lawyer_cents) != sorted(OVERHEADS)
+            or min(self.overhead_per_lawyer_cents.values()) < 0
+        ):
+            raise ValueError(f"pay.overhead_per_lawyer_cents must give each of {OVERHEADS}")
+        return self
 
     def city(self, city: str) -> int:
         """A city's pay and rent multiplier in bp (10000 where none is listed)."""

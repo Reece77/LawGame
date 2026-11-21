@@ -30,6 +30,9 @@ def main() -> int:
     parser.add_argument("--jobs", type=int, default=os.cpu_count() or 1)
     parser.add_argument("--runs", action="store_true", help="also print one line per run")
     parser.add_argument("--strict", action="store_true", help="exit 1 if any band fails too")
+    parser.add_argument(
+        "--data", default="data", help="data folder (relative to backend/): a tuning copy"
+    )
     args = parser.parse_args()
 
     os.environ.setdefault("PTK_LLM_ADAPTER", "mock")
@@ -50,6 +53,7 @@ def main() -> int:
         strategies=strategies,
         extra_runs=not args.no_extra,
         jobs=args.jobs,
+        data_dir=args.data,
     )
     rows = evaluate(results)
     if args.runs:

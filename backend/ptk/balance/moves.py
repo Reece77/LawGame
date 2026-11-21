@@ -10,10 +10,12 @@ from dataclasses import dataclass
 from ptk.balance.game import PLAYER, Game, is_associate
 from ptk.sim.hiring.actions import Interview, MakeOffer, OpenSearch
 from ptk.sim.ledger import REVOLVER
-from ptk.sim.matters.actions import Introduce, SetRatePolicy
+from ptk.sim.matters.actions import Introduce, SetMatterHours, SetRatePolicy
 from ptk.sim.org.actions import CreatePlan, CreateUnit, MovePerson, SetLeader
 from ptk.sim.partnership.actions import (
+    CapitalCall,
     Diligence,
+    ElectionChoice,
     LateralOffer,
     LateralSearch,
     ProposePartner,
@@ -22,12 +24,15 @@ from ptk.sim.partnership.actions import (
     SetDraws,
 )
 from ptk.sim.partnership.careers import eligible, tracks_for
+from ptk.sim.partnership.models import FirmPartnership
 from ptk.sim.people.reveal import shown_rating
 from ptk.sim.rivals.actions import PitchRfp
 
 CAMPUS_OPEN = 1  # January: register for the campus season
 CAMPUS_OFFERS = 8  # August: offers
 DECEMBER = 12
+TENTHS = 10  # hours are integer tenths (ADR PT-0005)
+CAPITAL_CALL_CENTS = 100_000_000  # T9's response: $1M from the partners (PT-M4's exodus test)
 JANUARY = 1
 
 
@@ -188,7 +193,8 @@ def comp_system(g: Game, system: str, two_tier: bool | None = None) -> None:
 
 def december_votes(g: Game, admit: int, track: str = "equity") -> None:
     """In December propose the best `admit` eligible candidates on `track` (equity, income or
-    counsel, as the agreement allows) and answer the rest "not this year"."""
+    counsel, as the agreement allows; equity when the track is not open); the rest are left
+    to up or out."""
     if g.ym[1] != DECEMBER:
         return
     fp = g.state.partnership.of(PLAYER)
@@ -204,10 +210,29 @@ def december_votes(g: Game, admit: int, track: str = "equity") -> None:
     cands.sort(key=lambda p: (-_score(g, p.id), p.id))
     for i, p in enumerate(cands):
         tracks = tracks_for(g.state, fp, p.id)
-        choice = track if i < admit and track in tracks else "not_this_year"
-        if i < admit and choice == "not_this_year" and "equity" in tracks and track == "income":
-            choice = "equity"
+        if i < admit:
+            choice = track if track in tracks else "equity"
+        elif _first_look(g, fp, p.id) and "not_this_year" in tracks:
+            choice = "not_this_year"  # a candidate in their first eligible year gets a second look
+        else:
+            continue  # up or out
         g.act(ProposePartner(g.founder_id, p.id, choice))  # type: ignore[arg-type]
+
+
+def _first_look(g: Game, fp: FirmPartnership, person_id: int) -> bool:
+    """An associate in the first class year the agreement's track makes eligible."""
+    from ptk.sim.partnership.careers import class_year
+
+    year = class_year(g.state.person(person_id).level)
+    return year is not None and year <= fp.agreement.track_years
+
+
+def answer_election(g: Game) -> None:
+    """After a lost MP election, hand over to the winner and play on as them (ADR PT-0007 3;
+    TST 45.5's heir): the strategy keeps the firm's levers."""
+    fp = g.state.partnership.of(PLAYER)
+    if fp is not None and fp.election_lost_turn is not None and fp.mp_id != g.founder_id:
+        g.act(ElectionChoice(g.founder_id, "hand_over", fp.mp_id))
 
 
 def practice_groups(g: Game) -> None:
@@ -228,9 +253,12 @@ def practice_groups(g: Game) -> None:
             if practice_of(g, p.id) == practice and p.id not in members and not p.is_founder:
                 g.act(MovePerson(g.founder_id, p.id, unit))
         u = g.state.org.unit(unit)
-        if u is not None and u.leader_id is None:
+        staff = set(g.state.staff_ids(PLAYER))
+        if u is not None and (u.leader_id is None or u.leader_id not in staff):
             leader = _senior_partner(g, practice)
             if leader is not None:
+                if u.leader_id is not None:
+                    g.act(SetLeader(g.founder_id, unit, None))  # the leader has left
                 g.act(SetLeader(g.founder_id, unit, leader))
 
 
@@ -279,6 +307,14 @@ def monthly_costs(g: Game) -> int:
     return max(0, m.revenue_cents - max(0, m.profit_12m_cents // 12))
 
 
+def bank_quiet(g: Game, months: int = 6, cash_months: float = 2.0) -> bool:
+    """No warning from the bank or the CFO for `months`, and cash above `cash_months` of
+    costs: the revolver has headroom to its covenant limit (T9's rocket borrows to it, not
+    past it)."""
+    quiet = g.warned_turn is None or g.state.turn - g.warned_turn > months
+    return quiet and g.cash > cash_months * monthly_costs(g)
+
+
 def heed_warning(g: Game) -> bool:
     """T9's rule: when the CFO warns (or a covenant breaks), stop guarantees, suspend draws and
     repay the revolver from spare cash. Returns whether the warning has come."""
@@ -288,6 +324,7 @@ def heed_warning(g: Game) -> bool:
     ):
         g.notes["warned"] = 1
         g.act(SetDraws(g.founder_id, True))
+        g.act(CapitalCall(g.founder_id, CAPITAL_CALL_CENTS))
     if g.notes.get("warned"):
         revolver_cap(g, 0)
         return True
@@ -368,3 +405,28 @@ def cross_sell(g: Game, n: int, min_score: float = 50.0) -> int:
         ):
             made += 1
     return made
+
+
+def push_hours(g: Game, monthly_hours: int) -> int:
+    """Pyramid's billable-hours target: each associate's planned hours on their open named
+    matters raised toward `monthly_hours` a month (on their biggest matter; the engine's
+    capacity check refuses what does not fit). Returns the plans changed."""
+    planned: dict[int, int] = {}
+    biggest: dict[int, tuple[int, int]] = {}  # person -> (planned tenths, matter id)
+    for m in g.state.market.open_matters(PLAYER):
+        for t in m.team:
+            planned[t.person_id] = planned.get(t.person_id, 0) + t.planned_tenths
+            if t.planned_tenths > biggest.get(t.person_id, (-1, 0))[0]:
+                biggest[t.person_id] = (t.planned_tenths, m.id)
+    changed = 0
+    target = monthly_hours * TENTHS
+    for p in g.lawyers():
+        if not is_associate(p.level) or p.id not in biggest:
+            continue
+        short = target - planned.get(p.id, 0)
+        if short <= 0:
+            continue
+        tenths, matter_id = biggest[p.id]
+        if g.act(SetMatterHours(g.founder_id, matter_id, p.id, (tenths + short) // TENTHS)):
+            changed += 1
+    return changed

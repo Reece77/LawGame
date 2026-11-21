@@ -19,6 +19,9 @@ from ptk.sim.data_models import Balance
 
 type Script = Callable[[Game], None]
 
+PYRAMID_HOURS: Final = (
+    175  # hours a month planned for each associate: 2,100 a year (docs/balance-targets.md)
+)
 CORPORATE: Final = "corporate_ma"
 LITIGATION: Final = "commercial_litigation"
 # The order steady adds practices in (one at each 30 lawyers): cross-sell from M&A first.
@@ -78,6 +81,19 @@ def _busiest(g: Game, practices: list[str]) -> list[str]:
     return sorted(practices, key=lambda p: (ratio(p), p))
 
 
+def _per_equity(g: Game) -> float:
+    staff = g.lawyers()
+    return len(staff) / max(1, sum(1 for p in staff if p.level == "equity_partner"))
+
+
+def _admissions(g: Game, lawyers_per_equity: float) -> int:
+    """December's business case: equity admissions that bring the firm to one equity partner
+    per `lawyers_per_equity` lawyers."""
+    staff = g.lawyers()
+    equity = sum(1 for p in staff if p.level == "equity_partner")
+    return max(0, round(len(staff) / lawyers_per_equity) - equity)
+
+
 def _grow(g: Game, practices: list[str], n: int, channel: str = "job_post") -> None:
     """Hire about `n` lateral associates this month across the practices that need them most:
     a practice group's leader through a hiring plan, otherwise the founder."""
@@ -91,23 +107,26 @@ def _grow(g: Game, practices: list[str], n: int, channel: str = "job_post") -> N
 
 
 def boutique(g: Game) -> None:
-    """25 lawyers, leverage at most 2, the founders' two practices, high rates (market + 2
-    points), pure lockstep, one partner admitted every two years, conservative money."""
+    """25 lawyers, leverage at most 2, the founders' two practices, high rates (market + 1
+    point), premium clients (RFPs pitched), pure lockstep, one partner admitted every two
+    years, conservative money. It grows whenever its people are busy: associates while
+    leverage is under 2, a lateral partner with a $2M book when it reaches 2."""
+    mv.answer_election(g)
     mv.comp_system(g, "lockstep")
-    mv.set_rates(g, _market_bp(g) + 200)
+    mv.set_rates(g, _market_bp(g) + 100)
+    mv.december_votes(g, 1 if g.ym[0] % 2 == 1 else 0)  # one partner every two years
     practices = [CORPORATE, LITIGATION]
     lawyers = len(g.lawyers())
-    room = lawyers < 25 and mv.associates_per_partner(g) < 2.0
-    if room:
-        _campus_split(g, practices, 2, delegated=False)
-        if mv.utilisation(g) >= 0.85:
+    leverage = mv.associates_per_partner(g)
+    busy = mv.utilisation(g) >= 0.80
+    if lawyers < 25:
+        _campus_split(g, practices, 2 if leverage < 2.0 else 0, delegated=False)
+        if busy and leverage < 2.0:
             mv.lateral_associates(g, _busiest(g, practices)[0], 1, "recruiter")
-    if g.ym[0] % 2 == 1:
-        mv.december_votes(g, 1)
-    else:
-        mv.december_votes(g, 0)
+        elif busy and mv.bank_quiet(g):  # a partner to keep leverage at 2 (a premium book)
+            mv.lateral_partner(g, _busiest(g, practices)[-1], mv.LateralRule(200_000_000))
     mv.revolver_cap(g, 0)
-    mv.pitch_rfps(g, 1, team_size=3)
+    mv.pitch_rfps(g, 2, team_size=3)
 
 
 def steady(g: Game, adds: tuple[str, ...] = STEADY_ADDS) -> None:
@@ -115,8 +134,10 @@ def steady(g: Game, adds: tuple[str, ...] = STEADY_ADDS) -> None:
     through the groups' delegates once they exist); a practice added at each 30 lawyers by a
     lateral partner; the revolver at most a month's fees; modified lockstep; partners admitted
     by business case (leverage above 3 associates a partner)."""
+    mv.answer_election(g)
     mv.comp_system(g, "modified_lockstep")
     mv.set_rates(g, None)
+    mv.december_votes(g, _admissions(g, 4.0))  # December's vote first (its energy)
     held = mv.practices_held(g)
     lawyers = len(g.lawyers())
     mv.practice_groups(g)
@@ -128,9 +149,12 @@ def steady(g: Game, adds: tuple[str, ...] = STEADY_ADDS) -> None:
     leverage = mv.associates_per_partner(g)
     if len(held) < wanted and missing:
         mv.lateral_partner(g, missing[0], mv.LateralRule(min_book_cents=100_000_000))
-    elif leverage > 4.0 and mv.utilisation(g) >= 0.80:  # partners for supervision and books
+    elif (
+        (leverage > 4.0 or _per_equity(g) > 5.0) and mv.utilisation(g) >= 0.80 and mv.bank_quiet(g)
+    ):
+        # partners for supervision, books and the equity (a steady firm keeps about one equity
+        # partner to four or five lawyers)
         mv.lateral_partner(g, _busiest(g, held)[-1], mv.LateralRule(min_book_cents=100_000_000))
-    mv.december_votes(g, max(0, round((leverage - 3.0) * 2)) if leverage > 3.0 else 0)
     fees = g.months[-1].revenue_cents if g.months else 0
     mv.revolver_cap(g, fees)
     mv.pitch_rfps(g)
@@ -138,7 +162,18 @@ def steady(g: Game, adds: tuple[str, ...] = STEADY_ADDS) -> None:
 
 
 def restructuring(g: Game) -> None:
-    """T8's restructuring-heavy firm: steady, adding restructuring first."""
+    """T8's restructuring-heavy firm: steady, with a restructuring lateral partner from 2005
+    (two until it holds them) and restructuring first among the practices it adds."""
+    held = mv.practices_held(g)
+    partners = sum(
+        1
+        for p in g.lawyers()
+        if mv.practice_of(g, p.id) == "restructuring"
+        and p.level in ("equity_partner", "income_partner")
+    )
+    if partners < 2 and mv.bank_quiet(g):
+        mv.lateral_partner(g, "restructuring", mv.LateralRule(min_book_cents=100_000_000))
+    del held
     steady(g, ("restructuring", *[p for p in STEADY_ADDS if p != "restructuring"]))
 
 
@@ -146,10 +181,12 @@ def lateral_rocket(g: Game, heeded: bool = False) -> None:
     """Lateral partners whenever a book of $2M+ is available, with guarantees; associates in
     the laterals' practices when busy; the revolver to its covenant limit; eat what you kill.
     `heeded` (T9): when the CFO warns, stop guarantees and repay the revolver."""
+    mv.answer_election(g)
     mv.comp_system(g, "eat_what_you_kill")
     mv.set_rates(g, None)
+    mv.december_votes(g, 1)
     warned = heeded and mv.heed_warning(g)
-    if not warned:
+    if not warned and mv.bank_quiet(g):
         for practice in [CORPORATE, LITIGATION, *STEADY_ADDS][: 2 + len(g.lawyers()) // 15]:
             if mv.lateral_partner(
                 g, practice, mv.LateralRule(min_book_cents=200_000_000, guarantee_years=3)
@@ -161,7 +198,6 @@ def lateral_rocket(g: Game, heeded: bool = False) -> None:
         for practice in _busiest(g, held)[:2]:
             mv.lateral_associates(g, practice, 1, "recruiter")
     _campus_split(g, held, max(1, len(g.lawyers()) // 15), delegated=True)
-    mv.december_votes(g, 1)
     mv.pitch_rfps(g, 1)
 
 
@@ -173,23 +209,21 @@ def pyramid(g: Game) -> None:
     """Leverage 5+, associates hired only when utilisation reaches 88% (a 2,100-hour year),
     volume work at rates below the market (market - 2 points), two-tier with few equity
     admissions (income partners instead), a moderate revolver (two months' fees)."""
+    mv.answer_election(g)
     mv.comp_system(g, "modified_lockstep", two_tier=True)
     mv.set_rates(g, max(0, _market_bp(g) - 200))
     held = mv.practices_held(g)
     lawyers = len(g.lawyers())
+    mv.december_votes(g, max(1, lawyers // 15), track="income")
     mv.practice_groups(g)
     _campus_split(g, held, max(3, lawyers // 6), delegated=True)
-    if mv.utilisation(g) >= 0.88 or mv.associates_per_partner(g) < 5.0:
-        for practice in _busiest(g, held)[:2]:
-            mv.lateral_associates(g, practice, 2, "job_post")
-    if len(held) < 2 + lawyers // 40:
+    mv.push_hours(g, PYRAMID_HOURS)  # a 2,100-hour year's plan for every associate
+    if mv.utilisation(g) >= 0.90 and mv.bank_quiet(g, cash_months=1.0):
+        _grow(g, held, max(2, lawyers // 6))
+    if len(held) < 2 + lawyers // 40 and mv.bank_quiet(g):
         missing = [p for p in STEADY_ADDS if p not in held]
         if missing:
             mv.lateral_partner(g, missing[0], mv.LateralRule(min_book_cents=100_000_000))
-    admit = 1 if g.ym[0] % 3 == 0 else 0
-    mv.december_votes(g, 2, track="income")
-    if admit:
-        mv.december_votes(g, 1, track="equity")
     fees = g.months[-1].revenue_cents if g.months else 0
     mv.revolver_cap(g, 2 * fees)
     mv.pitch_rfps(g)

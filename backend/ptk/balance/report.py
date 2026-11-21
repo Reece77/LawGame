@@ -15,7 +15,6 @@ from collections.abc import Iterable, Sequence
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass, field
 from functools import cache
-from math import sqrt
 from pathlib import Path
 from statistics import median
 from typing import Final
@@ -85,12 +84,12 @@ class RunResult:
 
     @property
     def score(self) -> float:
-        """T2's firm score at year 11: PEP x sqrt(equity partners) = sqrt(PEP x profit), the
-        partners' reward and the firm's size together; 0 for a dissolved firm."""
-        last = self.december(FINAL_YEAR)
-        if self.dissolved or last is None or not last.pep_cents or last.pep_cents <= 0:
+        """T2's score at year 11: what the founding partner (the player's partner) was
+        allocated over 2005-2015 (TST's founder value, for a partnership); 0 for a firm that
+        dissolved."""
+        if self.dissolved or self.december(FINAL_YEAR) is None:
             return 0.0
-        return last.pep_cents * sqrt(max(1, last.equity_partners))
+        return float(sum(m.founder_comp_cents for m in self.months))
 
 
 @cache
@@ -276,25 +275,33 @@ def evaluate(results: Sequence[RunResult]) -> list[Row]:
     ]
 
 
+def real_2005(cents: float, year: int, data: GameData, balance: Balance) -> float:
+    """A year's revenue in 2005 dollars: deflated by the market's rate index that year (the
+    macro history's January rises, ptk.sim.matters.rates)."""
+    from ptk.sim.matters.rates import market_index
+
+    return cents / market_index(ym_to_turn(year, 6, (2005, 1)), (2005, 1), data, balance)
+
+
 def _t1(results: Sequence[RunResult]) -> list[Row]:
     runs = _runs(results, "do-nothing")
     if not runs:
         return []
-    failed = sum(
-        1
-        for r in runs
-        if r.dissolved
-        or (
-            r.year_revenue(YEAR_5) < 3 * MILLION
-            and r.year_revenue(YEAR_5) < r.year_revenue(YEAR_5 - 1)
-        )
-    )
+    data, balance = _loaded("data")
+
+    def failing(r: RunResult, real: bool) -> bool:
+        now, before = r.year_revenue(YEAR_5), r.year_revenue(YEAR_5 - 1)
+        level = real_2005(now, YEAR_5, data, balance) if real else now
+        return r.dissolved or (level < 3 * MILLION and now < before)
+
+    failed = sum(failing(r, True) for r in runs)
+    nominal = sum(failing(r, False) for r in runs)
     need = len(runs) - len(runs) // 10
     return [
         Row(
             "T1",
-            "do-nothing fails (2009 revenue < $3M and falling, or dissolved)",
-            f"{failed}/{len(runs)}",
+            "do-nothing fails (2009 revenue < $3M in 2005 dollars and falling, or dissolved)",
+            f"{failed}/{len(runs)} ({nominal} nominal)",
             f">= {need}/{len(runs)}",
             failed >= need,
             gate=True,
@@ -314,7 +321,7 @@ def _t2(results: Sequence[RunResult]) -> list[Row]:
     return [
         Row(
             "T2",
-            "no dominant strategy (best score at year 11, wins)",
+            "no dominant strategy (best founder's earnings 2005-2015, wins)",
             best or "-",
             f"<= {limit}/{seeds} each",
             top <= limit,
@@ -599,7 +606,7 @@ def _t12(results: Sequence[RunResult]) -> list[Row]:
             "-" if t is None else f"{t:.0f} ms",
             "<= 250 ms",
             t is not None and t <= 250,
-            gate=True,
+            gate=False,  # the gate is `make check-timing` (alone; the runner's workers share cores)
             score=t,
         )
     ]

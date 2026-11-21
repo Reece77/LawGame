@@ -40,3 +40,22 @@ All strategies staff named matters by the default rule, bill monthly, accept the
 | T10 | **Strain matters:** pyramid's associates burn out at least twice as often as steady's; steady's at most 5% a year | band |
 | T11 | **Rivals hold history:** each pinned rival's revenue within ±15% of its path in December 2009 and December 2015; the top 10 by revenue in 2015 contains at least 8 of history's | pass/fail |
 | T12 | **Turn time:** median turn ≤ 250 ms at December 2015 on the steady save | pass/fail |
+
+## Measures (PT-M7)
+
+How `ptk/balance/report.py` reads each target (`make balance`; `tools/balance_runner.py --runs` prints one line per run). Year 1 is 2005, year 5 2009, year 11 2015; a run is 132 turns of `biglaw_spinout` over the pure sim, critical events answered with their first choice, events written by `MockLLMAdapter`.
+
+| # | Measure |
+| --- | --- |
+| T1 | do-nothing runs where the firm dissolved, or 2009's revenue (the year's fees) is below $3M and below 2008's |
+| T2 | the **firm score** at December 2015 = PEP x sqrt(equity partners) (= sqrt(PEP x the partners' profit): the partners' reward and the firm's size together; 0 if dissolved); a strategy wins a seed with the best score (a tie wins nobody) |
+| T3 | steady's lawyers on the books in December 2015 and its 2015 revenue, medians over seeds |
+| T4 | PEP (trailing 12 months) in December 2015, a dissolved firm counting 0, medians |
+| T5 | steady's share of seeds dissolved by December 2015 at each difficulty |
+| T6 | attrition: associates who left in a year / the year's average associates, for each full year 2006-2015 with two or more associates, median over years and the four active strategies; partners: steady's September 2006 class (the first class a January 2005 firm can hire) made equity partner by December 2015 (track 8: eligible from December 2014) |
+| T7 | utilisation: monthly, 2006-2015; realisation, collection and lockup: December's trailing-12-month values; medians over the five strategies' standard runs |
+| T8 | 2009's revenue over 2008's: "corporate-heavy" = M&A, PE, capital markets and banking at least half of 2008's revenue; "restructuring" = restructuring above 20% of 2009's; every standard run that qualifies (the `restructuring` variant, steady with a restructuring lateral from 2005, makes sure some do) |
+| T9 | lateral rocket's dissolutions by December 2015; the `lateral-rocket-heeded` variant: when the CFO warns (or a covenant breaks), it stops new laterals, suspends draws, calls $1M of capital and repays the revolver from spare cash |
+| T10 | burnout starts among associates / associate-years, pooled over each strategy's runs |
+| T11 | PT-M5's measure (`tests/balance/test_pt_m5.py`), read from the steady runs' rivals |
+| T12 | printed: the steady runs' median turn in 2015 (pure sim, on the runner's machine with its workers sharing cores); the gate is `make check-timing`'s test (PT-M5's, run alone, CLAUDE.md §9 rule 6) |

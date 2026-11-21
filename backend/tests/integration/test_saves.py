@@ -128,7 +128,12 @@ def test_hiring_round_trips_and_replays(save_dir: Path, data: GameData, balance:
     from ptk.db.session import make_sessionmaker, shared_engine
     from ptk.sim.hiring.actions import Interview, MakeOffer, OpenSearch
     from tests.hiring_helpers import start
+    from tests.matters_support import solvent
 
+    # PT-M7: hiring two people a month from $600k of capital, the firm (now carrying
+    # overhead per lawyer) would dissolve by month 6; this test is about the round trip,
+    # not survival, so both sides run with insolvency switched off (PT-M4's pattern)
+    balance = solvent(balance)
     path = _new(save_dir, data, slug="h", seed=19)
     game = start(data, balance, seed=19)
     fid = game.founder_id

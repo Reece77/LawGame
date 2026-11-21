@@ -30,6 +30,8 @@ def _fingerprint(path: Path, balance: Balance, data: GameData) -> dict[str, obje
             "log": [(i.kind, i.message) for i in result.log_items],
         }
         digest.update(json.dumps(payload, sort_keys=True).encode())
+        if result.new_state.ended:  # PT-M7: an unmanaged firm may dissolve before 2034
+            break
     state, balances = saves.read_state(path)
     people = [
         [

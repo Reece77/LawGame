@@ -61,5 +61,5 @@ jurisdictions:
 difficulties:
   - { id: easy, name: Easy, capital_mult_bp: 15000 }
   - { id: standard, name: Standard, capital_mult_bp: 10000 }
-  - { id: hard, name: Hard, capital_mult_bp: 6000 }
+  - { id: hard, name: Hard, capital_mult_bp: 8000 }  # PT-M7: 6000 -> 8000 (T5: steady dissolved on 7 of 10 seeds at 6000)
   - { id: ironman, name: Ironman, capital_mult_bp: 10000 }  # difficulty from no reloads

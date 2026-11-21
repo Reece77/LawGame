@@ -203,6 +203,11 @@ campus: # the US campus cycle (spec 5.7; ADR PT-0002 section 3)
 pay: # salaries, bonuses and costs per head (spec 5.4, 8.3; TST formulas.md 8)
   benefits_bp: 2500 # benefits as bp of salary (5200)
   rent_per_head_cents: 300000 # $3,000 a month per person on the books in New York (6000)
+  overhead_per_lawyer_cents: # PT-M7: a month's overhead per lawyer on the books in New York, by kind (spec 6's margin norms of 30-45%; Am Law 2005 expenses about 60% of revenue) [A]
+    support_staff: 700000 # $7,000: secretaries, pooled paralegals and administrators (5100)
+    technology: 150000 # $1,500: systems, research databases (6100)
+    insurance: 80000 # $800: malpractice cover (6300)
+    general_admin: 400000 # $4,000: marketing, knowledge, travel and general costs (6900)
   city_bp: { new_york: 10000, washington_dc: 9000, chicago: 8500, boston: 9000, los_angeles: 9500, san_francisco: 9500, houston: 8000 } # pay bands and rent by city
   policy: # the firm's choice against the market scale (spec 5.4)
     min_bp: 5000 # the deepest lag: 50% of the market scale (regional firms run 50-80%)
@@ -681,7 +686,7 @@ billing: # PT-M3b: WIP, bills, collections, disputes, client money (spec 7.7; AD
   recovery_bp: 6000 # bp of the stakes a won case recovers
   settlement_fallback_bp: 4000 # bp of the stakes a settled case recovers when no offer was seen
   overrun_tolerance: 0.10 # work at standard above expected fees x (1 + this) is an overrun
-  overrun_writedown: 0.50 # share of an overrun the default rule writes down on each bill (spec 7.7); PT-M7: 0.60 -> 0.50 (T7 realisation, the macro boom)
+  overrun_writedown: 0.40 # share of an overrun the default rule writes down on each bill (spec 7.7); PT-M7: 0.60 -> 0.40 (T7 realisation with the macro boom: PT-M3b's guard 83.4% -> 84.5%)
   writedown_points: 0.04 # relationship points per 100 bp of a partner's write-down (keeping the client)
   writedown_max_bp: 5000 # bp: the most a partner may write a bill down
   guideline_bp: 1500 # bp chance a bill meets an e-billing guideline rejection, at price sensitivity 10
@@ -899,7 +904,7 @@ rates: # PT-M7a: the firm's yearly rate rise over the practices' 2005 cards; the
   rise_max_bp: 2000 # or raise them up to 20%
   month: 1 # calendar month the rise takes effect (January)
 macro: # PT-M7: how macro_history.yaml's indices act on the firm (ptk/sim/macro.py; spec 6, 14)
-  beta_scale: 1.0 # multiplier on every practice's demand beta (T8's tuning key)
+  beta_scale: 1.3 # multiplier on every practice's demand beta (T8's tuning key); PT-M7 tuning 1.0 -> 1.3 (T1, T8)
   demand_floor: 0.25 # a practice's driver term never falls below 25% of its base
   collections_weight: 1.0 # days to pay x (1 + w (collections index - 1))
   lateral_heat_weight: 1.0 # associate resignations and partners' market value x (1 + w (heat - 1))

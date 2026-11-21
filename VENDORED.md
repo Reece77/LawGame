@@ -91,6 +91,8 @@ Files copied or ported from Tech Startup Tycoon (`Reece77/Tech_Executive_Tycoon`
 | `backend/ptk/balance/known_misses.py` | `backend/tst/balance/known_misses.py` | ported | — |
 | `tools/balance_runner.py` | `tools/balance_runner.py` | ported | — |
 | `.github/workflows/nightly.yml` | `.github/workflows/nightly.yml` | ported | — |
+| `backend/ptk/balance/state_cache.py` | `backend/tst/balance/m30.py` | ported | — |
+| `backend/tests/balance/test_state_cache.py` | `backend/tests/balance/test_m30_state_cache.py` | ported | — |
 | `backend/ptk/sim/partnership/governance.py` | `backend/tst/sim/finance/board.py` | ported | — |
 | `backend/ptk/sim/partnership/formulas.py` | `backend/tst/sim/finance/formulas.py` | ported | — |
 
@@ -165,4 +167,5 @@ PT-M7 (balance and v1 close) ported TST's balance runner framework from upstream
 - `backend/ptk/balance/known_misses.py`: TST's `KnownMiss`, `Reading` and `verdict` as they are; Partner Track's own (empty) list.
 - `tools/balance_runner.py`: Partner Track's package, 132 turns and the extra runs.
 - `.github/workflows/nightly.yml`: two parts (`make balance`, `make nightly`), no shards; the changed-main skip as TST's.
+- `backend/ptk/balance/state_cache.py` and `backend/tests/balance/test_state_cache.py`: TST M30's state cache (PT-M0 deferred it): Partner Track's strategies (steady, pyramid, boutique), 132 turns, its loader and fixture (`tests/fixtures/state_hashes.json`); the Digester and the fixture format as TST's.
 - Holiday was ported in PT-M7a (`backend/ptk/holiday.py`, TST 17.1's stop reasons; synchronous, see its brief).

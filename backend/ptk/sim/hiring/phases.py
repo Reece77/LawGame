@@ -346,9 +346,11 @@ def monthly_cost_lines(
     by_account: dict[AccountCode, Cents] = {}
     benefits = 0
     heads = 0
+    lawyers = 0
     for e in state.staff(firm_id):
         heads += 1
         person = state.person(e.person_id)
+        lawyers += data.role(person.role).kind == "lawyer"
         account = salary_account(person.level, balance)
         if account is None or e.salary_cents <= 0:
             continue
@@ -372,10 +374,31 @@ def monthly_cost_lines(
         CostLine("Staff salaries", STAFF_SALARIES, by_account.get(STAFF_SALARIES, 0)),
         CostLine("Benefits", BENEFITS, benefits),
         CostLine("Rent", RENT, rent_cents(heads, firm.home_city, balance.pay)),
+        *overhead_lines(lawyers, firm.home_city, balance),
         CostLine("Job posts", RECRUITING, balance.hiring.job_post_cost_cents * job_posts),
         CostLine("Summer programme", RECRUITING, summer),
     ]
     return tuple(lines)
+
+
+OVERHEAD_LINES: Final = (
+    ("Support staff", STAFF_SALARIES, "support_staff"),
+    ("Technology", "6100_technology", "technology"),
+    ("Insurance", "6300_insurance", "insurance"),
+    ("General and administrative", "6900_general_admin", "general_admin"),
+)
+
+
+def overhead_lines(lawyers: int, city: str, balance: Balance) -> tuple[CostLine, ...]:
+    """PT-M7: each lawyer on the books carries a month's overhead (pay.overhead_per_lawyer_cents,
+    by the city's pay band)."""
+    pay = balance.pay
+    return tuple(
+        CostLine(
+            label, account, lawyers * pct_of(pay.overhead_per_lawyer_cents[key], pay.city(city))
+        )
+        for label, account, key in OVERHEAD_LINES
+    )
 
 
 def _summer_pay_cents(state: GameState, firm_id: int, balance: Balance, data: GameData) -> Cents:

@@ -55,7 +55,9 @@ def test_founders_agreement(data: GameData, balance: Balance) -> None:
 
 
 def test_a_year_of_draws_allocation_and_true_up(data: GameData, balance: Balance) -> None:
-    g = start(data, balance, seed=2, scenario="biglaw_spinout")
+    # PT-M7: seed 3 (with overhead per lawyer, seed 2's founders drew more than its first
+    # year's cash profit: no true-up is owed, which is not what this test is about)
+    g = start(data, balance, seed=3, scenario="biglaw_spinout")
     g.advance(11)  # January to November: draws only
     drawn = sum(p.drawn_ytd_cents for p in g.fp.partners)
     assert drawn > 0 and g.bal("3200_drawings") == drawn
@@ -68,6 +70,7 @@ def test_a_year_of_draws_allocation_and_true_up(data: GameData, balance: Balance
     assert g.bal("3100_undistributed_profit") == allocated
     subledgers_match(g)
     owed = -g.bal("2700_partner_current_accounts")
+    assert owed > 0  # the precondition: the firm owes its partners a true-up
     draws = sum(
         ln.amount for e in g.entries if e.memo == "Partner draws" for ln in e.lines if ln.amount > 0
     )

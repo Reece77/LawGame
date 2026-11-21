@@ -42,6 +42,8 @@ log = logging.getLogger(__name__)
 PLAYER = 1
 ASSOCIATE_PREFIX = "associate_"
 SENIOR_ASSOCIATE = "senior_associate"
+DECEMBER = 12  # tunable-exempt: the allocation month
+BANK_WARNINGS = frozenset({"cfo_warning", "covenant_breach", "revolver_called", "insolvent"})
 
 
 def is_associate(level: str) -> bool:
@@ -71,6 +73,7 @@ class Month:
     revolver_cents: int
     seconds: float  # the turn's wall-clock time (T12; never read by the sim)
     practice_revenue: tuple[tuple[str, int], ...] = ()  # the month's income by practice
+    founder_comp_cents: int = 0  # December: the player's partner's allocation for the year (T2)
 
 
 @dataclass(slots=True)
@@ -87,6 +90,7 @@ class Game:
     month_entries: list[LedgerEntry] = field(default_factory=list)  # this month's, actions too
     notes: dict[str, int] = field(default_factory=dict)  # a script's own memory
     hired_classes: dict[int, tuple[int, ...]] = field(default_factory=dict)  # year -> ids
+    warned_turn: int | None = None  # the last month the bank or the CFO warned
     _associates: frozenset[int] = frozenset()
     _writer: Writer = field(
         default_factory=lambda: Writer(MockLLMAdapter(), LLMSettings(), lambda: 1_000_000.0)
@@ -174,6 +178,8 @@ class Game:
             state = write_pending_events(state, self.cash, self._writer, self.balance, self.data)
         self.state = state
         self.logs = list(result.log_items)
+        if any(i.kind in BANK_WARNINGS for i in self.logs if i.firm_id == PLAYER):
+            self.warned_turn = result.snapshot.turn
         year = turn_to_ym(result.snapshot.turn, self.state.save_meta.start_ym)[0]
         for item in self.logs:
             if item.kind == "class_started" and item.firm_id == PLAYER and item.link_id is not None:
@@ -198,6 +204,9 @@ class Game:
         self._associates = associates
         fp = self.state.partnership.of(PLAYER)
         e = explain(self.state, fp) if fp is not None else None
+        ym = turn_to_ym(turn, self.state.save_meta.start_ym)
+        mine = fp.partner(self.founder_id) if fp is not None and ym[1] == DECEMBER else None
+        founder_comp = mine.comp_last_cents if mine is not None and mine.comp_last_cents else 0
         types = {a.code: a.type for a in self.data.accounts}
         by_practice: Counter[str] = Counter()
         for entry in self.month_entries:
@@ -227,6 +236,7 @@ class Game:
                 revolver_cents=snap.revolver_cents if snap and snap.revolver_cents else 0,
                 seconds=seconds,
                 practice_revenue=tuple(sorted(by_practice.items())),
+                founder_comp_cents=founder_comp,
             )
         )
 

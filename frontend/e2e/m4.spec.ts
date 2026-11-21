@@ -4,20 +4,21 @@ import { expect, test, type Page } from '@playwright/test';
 // routes (PTK_DEBUG_ROUTES=1) set up a strong candidate and a rival's approach, so the
 // outcome does not hang on seed luck.
 
-async function choose(page: Page, label: string, option: string) {
-  await page.getByRole('combobox', { name: label, exact: true }).click();
-  await page.getByRole('option', { name: option, exact: true }).click();
-}
-
+// PT-M7: a fixed seed (5). With overhead per lawyer an untouched group lift founded on a
+// random seed can dissolve before December (4 of 12 seeds do within two years), which made
+// this test time out by seed luck; seed 5's firm lives.
 async function found(page: Page, name: string): Promise<string> {
-  await page.goto('/new');
-  await page.getByLabel('Firm name').fill(name);
-  await choose(page, 'Scenario', 'Group lift');
-  await page.getByRole('button', { name: 'Found the firm' }).click();
+  const slug = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/-+$/, '');
+  const made = await page.request.post('/api/saves', {
+    data: { slug, firm_name: name, seed: 5, scenario_id: 'group_lift' },
+  });
+  expect(made.ok()).toBeTruthy();
+  await page.goto(`/game/${slug}`);
   await expect(page.getByTestId('date')).toHaveText('Jan 2005');
-  const slug = /\/game\/([^/]+)/.exec(page.url())?.[1];
-  expect(slug).toBeTruthy();
-  return slug ?? '';
+  return slug;
 }
 
 async function advanceTo(page: Page, label: string) {

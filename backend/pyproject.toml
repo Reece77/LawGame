@@ -76,4 +76,5 @@ testpaths = ["tests"]
 addopts = "-q"
 markers = [
     "timing: turn-time budgets; run alone without xdist (`make check-timing`, PT-M5 T12)",
+    "nightly: the long balance runs (docs/balance-targets.md; `make nightly`, CI's nightly.yml, PT-M7)",
 ]

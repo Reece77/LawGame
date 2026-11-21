@@ -39,6 +39,7 @@ from ptk.sim.ledger import (
     LedgerEntry,
 )
 from ptk.sim.log import LinkKind, LogItem, inbox_item
+from ptk.sim.macro import lateral_heat
 from ptk.sim.matters.intake import with_relationship
 from ptk.sim.money import Cents
 from ptk.sim.partnership import formulas as fx
@@ -114,7 +115,9 @@ class FlightHook:
         self, state: GameState, person_id: int, balance: Balance, data: GameData
     ) -> int:
         return fx.market_value_cents(
-            book_cents(state, state.person(person_id)), balance.partnership.flight
+            book_cents(state, state.person(person_id)),
+            balance.partnership.flight,
+            lateral_heat(state.turn, state.save_meta.start_ym, data, balance),  # PT-M7
         )
 
     def leave_chance_bp(
@@ -243,6 +246,10 @@ class FlightHook:
         fp, a = _open_approach(state, approach_id)
         p = fp.partner(a.person_id)
         assert p is not None
+        if state.employment_of(a.person_id) is None:
+            # PT-M7: they left another way first (a resignation's notice ended): nothing to decide
+            gone = with_approach(fp, replace(a, status="withdrawn", resolved_turn=state.turn))
+            return HookResult(put(state, gone))
         gen = draws()
         stays = float(gen.random()) < self.stay_probability(state, a, balance)
         if stays:

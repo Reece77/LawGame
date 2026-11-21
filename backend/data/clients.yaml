@@ -92,7 +92,7 @@ panel_firms:
   - { key: kirkland, name: Kirkland & Ellis, base: 1.4, strong: [private_equity, restructuring, ip] }
   - { key: jones_day, name: Jones Day, base: 1.2, strong: [commercial_litigation, employment, ip] }
 
-# 300 real clients, 2005 (spec 7.1: Fortune 500 and FTSE 100 names, personal use). revenue_bn
+# 301 real clients, 2005 (spec 7.1: Fortune 500 and FTSE 100 names, personal use). revenue_bn
 # is 2005 revenue in USD billions [A]: approximate, from memory of the 2006 Fortune 500 (FY2005)
 # and FTSE 100 annual reports; not verified this session. Private equity sponsors' revenue_bn is
 # a size proxy (about 1% of assets under management) [A]. country: us unless stated.
@@ -130,19 +130,19 @@ real_clients:
   - { name: Bank of America, sector: banking, revenue_bn: 84 }
   - { name: JPMorgan Chase, sector: banking, revenue_bn: 79 }
   - { name: Morgan Stanley, sector: banking, revenue_bn: 52 }
-  - { name: Merrill Lynch, sector: banking, revenue_bn: 47 }
+  - { name: Merrill Lynch, sector: banking, revenue_bn: 47, fails: { ym: [2008, 9], kind: rescue, src: "dossier s1: Bank of America rescue announced 15 Sep 2008, closed 1 Jan 2009 [A]" } }
   - { name: Goldman Sachs, sector: banking, revenue_bn: 43 }
-  - { name: Wachovia, sector: banking, revenue_bn: 35 }
+  - { name: Wachovia, sector: banking, revenue_bn: 35, fails: { ym: [2008, 10], kind: rescue, src: "dossier s1: Wells Fargo rescue announced 3 Oct 2008, closed 31 Dec [A]" } }
   - { name: Wells Fargo, sector: banking, revenue_bn: 40 }
-  - { name: Lehman Brothers, sector: banking, revenue_bn: 32 }
-  - { name: Washington Mutual, sector: banking, revenue_bn: 22 }
+  - { name: Lehman Brothers, sector: banking, revenue_bn: 32, fails: { ym: [2008, 9], kind: bankruptcy, src: "dossier s1: Chapter 11, 15 Sep 2008 [A]" } }
+  - { name: Washington Mutual, sector: banking, revenue_bn: 22, fails: { ym: [2008, 9], kind: bankruptcy, src: "dossier s1: bank seized 25 Sep 2008, WMI Chapter 11 26 Sep [A]" } }
   - { name: Fannie Mae, sector: banking, revenue_bn: 36 }
   - { name: Freddie Mac, sector: banking, revenue_bn: 26 }
   - { name: American Express, sector: banking, revenue_bn: 25 }
-  - { name: Countrywide Financial, sector: banking, revenue_bn: 25 }
+  - { name: Countrywide Financial, sector: banking, revenue_bn: 25, fails: { ym: [2008, 1], kind: rescue, src: "dossier s1: Bank of America rescue announced 11 Jan 2008, closed 1 Jul [A]" } }
   - { name: U.S. Bancorp, sector: banking, revenue_bn: 15 }
-  - { name: Bear Stearns, sector: banking, revenue_bn: 11.5 }
-  - { name: National City, sector: banking, revenue_bn: 10.8 }
+  - { name: Bear Stearns, sector: banking, revenue_bn: 11.5, fails: { ym: [2008, 3], kind: rescue, src: "dossier s1: JPMorgan rescue announced 16 Mar 2008, closed 30 May [A]" } }
+  - { name: National City, sector: banking, revenue_bn: 10.8, fails: { ym: [2008, 10], kind: rescue, src: "dossier s1: PNC rescue announced 24 Oct 2008, closed 31 Dec [A]" } }
   - { name: SunTrust Banks, sector: banking, revenue_bn: 11 }
   - { name: Capital One Financial, sector: banking, revenue_bn: 12 }
   - { name: PNC Financial Services, sector: banking, revenue_bn: 8.6 }
@@ -155,7 +155,7 @@ real_clients:
   - { name: Barclays, sector: banking, revenue_bn: 40, country: uk }
   - { name: Royal Bank of Scotland, sector: banking, revenue_bn: 45, country: uk }
   - { name: Lloyds TSB, sector: banking, revenue_bn: 25, country: uk }
-  - { name: HBOS, sector: banking, revenue_bn: 30, country: uk }
+  - { name: HBOS, sector: banking, revenue_bn: 30, country: uk, fails: { ym: [2008, 9], kind: rescue, src: "dossier s1: Lloyds TSB rescue announced 18 Sep 2008, completed 19 Jan 2009 [S]" } }
   - { name: Standard Chartered, sector: banking, revenue_bn: 9, country: uk }
   - { name: American International Group, sector: insurance, revenue_bn: 108 }
   - { name: Berkshire Hathaway, sector: insurance, revenue_bn: 81 }
@@ -334,32 +334,32 @@ real_clients:
   - { name: WPP Group, sector: telecom_media, revenue_bn: 10, country: uk }
   - { name: Reed Elsevier, sector: telecom_media, revenue_bn: 9, country: uk }
   - { name: Pearson, sector: telecom_media, revenue_bn: 7, country: uk }
-  - { name: General Motors, sector: autos_transport, revenue_bn: 193 }
+  - { name: General Motors, sector: autos_transport, revenue_bn: 193, fails: { ym: [2009, 6], kind: bankruptcy, src: "dossier s1: Chapter 11 and 363 sale, 1 Jun 2009 [A]" } }
   - { name: Ford Motor, sector: autos_transport, revenue_bn: 177 }
-  - { name: Delphi, sector: autos_transport, revenue_bn: 27 }
+  - { name: Delphi, sector: autos_transport, revenue_bn: 27, fails: { ym: [2005, 10], kind: bankruptcy, src: "dossier s1: Chapter 11, 8 Oct 2005 [A]" } }
   - { name: United Parcel Service, sector: autos_transport, revenue_bn: 42 }
   - { name: FedEx, sector: autos_transport, revenue_bn: 30 }
-  - { name: AMR, sector: autos_transport, revenue_bn: 20.7 }
+  - { name: AMR, sector: autos_transport, revenue_bn: 20.7, fails: { ym: [2011, 11], kind: bankruptcy, src: "dossier s1: Chapter 11, 29 Nov 2011 [S]" } }
   - { name: UAL, sector: autos_transport, revenue_bn: 17.4 }
-  - { name: Delta Air Lines, sector: autos_transport, revenue_bn: 16.2 }
-  - { name: Northwest Airlines, sector: autos_transport, revenue_bn: 12.3 }
+  - { name: Delta Air Lines, sector: autos_transport, revenue_bn: 16.2, fails: { ym: [2005, 9], kind: bankruptcy, src: "dossier s1: Chapter 11, 14 Sep 2005 [A]" } }
+  - { name: Northwest Airlines, sector: autos_transport, revenue_bn: 12.3, fails: { ym: [2005, 9], kind: bankruptcy, src: "dossier s1: Chapter 11, 14 Sep 2005 [A]" } }
   - { name: Continental Airlines, sector: autos_transport, revenue_bn: 11.2 }
   - { name: Union Pacific, sector: autos_transport, revenue_bn: 13.6 }
   - { name: Burlington Northern Santa Fe, sector: autos_transport, revenue_bn: 13 }
   - { name: CSX, sector: autos_transport, revenue_bn: 8.6 }
   - { name: Norfolk Southern, sector: autos_transport, revenue_bn: 8.5 }
-  - { name: Lear, sector: autos_transport, revenue_bn: 17 }
-  - { name: Visteon, sector: autos_transport, revenue_bn: 17 }
+  - { name: Lear, sector: autos_transport, revenue_bn: 17, fails: { ym: [2009, 7], kind: bankruptcy, src: "dossier s1: prepackaged Chapter 11, 7 Jul 2009 [S]" } }
+  - { name: Visteon, sector: autos_transport, revenue_bn: 17, fails: { ym: [2009, 5], kind: bankruptcy, src: "dossier s1: Chapter 11, 28 May 2009 [S]" } }
   - { name: Navistar International, sector: autos_transport, revenue_bn: 12 }
   - { name: Paccar, sector: autos_transport, revenue_bn: 14 }
-  - { name: Dana, sector: autos_transport, revenue_bn: 8.6 }
+  - { name: Dana, sector: autos_transport, revenue_bn: 8.6, fails: { ym: [2006, 3], kind: bankruptcy, src: "dossier s1: Chapter 11, 3 Mar 2006 [S]" } }
   - { name: ArvinMeritor, sector: autos_transport, revenue_bn: 8.9 }
   - { name: Simon Property Group, sector: real_estate, revenue_bn: 3.2 }
   - { name: Equity Office Properties, sector: real_estate, revenue_bn: 3.2 }
   - { name: Vornado Realty Trust, sector: real_estate, revenue_bn: 2.5 }
   - { name: Boston Properties, sector: real_estate, revenue_bn: 1.4 }
   - { name: ProLogis, sector: real_estate, revenue_bn: 2 }
-  - { name: General Growth Properties, sector: real_estate, revenue_bn: 3.1 }
+  - { name: General Growth Properties, sector: real_estate, revenue_bn: 3.1, fails: { ym: [2009, 4], kind: bankruptcy, src: "dossier s1: Chapter 11, 16 Apr 2009 [S]" } }
   - { name: Equity Residential, sector: real_estate, revenue_bn: 2 }
   - { name: Host Marriott, sector: real_estate, revenue_bn: 3.9 }
   - { name: Archstone-Smith, sector: real_estate, revenue_bn: 1.2 }
@@ -397,3 +397,5 @@ real_clients:
   - { name: Apax Partners, sector: private_equity, revenue_bn: 4, country: uk }
   - { name: CVC Capital Partners, sector: private_equity, revenue_bn: 4, country: uk }
   - { name: 3i Group, sector: private_equity, revenue_bn: 3, country: uk }
+  # PT-M7 (appended: ids follow this order). Chrysler Group of DaimlerChrysler, 2005 revenue EUR 50.1bn [S], about $62bn [A] (dossier s1)
+  - { name: Chrysler, sector: autos_transport, revenue_bn: 62, fails: { ym: [2009, 4], kind: bankruptcy, src: "dossier s1: Chapter 11 and 363 sale to Fiat, 30 Apr 2009 [A]" } }

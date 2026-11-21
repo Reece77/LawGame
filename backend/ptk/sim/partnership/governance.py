@@ -102,7 +102,7 @@ def confidence_month(state: GameState, balance: Balance) -> GameState:
         fp = replace(fp, low_confidence_months=fp.low_confidence_months + 1 if low else 0)
         state = put(state, fp)
         if fp.low_confidence_months == cfg.petition_months:
-            state = queue_event(state, fp.firm_id, "no_confidence", balance)
+            state = queue_event(state, fp.firm_id, "no_confidence_petition", balance)
     return state
 
 
@@ -350,6 +350,11 @@ def resolve_votes(
             if vote.status != "open" or vote.kind == "election":
                 continue
             fp = firm_partnership(state, fp0.firm_id)
+            if vote.subject_id is not None and state.employment_of(vote.subject_id) is None:
+                # PT-M7: the subject left before the count (a notice that ended in phase 1)
+                gone = replace(vote, status="withdrawn", resolved_turn=state.turn)
+                state = put(state, with_vote(fp, gone))
+                continue
             counted = count_vote(state, fp, vote, rng, balance, data)
             state = put(state, with_vote(fp, counted))
             logs.append(

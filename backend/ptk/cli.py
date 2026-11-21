@@ -402,6 +402,22 @@ def staff_default(save: str = typer.Option(...), matter: int = typer.Option(...)
     _staff(save, matter, lambda a: DefaultStaffing(a, matter))
 
 
+@app.command("practice-save")
+def practice_save_cmd(
+    key: str = typer.Argument("pt-2008", help="The practice save (pt-2008)"),
+    name: str | None = typer.Option(None, help="Save name; the practice save's key if omitted"),
+) -> None:
+    """Create a practice save (PT-M7): pt-2008 is a 60-lawyer firm in June 2008."""
+    from ptk.practice import PRACTICE_SAVES, create_practice_save
+
+    if key not in PRACTICE_SAVES:
+        raise typer.BadParameter(f"choose from {sorted(PRACTICE_SAVES)}")
+    path = create_practice_save(
+        get_settings().resolved_save_dir(), key, loader.game_data(), loader.balance(), name
+    )
+    typer.echo(f"Created {path.name}: {PRACTICE_SAVES[key].label}")
+
+
 @app.command("saves")
 def list_cmd() -> None:
     for s in saves.list_saves(get_settings().resolved_save_dir()):

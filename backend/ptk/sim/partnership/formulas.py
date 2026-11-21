@@ -271,9 +271,10 @@ def leave_chance_bp(
     return min(cfg.cap_bp, round(p))
 
 
-def market_value_cents(book_cents: int, cfg: FlightBalance) -> int:
-    """V_mkt = book x the lateral market's multiple."""
-    return pct_of(max(book_cents, cfg.min_book_cents), cfg.market_multiple_bp)
+def market_value_cents(book_cents: int, cfg: FlightBalance, heat: float = 1.0) -> int:
+    """V_mkt = book x the lateral market's multiple x the macro's lateral heat (PT-M7)."""
+    value = pct_of(max(book_cents, cfg.min_book_cents), cfg.market_multiple_bp)
+    return value if heat == 1.0 else round(value * heat)  # tunable-exempt: no heat
 
 
 def stay_probability(

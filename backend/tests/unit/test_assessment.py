@@ -66,7 +66,7 @@ def _case(g: Game) -> Matter:
 
 
 def test_assessment_costs_energy_and_the_leads_hours(data: GameData, balance: Balance) -> None:
-    g = start(data, balance, seed=3, scenario="group_lift")
+    g = start(data, balance, seed=4, scenario="group_lift")
     m = _case(g)
     assert m.lead_id is not None
     energy = g.state.person_state(g.founder_id).energy
@@ -88,7 +88,7 @@ def test_assessment_costs_energy_and_the_leads_hours(data: GameData, balance: Ba
 
 
 def test_only_cases_with_a_lead_can_be_assessed(data: GameData, balance: Balance) -> None:
-    g = start(data, balance, seed=3, scenario="group_lift")
+    g = start(data, balance, seed=4, scenario="group_lift")
     m = _case(g)
     g.state = replace(g.state, market=with_matter(g.state.market, replace(m, lead_id=None)))
     with pytest.raises(MatterActionError):

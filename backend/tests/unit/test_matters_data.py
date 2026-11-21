@@ -34,7 +34,7 @@ def test_rate_card_and_practice_rates_are_integer_cents(data: GameData) -> None:
 
 
 def test_three_hundred_real_clients_and_courts(data: GameData) -> None:
-    assert len(data.clients.real_clients) == 300
+    assert len(data.clients.real_clients) == 301  # PT-M7: Chrysler
     assert {c.key for c in data.courts.courts} >= {"sdny", "edny", "ddel", "del_chancery", "aaa"}
 
 

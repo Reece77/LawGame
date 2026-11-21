@@ -89,6 +89,8 @@ export function useAdvance(slug: string) {
         'texts',
         'partnership',
         'policies',
+        'history',
+        'guidance',
       ]) {
         void client.invalidateQueries({ queryKey: [key, slug] });
       }
@@ -887,6 +889,37 @@ export function usePartnershipAction(slug: string) {
       client.setQueryData(['partnership', slug], data);
       void client.invalidateQueries({ queryKey: ['game', slug] });
       void client.invalidateQueries({ queryKey: ['finance', slug] });
+    },
+  });
+}
+
+// --- PT-M7: History and the Overview's guidance --------------------------------------------
+
+export type HistoryData = Schemas['HistoryOut'];
+export type Guidance = Schemas['GuidanceOut'];
+
+export const useHistory = (slug: string) =>
+  useQuery({
+    queryKey: ['history', slug],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/saves/{slug}/history', { params: { path: { slug } } })),
+  });
+
+export const useGuidance = (slug: string) =>
+  useQuery({
+    queryKey: ['guidance', slug],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/saves/{slug}/guidance', { params: { path: { slug } } })),
+  });
+
+// PT-M7: a practice save (pt-2008); a 409 means it was made before and simply opens
+export function usePracticeSave() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: async (key: string) =>
+      unwrap(await api.POST('/api/practice/{key}', { params: { path: { key } } })),
+    onSettled: () => {
+      void client.invalidateQueries({ queryKey: ['saves'] });
     },
   });
 }

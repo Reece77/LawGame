@@ -12,6 +12,7 @@ from __future__ import annotations
 from dataclasses import replace
 
 from ptk.sim.data_models import Balance, GameData
+from ptk.sim.macro import lateral_heat
 from ptk.sim.money import pct_of
 from ptk.sim.partnership import formulas as fx
 from ptk.sim.partnership.common import book_cents, ym
@@ -111,10 +112,11 @@ def allocate_year(
     allocation = comp_shares(state, fp, pool, balance)
     contrib = fx.contribution_shares(credits(state, fp, balance), cfg)
     lockstep = fp.agreement.comp_system in LOCKSTEP_SYSTEMS
+    heat = lateral_heat(state.turn, state.save_meta.start_ym, data, balance)  # PT-M7
     for p in fp.equity_partners:
         person = state.person(p.person_id)
         alloc = allocation.get(p.person_id, 0)
-        market = fx.market_value_cents(book_cents(state, person), cfg.flight)
+        market = fx.market_value_cents(book_cents(state, person), cfg.flight, heat)
         sat = fx.satisfaction(
             alloc,
             round(max(pool, 0) * contrib.get(p.person_id, 0.0)),

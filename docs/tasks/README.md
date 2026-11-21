@@ -25,3 +25,4 @@ Each brief is a self-contained prompt for a coding agent, in Tech Startup Tycoon
 | [PT-M6-events.md](PT-M6-events.md) | Events and the LLM | PT-M3a |
 | [PT-M7a-v1-gaps.md](PT-M7a-v1-gaps.md) | Scenario fix, staffing for expected output, pro bono, early case assessment, rate rises, Holiday stops | PT-M3a–PT-M6 |
 | [PT-M7-balance-and-v1-close.md](PT-M7-balance-and-v1-close.md) | Strategies, macro history, balance, Holiday, History | all |
+| [PT-M7b-pressure-and-balance.md](PT-M7b-pressure-and-balance.md) | A new firm's card, difficulty teeth, crisis discounts, an earlier CFO warning, an hours policy; T2 re-read | PT-M7 |

@@ -26,11 +26,11 @@ ROOTS = ("PartnershipOut",)
 SLUG = "pt"
 
 
-def _client(turns: int = 2, scenario: str = "group_lift") -> TestClient:
+def _client(turns: int = 2, scenario: str = "group_lift", seed: int = 4) -> TestClient:
     client = TestClient(create_app())
     made = client.post(
         "/api/saves",
-        json={"slug": SLUG, "firm_name": "Partners LLP", "seed": 4, "scenario_id": scenario},
+        json={"slug": SLUG, "firm_name": "Partners LLP", "seed": seed, "scenario_id": scenario},
     )
     assert made.status_code == 200, made.text
     for _ in range(turns):
@@ -92,8 +92,11 @@ def test_actions_through_the_api(save_dir: Path) -> None:
 
 
 def test_the_partnership_survives_a_save_round_trip(save_dir: Path) -> None:
-    client = _client(turns=13)
+    # PT-M7: seed 5 (with overhead per lawyer the untouched group lift on seed 4 dissolves in
+    # its fourteenth month; this test is about the round trip, so the firm must be alive)
+    client = _client(turns=13, seed=5)
     state, _ = saves.read_state(_path())
+    assert not state.ended
     fp = state.partnership.of(1)
     assert fp is not None and fp.last_profit_cents is not None and fp.pnl
     assert client.post(f"/api/saves/{SLUG}/advance").status_code == 200

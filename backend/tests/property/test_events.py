@@ -34,7 +34,8 @@ SEVERITIES = ("minor", "major", "critical")
 
 @cache
 def _base() -> GameState:
-    return played(DATA, BALANCE, seed=7, turns=8)
+    # PT-M7: seed 8 (seed 7's firm, in the universe with Chrysler, has no open matter at turn 8)
+    return played(DATA, BALANCE, seed=8, turns=8)
 
 
 def _event(state: GameState, template_id: str, severity: str, base: int) -> GameEvent:

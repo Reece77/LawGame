@@ -89,12 +89,15 @@ def overrun_writedown(
     return min(fee, round_half_even(times(over, cfg.overrun_writedown) * fee, wip))
 
 
-def days_to_pay(client: ClientBillingView, u: float, cfg: BillingBalance) -> float:
+def days_to_pay(
+    client: ClientBillingView, u: float, cfg: BillingBalance, stress: float = 1.0
+) -> float:
+    """Days a client takes to pay a bill; `stress` is the macro's collections stress (PT-M7)."""
     base = cfg.days_to_pay[client.size_class] + cfg.days_per_point * (
         client.price_sensitivity - NEUTRAL
     )
     z = _NORMAL.inv_cdf(min(1.0 - 1e-9, max(1e-9, u)))  # tunable-exempt: open interval
-    return max(1.0, base) * cfg.macro_stress * math.exp(cfg.days_sigma * z)
+    return max(1.0, base) * cfg.macro_stress * stress * math.exp(cfg.days_sigma * z)
 
 
 def due_turn(turn: int, days: float, cfg: BillingBalance) -> int:

@@ -24,6 +24,13 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         default=False,
         help="Regenerate tests/golden/snapshots/*.json (record the reason in CHANGELOG.md)",
     )
+    parser.addoption(
+        "--update-state-cache",
+        action="store_true",
+        default=False,
+        help="Re-record tests/fixtures/state_hashes.json (PT-M7's state cache; an intentional "
+        "result change only, with the reason in CHANGELOG.md)",
+    )
 
 
 @pytest.fixture(scope="session")

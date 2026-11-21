@@ -110,9 +110,11 @@ flow_tasks: { advice: 0.25, research: 0.25, drafting: 0.3, review: 0.2 } # [A]
 
 # Each practice:
 #   demand_cents: the NY 2005 annual demand base D0 (dossier s4 central value).
-#   driver, beta, sigma: spec 6's demand formula; driver indices are 1.0 until PT-M7, so beta
-#     takes effect then. beta: [spec] for M&A 1.4, restructuring -1.2, litigation -0.2; others [A].
-#     sigma: monthly LogNormal noise of demand [A].
+#   driver, beta, index, sigma: spec 6's demand formula. index: the macro_history.yaml series
+#     that is the driver (PT-M7). beta: [spec] for M&A 1.4, restructuring -1.2, litigation -0.2;
+#     others [A]. A counter-cyclical practice (beta < 0) reads a pro-cyclical index, so the
+#     spec's sign holds: restructuring reads `credit` (2005's default rate over the month's),
+#     litigation and employment read `cycle` (ADR PT-0014). sigma: monthly LogNormal noise [A].
 #   rates: cents an hour by band (dossier s5): partner = the s5 comparison table's dossier-view
 #     midpoint [D/A]; other bands = the rate card median x partner / $700 [D], to the nearest $5.
 #   leverage, margin_bp: [spec] 6 table. realisation_bp, collection_bp: [A] within spec 6's
@@ -133,6 +135,7 @@ practices:
     demand_cents: 240000000000 # $2.4bn [A] s4 row 1 (range $1.9-3.0bn): US M&A $1.1tn [S]
     driver: M&A volume
     beta: 1.4 # [spec]
+    index: ma # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.10
     rates: { partner: 72500, counsel: 59500, senior: 52000, mid: 42500, junior: 27500, paralegal: 19000 } # partner $700-750 [D/A]
     leverage: 4.0
@@ -153,6 +156,7 @@ practices:
     demand_cents: 110000000000 # $1.1bn [A] s4 row 2 (range $0.8-1.5bn): record buyout fundraising $86bn [S]
     driver: PE deal and fundraising volume
     beta: 1.5
+    index: pe # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.12
     rates: { partner: 76000, counsel: 62500, senior: 54500, mid: 44500, junior: 29000, paralegal: 20000 } # partner $725-800 [D/A]
     leverage: 4.5
@@ -173,6 +177,7 @@ practices:
     demand_cents: 130000000000 # $1.3bn [A] s4 row 3 (range $1.0-1.7bn): US underwriting $3.2tn [S]
     driver: IPO and issuance volume
     beta: 1.3
+    index: issuance # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.15
     rates: { partner: 72500, counsel: 59500, senior: 52000, mid: 42500, junior: 27500, paralegal: 19000 } # partner $700-750 [D/A]
     leverage: 3.5
@@ -193,6 +198,7 @@ practices:
     demand_cents: 110000000000 # $1.1bn [A] s4 row 4 (range $0.8-1.4bn): leveraged lending boom (volume not found)
     driver: leveraged lending volume
     beta: 1.1
+    index: lending # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.10
     rates: { partner: 67500, counsel: 55500, senior: 48000, mid: 39500, junior: 25500, paralegal: 18000 } # partner $650-700 [D/A]
     leverage: 3.5
@@ -213,6 +219,7 @@ practices:
     demand_cents: 70000000000 # $0.7bn [A] s4 row 5 (range $0.5-1.0bn): SDNY 790 Chapter 11 cases in 2005 [S]
     driver: default rate and distressed debt
     beta: -1.2 # [spec] counter-cyclical
+    index: credit # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.10
     rates: { partner: 80000, counsel: 65500, senior: 57000, mid: 47000, junior: 30500, paralegal: 21000 } # partner $750-850 [D/A]
     leverage: 3.0
@@ -233,6 +240,7 @@ practices:
     demand_cents: 250000000000 # $2.5bn [A] s4 row 6 (range $2.0-3.2bn): litigation 58% of large-company spend [S]
     driver: litigation index
     beta: -0.2 # [spec] steady, slightly counter-cyclical
+    index: cycle # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.05
     rates: { partner: 69000, counsel: 56500, senior: 49500, mid: 40500, junior: 26000, paralegal: 18000 } # partner $650-725 [D/A]
     leverage: 3.0
@@ -253,7 +261,8 @@ practices:
     short_label: White collar
     demand_cents: 85000000000 # $0.85bn [A] s4 row 7 (range $0.6-1.2bn): post-Enron, SOX era
     driver: enforcement intensity
-    beta: 0.0 # [A] policy-driven, not cyclical
+    beta: 0.6 # [A] PT-M7: policy-driven, follows the enforcement index (was 0.0 while indices were flat)
+    index: enforcement # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.08
     rates: { partner: 75000, counsel: 61500, senior: 53500, mid: 44000, junior: 28500, paralegal: 20000 } # partner $700-800 [D/A]
     leverage: 3.0
@@ -274,6 +283,7 @@ practices:
     demand_cents: 85000000000 # $0.85bn [A] s4 row 9 (range $0.6-1.1bn): 2,720 patent and 5,796 copyright suits FY2005 [S]
     driver: patent filings and tech M&A
     beta: 0.2
+    index: ip # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.06
     rates: { partner: 61500, counsel: 50500, senior: 44000, mid: 36000, junior: 23500, paralegal: 16500 } # partner $575-650 [D/A]
     leverage: 2.5
@@ -294,6 +304,7 @@ practices:
     demand_cents: 55000000000 # $0.55bn [A] s4 row 10 (range $0.4-0.8bn): 16,930 employment civil-rights suits [S]
     driver: employment level and regulation
     beta: -0.3 # [A] counter-cyclical (layoffs)
+    index: cycle # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.05
     rates: { partner: 52500, counsel: 43000, senior: 37500, mid: 31000, junior: 20000, paralegal: 14000 } # partner $475-575 [D/A]
     leverage: 2.0
@@ -314,6 +325,7 @@ practices:
     demand_cents: 100000000000 # $1.0bn [A] s4 row 8 (range $0.7-1.4bn): Manhattan's 2005 property boom
     driver: property transactions
     beta: 1.2 # [A] pro-cyclical, should fall by half in 2009
+    index: real_estate # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.08
     rates: { partner: 56500, counsel: 46500, senior: 40500, mid: 33000, junior: 21500, paralegal: 15000 } # partner $525-600 [A] (review)
     leverage: 2.5

@@ -12,6 +12,7 @@ from ptk import loader
 from ptk.api import recruitment
 from ptk.api.events import blocking_event_id, make_events_router
 from ptk.api.finance import make_finance_router
+from ptk.api.history import make_history_router
 from ptk.api.market import make_market_router
 from ptk.api.matters import make_matters_router
 from ptk.api.org import make_org_router
@@ -239,6 +240,24 @@ def create_app() -> FastAPI:
         return _game(slug)
 
     @app.post(
+        "/api/practice/{key}",
+        response_model=GameOut,
+        responses=errors,
+        operation_id="createPracticeSave",
+    )
+    def create_practice(key: str) -> GameOut:
+        """PT-M7: create a practice save (pt-2008: a 60-lawyer firm in June 2008); 404 for an
+        unknown key, 409 if a save of that name exists."""
+        from ptk.practice import PRACTICE_SAVES, create_practice_save
+
+        if key not in PRACTICE_SAVES:
+            raise NotFoundError(f"no practice save {key!r}")
+        create_practice_save(
+            get_settings().resolved_save_dir(), key, loader.game_data(), loader.balance()
+        )
+        return _game(key)
+
+    @app.post(
         "/api/saves/{slug}/advance",
         response_model=GameOut,
         responses=errors,
@@ -285,6 +304,7 @@ def create_app() -> FastAPI:
     app.include_router(make_finance_router(errors))
     app.include_router(make_market_router(errors))  # PT-M5
     app.include_router(make_partnership_router(errors))
+    app.include_router(make_history_router(errors))  # PT-M7
     return app
 
 

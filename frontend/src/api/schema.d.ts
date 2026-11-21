@@ -52,6 +52,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/practice/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Practice
+         * @description PT-M7: create a practice save (pt-2008: a 60-lawyer firm in June 2008); 404 for an
+         *     unknown key, 409 if a save of that name exists.
+         */
+        post: operations["createPracticeSave"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/saves/{slug}/advance": {
         parameters: {
             query?: never;
@@ -1491,6 +1512,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/saves/{slug}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get History */
+        get: operations["getHistory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/guidance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Guidance */
+        get: operations["getGuidance"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2136,6 +2191,37 @@ export interface components {
             /** Age */
             age: number;
         };
+        /** GettingStartedStepOut */
+        GettingStartedStepOut: {
+            /** Key */
+            key: string;
+            /** Text */
+            text: string;
+            /** Done */
+            done: boolean;
+            /** Link Kind */
+            link_kind: string;
+        };
+        /** GuidanceItemOut */
+        GuidanceItemOut: {
+            /** Key */
+            key: string;
+            /** Text */
+            text: string;
+            /** Link Kind */
+            link_kind: string;
+            /** Link Id */
+            link_id?: number | null;
+        };
+        /** GuidanceOut */
+        GuidanceOut: {
+            /** What Next */
+            what_next: components["schemas"]["GuidanceItemOut"][];
+            /** Getting Started */
+            getting_started: components["schemas"]["GettingStartedStepOut"][];
+            /** First Year */
+            first_year: boolean;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -2143,6 +2229,34 @@ export interface components {
         };
         /** @enum {string} */
         HiringChannel: "campus" | "recruiter" | "job_post" | "referral";
+        /** HistoryOut */
+        HistoryOut: {
+            /** Years */
+            years: components["schemas"]["HistoryYearOut"][];
+            /** Timeline */
+            timeline: components["schemas"]["TimelineItemOut"][];
+        };
+        /** HistoryYearOut */
+        HistoryYearOut: {
+            /** Year */
+            year: number;
+            /** Revenue Cents */
+            revenue_cents: number;
+            /** Pep Cents */
+            pep_cents: number | null;
+            /** Rpl Cents */
+            rpl_cents: number | null;
+            /** Margin Bp */
+            margin_bp: number | null;
+            /** Equity Partners */
+            equity_partners: number;
+            /** Rank */
+            rank: number | null;
+            /** Firms Ranked */
+            firms_ranked: number;
+            /** Complete */
+            complete: boolean;
+        };
         /**
          * HolidayIn
          * @description PT-M7a: Holiday (`months`) or continue until a month (`until_year`, `until_month`).
@@ -3735,6 +3849,21 @@ export interface components {
             /** Source */
             source: string;
         };
+        /** TimelineItemOut */
+        TimelineItemOut: {
+            /** Turn */
+            turn: number;
+            /** Date Label */
+            date_label: string;
+            /** Kind */
+            kind: string;
+            /** Title */
+            title: string;
+            /** Link Kind */
+            link_kind?: string | null;
+            /** Link Id */
+            link_id?: number | null;
+        };
         /** TrendPointOut */
         TrendPointOut: {
             /** Date Label */
@@ -3930,6 +4059,64 @@ export interface operations {
             header?: never;
             path: {
                 slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GameOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    createPracticeSave: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
             };
             cookie?: never;
         };
@@ -9163,6 +9350,122 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PartnershipOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getHistory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HistoryOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getGuidance: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuidanceOut"];
                 };
             };
             /** @description Bad Request */

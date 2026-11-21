@@ -28,6 +28,7 @@ from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import NotFoundError
 from ptk.sim.interfaces import ApproachRequest, Suitor, partner_flight
 from ptk.sim.ledger import CASH, PARTNERS_CAPITAL
+from ptk.sim.macro import lateral_heat
 from ptk.sim.partnership import actions as pa
 from ptk.sim.partnership import formulas as fx
 from ptk.sim.partnership.books import drawn_cents, headroom_cents
@@ -389,7 +390,11 @@ def partnership_view(
                 working_cents=c.working_cents if c else p.working_ytd_cents,
                 contribution_bp=round(contrib.get(p.person_id, 0.0) * 10_000),
                 market_band=market_band(
-                    fx.market_value_cents(book_cents(state, person), cfg.flight)
+                    fx.market_value_cents(
+                        book_cents(state, person),
+                        cfg.flight,
+                        lateral_heat(state.turn, state.save_meta.start_ym, data, balance),
+                    )
                 ),
                 confidence_label="managing partner"
                 if p.person_id == fp.mp_id

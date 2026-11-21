@@ -74,6 +74,7 @@ from ptk.sim.ledger import (
     LedgerEntry,
 )
 from ptk.sim.log import LogItem, inbox_item
+from ptk.sim.macro import bankrupt_by, collections_stress
 from ptk.sim.money import BP_DENOMINATOR, pct_of, round_half_even, times
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState, with_reveals
@@ -105,6 +106,8 @@ class _Run:
         self.data = data
         self.balance = balance
         self.cfg: BillingBalance = balance.billing
+        # PT-M7: clients pay slower when the macro's collections index is stressed
+        self.stress = collections_stress(state.turn, state.save_meta.start_ym, data, balance)
         self.eng: dict[int, Engagement] = {
             e.matter_id: e for e in b.engagements if not e.closed and e.firm_id == firm_id
         }
@@ -245,11 +248,18 @@ class _Run:
                 status="paid",
                 closed_turn=self.turn,
             )
-        # bankruptcies (generated clients with open bills; never a real company)
+        # bankruptcies (generated clients with open bills; real companies only on history's
+        # dates, PT-M7: their open bills are written off every month from the filing)
         owing = sorted({b.client_id for b in self.bills.values() if b.is_open})
+        start = self.state.save_meta.start_ym
         for cid in owing:
             client = self.client(cid)
             if client.real:
+                if bankrupt_by(self.state.market.client(cid), self.turn, self.data, start):
+                    for bid in sorted(self.bills):
+                        bill = self.bills[bid]
+                        if bill.client_id == cid and bill.is_open:
+                            self.write_off(bill)
                 continue
             u = fx.billing_draws(self.rng, self.turn, fx.CLIENT, cid)
             if u[0] >= cfg.bankruptcy_bp[client.size_class] / BP_DENOMINATOR:
@@ -351,7 +361,7 @@ class _Run:
             model=model,
             kind=kind,
             issued_turn=self.turn,
-            due_turn=fx.due_turn(self.turn, fx.days_to_pay(client, u[4], cfg), cfg),
+            due_turn=fx.due_turn(self.turn, fx.days_to_pay(client, u[4], cfg, self.stress), cfg),
             standard_cents=standard,
             billed_cents=fee,
             padding_cents=padding,

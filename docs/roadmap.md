@@ -21,6 +21,7 @@ Goal: a founding partner can start a firm in January 2005, staff and bill matter
 | **PT-M5, rival firms** | B | 40 real firms at 2005 values, generated firms, personalities and utility AI, panels and RFPs, poaching both ways, spin-off boutiques, the history pin to 2015 | PT-M3a | `PT-M5-rival-firms.md` |
 | **PT-M6, events and the LLM** | C | legal templates, the context builder, critical events, storylines, opposing counsel in events, the year-end letter | PT-M3a | `PT-M6-events.md` |
 | **PT-M7, balance and v1 close** | A | strategy scripts, the runner, macro history 2005–2015, the 2008 crisis checks, Holiday, History, onboarding, the 10-year run | all of v1 | `PT-M7-balance-and-v1-close.md` |
+| **PT-M7b, pressure and balance** | A | a new firm's rate card, difficulty teeth, crisis discounts, an earlier CFO warning, an hours policy; T2 re-read (Reece's decisions on PT-M7, 2026-11-21) | PT-M7 | `PT-M7b-pressure-and-balance.md` |
 
 **Lanes.** Lane A carries the spine (people → matters → partnership → balance). Lane B joins at PT-M2 and stays on systems that touch few shared files. Lane C does screens and events. PT-M3a and PT-M5 are the riskiest; they start as early as their dependencies allow.
 

@@ -84,6 +84,7 @@ from ptk.sim.ledger import (
     LedgerLine,
 )
 from ptk.sim.log import LogItem, inbox_item
+from ptk.sim.macro import lateral_heat
 from ptk.sim.matters.pro_bono import morale_term as pro_bono_morale
 from ptk.sim.money import Cents, pct_of
 from ptk.sim.people.generator import generate_person, people_gen_stream, weighted_pick
@@ -345,9 +346,11 @@ def monthly_cost_lines(
     by_account: dict[AccountCode, Cents] = {}
     benefits = 0
     heads = 0
+    lawyers = 0
     for e in state.staff(firm_id):
         heads += 1
         person = state.person(e.person_id)
+        lawyers += data.role(person.role).kind == "lawyer"
         account = salary_account(person.level, balance)
         if account is None or e.salary_cents <= 0:
             continue
@@ -371,10 +374,31 @@ def monthly_cost_lines(
         CostLine("Staff salaries", STAFF_SALARIES, by_account.get(STAFF_SALARIES, 0)),
         CostLine("Benefits", BENEFITS, benefits),
         CostLine("Rent", RENT, rent_cents(heads, firm.home_city, balance.pay)),
+        *overhead_lines(lawyers, firm.home_city, balance),
         CostLine("Job posts", RECRUITING, balance.hiring.job_post_cost_cents * job_posts),
         CostLine("Summer programme", RECRUITING, summer),
     ]
     return tuple(lines)
+
+
+OVERHEAD_LINES: Final = (
+    ("Support staff", STAFF_SALARIES, "support_staff"),
+    ("Technology", "6100_technology", "technology"),
+    ("Insurance", "6300_insurance", "insurance"),
+    ("General and administrative", "6900_general_admin", "general_admin"),
+)
+
+
+def overhead_lines(lawyers: int, city: str, balance: Balance) -> tuple[CostLine, ...]:
+    """PT-M7: each lawyer on the books carries a month's overhead (pay.overhead_per_lawyer_cents,
+    by the city's pay band)."""
+    pay = balance.pay
+    return tuple(
+        CostLine(
+            label, account, lawyers * pct_of(pay.overhead_per_lawyer_cents[key], pay.city(city))
+        )
+        for label, account, key in OVERHEAD_LINES
+    )
 
 
 def _summer_pay_cents(state: GameState, firm_id: int, balance: Balance, data: GameData) -> Cents:
@@ -539,6 +563,7 @@ def morale_and_departures(
     cfg = balance.morale
     month = _ym(state)[1]
     december = month == balance.pay.bonus_month
+    heat = lateral_heat(state.turn, state.save_meta.start_ym, data, balance)  # PT-M7
     moved: list[PersonState] = []
     for employment, person in _employees(state):
         target = morale_target(
@@ -567,6 +592,7 @@ def morale_and_departures(
             lifer=LIFER in person.tags,
             burnout=burnout_effects_active(person, state.turn, balance),
             month_mult=month_multiplier(person.level, month, balance),
+            heat=heat,
         )
         roll = int(rng.stream(state.turn, "resign", person.id).integers(0, ROLL_RANGE))
         if not roll_succeeds(roll, chance):

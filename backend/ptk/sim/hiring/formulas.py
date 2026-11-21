@@ -179,10 +179,12 @@ def resignation_bp(
     lifer: bool = False,
     burnout: bool = False,
     month_mult: float = 1.0,
+    heat: float = 1.0,
 ) -> float:
     """base x (1 + max(0, floor - morale) / 20) x (21 - loyalty) / 10 x (2 if job hopper)
-    x (2 within a burnout's effect) x bonus timing x lateral market heat, capped.
-    A lifer's loyalty counts as at least lifer_loyalty_floor."""
+    x (2 within a burnout's effect) x bonus timing x lateral market heat x the
+    macro's lateral heat (`heat`, PT-M7), capped. A lifer's loyalty counts as at least
+    lifer_loyalty_floor."""
     if lifer:
         loyalty = max(loyalty, resign.lifer_loyalty_floor)
     chance = (
@@ -194,6 +196,7 @@ def resignation_bp(
         * (resign.burnout_mult if burnout else 1)
         * month_mult
         * resign.lateral_market_heat
+        * heat
     )
     return min(chance, resign.cap_bp)
 

@@ -241,7 +241,26 @@ Rival firms are current state in one JSON document, rewritten each turn and afte
 
 `matter.data_json` gains `assessment` (PT-M7a, early case assessment: `[turn, lo, hi]`, the revealed range of the case's merits in logit points, always holding the hidden `merits`; null until assessed). A pro bono matter has `client_id` 0 and `expected_fees_cents` 0. `hours_log` rows for pro bono work have `client_id` 0 and `value_cents` 0: they post no WIP and are not billable (utilisation is billable hours over capacity). `inbox_item` gains templates `rates_rose`, `case_assessed` and `pro_bono_opened`.
 
-## Schema v11 (`0011_pressure`, PT-M7b)
+## Schema v11 (`0011_founder_life`, PT-M17)
+
+The founder's life and family are current state in two JSON documents, rewritten each turn and after each founder or family action (`ptk/db/founder_io.py` encodes the frozen models of `ptk/sim/founder/models.py` and `ptk/sim/family/models.py` from their type hints). The players' personal books are their own double entry, like the client-money book: personal accounts (codes beginning 9) appear only in `personal_line`, never in `ledger_line` (`LedgerEntry` refuses them). Family members are rows in `person` with no employment until a child joins the firm; their potential and hidden traits are hidden as anyone's.
+
+| Table | Column | Type | Meaning |
+| --- | --- | --- | --- |
+| `founder_life` | `key` | text | `founder_life` or `family` |
+| | `data_json` | text | `founder_life`: `lives` (every person the player has played: the four persona traits 0-100, `status` managing_partner, partner, senior_partner, retired, `since_turn`, `until_turn`, `causes` [turn, trait, change, words], the year's revolver-leverage points, bar politics: `influence`, `committee`, `bar_spend_cents`, `standing`, `office_until_turn`, `office_turns`; `successor_plan`); `books` (each player's running balances by account, the family office's `mandate`, and the partnership marks the next month's mirror compares: drawn year to date, current account, capital, a leaver's capital return); `foundations` (`name`, `cause`, `created_turn`, lifetime `grants_cents` and `gifts_cents`, the last grant); `annuities` (retired partners': `monthly_cents`, `remaining_cents` (the 2600 sub-ledger), `start_turn`, `end_turn`); `annuity_terms` (the agreement's annuity term once voted; null: `founder_life.annuity`); `successions` (`turn`, `trigger` choice, retirement, election, health; `founder_id`, `successor_id`, `vote_id`, `rival_id`, `result` open, elected, lost, lapsed, handed_over); `retirement_due_turn` and `due_trigger`; `opinions` (the senior partner's: vote, stance, words, overruled); `best_revenue_cents` (legacy). `family`: `family` (`setting`, `head_id`, `family_time`, `relationship`, `partner_since`, `married`, `low_months`, `next_index`, `lifetime_gifts_cents`, `estate_tax_cents`, `trust_turn`, `notes`) and `members` (`relation` partner, child, ex_partner; `member_index`, `head_id`, `joined_turn`, `parent_ids`, `closeness`, `school`, `law_school`, `milestones`, `mentored`, `joined_firm_turn`, `seen_level`, `left_turn`) |
+| `personal_entry` | `id` | int | Entry id (written order) |
+| | `turn` | int | The turn (or the action's turn) |
+| | `person_id` | int | Whose book |
+| | `memo` | text | What it was |
+| | `source` | text | `opening`, `draws`, `true_up`, `tax`, `capital`, `loan`, `invest`, `annuity`, `gift`, `grant`, `education`, `estate`, `gift_heir`, `trust`, `divorce` |
+| `personal_line` | `entry_id` | int | The entry |
+| | `account` | text | A personal account: 9100 cash, 9110 investments, 9120 capital in the firm, 9130 family office, 9140 family trust, 9200 foundation endowment; 9300 spending, 9310 income tax, 9320 loan interest, 9330 education, 9340 estate and gift tax, 9350 foundation grants, 9360 divorce settlement; 9400 draws, 9410 true-up, 9420 investment gains, 9430 losses, 9440 annuity income; 9500 capital loan, 9510 tax payable; 9900 opening net worth |
+| | `amount_cents` | bigint | Debit positive, credit negative; each entry sums to zero |
+
+Ledger accounts first posted in PT-M17: 2600 (retired-partner annuities: booked against 3100 at retirement, paid monthly from 1000) and 6950 (bar politics). `employment.end_reason` `retired` (mandatory retirement through PT-M4's departure). `save_meta.game_state` may be `election_lost` when a forced succession's vote is lost on ironman. `inbox_item` gains templates `foundation_created`, `foundation_grants`, `bar_office_won`, `bar_office_lost`, `annuity_granted`, `annuity_vote`, `succession_due_retirement`, `succession_due_health`, `succession_elected`, `succession_lost`, `succession_handover`, `adviser_opinion`, `family_divorce`, `family_milestone`, `family_partner_met`, `family_married`, `family_child_born` and `family_joined_firm`.
+
+## Schema v12 (`0012_pressure`, PT-M7b)
 
 | Table | Column | Type | Meaning |
 | --- | --- | --- | --- |

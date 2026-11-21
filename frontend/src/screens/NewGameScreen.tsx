@@ -1,4 +1,4 @@
-import { Alert, Button, Select, Stack, TextInput, Title } from '@mantine/core';
+import { Alert, Button, NumberInput, Select, Stack, TextInput, Title } from '@mantine/core';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useMeta, useNewGame } from '../lib/api';
@@ -19,6 +19,9 @@ export function NewGameScreen() {
   const [scenario, setScenario] = useState<string | null>('biglaw_spinout');
   const [difficulty, setDifficulty] = useState<string | null>('standard');
   const [background, setBackground] = useState<string | null>(null); // null: the scenario's
+  const [age, setAge] = useState<string | number>(''); // PT-M17: '' = the default age
+  const [family, setFamily] = useState<string | null>('none'); // PT-M17 (TST 45.1)
+  const [childAges, setChildAges] = useState('');
   const slug = slugify(firmName) || 'firm';
 
   const start = () =>
@@ -29,6 +32,15 @@ export function NewGameScreen() {
         scenario_id: scenario ?? undefined,
         difficulty: difficulty ?? undefined,
         background: background ?? undefined,
+        founder_age: age === '' ? undefined : Number(age),
+        family: (family ?? 'none') as 'none' | 'partner' | 'children',
+        child_ages:
+          family === 'children'
+            ? childAges
+                .split(',')
+                .map((a) => Number(a.trim()))
+                .filter((a) => Number.isFinite(a) && a >= 0)
+            : [],
       },
       { onSuccess: (game) => navigate(`/game/${game.slug}`) },
     );
@@ -62,6 +74,33 @@ export function NewGameScreen() {
         onChange={setBackground}
         description={meta.data?.backgrounds.find((b) => b.key === background)?.description}
       />
+      <NumberInput
+        label="Your age"
+        placeholder="The scenario's default"
+        min={34}
+        max={52}
+        value={age}
+        onChange={setAge}
+        data-testid="founder-age"
+      />
+      <Select
+        label="Family"
+        data={[
+          { value: 'none', label: 'None' },
+          { value: 'partner', label: 'A partner' },
+          { value: 'children', label: 'A partner and children' },
+        ]}
+        value={family}
+        onChange={setFamily}
+      />
+      {family === 'children' && (
+        <TextInput
+          label="Children's ages"
+          placeholder="e.g. 4, 9"
+          value={childAges}
+          onChange={(e) => setChildAges(e.currentTarget.value)}
+        />
+      )}
       {create.error && <Alert color="warn">{create.error.message}</Alert>}
       <Button onClick={start} loading={create.isPending} disabled={!firmName.trim()}>
         Found the firm

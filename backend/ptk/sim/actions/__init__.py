@@ -3,7 +3,8 @@
 
 Ported from backend/tst/sim/actions/__init__.py @ 02fba2aa (Tech Startup Tycoon) as a
 pattern; changed: hiring actions (PT-M1b), client and matter actions (PT-M3a), billing actions
-(PT-M3b), the answer to an event (PT-M6) and rival-firm actions (PT-M5); later milestones
+(PT-M3b), the answer to an event (PT-M6), rival-firm actions (PT-M5) and the founder's life
+(PT-M17); later milestones
 add theirs here.
 
 `apply_action` is pure: it takes the state and returns the new state, any ledger entries and
@@ -25,6 +26,7 @@ from ptk.sim.billing.actions import (
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import GameOverError, InvalidActionError
 from ptk.sim.events.actions import EVENT_ACTION_TYPES, ChooseEvent, apply_event_action
+from ptk.sim.founder.actions import FOUNDER_ACTION_TYPES, FounderAction, apply_founder_action
 from ptk.sim.hiring.actions import (
     CloseSearch,
     HiringAction,
@@ -50,7 +52,13 @@ from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
 
 type Action = (
-    HiringAction | MatterAction | BillingAction | PartnershipAction | ChooseEvent | RivalAction
+    HiringAction
+    | MatterAction
+    | BillingAction
+    | PartnershipAction
+    | ChooseEvent
+    | RivalAction
+    | FounderAction
 )
 
 ACTION_TYPES: dict[str, type[Any]] = {
@@ -67,6 +75,7 @@ ACTION_TYPES: dict[str, type[Any]] = {
     **BILLING_ACTION_TYPES,  # PT-M3b
     **RIVAL_ACTION_TYPES,  # PT-M5
     **PARTNERSHIP_ACTION_TYPES,  # PT-M4
+    **FOUNDER_ACTION_TYPES,  # PT-M17
 }
 
 
@@ -87,6 +96,8 @@ def apply_action(
     draws = lambda: rng.stream(state.turn, "actions", seq)  # noqa: E731
     if isinstance(action, ChooseEvent):
         return apply_event_action(state, action, balance, data)
+    if type(action) in FOUNDER_ACTION_TYPES.values():  # PT-M17
+        return apply_founder_action(state, action, draws, balance, data)  # type: ignore[arg-type]
     if type(action) in RIVAL_ACTION_TYPES.values():
         return apply_rival_action(state, action, draws, balance, data)  # type: ignore[arg-type]
     if type(action) in PARTNERSHIP_ACTION_TYPES.values():

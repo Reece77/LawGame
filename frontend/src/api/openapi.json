@@ -7337,6 +7337,1477 @@
           }
         }
       }
+    },
+    "/api/saves/{slug}/founder": {
+      "get": {
+        "summary": "Get Founder",
+        "operationId": "getFounder",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FounderOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/founder/foundation": {
+      "post": {
+        "summary": "Create Foundation",
+        "operationId": "createFoundation",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CauseIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FounderOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/founder/foundation/gift": {
+      "post": {
+        "summary": "Give",
+        "operationId": "giveToFoundation",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FounderAmountIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FounderOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/founder/invest": {
+      "post": {
+        "summary": "Invest",
+        "operationId": "invest",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FounderAmountIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FounderOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/founder/family-office": {
+      "post": {
+        "summary": "Office",
+        "operationId": "familyOffice",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OfficeIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FounderOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/founder/bar/committee": {
+      "post": {
+        "summary": "Committee",
+        "operationId": "barCommittee",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OnIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FounderOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/founder/bar/spend": {
+      "post": {
+        "summary": "Spend",
+        "operationId": "barSpend",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SpendIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FounderOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/founder/bar/stand": {
+      "post": {
+        "summary": "Stand",
+        "operationId": "standForOffice",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FounderOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/founder/succession/plan": {
+      "post": {
+        "summary": "Plan",
+        "operationId": "planSuccession",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SuccessionPlanIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FounderOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/founder/succession/name": {
+      "post": {
+        "summary": "Name Successor",
+        "operationId": "nameSuccessor",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SuccessorIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FounderOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/founder/retirement-age": {
+      "post": {
+        "summary": "Retirement",
+        "operationId": "proposeRetirementAge",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgeIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FounderOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/founder/annuities": {
+      "post": {
+        "summary": "Annuities",
+        "operationId": "proposeAnnuities",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnnuityIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FounderOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/family": {
+      "get": {
+        "summary": "Get Family",
+        "operationId": "getFamily",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FamilyOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/family/time": {
+      "post": {
+        "summary": "Family Time",
+        "operationId": "setFamilyTime",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TimeIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FamilyOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/family/education": {
+      "post": {
+        "summary": "Education",
+        "operationId": "chooseEducation",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EducationIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FamilyOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/family/join": {
+      "post": {
+        "summary": "Join",
+        "operationId": "joinFirm",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChildIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FamilyOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/family/mentor": {
+      "post": {
+        "summary": "Mentor",
+        "operationId": "mentorChild",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MentorIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FamilyOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/family/gift": {
+      "post": {
+        "summary": "Gift",
+        "operationId": "giftToChild",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GiftIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FamilyOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/family/trust": {
+      "post": {
+        "summary": "Trust",
+        "operationId": "setUpTrust",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FounderAmountIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FamilyOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -7364,6 +8835,19 @@
         ],
         "title": "AgeBucketOut"
       },
+      "AgeIn": {
+        "properties": {
+          "age": {
+            "type": "integer",
+            "title": "Age"
+          }
+        },
+        "type": "object",
+        "required": [
+          "age"
+        ],
+        "title": "AgeIn"
+      },
       "AmountIn": {
         "properties": {
           "amount_cents": {
@@ -7376,6 +8860,52 @@
           "amount_cents"
         ],
         "title": "AmountIn"
+      },
+      "AnnuityIn": {
+        "properties": {
+          "share_bp": {
+            "type": "integer",
+            "title": "Share Bp"
+          },
+          "years": {
+            "type": "integer",
+            "title": "Years"
+          }
+        },
+        "type": "object",
+        "required": [
+          "share_bp",
+          "years"
+        ],
+        "title": "AnnuityIn"
+      },
+      "AnnuityOut": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "monthly_cents": {
+            "type": "integer",
+            "title": "Monthly Cents"
+          },
+          "remaining_cents": {
+            "type": "integer",
+            "title": "Remaining Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "name",
+          "monthly_cents",
+          "remaining_cents"
+        ],
+        "title": "AnnuityOut"
       },
       "ApproachOut": {
         "properties": {
@@ -7595,6 +9125,24 @@
           "amount_cents"
         ],
         "title": "BalanceLineOut"
+      },
+      "BandOut": {
+        "properties": {
+          "lo": {
+            "type": "number",
+            "title": "Lo"
+          },
+          "hi": {
+            "type": "number",
+            "title": "Hi"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lo",
+          "hi"
+        ],
+        "title": "BandOut"
       },
       "BillOut": {
         "properties": {
@@ -7945,6 +9493,52 @@
         ],
         "title": "CandidateOut"
       },
+      "CauseIn": {
+        "properties": {
+          "cause": {
+            "type": "string",
+            "title": "Cause"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "cause"
+        ],
+        "title": "CauseIn"
+      },
+      "CauseOut": {
+        "properties": {
+          "when": {
+            "type": "string",
+            "title": "When"
+          },
+          "trait": {
+            "type": "string",
+            "title": "Trait"
+          },
+          "change": {
+            "type": "number",
+            "title": "Change"
+          },
+          "why": {
+            "type": "string",
+            "title": "Why"
+          }
+        },
+        "type": "object",
+        "required": [
+          "when",
+          "trait",
+          "change",
+          "why"
+        ],
+        "title": "CauseOut"
+      },
       "ChannelOptionOut": {
         "properties": {
           "key": {
@@ -7972,6 +9566,19 @@
           "fee_note"
         ],
         "title": "ChannelOptionOut"
+      },
+      "ChildIn": {
+        "properties": {
+          "child_id": {
+            "type": "integer",
+            "title": "Child Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "child_id"
+        ],
+        "title": "ChildIn"
       },
       "ChooseIn": {
         "properties": {
@@ -8567,6 +10174,33 @@
         ],
         "title": "DrawsIn"
       },
+      "EducationIn": {
+        "properties": {
+          "child_id": {
+            "type": "integer",
+            "title": "Child Id"
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "school",
+              "law_school"
+            ],
+            "title": "Stage"
+          },
+          "tier": {
+            "type": "string",
+            "title": "Tier"
+          }
+        },
+        "type": "object",
+        "required": [
+          "child_id",
+          "stage",
+          "tier"
+        ],
+        "title": "EducationIn"
+      },
       "ElectionIn": {
         "properties": {
           "choice": {
@@ -8595,6 +10229,29 @@
         ],
         "title": "ElectionIn"
       },
+      "EntryOut": {
+        "properties": {
+          "when": {
+            "type": "string",
+            "title": "When"
+          },
+          "memo": {
+            "type": "string",
+            "title": "Memo"
+          },
+          "cash_cents": {
+            "type": "integer",
+            "title": "Cash Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "when",
+          "memo",
+          "cash_cents"
+        ],
+        "title": "EntryOut"
+      },
       "ErrorBody": {
         "properties": {
           "code": {
@@ -8612,6 +10269,44 @@
           "message"
         ],
         "title": "ErrorBody"
+      },
+      "EstateOut": {
+        "properties": {
+          "estate_cents": {
+            "type": "integer",
+            "title": "Estate Cents"
+          },
+          "exemption_cents": {
+            "type": "integer",
+            "title": "Exemption Cents"
+          },
+          "rate_bp": {
+            "type": "integer",
+            "title": "Rate Bp"
+          },
+          "tax_cents": {
+            "type": "integer",
+            "title": "Tax Cents"
+          },
+          "lifetime_gifts_cents": {
+            "type": "integer",
+            "title": "Lifetime Gifts Cents"
+          },
+          "trust_cents": {
+            "type": "integer",
+            "title": "Trust Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "estate_cents",
+          "exemption_cents",
+          "rate_bp",
+          "tax_cents",
+          "lifetime_gifts_cents",
+          "trust_cents"
+        ],
+        "title": "EstateOut"
       },
       "EventChoiceOut": {
         "properties": {
@@ -8925,6 +10620,94 @@
         ],
         "title": "FamiliarityOut"
       },
+      "FamilyOut": {
+        "properties": {
+          "setting": {
+            "type": "string",
+            "title": "Setting"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active"
+          },
+          "family_time": {
+            "type": "integer",
+            "title": "Family Time"
+          },
+          "max_time": {
+            "type": "integer",
+            "title": "Max Time"
+          },
+          "relationship": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relationship"
+          },
+          "married": {
+            "type": "boolean",
+            "title": "Married"
+          },
+          "members": {
+            "items": {
+              "$ref": "#/components/schemas/MemberOut"
+            },
+            "type": "array",
+            "title": "Members"
+          },
+          "estate": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EstateOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "notes": {
+            "items": {
+              "$ref": "#/components/schemas/NoteOut"
+            },
+            "type": "array",
+            "title": "Notes"
+          },
+          "schools": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Schools"
+          },
+          "law_schools": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Law Schools"
+          }
+        },
+        "type": "object",
+        "required": [
+          "setting",
+          "active",
+          "family_time",
+          "max_time",
+          "relationship",
+          "married",
+          "members",
+          "estate",
+          "notes",
+          "schools",
+          "law_schools"
+        ],
+        "title": "FamilyOut"
+      },
       "FinanceOut": {
         "properties": {
           "date_label": {
@@ -9125,6 +10908,285 @@
         ],
         "title": "ForumIn"
       },
+      "FoundationOut": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "cause": {
+            "type": "string",
+            "title": "Cause"
+          },
+          "cause_label": {
+            "type": "string",
+            "title": "Cause Label"
+          },
+          "endowment_cents": {
+            "type": "integer",
+            "title": "Endowment Cents"
+          },
+          "grants_cents": {
+            "type": "integer",
+            "title": "Grants Cents"
+          },
+          "last_grant_cents": {
+            "type": "integer",
+            "title": "Last Grant Cents"
+          },
+          "gifts_cents": {
+            "type": "integer",
+            "title": "Gifts Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "cause",
+          "cause_label",
+          "endowment_cents",
+          "grants_cents",
+          "last_grant_cents",
+          "gifts_cents"
+        ],
+        "title": "FoundationOut"
+      },
+      "FounderAmountIn": {
+        "properties": {
+          "amount_cents": {
+            "type": "integer",
+            "title": "Amount Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "amount_cents"
+        ],
+        "title": "FounderAmountIn"
+      },
+      "FounderOut": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "age": {
+            "type": "integer",
+            "title": "Age"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "is_mp": {
+            "type": "boolean",
+            "title": "Is Mp"
+          },
+          "energy": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Energy"
+          },
+          "retirement_age": {
+            "type": "integer",
+            "title": "Retirement Age"
+          },
+          "years_to_retirement": {
+            "type": "number",
+            "title": "Years To Retirement"
+          },
+          "plan_from_age": {
+            "type": "integer",
+            "title": "Plan From Age"
+          },
+          "persona_traits": {
+            "items": {
+              "$ref": "#/components/schemas/TraitOut"
+            },
+            "type": "array",
+            "title": "Persona Traits"
+          },
+          "public_words": {
+            "type": "string",
+            "title": "Public Words"
+          },
+          "causes": {
+            "items": {
+              "$ref": "#/components/schemas/CauseOut"
+            },
+            "type": "array",
+            "title": "Causes"
+          },
+          "personal": {
+            "$ref": "#/components/schemas/PersonalOut"
+          },
+          "foundation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FoundationOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "foundation_min_cents": {
+            "type": "integer",
+            "title": "Foundation Min Cents"
+          },
+          "causes_available": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Causes Available"
+          },
+          "influence": {
+            "$ref": "#/components/schemas/InfluenceOut"
+          },
+          "legacy": {
+            "$ref": "#/components/schemas/LegacyOut"
+          },
+          "annuities_granted": {
+            "type": "boolean",
+            "title": "Annuities Granted"
+          },
+          "annuity_share_bp": {
+            "type": "integer",
+            "title": "Annuity Share Bp"
+          },
+          "annuity_years": {
+            "type": "integer",
+            "title": "Annuity Years"
+          },
+          "annuities": {
+            "items": {
+              "$ref": "#/components/schemas/AnnuityOut"
+            },
+            "type": "array",
+            "title": "Annuities"
+          },
+          "annuities_owed_cents": {
+            "type": "integer",
+            "title": "Annuities Owed Cents"
+          },
+          "plan_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Id"
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/SuccessorCandidateOut"
+            },
+            "type": "array",
+            "title": "Candidates"
+          },
+          "due": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due"
+          },
+          "due_trigger": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due Trigger"
+          },
+          "open_succession": {
+            "type": "boolean",
+            "title": "Open Succession"
+          },
+          "ousted": {
+            "type": "boolean",
+            "title": "Ousted"
+          },
+          "successions": {
+            "items": {
+              "$ref": "#/components/schemas/SuccessionOut"
+            },
+            "type": "array",
+            "title": "Successions"
+          },
+          "played": {
+            "items": {
+              "$ref": "#/components/schemas/PlayedOut"
+            },
+            "type": "array",
+            "title": "Played"
+          },
+          "opinions": {
+            "items": {
+              "$ref": "#/components/schemas/OpinionOut"
+            },
+            "type": "array",
+            "title": "Opinions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "name",
+          "age",
+          "status",
+          "is_mp",
+          "energy",
+          "retirement_age",
+          "years_to_retirement",
+          "plan_from_age",
+          "persona_traits",
+          "public_words",
+          "causes",
+          "personal",
+          "foundation",
+          "foundation_min_cents",
+          "causes_available",
+          "influence",
+          "legacy",
+          "annuities_granted",
+          "annuity_share_bp",
+          "annuity_years",
+          "annuities",
+          "annuities_owed_cents",
+          "plan_id",
+          "candidates",
+          "due",
+          "due_trigger",
+          "open_succession",
+          "ousted",
+          "successions",
+          "played",
+          "opinions"
+        ],
+        "title": "FounderOut"
+      },
       "GameOut": {
         "properties": {
           "slug": {
@@ -9152,7 +11214,8 @@
             "enum": [
               "active",
               "campaign_complete",
-              "dissolved"
+              "dissolved",
+              "election_lost"
             ],
             "title": "Game State"
           },
@@ -9230,6 +11293,24 @@
           "link_kind"
         ],
         "title": "GettingStartedStepOut"
+      },
+      "GiftIn": {
+        "properties": {
+          "child_id": {
+            "type": "integer",
+            "title": "Child Id"
+          },
+          "amount_cents": {
+            "type": "integer",
+            "title": "Amount Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "child_id",
+          "amount_cents"
+        ],
+        "title": "GiftIn"
       },
       "GuidanceItemOut": {
         "properties": {
@@ -9607,6 +11688,61 @@
         ],
         "title": "InboxItemOut"
       },
+      "InfluenceOut": {
+        "properties": {
+          "value": {
+            "type": "integer",
+            "title": "Value"
+          },
+          "committee": {
+            "type": "boolean",
+            "title": "Committee"
+          },
+          "spend_cents": {
+            "type": "integer",
+            "title": "Spend Cents"
+          },
+          "standing": {
+            "type": "boolean",
+            "title": "Standing"
+          },
+          "in_office": {
+            "type": "boolean",
+            "title": "In Office"
+          },
+          "office_until": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Office Until"
+          },
+          "can_stand": {
+            "type": "boolean",
+            "title": "Can Stand"
+          },
+          "max_spend_cents": {
+            "type": "integer",
+            "title": "Max Spend Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "value",
+          "committee",
+          "spend_cents",
+          "standing",
+          "in_office",
+          "office_until",
+          "can_stand",
+          "max_spend_cents"
+        ],
+        "title": "InfluenceOut"
+      },
       "IntroduceIn": {
         "properties": {
           "colleague_id": {
@@ -9948,6 +12084,49 @@
           "person_id"
         ],
         "title": "LeaderIn"
+      },
+      "LegacyOut": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "firm": {
+            "type": "integer",
+            "title": "Firm"
+          },
+          "name_on_door": {
+            "type": "integer",
+            "title": "Name On Door"
+          },
+          "giving": {
+            "type": "integer",
+            "title": "Giving"
+          },
+          "persona": {
+            "type": "integer",
+            "title": "Persona"
+          },
+          "family": {
+            "type": "integer",
+            "title": "Family"
+          },
+          "bar": {
+            "type": "integer",
+            "title": "Bar"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "firm",
+          "name_on_door",
+          "giving",
+          "persona",
+          "family",
+          "bar"
+        ],
+        "title": "LegacyOut"
       },
       "MarketOut": {
         "properties": {
@@ -10567,6 +12746,134 @@
           "declined"
         ]
       },
+      "MemberOut": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "relation": {
+            "type": "string",
+            "title": "Relation"
+          },
+          "age": {
+            "type": "integer",
+            "title": "Age"
+          },
+          "closeness": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closeness"
+          },
+          "school": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "School"
+          },
+          "law_school": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Law School"
+          },
+          "at_firm": {
+            "type": "boolean",
+            "title": "At Firm"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "ability": {
+            "$ref": "#/components/schemas/BandOut"
+          },
+          "potential": {
+            "type": "string",
+            "title": "Potential"
+          },
+          "can_choose_school": {
+            "type": "boolean",
+            "title": "Can Choose School"
+          },
+          "can_choose_law_school": {
+            "type": "boolean",
+            "title": "Can Choose Law School"
+          },
+          "can_join": {
+            "type": "boolean",
+            "title": "Can Join"
+          },
+          "mentored": {
+            "type": "boolean",
+            "title": "Mentored"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "name",
+          "relation",
+          "age",
+          "closeness",
+          "school",
+          "law_school",
+          "at_firm",
+          "level",
+          "ability",
+          "potential",
+          "can_choose_school",
+          "can_choose_law_school",
+          "can_join",
+          "mentored"
+        ],
+        "title": "MemberOut"
+      },
+      "MentorIn": {
+        "properties": {
+          "child_id": {
+            "type": "integer",
+            "title": "Child Id"
+          },
+          "on": {
+            "type": "boolean",
+            "title": "On"
+          }
+        },
+        "type": "object",
+        "required": [
+          "child_id",
+          "on"
+        ],
+        "title": "MentorIn"
+      },
       "MetaOut": {
         "properties": {
           "scenarios": {
@@ -10763,6 +13070,34 @@
               }
             ],
             "title": "Background"
+          },
+          "founder_age": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Founder Age"
+          },
+          "family": {
+            "type": "string",
+            "enum": [
+              "none",
+              "partner",
+              "children"
+            ],
+            "title": "Family",
+            "default": "none"
+          },
+          "child_ages": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Child Ages"
           }
         },
         "type": "object",
@@ -10803,6 +13138,24 @@
           "text"
         ],
         "title": "NewsOut"
+      },
+      "NoteOut": {
+        "properties": {
+          "when": {
+            "type": "string",
+            "title": "When"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "when",
+          "text"
+        ],
+        "title": "NoteOut"
       },
       "OfferIn": {
         "properties": {
@@ -10899,6 +13252,37 @@
         ],
         "title": "OfferPreviewOut"
       },
+      "OfficeIn": {
+        "properties": {
+          "mandate": {
+            "type": "string",
+            "title": "Mandate"
+          },
+          "amount_cents": {
+            "type": "integer",
+            "title": "Amount Cents",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "mandate"
+        ],
+        "title": "OfficeIn"
+      },
+      "OnIn": {
+        "properties": {
+          "on": {
+            "type": "boolean",
+            "title": "On"
+          }
+        },
+        "type": "object",
+        "required": [
+          "on"
+        ],
+        "title": "OnIn"
+      },
       "OpenSearchIn": {
         "properties": {
           "role": {
@@ -10933,6 +13317,44 @@
           "channel"
         ],
         "title": "OpenSearchIn"
+      },
+      "OpinionOut": {
+        "properties": {
+          "when": {
+            "type": "string",
+            "title": "When"
+          },
+          "adviser": {
+            "type": "string",
+            "title": "Adviser"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "stance": {
+            "type": "string",
+            "title": "Stance"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "overruled": {
+            "type": "boolean",
+            "title": "Overruled"
+          }
+        },
+        "type": "object",
+        "required": [
+          "when",
+          "adviser",
+          "title",
+          "stance",
+          "text",
+          "overruled"
+        ],
+        "title": "OpinionOut"
       },
       "OptionOut": {
         "properties": {
@@ -12433,6 +14855,95 @@
         ],
         "title": "PersonUnitIn"
       },
+      "PersonalOut": {
+        "properties": {
+          "cash_cents": {
+            "type": "integer",
+            "title": "Cash Cents"
+          },
+          "investments_cents": {
+            "type": "integer",
+            "title": "Investments Cents"
+          },
+          "family_office_cents": {
+            "type": "integer",
+            "title": "Family Office Cents"
+          },
+          "mandate": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mandate"
+          },
+          "trust_cents": {
+            "type": "integer",
+            "title": "Trust Cents"
+          },
+          "firm_capital_cents": {
+            "type": "integer",
+            "title": "Firm Capital Cents"
+          },
+          "loan_cents": {
+            "type": "integer",
+            "title": "Loan Cents"
+          },
+          "net_worth_cents": {
+            "type": "integer",
+            "title": "Net Worth Cents"
+          },
+          "endowment_cents": {
+            "type": "integer",
+            "title": "Endowment Cents"
+          },
+          "year": {
+            "$ref": "#/components/schemas/StatementOut"
+          },
+          "lifetime": {
+            "$ref": "#/components/schemas/StatementOut"
+          },
+          "recent": {
+            "items": {
+              "$ref": "#/components/schemas/EntryOut"
+            },
+            "type": "array",
+            "title": "Recent"
+          },
+          "family_office_min_cents": {
+            "type": "integer",
+            "title": "Family Office Min Cents"
+          },
+          "mandates": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Mandates"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cash_cents",
+          "investments_cents",
+          "family_office_cents",
+          "mandate",
+          "trust_cents",
+          "firm_capital_cents",
+          "loan_cents",
+          "net_worth_cents",
+          "endowment_cents",
+          "year",
+          "lifetime",
+          "recent",
+          "family_office_min_cents",
+          "mandates"
+        ],
+        "title": "PersonalOut"
+      },
       "PhaseOut": {
         "properties": {
           "key": {
@@ -12667,6 +15178,46 @@
           "last_activity"
         ],
         "title": "PlanOut"
+      },
+      "PlayedOut": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "since": {
+            "type": "string",
+            "title": "Since"
+          },
+          "until": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Until"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "name",
+          "status",
+          "since",
+          "until"
+        ],
+        "title": "PlayedOut"
       },
       "PnlLineOut": {
         "properties": {
@@ -14080,6 +16631,20 @@
         ],
         "title": "SignedOut"
       },
+      "SpendIn": {
+        "properties": {
+          "monthly_cents": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Monthly Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "monthly_cents"
+        ],
+        "title": "SpendIn"
+      },
       "SponsorIn": {
         "properties": {
           "person_id": {
@@ -14136,6 +16701,173 @@
           "events"
         ],
         "title": "StaffingBoardOut"
+      },
+      "StatementOut": {
+        "properties": {
+          "draws_cents": {
+            "type": "integer",
+            "title": "Draws Cents"
+          },
+          "true_up_cents": {
+            "type": "integer",
+            "title": "True Up Cents"
+          },
+          "annuity_cents": {
+            "type": "integer",
+            "title": "Annuity Cents"
+          },
+          "tax_cents": {
+            "type": "integer",
+            "title": "Tax Cents"
+          },
+          "after_tax_cents": {
+            "type": "integer",
+            "title": "After Tax Cents"
+          },
+          "gains_cents": {
+            "type": "integer",
+            "title": "Gains Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "draws_cents",
+          "true_up_cents",
+          "annuity_cents",
+          "tax_cents",
+          "after_tax_cents",
+          "gains_cents"
+        ],
+        "title": "StatementOut"
+      },
+      "SuccessionOut": {
+        "properties": {
+          "turn": {
+            "type": "string",
+            "title": "Turn"
+          },
+          "trigger": {
+            "type": "string",
+            "title": "Trigger"
+          },
+          "founder": {
+            "type": "string",
+            "title": "Founder"
+          },
+          "successor": {
+            "type": "string",
+            "title": "Successor"
+          },
+          "result": {
+            "type": "string",
+            "title": "Result"
+          }
+        },
+        "type": "object",
+        "required": [
+          "turn",
+          "trigger",
+          "founder",
+          "successor",
+          "result"
+        ],
+        "title": "SuccessionOut"
+      },
+      "SuccessionPlanIn": {
+        "properties": {
+          "person_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Person Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id"
+        ],
+        "title": "SuccessionPlanIn"
+      },
+      "SuccessorCandidateOut": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "practice": {
+            "type": "string",
+            "title": "Practice"
+          },
+          "age": {
+            "type": "integer",
+            "title": "Age"
+          },
+          "rating": {
+            "$ref": "#/components/schemas/BandOut"
+          },
+          "is_child": {
+            "type": "boolean",
+            "title": "Is Child"
+          },
+          "predicted_yes": {
+            "$ref": "#/components/schemas/BandOut"
+          },
+          "total_weight": {
+            "type": "number",
+            "title": "Total Weight"
+          },
+          "needed_weight": {
+            "type": "number",
+            "title": "Needed Weight"
+          },
+          "rival_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rival Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "name",
+          "practice",
+          "age",
+          "rating",
+          "is_child",
+          "predicted_yes",
+          "total_weight",
+          "needed_weight",
+          "rival_name"
+        ],
+        "title": "SuccessorCandidateOut"
+      },
+      "SuccessorIn": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id"
+        ],
+        "title": "SuccessorIn"
       },
       "SupervisorLabel": {
         "type": "string",
@@ -14325,6 +17057,19 @@
         ],
         "title": "TextOut"
       },
+      "TimeIn": {
+        "properties": {
+          "energy": {
+            "type": "integer",
+            "title": "Energy"
+          }
+        },
+        "type": "object",
+        "required": [
+          "energy"
+        ],
+        "title": "TimeIn"
+      },
       "TimelineItemOut": {
         "properties": {
           "turn": {
@@ -14374,6 +17119,29 @@
           "title"
         ],
         "title": "TimelineItemOut"
+      },
+      "TraitOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "value": {
+            "type": "integer",
+            "title": "Value"
+          },
+          "strong": {
+            "type": "boolean",
+            "title": "Strong"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "value",
+          "strong"
+        ],
+        "title": "TraitOut"
       },
       "TrendPointOut": {
         "properties": {

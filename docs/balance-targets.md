@@ -45,7 +45,7 @@ All strategies staff named matters by the default rule, bill monthly, accept the
 
 Recorded in `backend/ptk/balance/known_misses.py` by Reece's decision on PT-M7 (2026-11-21), each owned by PT-M7b (`docs/tasks/PT-M7b-pressure-and-balance.md`): T2, T3 (lawyers), T4 (steady and pyramid), T5 (standard and hard), T8, T9 and T10. T6's class reading (7.7% against 8%) is accepted as sampling noise.
 
-PT-M7b (2026-11-21) removed T5 (standard and hard), T8 (corporate), T9 (the unchecked rocket) and T10 (the ratio), which now pass on seeds 1-10, and carries T2, T3 (lawyers), T4 (steady and pyramid), T8 (restructuring) and T9 (heeded) with its readings back to Reece (the brief's "Decisions made").
+PT-M7b (2026-11-21) removed T5 (standard and hard), T9 (the rocket and the heeded rocket) and T10 (the ratio), which now pass on seeds 1-10, and carries T2, T3 (lawyers), T4 (steady and pyramid) and T8 (corporate and restructuring) with its readings back to Reece (the brief's "Decisions made").
 
 ## Measures (PT-M7)
 

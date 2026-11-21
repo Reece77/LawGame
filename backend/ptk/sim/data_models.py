@@ -12,6 +12,7 @@ from ptk.sim.events.data import (
     EventTemplate,
     template_problems,
 )
+from ptk.sim.founder.config import FamilyBalance, FounderLifeBalance, SuccessionBalance
 from ptk.sim.macro_data import SERIES as MACRO_SERIES
 from ptk.sim.macro_data import MacroBalance, MacroData
 from ptk.sim.rivals.data import RivalsBalance, RivalsData, WorldBalance
@@ -1234,6 +1235,9 @@ class Balance(_Strict):
     rates: RatesBalance  # PT-M7a
     macro: MacroBalance  # PT-M7: the macro and legal indices
     holiday: HolidayBalance  # PT-M7a
+    founder_life: FounderLifeBalance  # PT-M17
+    family: FamilyBalance  # PT-M17
+    succession: SuccessionBalance  # PT-M17
 
 
 # --- People seed data (PT-M1a) ------------------------------------------------------------

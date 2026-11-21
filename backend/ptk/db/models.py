@@ -552,3 +552,31 @@ class PartnershipRow(Base):
     __tablename__ = "partnership"
     firm_id: Mapped[int] = mapped_column(Integer, primary_key=True)  # 0: the id counters
     data_json: Mapped[str] = mapped_column(Text)  # FirmPartnership (or the counters)
+
+
+# --- PT-M17: the founder's life, family and personal books (schema v11) -----------------------
+# The founder-life and family states are JSON documents (one row each); the players' personal
+# books are their own double entry (like the client-money book), never mixed with a firm's.
+
+
+class FounderLifeRow(Base):
+    __tablename__ = "founder_life"
+    key: Mapped[str] = mapped_column(String(20), primary_key=True)  # "founder_life", "family"
+    data_json: Mapped[str] = mapped_column(Text)
+
+
+class PersonalEntryRow(Base):
+    __tablename__ = "personal_entry"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    turn: Mapped[int] = mapped_column(Integer, index=True)
+    person_id: Mapped[int] = mapped_column(Integer, index=True)
+    memo: Mapped[str] = mapped_column(Text)
+    source: Mapped[str] = mapped_column(String(20))
+
+
+class PersonalLineRow(Base):
+    __tablename__ = "personal_line"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    entry_id: Mapped[int] = mapped_column(ForeignKey("personal_entry.id"), index=True)
+    account: Mapped[str] = mapped_column(String(40))  # 9xxx personal accounts only
+    amount_cents: Mapped[int] = mapped_column(BigInteger)

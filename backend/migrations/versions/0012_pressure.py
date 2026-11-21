@@ -1,11 +1,11 @@
-"""Schema v11 (PT-M7b): a new firm's card by practice and the firm's hours policy.
+"""Schema v12 (PT-M7b): a new firm's card by practice and the firm's hours policy.
 
 `firm.rate_card` holds the firm's share of each practice's top card ({practice: bp}, JSON); a
 save from before PT-M7b keeps its rates (an empty card bills every practice at the full card).
 `firm.billable_target_hours` is the firm-wide billable target (hours a year; NULL: the levels').
 
-Revision ID: 0011_pressure
-Revises: 0010_v1_gaps
+Revision ID: 0012_pressure
+Revises: 0011_founder_life
 Create Date: 2026-11-21
 """
 
@@ -14,8 +14,8 @@ from __future__ import annotations
 import sqlalchemy as sa
 from alembic import op
 
-revision = "0011_pressure"
-down_revision = "0010_v1_gaps"
+revision = "0012_pressure"
+down_revision = "0011_founder_life"
 branch_labels = None
 depends_on = None
 

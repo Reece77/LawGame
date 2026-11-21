@@ -28,7 +28,7 @@ class KnownMiss:
 KNOWN_MISSES: Final[tuple[KnownMiss, ...]] = (
     # Recorded by Reece's decision on PT-M7 (via the product manager, 2026-11-21), each owned by
     # PT-M7b. PT-M7b removed the rows whose targets now pass (T5.standard, T5.hard,
-    # T9.rocket, T10.ratio) and carries the rest with its readings (seeds 1-10)
+    # T9.rocket, T9.heeded, T10.ratio) and carries the rest with its readings (seeds 1-10)
     # back to Reece: docs/tasks/PT-M7b-pressure-and-balance.md, "Decisions made".
     KnownMiss(
         target="T2",  # no strategy has the best score on more than 6 of 10 seeds
@@ -52,7 +52,7 @@ KNOWN_MISSES: Final[tuple[KnownMiss, ...]] = (
         owner="PT-M7b",
         # score: median PEP in $M; known while at most $5.0M
         worse_than=5.0,
-        reason="$4.03M (PT-M7b; PT-M7: $4.07M): as T3.lawyers; for Reece",
+        reason="$4.02M (PT-M7b; PT-M7: $4.07M): as T3.lawyers; for Reece",
     ),
     KnownMiss(
         target="T4.pyramid",  # pyramid PEP $0.7-1.6M in 2015
@@ -67,7 +67,7 @@ KNOWN_MISSES: Final[tuple[KnownMiss, ...]] = (
         owner="PT-M7b",
         # score: the median change; known while it is at most +5%
         worse_than=0.05,
-        reason="-6.0% (PT-M7b; -11.1% at a 9500 card, which broke PT-M4's exodus guard; PT-M7: "
+        reason="-9.0% (PT-M7b; -11.1% at a 9500 card, which broke PT-M4's exodus guard; PT-M7: "
         "-1.3%): a stronger crisis discount pushes realisation under T7's 84%; for Reece",
     ),
     KnownMiss(
@@ -75,16 +75,8 @@ KNOWN_MISSES: Final[tuple[KnownMiss, ...]] = (
         owner="PT-M7b",
         # score: the median change; known while at most +55%
         worse_than=0.55,
-        reason="+23.4% on 2-3 runs (PT-M7b, restructuring beta -0.8, estate_mult 15; PT-M7: "
+        reason="+31.1% on 2-3 runs (PT-M7b, restructuring beta -0.8, estate_mult 15; PT-M7: "
         "+40.7% on 3): the qualifying firms are small ones that caught an estate; for Reece",
-    ),
-    KnownMiss(
-        target="T9.heeded",  # the heeded rocket dissolves on at most 1 of 10
-        owner="PT-M7b",
-        worse_than=4.0,  # score: seeds dissolved
-        reason="2/10 (PT-M7b, 9/30 on seeds 11-40; PT-M7: 6/10): the rocket's first guaranteed "
-        "lateral sinks it in months 4-6, before any trend exists to forecast, and its $1M "
-        "capital call fails the partners' vote; for Reece",
     ),
 )
 

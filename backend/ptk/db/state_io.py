@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 
 from ptk.db.billing_io import load_billing, write_billing, write_client_book
 from ptk.db.events_io import load_events, write_events
+from ptk.db.founder_io import load_founder_life, write_founder_life, write_personal_book
 from ptk.db.inbox import inbox_rows
 from ptk.db.market_io import insert_market, load_market, write_market
 from ptk.db.models import (
@@ -33,6 +34,7 @@ from ptk.db.partnership_io import load_partnership, write_partnership
 from ptk.db.rivals_io import insert_rivals, load_rivals, write_panels, write_rivals
 from ptk.sim.billing.models import ClientBookEntry
 from ptk.sim.data_models import InboxTemplate
+from ptk.sim.founder.models import PersonalEntry
 from ptk.sim.hiring.models import Candidate, Offer, PayPolicy, PersonState, Search
 from ptk.sim.ledger import LedgerEntry
 from ptk.sim.log import LogItem
@@ -107,6 +109,7 @@ def insert_new(session: Session, state: GameState, entries: tuple[LedgerEntry, .
     write_partnership(session, state.partnership)
     write_events(session, state.events)
     write_entries(session, entries)
+    write_founder_life(session, state.founder_life, state.family)  # PT-M17
 
 
 def load_state(session: Session) -> GameState:
@@ -122,6 +125,7 @@ def load_state(session: Session) -> GameState:
         game_state=row.game_state,  # type: ignore[arg-type]
         ended_turn=row.ended_turn,
     )
+    founder_life, family = load_founder_life(session)  # PT-M17
     rivals = load_rivals(session)  # PT-M5: rival firms' rows are not the player's firms
     rival_ids = {f.id for f in rivals.firms}
     firms = tuple(
@@ -193,6 +197,8 @@ def load_state(session: Session) -> GameState:
             for r in session.scalars(select(PersonStateRow).order_by(PersonStateRow.person_id))
         ),
         rivals=rivals,
+        founder_life=founder_life,
+        family=family,
     )
 
 
@@ -510,9 +516,11 @@ def write_turn(
     snapshot: TurnSnapshot,
     templates: Mapping[str, InboxTemplate] | None = None,
     client_book: tuple[ClientBookEntry, ...] = (),
+    personal_book: tuple[PersonalEntry, ...] = (),
 ) -> None:
     write_entries(session, entries)
     write_client_book(session, client_book)
+    write_personal_book(session, personal_book)  # PT-M17: the players' own books
     write_log(session, new_state, log_items, templates)
     session.add_all(
         TurnSnapshotRow(turn=snapshot.turn, firm_id=f.firm_id, kpis_json=json.dumps(f.kpis()))
@@ -532,6 +540,7 @@ def write_turn(
     write_rivals(session, new_state.rivals)  # PT-M5
     write_panels(session, new_state.market)
     write_partnership(session, new_state.partnership)
+    write_founder_life(session, new_state.founder_life, new_state.family)  # PT-M17
 
 
 def write_firms(session: Session, state: GameState) -> None:

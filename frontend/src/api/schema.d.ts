@@ -1566,6 +1566,329 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/saves/{slug}/founder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Founder */
+        get: operations["getFounder"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/founder/foundation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Foundation */
+        post: operations["createFoundation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/founder/foundation/gift": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Give */
+        post: operations["giveToFoundation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/founder/invest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Invest */
+        post: operations["invest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/founder/family-office": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Office */
+        post: operations["familyOffice"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/founder/bar/committee": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Committee */
+        post: operations["barCommittee"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/founder/bar/spend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Spend */
+        post: operations["barSpend"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/founder/bar/stand": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Stand */
+        post: operations["standForOffice"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/founder/succession/plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Plan */
+        post: operations["planSuccession"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/founder/succession/name": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Name Successor */
+        post: operations["nameSuccessor"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/founder/retirement-age": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Retirement */
+        post: operations["proposeRetirementAge"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/founder/annuities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Annuities */
+        post: operations["proposeAnnuities"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/family": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Family */
+        get: operations["getFamily"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/family/time": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Family Time */
+        post: operations["setFamilyTime"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/family/education": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Education */
+        post: operations["chooseEducation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/family/join": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Join */
+        post: operations["joinFirm"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/family/mentor": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mentor */
+        post: operations["mentorChild"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/family/gift": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Gift */
+        post: operations["giftToChild"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/family/trust": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Trust */
+        post: operations["setUpTrust"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1579,10 +1902,33 @@ export interface components {
             /** Count */
             count: number;
         };
+        /** AgeIn */
+        AgeIn: {
+            /** Age */
+            age: number;
+        };
         /** AmountIn */
         AmountIn: {
             /** Amount Cents */
             amount_cents: number;
+        };
+        /** AnnuityIn */
+        AnnuityIn: {
+            /** Share Bp */
+            share_bp: number;
+            /** Years */
+            years: number;
+        };
+        /** AnnuityOut */
+        AnnuityOut: {
+            /** Person Id */
+            person_id: number;
+            /** Name */
+            name: string;
+            /** Monthly Cents */
+            monthly_cents: number;
+            /** Remaining Cents */
+            remaining_cents: number;
         };
         /** ApproachOut */
         ApproachOut: {
@@ -1664,6 +2010,13 @@ export interface components {
             kind: "asset" | "liability" | "equity";
             /** Amount Cents */
             amount_cents: number;
+        };
+        /** BandOut */
+        BandOut: {
+            /** Lo */
+            lo: number;
+            /** Hi */
+            hi: number;
         };
         /** BillOut */
         BillOut: {
@@ -1782,6 +2135,27 @@ export interface components {
             /** Expires Label */
             expires_label: string;
         };
+        /** CauseIn */
+        CauseIn: {
+            /** Cause */
+            cause: string;
+            /**
+             * Name
+             * @default
+             */
+            name?: string;
+        };
+        /** CauseOut */
+        CauseOut: {
+            /** When */
+            when: string;
+            /** Trait */
+            trait: string;
+            /** Change */
+            change: number;
+            /** Why */
+            why: string;
+        };
         /** ChannelOptionOut */
         ChannelOptionOut: {
             /** Key */
@@ -1792,6 +2166,11 @@ export interface components {
             energy: number;
             /** Fee Note */
             fee_note: string;
+        };
+        /** ChildIn */
+        ChildIn: {
+            /** Child Id */
+            child_id: number;
         };
         /** ChooseIn */
         ChooseIn: {
@@ -2025,6 +2404,18 @@ export interface components {
             /** Suspended */
             suspended: boolean;
         };
+        /** EducationIn */
+        EducationIn: {
+            /** Child Id */
+            child_id: number;
+            /**
+             * Stage
+             * @enum {string}
+             */
+            stage: "school" | "law_school";
+            /** Tier */
+            tier: string;
+        };
         /** ElectionIn */
         ElectionIn: {
             /**
@@ -2035,12 +2426,36 @@ export interface components {
             /** Successor Id */
             successor_id?: number | null;
         };
+        /** EntryOut */
+        EntryOut: {
+            /** When */
+            when: string;
+            /** Memo */
+            memo: string;
+            /** Cash Cents */
+            cash_cents: number;
+        };
         /** ErrorBody */
         ErrorBody: {
             /** Code */
             code: string;
             /** Message */
             message: string;
+        };
+        /** EstateOut */
+        EstateOut: {
+            /** Estate Cents */
+            estate_cents: number;
+            /** Exemption Cents */
+            exemption_cents: number;
+            /** Rate Bp */
+            rate_bp: number;
+            /** Tax Cents */
+            tax_cents: number;
+            /** Lifetime Gifts Cents */
+            lifetime_gifts_cents: number;
+            /** Trust Cents */
+            trust_cents: number;
         };
         /** EventChoiceOut */
         EventChoiceOut: {
@@ -2130,6 +2545,30 @@ export interface components {
             /** Hi */
             hi: number;
         };
+        /** FamilyOut */
+        FamilyOut: {
+            /** Setting */
+            setting: string;
+            /** Active */
+            active: boolean;
+            /** Family Time */
+            family_time: number;
+            /** Max Time */
+            max_time: number;
+            /** Relationship */
+            relationship: number | null;
+            /** Married */
+            married: boolean;
+            /** Members */
+            members: components["schemas"]["MemberOut"][];
+            estate: components["schemas"]["EstateOut"] | null;
+            /** Notes */
+            notes: components["schemas"]["NoteOut"][];
+            /** Schools */
+            schools: string[];
+            /** Law Schools */
+            law_schools: string[];
+        };
         /** FinanceOut */
         FinanceOut: {
             /** Date Label */
@@ -2202,6 +2641,91 @@ export interface components {
             /** Court */
             court: string;
         };
+        /** FoundationOut */
+        FoundationOut: {
+            /** Name */
+            name: string;
+            /** Cause */
+            cause: string;
+            /** Cause Label */
+            cause_label: string;
+            /** Endowment Cents */
+            endowment_cents: number;
+            /** Grants Cents */
+            grants_cents: number;
+            /** Last Grant Cents */
+            last_grant_cents: number;
+            /** Gifts Cents */
+            gifts_cents: number;
+        };
+        /** FounderAmountIn */
+        FounderAmountIn: {
+            /** Amount Cents */
+            amount_cents: number;
+        };
+        /** FounderOut */
+        FounderOut: {
+            /** Person Id */
+            person_id: number;
+            /** Name */
+            name: string;
+            /** Age */
+            age: number;
+            /** Status */
+            status: string;
+            /** Is Mp */
+            is_mp: boolean;
+            /** Energy */
+            energy: number | null;
+            /** Retirement Age */
+            retirement_age: number;
+            /** Years To Retirement */
+            years_to_retirement: number;
+            /** Plan From Age */
+            plan_from_age: number;
+            /** Persona Traits */
+            persona_traits: components["schemas"]["TraitOut"][];
+            /** Public Words */
+            public_words: string;
+            /** Causes */
+            causes: components["schemas"]["CauseOut"][];
+            personal: components["schemas"]["PersonalOut"];
+            foundation: components["schemas"]["FoundationOut"] | null;
+            /** Foundation Min Cents */
+            foundation_min_cents: number;
+            /** Causes Available */
+            causes_available: string[];
+            influence: components["schemas"]["InfluenceOut"];
+            legacy: components["schemas"]["LegacyOut"];
+            /** Annuities Granted */
+            annuities_granted: boolean;
+            /** Annuity Share Bp */
+            annuity_share_bp: number;
+            /** Annuity Years */
+            annuity_years: number;
+            /** Annuities */
+            annuities: components["schemas"]["AnnuityOut"][];
+            /** Annuities Owed Cents */
+            annuities_owed_cents: number;
+            /** Plan Id */
+            plan_id: number | null;
+            /** Candidates */
+            candidates: components["schemas"]["SuccessorCandidateOut"][];
+            /** Due */
+            due: string | null;
+            /** Due Trigger */
+            due_trigger: string | null;
+            /** Open Succession */
+            open_succession: boolean;
+            /** Ousted */
+            ousted: boolean;
+            /** Successions */
+            successions: components["schemas"]["SuccessionOut"][];
+            /** Played */
+            played: components["schemas"]["PlayedOut"][];
+            /** Opinions */
+            opinions: components["schemas"]["OpinionOut"][];
+        };
         /** GameOut */
         GameOut: {
             /** Slug */
@@ -2218,7 +2742,7 @@ export interface components {
              * Game State
              * @enum {string}
              */
-            game_state: "active" | "campaign_complete" | "dissolved";
+            game_state: "active" | "campaign_complete" | "dissolved" | "election_lost";
             /** Turns In Campaign */
             turns_in_campaign: number;
             /** Blocking Event Id */
@@ -2241,6 +2765,13 @@ export interface components {
             done: boolean;
             /** Link Kind */
             link_kind: string;
+        };
+        /** GiftIn */
+        GiftIn: {
+            /** Child Id */
+            child_id: number;
+            /** Amount Cents */
+            amount_cents: number;
         };
         /** GuidanceItemOut */
         GuidanceItemOut: {
@@ -2356,6 +2887,25 @@ export interface components {
             link_id: number | null;
             /** Read */
             read: boolean;
+        };
+        /** InfluenceOut */
+        InfluenceOut: {
+            /** Value */
+            value: number;
+            /** Committee */
+            committee: boolean;
+            /** Spend Cents */
+            spend_cents: number;
+            /** Standing */
+            standing: boolean;
+            /** In Office */
+            in_office: boolean;
+            /** Office Until */
+            office_until: string | null;
+            /** Can Stand */
+            can_stand: boolean;
+            /** Max Spend Cents */
+            max_spend_cents: number;
         };
         /** IntroduceIn */
         IntroduceIn: {
@@ -2478,6 +3028,23 @@ export interface components {
         LeaderIn: {
             /** Person Id */
             person_id: number | null;
+        };
+        /** LegacyOut */
+        LegacyOut: {
+            /** Total */
+            total: number;
+            /** Firm */
+            firm: number;
+            /** Name On Door */
+            name_on_door: number;
+            /** Giving */
+            giving: number;
+            /** Persona */
+            persona: number;
+            /** Family */
+            family: number;
+            /** Bar */
+            bar: number;
         };
         /** MarketOut */
         MarketOut: {
@@ -2671,6 +3238,45 @@ export interface components {
         };
         /** @enum {string} */
         MatterStatusOut: "open" | "conflicted" | "closed" | "declined";
+        /** MemberOut */
+        MemberOut: {
+            /** Person Id */
+            person_id: number;
+            /** Name */
+            name: string;
+            /** Relation */
+            relation: string;
+            /** Age */
+            age: number;
+            /** Closeness */
+            closeness: number | null;
+            /** School */
+            school: string | null;
+            /** Law School */
+            law_school: string | null;
+            /** At Firm */
+            at_firm: boolean;
+            /** Level */
+            level: string | null;
+            ability: components["schemas"]["BandOut"];
+            /** Potential */
+            potential: string;
+            /** Can Choose School */
+            can_choose_school: boolean;
+            /** Can Choose Law School */
+            can_choose_law_school: boolean;
+            /** Can Join */
+            can_join: boolean;
+            /** Mentored */
+            mentored: boolean;
+        };
+        /** MentorIn */
+        MentorIn: {
+            /** Child Id */
+            child_id: number;
+            /** On */
+            on: boolean;
+        };
         /** MetaOut */
         MetaOut: {
             /** Scenarios */
@@ -2739,6 +3345,16 @@ export interface components {
             seed?: number | null;
             /** Background */
             background?: string | null;
+            /** Founder Age */
+            founder_age?: number | null;
+            /**
+             * Family
+             * @default none
+             * @enum {string}
+             */
+            family?: "none" | "partner" | "children";
+            /** Child Ages */
+            child_ages?: number[];
         };
         /** NewsOut */
         NewsOut: {
@@ -2749,6 +3365,13 @@ export interface components {
             firm: components["schemas"]["FirmRefOut"];
             /** Action */
             action: string;
+            /** Text */
+            text: string;
+        };
+        /** NoteOut */
+        NoteOut: {
+            /** When */
+            when: string;
             /** Text */
             text: string;
         };
@@ -2790,6 +3413,21 @@ export interface components {
             /** Ask Cents */
             ask_cents: number;
         };
+        /** OfficeIn */
+        OfficeIn: {
+            /** Mandate */
+            mandate: string;
+            /**
+             * Amount Cents
+             * @default 0
+             */
+            amount_cents?: number;
+        };
+        /** OnIn */
+        OnIn: {
+            /** On */
+            on: boolean;
+        };
         /** OpenSearchIn */
         OpenSearchIn: {
             /** Role */
@@ -2799,6 +3437,21 @@ export interface components {
             level?: string | null;
             /** School Tiers */
             school_tiers?: string[];
+        };
+        /** OpinionOut */
+        OpinionOut: {
+            /** When */
+            when: string;
+            /** Adviser */
+            adviser: string;
+            /** Title */
+            title: string;
+            /** Stance */
+            stance: string;
+            /** Text */
+            text: string;
+            /** Overruled */
+            overruled: boolean;
         };
         /** OptionOut */
         OptionOut: {
@@ -3240,6 +3893,35 @@ export interface components {
             /** Unit Id */
             unit_id: number | null;
         };
+        /** PersonalOut */
+        PersonalOut: {
+            /** Cash Cents */
+            cash_cents: number;
+            /** Investments Cents */
+            investments_cents: number;
+            /** Family Office Cents */
+            family_office_cents: number;
+            /** Mandate */
+            mandate: string | null;
+            /** Trust Cents */
+            trust_cents: number;
+            /** Firm Capital Cents */
+            firm_capital_cents: number;
+            /** Loan Cents */
+            loan_cents: number;
+            /** Net Worth Cents */
+            net_worth_cents: number;
+            /** Endowment Cents */
+            endowment_cents: number;
+            year: components["schemas"]["StatementOut"];
+            lifetime: components["schemas"]["StatementOut"];
+            /** Recent */
+            recent: components["schemas"]["EntryOut"][];
+            /** Family Office Min Cents */
+            family_office_min_cents: number;
+            /** Mandates */
+            mandates: string[];
+        };
         /** PhaseOut */
         PhaseOut: {
             /** Key */
@@ -3319,6 +4001,19 @@ export interface components {
             campus: boolean;
             /** Last Activity */
             last_activity: string | null;
+        };
+        /** PlayedOut */
+        PlayedOut: {
+            /** Person Id */
+            person_id: number;
+            /** Name */
+            name: string;
+            /** Status */
+            status: string;
+            /** Since */
+            since: string;
+            /** Until */
+            until: string | null;
         };
         /** PnlLineOut */
         PnlLineOut: {
@@ -3820,6 +4515,11 @@ export interface components {
             /** Start Label */
             start_label: string;
         };
+        /** SpendIn */
+        SpendIn: {
+            /** Monthly Cents */
+            monthly_cents: number;
+        };
         /** SponsorIn */
         SponsorIn: {
             /** Person Id */
@@ -3839,6 +4539,65 @@ export interface components {
             people: components["schemas"]["BoardPersonOut"][];
             /** Events */
             events: components["schemas"]["MatterEventOut"][];
+        };
+        /** StatementOut */
+        StatementOut: {
+            /** Draws Cents */
+            draws_cents: number;
+            /** True Up Cents */
+            true_up_cents: number;
+            /** Annuity Cents */
+            annuity_cents: number;
+            /** Tax Cents */
+            tax_cents: number;
+            /** After Tax Cents */
+            after_tax_cents: number;
+            /** Gains Cents */
+            gains_cents: number;
+        };
+        /** SuccessionOut */
+        SuccessionOut: {
+            /** Turn */
+            turn: string;
+            /** Trigger */
+            trigger: string;
+            /** Founder */
+            founder: string;
+            /** Successor */
+            successor: string;
+            /** Result */
+            result: string;
+        };
+        /** SuccessionPlanIn */
+        SuccessionPlanIn: {
+            /** Person Id */
+            person_id: number | null;
+        };
+        /** SuccessorCandidateOut */
+        SuccessorCandidateOut: {
+            /** Person Id */
+            person_id: number;
+            /** Name */
+            name: string;
+            /** Practice */
+            practice: string;
+            /** Age */
+            age: number;
+            rating: components["schemas"]["BandOut"];
+            /** Is Child */
+            is_child: boolean;
+            predicted_yes: components["schemas"]["BandOut"];
+            /** Total Weight */
+            total_weight: number;
+            /** Needed Weight */
+            needed_weight: number;
+            /** Rival Name */
+            rival_name: string | null;
+        };
+        /** SuccessorIn */
+        SuccessorIn: {
+            /** Person Id */
+            person_id: number;
         };
         /** @enum {string} */
         SupervisorLabel: "strong" | "fine" | "stretched";
@@ -3903,6 +4662,11 @@ export interface components {
             /** Source */
             source: string;
         };
+        /** TimeIn */
+        TimeIn: {
+            /** Energy */
+            energy: number;
+        };
         /** TimelineItemOut */
         TimelineItemOut: {
             /** Turn */
@@ -3917,6 +4681,15 @@ export interface components {
             link_kind?: string | null;
             /** Link Id */
             link_id?: number | null;
+        };
+        /** TraitOut */
+        TraitOut: {
+            /** Key */
+            key: string;
+            /** Value */
+            value: number;
+            /** Strong */
+            strong: boolean;
         };
         /** TrendPointOut */
         TrendPointOut: {
@@ -9582,6 +10355,1172 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GuidanceOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getFounder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FounderOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    createFoundation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CauseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FounderOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    giveToFoundation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FounderAmountIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FounderOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    invest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FounderAmountIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FounderOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    familyOffice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OfficeIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FounderOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    barCommittee: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OnIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FounderOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    barSpend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SpendIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FounderOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    standForOffice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FounderOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    planSuccession: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SuccessionPlanIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FounderOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    nameSuccessor: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SuccessorIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FounderOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    proposeRetirementAge: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AgeIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FounderOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    proposeAnnuities: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnnuityIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FounderOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getFamily: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FamilyOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    setFamilyTime: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TimeIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FamilyOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    chooseEducation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EducationIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FamilyOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    joinFirm: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChildIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FamilyOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    mentorChild: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MentorIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FamilyOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    giftToChild: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GiftIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FamilyOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    setUpTrust: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FounderAmountIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FamilyOut"];
                 };
             };
             /** @description Bad Request */

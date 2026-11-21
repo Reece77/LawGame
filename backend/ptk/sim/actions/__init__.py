@@ -40,6 +40,8 @@ from ptk.sim.hiring.actions import (
 )
 from ptk.sim.ledger import LedgerBalances
 from ptk.sim.matters.actions import MATTER_ACTION_TYPES, MatterAction, apply_matter_action
+from ptk.sim.org.pitches import AnswerPitch, answer_pitch
+from ptk.sim.org.seats import SEAT_ACTION_TYPES, SeatAction, apply_seat_action
 from ptk.sim.partnership.actions import (
     PARTNERSHIP_ACTION_TYPES,
     PartnershipAction,
@@ -50,7 +52,14 @@ from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
 
 type Action = (
-    HiringAction | MatterAction | BillingAction | PartnershipAction | ChooseEvent | RivalAction
+    HiringAction
+    | MatterAction
+    | BillingAction
+    | PartnershipAction
+    | ChooseEvent
+    | RivalAction
+    | SeatAction
+    | AnswerPitch
 )
 
 ACTION_TYPES: dict[str, type[Any]] = {
@@ -67,6 +76,8 @@ ACTION_TYPES: dict[str, type[Any]] = {
     **BILLING_ACTION_TYPES,  # PT-M3b
     **RIVAL_ACTION_TYPES,  # PT-M5
     **PARTNERSHIP_ACTION_TYPES,  # PT-M4
+    **SEAT_ACTION_TYPES,  # PT-M8
+    "answer_pitch": AnswerPitch,  # PT-M8
 }
 
 
@@ -87,6 +98,12 @@ def apply_action(
     draws = lambda: rng.stream(state.turn, "actions", seq)  # noqa: E731
     if isinstance(action, ChooseEvent):
         return apply_event_action(state, action, balance, data)
+    if isinstance(action, AnswerPitch):  # PT-M8
+        answered = answer_pitch(state, action, rng, draws, balance, data, ledger_balances)
+        return Outcome(answered.state, answered.entries, answered.log)
+    if type(action) in SEAT_ACTION_TYPES.values():  # PT-M8
+        seated = apply_seat_action(state, action, balance, data)  # type: ignore[arg-type]
+        return Outcome(seated.state, (), seated.log)
     if type(action) in RIVAL_ACTION_TYPES.values():
         return apply_rival_action(state, action, draws, balance, data)  # type: ignore[arg-type]
     if type(action) in PARTNERSHIP_ACTION_TYPES.values():
@@ -106,9 +123,18 @@ def apply_action(
     return apply_hiring(state, action, draws, balance, data, ledger_balances)  # type: ignore[arg-type]
 
 
+def _lists(value: Any) -> Any:
+    return [_lists(v) for v in value] if isinstance(value, tuple) else value
+
+
 def action_payload(action: Action) -> dict[str, Any]:
     """The decision_log payload: the action's fields (tuples as lists)."""
-    return {k: list(v) if isinstance(v, tuple) else v for k, v in asdict(action).items()}
+    return {k: _lists(v) for k, v in asdict(action).items()}
+
+
+def _tuples(value: Any) -> Any:
+    """JSON lists back to (nested) tuples, as the action's fields hold them."""
+    return tuple(_tuples(v) for v in value) if isinstance(value, list) else value
 
 
 def action_from_payload(payload: dict[str, Any]) -> Action:
@@ -117,6 +143,6 @@ def action_from_payload(payload: dict[str, Any]) -> Action:
     cls = ACTION_TYPES.get(str(kind))
     if cls is None:
         raise InvalidActionError(f"unknown action kind {kind!r}")
-    fields = {k: tuple(v) if isinstance(v, list) else v for k, v in payload.items()}
+    fields = {k: _tuples(v) for k, v in payload.items()}
     action: Action = cls(**fields)
     return action

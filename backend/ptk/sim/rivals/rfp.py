@@ -36,6 +36,7 @@ import numpy as np
 from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import InvalidActionError
+from ptk.sim.interfaces import seat_effect
 from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.matters.models import Client, Relationship
 from ptk.sim.rivals import streams
@@ -229,6 +230,10 @@ def player_score(state: GameState, rfp: Rfp, data: GameData, balance: Balance) -
     score += w.reputation * player_reputation(state, rfp.practices)
     if rfp.pitch is not None:
         quality = pitch_quality(state, rfp.pitch.team, rfp.practices)
+        # PT-M8 (spec 9.1): the CMO's pitch craft
+        quality += balance.seats.effects.cmo_pitch_points * seat_effect(
+            state, state.player.id, "cmo", balance, data
+        )
         score += rb.w_pitch * (quality - 10.0)  # tunable-exempt: the 1-20 midpoint
         for claim in rfp.pitch.claims:
             score += rb.w_claim if substantiated(state, rfp, claim, rfp.pitch.team) else -rb.w_claim

@@ -17,6 +17,7 @@ from ptk.sim.events.models import EMPTY_EVENTS, EventsState
 from ptk.sim.hiring.models import Candidate, Offer, PayPolicy, PersonState, Search
 from ptk.sim.matters.models import EMPTY_MARKET, MarketState
 from ptk.sim.org.models import EMPTY_ORG, OrgState
+from ptk.sim.org.seat_models import EMPTY_LEADERSHIP, LeadershipState
 from ptk.sim.partnership.models import EMPTY_PARTNERSHIP, PartnershipState
 from ptk.sim.people.models import Employment, Person, RevealState
 from ptk.sim.rivals.models import EMPTY_RIVALS, RIVAL_PERSON_BASE, RivalsState
@@ -73,6 +74,7 @@ class GameState:
     billing: BillingState = EMPTY_BILLING  # WIP, bills, client money, totals (PT-M3b)
     rivals: RivalsState = EMPTY_RIVALS  # rival firms, their key people, RFPs (PT-M5)
     partnership: PartnershipState = EMPTY_PARTNERSHIP  # capital, comp, votes, flight (PT-M4)
+    leadership: LeadershipState = EMPTY_LEADERSHIP  # seats, authority, pitches (PT-M8)
 
     @property
     def ended(self) -> bool:

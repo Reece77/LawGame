@@ -25,7 +25,12 @@ type EventStatus = Literal["pending", "open", "answered", "auto"]
 type StorylineStatus = Literal["active", "ended"]
 type Tone = Literal["grounded", "light"]
 type TextKind = Literal[
-    "headlines", "matter_brief", "pitch_letter", "partner_memo", "year_end_letter"
+    "headlines",
+    "matter_brief",
+    "pitch_letter",
+    "partner_memo",
+    "year_end_letter",
+    "seat_report",  # PT-M8: a chief seat holder's quarterly report (ref_id: the holder)
 ]
 
 

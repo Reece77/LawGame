@@ -214,8 +214,12 @@ def manager_morale_term(
     true leadership, communication and mentoring and their span (0 for the founding partner
     and anyone not on a firm's books)."""
     from ptk.sim.org.rules import supervisor_morale
+    from ptk.sim.org.seats import associate_morale
 
-    return supervisor_morale(state, person_id, balance)
+    # PT-M8: an associate's practice group leader and the CHRO (spec 9.1)
+    return supervisor_morale(state, person_id, balance) + associate_morale(
+        state, person_id, balance, data
+    )
 
 
 # --- PT-M2 (org): one-off morale changes and pay --------------------------------------------
@@ -677,3 +681,33 @@ def has_sponsor(state: GameState, person_id: int) -> bool:
     firm = state.employer_of(person_id)
     fp = state.partnership.of(firm) if firm is not None else None
     return fp is not None and fp.sponsor_of(person_id) is not None
+
+
+# --- PT-M8 (seats): the one seam other lanes' systems read seats through -------------------
+
+
+def seat_effect(
+    state: GameState,
+    firm_id: int,
+    seat_key: str,
+    balance: Balance,
+    data: GameData,
+    *,
+    unit_id: int | None = None,
+) -> float:
+    """The spec's seat effect `e` (spec 9.1, TST 18.3): clamp((s - 10) / 8, -0.5, 1) from the
+    holder's true seat score, -0.5 for a seat vacant from its stage, 0 before its stage (and
+    for rival firms). A practice group leader's needs the group's `unit_id`; the executive
+    committee's is its members' mean. Engine-only: never sent to the API or a prompt."""
+    from ptk.sim.org.seats import effect
+
+    return effect(state, firm_id, seat_key, balance, data, slot=unit_id)
+
+
+def practice_leader_effect(
+    state: GameState, firm_id: int, practice: str, balance: Balance, data: GameData
+) -> float:
+    """The practice group leader's `e` for the group of a practice (0 without a group)."""
+    from ptk.sim.org.seats import group_effect
+
+    return group_effect(state, firm_id, practice, balance, data)

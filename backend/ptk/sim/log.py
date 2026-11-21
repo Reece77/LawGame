@@ -18,6 +18,8 @@ type LinkKind = Literal[
     "rfp",  # PT-M5: the Market screen's RFP
     "rival",  # PT-M5: a rival firm's page
     "partnership",  # PT-M4: the Partnership screen
+    "org",  # PT-M8: the Org screen's Leadership panel
+    "pitch",  # PT-M8: a seat holder's pitch (answered in the inbox)
 ]  # appended by each milestone that links a new screen
 type ParamValue = str | int
 

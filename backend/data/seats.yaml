@@ -1,0 +1,150 @@
+# Seats (spec 9.1; TST formulas.md 18.3, 24.1; PT-M8). Validated by ptk.sim.org.seat_data.
+#
+# Each seat:
+# - key, label, short: ids and names shown on the Org screen's Leadership panel.
+# - stage: the firm stage (spec 3) from which the seat can be filled, its effect counts, and
+#   a vacancy counts as e = seats.vacant_effect (-0.5). Before it the seat has no effect.
+# - who: partner (an equity partner; `income: true` also lets an income partner sit),
+#   business_services (a business-services person at `bs_min_level` or above, or a partner),
+#   or player (the managing partner: the player, never appointed here).
+# - slots: one; per_group (one per active practice group: PT-M2's unit leader is the holder);
+#   per_office (offices beyond the home city, PT-M11: none yet, so no instances);
+#   committee (the executive committee: seats.exco sizes it).
+# - weights: the seat score s = sum of weight x the holder's TRUE skill (or personality trait:
+#   integrity), 1-20 points. The weights add up to 1.
+# - effect: what e does (text for the panel; the coefficients are balance seats.effects).
+# - authority: what the holder does each month when given authority, and its guardrails
+#   (key, label, default, min, max; integers, units in the label). Empty: no authority.
+# - pitches: the big moves the holder pitches each quarter with authority (pitches.py).
+seats:
+  - key: managing_partner
+    label: Managing partner
+    short: MP
+    stage: 2
+    who: player
+    slots: one
+    weights: { leadership: 0.3, strategy: 0.3, communication: 0.2, business_development: 0.2 }
+    effect: "Partners' confidence in the MP rises (or falls) a little every month."
+    authority: { does: "", guardrails: [] }
+    pitches: []
+  - key: executive_committee
+    label: Executive committee
+    short: ExCo
+    stage: 3
+    who: partner
+    slots: committee
+    weights: { strategy: 0.4, leadership: 0.3, communication: 0.3 }
+    effect: "Vets firm-wide proposals: every pitch is better chosen."
+    authority: { does: "", guardrails: [] }
+    pitches: []
+  - key: practice_group_leader
+    label: Practice group leader
+    short: PGL
+    stage: 3
+    who: partner
+    slots: per_group
+    weights: { supervision: 0.3, leadership: 0.3, business_development: 0.2, judgment_of_talent: 0.2 }
+    effect: "Keeps the group's diary full (flow work) and its associates' morale up."
+    authority:
+      does: "Opens associate hiring plans for the group when it runs hot, within a headcount cap."
+      guardrails:
+        - { key: headcount_cap, label: "Group headcount cap (people)", default: 40, min: 1, max: 400 }
+        - { key: busy_bp, label: "Hire above this utilisation (bp)", default: 9000, min: 6000, max: 11000 }
+    pitches: [lateral_partner, new_group]
+  - key: office_managing_partner
+    label: Office managing partner
+    short: OMP
+    stage: 3
+    who: partner
+    slots: per_office
+    weights: { leadership: 0.3, client_care: 0.2, operations: 0.2, communication: 0.3 }
+    effect: "Office morale and local business (from a second office, PT-M11)."
+    authority: { does: "", guardrails: [] }
+    pitches: []
+  - key: general_counsel
+    label: General counsel
+    short: GC
+    stage: 2
+    who: partner
+    income: true
+    slots: one
+    weights: { legal_reasoning: 0.3, integrity: 0.3, communication: 0.2, procedure: 0.2 }
+    effect: "Better conflicts checks: unseen conflicts surface less often."
+    authority:
+      does: "Asks clients for conflict waivers on held instructions (never adverse to a key client)."
+      guardrails:
+        - { key: waivers_per_month, label: "Waiver requests a month", default: 2, min: 0, max: 10 }
+    pitches: []
+  - key: cfo
+    label: Chief financial officer
+    short: CFO
+    stage: 2
+    who: business_services
+    slots: one
+    weights: { finance: 0.45, strategy: 0.2, negotiation: 0.2, communication: 0.15 }
+    effect: "Collections improve (from PT-M7b's billing)."
+    authority:
+      does: "Writes down the time on long-unbilled matters, within a band."
+      guardrails:
+        - { key: writedown_bp, label: "Largest write-down (bp of a bill)", default: 1000, min: 0, max: 3000 }
+        - { key: aged_months, label: "Write down WIP older than (months)", default: 6, min: 2, max: 24 }
+    pitches: [cost_programme]
+  - key: coo
+    label: Chief operating officer
+    short: COO
+    stage: 2
+    who: business_services
+    slots: one
+    weights: { operations: 0.35, leadership: 0.25, strategy: 0.2, communication: 0.2 }
+    effect: "Support coverage and office costs (from PT-M7b)."
+    authority: { does: "Keeps the offices running; proposes fit-outs as pitches.", guardrails: [] }
+    pitches: [fit_out]
+  - key: cmo
+    label: Chief marketing officer
+    short: CMO
+    stage: 2
+    who: business_services
+    slots: one
+    weights: { marketing: 0.45, communication: 0.2, strategy: 0.2, leadership: 0.15 }
+    effect: "Better RFP pitches."
+    authority:
+      does: "Pitches for open RFPs with the best team it can see, within a monthly limit."
+      guardrails:
+        - { key: rfps_per_month, label: "RFP pitches a month", default: 1, min: 0, max: 5 }
+    pitches: [panel_push]
+  - key: chro
+    label: Chief HR officer
+    short: CHRO
+    stage: 2
+    who: business_services
+    slots: one
+    weights: { human_resources: 0.4, judgment_of_talent: 0.2, communication: 0.2, leadership: 0.2 }
+    effect: "Associates' morale across the firm, and a stronger campus class."
+    authority:
+      does: "Registers each practice group's campus search in the season, within a class size."
+      guardrails:
+        - { key: class_size, label: "First-years a group a year (people)", default: 2, min: 0, max: 30 }
+    pitches: [campus_size]
+  - key: pricing_director
+    label: Pricing director
+    short: Pricing
+    stage: 3
+    who: business_services
+    slots: one
+    weights: { pricing: 0.45, numeracy: 0.25, negotiation: 0.15, communication: 0.15 }
+    effect: "Realisation improves (from PT-M7b's billing)."
+    authority:
+      does: "Sets each January's rate rise within a band around the market's."
+      guardrails:
+        - { key: band_bp, label: "Rate rise band around the market (bp)", default: 200, min: 0, max: 1000 }
+    pitches: [rate_move]
+  - key: cko
+    label: Chief knowledge officer
+    short: CKO
+    stage: 4
+    who: business_services
+    slots: one
+    weights: { knowledge_management: 0.35, technology: 0.35, strategy: 0.3 }
+    effect: "AI adoption and training (from PT-M12's knowledge systems)."
+    authority: { does: "", guardrails: [] }
+    pitches: []

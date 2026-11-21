@@ -13,9 +13,10 @@ from sqlalchemy import func, select
 from ptk.db import backup, migrate
 from ptk.db.billing_io import write_billing
 from ptk.db.events_io import add_text_requests, write_events, write_pending
+from ptk.db.leadership_io import write_leadership, write_seat_decisions
 from ptk.db.market_io import write_market
 from ptk.db.models import DecisionLogRow, FirmRow, SaveMetaRow, TurnSnapshotRow
-from ptk.db.org_io import write_delegate_actions
+from ptk.db.org_io import write_delegate_actions, write_org
 from ptk.db.partnership_io import write_partnership
 from ptk.db.rivals_io import write_panels, write_rival_moves, write_rivals
 from ptk.db.session import make_sessionmaker, shared_engine
@@ -152,6 +153,7 @@ def run_turn(
         )
         write_delegate_actions(session, state.turn, result.delegate_actions)
         write_rival_moves(session, state.turn, result.rival_moves)  # PT-M5
+        write_seat_decisions(session, state.turn, result.seat_decisions)  # PT-M8
         add_text_requests(session, result.text_requests)
     write_pending(path, balance, data, adapter=adapter)
     if result.new_state.turn % balance.backups.every_turns == 0:
@@ -190,6 +192,8 @@ def run_action(path: Path, action: Action, balance: Balance, data: GameData) -> 
         write_rivals(session, outcome.state.rivals)  # PT-M5
         write_panels(session, outcome.state.market)
         write_partnership(session, outcome.state.partnership)
+        write_org(session, outcome.state)  # PT-M8: a group leader's seat is the unit's leader
+        write_leadership(session, outcome.state.leadership)  # PT-M8
         session.add(
             DecisionLogRow(
                 turn=state.turn,

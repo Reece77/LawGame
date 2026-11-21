@@ -549,3 +549,14 @@ class PartnershipRow(Base):
     __tablename__ = "partnership"
     firm_id: Mapped[int] = mapped_column(Integer, primary_key=True)  # 0: the id counters
     data_json: Mapped[str] = mapped_column(Text)  # FirmPartnership (or the counters)
+
+
+# --- PT-M8: seats, authority, pitches (schema v11) ------------------------------------------
+# One JSON document (ptk.sim.org.seat_models.LeadershipState). A practice group leader's seat
+# is the unit's leader (org_unit.leader_id), so PT-M2's leaders are the holders already.
+
+
+class LeadershipRow(Base):
+    __tablename__ = "leadership"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)  # always 1
+    data_json: Mapped[str] = mapped_column(Text)

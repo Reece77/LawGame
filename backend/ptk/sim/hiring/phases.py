@@ -69,7 +69,7 @@ from ptk.sim.hiring.rules import (
     offer_pitch,
     prestige,
 )
-from ptk.sim.interfaces import has_sponsor, manager_morale_term
+from ptk.sim.interfaces import has_sponsor, manager_morale_term, seat_effect
 from ptk.sim.ledger import (
     BENEFITS,
     BONUSES,
@@ -847,6 +847,14 @@ def lateral_batches(
     return state, tuple(logs)
 
 
+def _lifted(person: Person, keys: tuple[str, ...], points: float) -> Person:
+    """A campus candidate's role skills moved by `points` (the CHRO, PT-M8), clamped 1-20."""
+    from ptk.sim.scale import clamp_attr
+
+    changes = {k: clamp_attr(person.skills[k] + points) for k in keys}
+    return replace(person, skills=person.skills.updated(changes))
+
+
 def campus_pools(
     state: GameState, rng: RngFactory, balance: Balance, data: GameData
 ) -> tuple[GameState, tuple[LogItem, ...]]:
@@ -866,6 +874,10 @@ def campus_pools(
         role = data.role(search.role)
         city = state.firm(search.firm_id).home_city
         people: list[tuple[Person, Cents]] = []
+        # PT-M8 (spec 9.1): the CHRO's campus programme draws a stronger (or weaker) class
+        lift = balance.seats.effects.chro_campus_points * seat_effect(
+            state, search.firm_id, "chro", balance, data
+        )
         for index, tier in enumerate(data.school_tiers):
             if tier not in tiers or (search.school_tiers and tier.key not in search.school_tiers):
                 continue
@@ -883,6 +895,8 @@ def campus_pools(
                     jurisdiction=jurisdiction,
                     school_tier=tier.key,
                 )
+                if lift:
+                    person = _lifted(person, role.primary, lift)
                 people.append(
                     (person, ask_cents(gen, person, state, search.firm_id, balance, data))
                 )

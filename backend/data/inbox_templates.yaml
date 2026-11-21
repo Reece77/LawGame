@@ -200,3 +200,34 @@ templates:
   election_lost_again:
     title: "{rival} keeps the managing partnership"
     body: "The partners kept {rival} as managing partner."
+  # --- PT-M8: seats, authority, pitches and reports ------------------------------------------
+  seat_appointed:
+    title: "{name} takes the {seat} seat"
+    body: "{name} is now the firm's {seat}. Set their authority and guardrails on the Org screen's Leadership panel."
+  seat_vacated:
+    title: "The {seat} seat is vacant"
+    body: "Nobody holds the {seat} seat. A vacant seat from its stage counts against the firm until it is filled."
+  seat_decision:
+    title: "{name} ({seat}): {what}"
+    body: "{detail}"
+  pitch:
+    title: "{name} pitches: {what}"
+    body: "{detail}"
+  pitch_answered:
+    title: "Pitch {outcome}: {what}"
+    body: "{detail}"
+  pitch_lapsed:
+    title: "Pitch lapsed: {what}"
+    body: "{name}'s pitch was not answered by the next quarter and lapses."
+  pitch_scored:
+    title: "Pitch follow-through: {what} was a {outcome}"
+    body: "{name}'s pitch from {made_label}: the central case was {central}; it measured {measured}."
+  partners_meeting:
+    title: "Partners' meeting: the committee is {mood}"
+    body: "{detail}"
+  exco_term:
+    title: "The exco_elected term {result}"
+    body: "{detail}"
+  exco_elected:
+    title: "The partners elect the executive committee"
+    body: "Elected for the year: {names}."

@@ -276,3 +276,19 @@ def test_health_never_asks_a_real_person(data: GameData, balance: Balance) -> No
     state = set_age(with_people(g.state, [real]), you, 80)
     for t in range(0, 120, 12):  # ten Januaries
         assert not succession._health(replace(state, turn=t), you, 80, RngFactory(t), balance)
+
+
+def test_a_month_with_no_player_partner_runs(data: GameData, balance: Balance) -> None:
+    """The player's partner can leave the firm (PT-M4's flight): lane C's month carries on."""
+    from ptk.sim.founder import phase
+
+    g = start_life(data, balance)
+    g.advance(2)
+    e = g.state.employment_of(g.founder)
+    assert e is not None
+    from ptk.sim.state import with_employment
+
+    gone = with_employment(g.state, replace(e, status="ended", end_turn=g.state.turn))
+    assert gone.founder_of(1) is None
+    month = phase.month(gone, gone, g.rng, g.balances, balance, data)
+    assert month.state == gone and month.entries == ()

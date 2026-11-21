@@ -156,7 +156,8 @@ def month(
     state, opened = ensure_player(state, balance)
     firm = state.player.id
     you = state.founder_of(firm)
-    assert you is not None
+    if you is None:  # the player's partner left the firm this month (PT-M4's flight)
+        return LifeMonth(state, personal=opened)
     logs: list[LogItem] = []
     out: list[PersonalEntry] = list(opened)
     entries: list[LedgerEntry] = []

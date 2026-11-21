@@ -3,27 +3,27 @@
     [
       1,
       "1000_cash",
-      472491936
+      149455016
     ],
     [
       1,
       "1100_unbilled_wip",
-      57827212
+      28436799
     ],
     [
       1,
       "1110_wip_provision",
-      -3501035
+      -1433807
     ],
     [
       1,
       "1200_receivables",
-      83993974
+      53909662
     ],
     [
       1,
       "1210_bad_debt_provision",
-      -839939
+      -539097
     ],
     [
       1,
@@ -33,17 +33,17 @@
     [
       1,
       "2700_partner_current_accounts",
-      -239862084
+      -70483188
     ],
     [
       1,
       "3000_partners_capital",
-      -232629852
+      -78971828
     ],
     [
       1,
       "3100_undistributed_profit",
-      11210828611
+      7887933272
     ],
     [
       1,
@@ -53,12 +53,12 @@
     [
       1,
       "4000_fees",
-      -12957983242
+      -9392420228
     ],
     [
       1,
       "4100_success_fees",
-      -123587966
+      -58494039
     ],
     [
       1,
@@ -73,7 +73,7 @@
     [
       1,
       "5100_staff_salaries",
-      578200000
+      480900000
     ],
     [
       1,
@@ -83,27 +83,27 @@
     [
       1,
       "6000_rent",
-      247800000
+      206100000
     ],
     [
       1,
       "6100_technology",
-      123900000
+      103050000
     ],
     [
       1,
       "6300_insurance",
-      66080000
+      54960000
     ],
     [
       1,
       "6700_write_offs",
-      1682219
+      1381377
     ],
     [
       1,
       "6900_general_admin",
-      437797051
+      358412946
     ],
     [
       101,
@@ -3346,7 +3346,7 @@
   "matter_outcomes": [
     [
       "closed",
-      44
+      36
     ],
     [
       "collapsed",
@@ -3354,7 +3354,7 @@
     ],
     [
       "done",
-      15
+      14
     ],
     [
       "lost",
@@ -3362,17 +3362,17 @@
     ],
     [
       "open",
-      3
+      1
     ]
   ],
-  "matters": "241c9ad7c3d0006fa137c6299c29f0fceb192228c0c487e689e78320ffdaaafb",
+  "matters": "2439bfe9b9059df5acf12b5ea45c5282901162be041f1bd077e40129d99b4b67",
   "names": [
     "James Jackson",
     "Michael Garcia",
     "Megan Brown",
     "Hannah Allen"
   ],
-  "people": "618f8822e9a5e3a33231752f452e04919dc91c3bc7bd8f3b0fee408996fa623e",
-  "relationships": "7a6f1ea1ca438d1ebeb8a22cde1c7717d935ef6007cf3f6f99eb9dd94d83c783",
-  "sha256": "ebb72d5709198f7c65e65f61ef7a8551fc7414d5d2c5dfd8b009ae26d5c70c11"
+  "people": "c8474fa5f699aec092aec880996b8cd502fd214f06df7191f69026c55153f206",
+  "relationships": "a0f0b3a828f4fc8f5e646ce1069d0cd7b892fe57be1291c6576df393417d85d4",
+  "sha256": "a03d648fc0b1e275389206a762c796cf7cd811e551da8daedb414502521ddfd1"
 }

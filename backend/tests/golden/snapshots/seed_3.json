@@ -3,27 +3,27 @@
     [
       1,
       "1000_cash",
-      139487798
+      349064925
     ],
     [
       1,
       "1100_unbilled_wip",
-      21108100
+      51802024
     ],
     [
       1,
       "1110_wip_provision",
-      -4647795
+      -3907590
     ],
     [
       1,
       "1200_receivables",
-      16366023
+      92484102
     ],
     [
       1,
       "1210_bad_debt_provision",
-      -163662
+      -1074557
     ],
     [
       1,
@@ -33,17 +33,17 @@
     [
       1,
       "2700_partner_current_accounts",
-      -48362822
+      -218454189
     ],
     [
       1,
       "3000_partners_capital",
-      -91124976
+      -130610736
     ],
     [
       1,
       "3100_undistributed_profit",
-      4695099939
+      9933411838
     ],
     [
       1,
@@ -53,42 +53,42 @@
     [
       1,
       "4000_fees",
-      -5277990798
+      -10513631860
     ],
     [
       1,
       "4100_success_fees",
-      -87965896
+      -209406930
     ],
     [
       1,
       "5000_associate_salaries",
-      206129994
+      190537495
     ],
     [
       1,
       "5010_bonuses",
-      40750000
+      39500000
     ],
     [
       1,
       "5200_benefits",
-      51532494
+      47634370
     ],
     [
       1,
       "6000_rent",
-      250800000
+      247800000
     ],
     [
       1,
       "6700_write_offs",
-      7686101
+      25617437
     ],
     [
       1,
       "6900_general_admin",
-      81295500
+      99233671
     ],
     [
       101,
@@ -3331,37 +3331,37 @@
   "matter_outcomes": [
     [
       "closed",
-      18
+      37
     ],
     [
       "collapsed",
-      4
+      3
     ],
     [
       "done",
-      11
+      15
     ],
     [
       "lost",
-      6
+      4
     ],
     [
       "open",
-      2
+      3
     ],
     [
       "won",
-      3
+      1
     ]
   ],
-  "matters": "da7975f6626a0b8eb19d1c7f9dad2da81a8b28f3a7d7ac2270441633a5c60b53",
+  "matters": "8d71074963fc4f6a7dca0605c37c15bcdb0cba56fe4920d00488724f1549f655",
   "names": [
     "James Jackson",
     "Michael Garcia",
     "Megan Brown",
     "Hannah Allen"
   ],
-  "people": "0f575fc59c2cd89adc78730222eb4b9d439f2605288a07ed3af7ebfa71b2ad88",
-  "relationships": "1f2865674dfb2fd9112dc11749dcd572fc20b0695c31b6f172cde2f281f142d8",
-  "sha256": "c7b2f1bf8c3371675802569ee29d8ed45ac5c4bc03f1a66c2ae13b965a1cc06a"
+  "people": "b8b53b9080757516d3bdf6b30f45d95b7e69f36ef1e2be10f9ebc5864c0140a5",
+  "relationships": "fcfaf5b8d3195676e1c4f4faec1c1952c1c4b4027d0adbd900766ac8df695d14",
+  "sha256": "5b573b735e25b1ad7e9b4dce037861cb2211d510a3097f23f6fc61478bf83575"
 }

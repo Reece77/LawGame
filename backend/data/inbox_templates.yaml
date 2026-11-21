@@ -90,6 +90,12 @@ templates:
   client_bankrupt:
     title: "{client} has filed for bankruptcy"
     body: "{client} has filed for bankruptcy. Its unpaid bills, {lost_cents} in all, have been written off as bad debts."
+  client_failed: # PT-M7: a real client history fails (clients.yaml fails)
+    title: "{client} has filed for Chapter 11"
+    body: "{client} has filed for bankruptcy. Our work for it has stopped and its unpaid bills will be written off as bad debts; its estate will instruct restructuring counsel."
+  client_rescued:
+    title: "{client} has been rescued"
+    body: "{client} has been sold in a rescue. Its bills will be paid, but its legal work will move to the buyer's firms within months."
   # PT-M5: rival firms, panels and RFPs
   rfp_open:
     title: "{client} invites pitches: {kind}"

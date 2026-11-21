@@ -20,6 +20,7 @@ from dataclasses import dataclass, replace
 
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.log import LogItem
+from ptk.sim.matters.failures import fail_clients
 from ptk.sim.matters.intake import expire_conflicted, intake, with_matter
 from ptk.sim.matters.market import monthly_demand
 from ptk.sim.matters.pro_bono import named_intake, record_month
@@ -73,9 +74,10 @@ def intake_and_staffing(
     if not state.market.clients:
         return StaffedMonth(state=state, work={}, unserved={}, log=())
     firm_id = state.player.id
-    state, rose = yearly_rise(state, balance)  # PT-M7a: January's rate rise
-    demand = monthly_demand(rng, state.turn, state, data)
+    state, rose = yearly_rise(state, data, balance)  # PT-M7a: January's rate rise
+    demand = monthly_demand(rng, state.turn, state, data, balance)
     state = replace(state, market=replace(state.market, demand_cents=demand))
+    state, failed = fail_clients(state, data, balance)  # PT-M7: history's failures
     state, declined = expire_conflicted(state, firm_id, balance)
     state = prune_teams(state, firm_id, data, balance)
     state = replan(state, firm_id, data, balance)
@@ -88,7 +90,7 @@ def intake_and_staffing(
         state=state,
         work=hours.work,
         unserved=hours.unserved,
-        log=(*rose, *declined, *result.log, *pro_bono),
+        log=(*rose, *failed, *declined, *result.log, *pro_bono),
     )
 
 

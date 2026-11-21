@@ -20,7 +20,7 @@ from pydantic import BaseModel, Field
 from ptk import loader
 from ptk.config import get_settings
 from ptk.db import saves
-from ptk.sim.calendar import format_turn
+from ptk.sim.calendar import format_turn, turn_to_ym
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import NotFoundError
 from ptk.sim.matters.actions import (
@@ -250,7 +250,7 @@ def practices_view(state: GameState, data: GameData, balance: Balance) -> list[P
 def _wallet_estimate(
     client: Client, state: GameState, data: GameData, balance: Balance
 ) -> RangeCentsOut:
-    shares = wallets(state.market.clients, data, balance)
+    shares = wallets(state.market.clients, data, balance, state.turn, state.save_meta.start_ym)
     base = base_monthly_demand(data)
     annual = sum(shares.wallet(client.id, i, base) for i in range(len(base))) * MONTHS
     lo, hi = WALLET_BAND
@@ -555,18 +555,21 @@ class RatePolicyIn(BaseModel):
     rise_bp: int | None  # None: follow the market
 
 
-def policies_view(state: GameState, balance: Balance) -> FirmPoliciesOut:
+def policies_view(state: GameState, data: GameData, balance: Balance) -> FirmPoliciesOut:
     firm = state.player
+    year = turn_to_ym(state.turn, state.save_meta.start_ym)[0]
     return FirmPoliciesOut(
         pro_bono_credit_hours=credit_hours(state, firm.id, balance),
         pro_bono_credit_max_hours=balance.pro_bono.credit_max_hours,
         pro_bono_hours_per_lawyer=round(firm.pro_bono_avg_tenths * 12 / TENTHS, 1),
         rate_rise_bp=firm.rate_rise_bp,
-        market_rise_bp=market_rise_bp(balance),
+        market_rise_bp=market_rise_bp(year, data, balance),
         rate_rise_min_bp=balance.rates.rise_min_bp,
         rate_rise_max_bp=balance.rates.rise_max_bp,
         rate_index_bp=round(firm.rate_index * 10000),
-        market_index_bp=round(market_index(state.turn, state.save_meta.start_ym, balance) * 10000),
+        market_index_bp=round(
+            market_index(state.turn, state.save_meta.start_ym, data, balance) * 10000
+        ),
     )
 
 
@@ -764,7 +767,7 @@ def make_matters_router(errors: dict[int | str, dict[str, Any]]) -> APIRouter:
         operation_id="getFirmPolicies",
     )
     def get_policies(slug: str) -> FirmPoliciesOut:
-        return policies_view(_state(slug), loader.balance())
+        return policies_view(_state(slug), loader.game_data(), loader.balance())
 
     @router.put(
         f"{base}/policies/pro-bono",
@@ -774,7 +777,9 @@ def make_matters_router(errors: dict[int | str, dict[str, Any]]) -> APIRouter:
     )
     def set_pro_bono(slug: str, body: ProBonoCreditIn) -> FirmPoliciesOut:
         return policies_view(
-            _act(slug, lambda a: SetProBonoCredit(a, body.hours)), loader.balance()
+            _act(slug, lambda a: SetProBonoCredit(a, body.hours)),
+            loader.game_data(),
+            loader.balance(),
         )
 
     @router.put(
@@ -784,7 +789,11 @@ def make_matters_router(errors: dict[int | str, dict[str, Any]]) -> APIRouter:
         operation_id="setRatePolicy",
     )
     def set_rates(slug: str, body: RatePolicyIn) -> FirmPoliciesOut:
-        return policies_view(_act(slug, lambda a: SetRatePolicy(a, body.rise_bp)), loader.balance())
+        return policies_view(
+            _act(slug, lambda a: SetRatePolicy(a, body.rise_bp)),
+            loader.game_data(),
+            loader.balance(),
+        )
 
     @router.get(
         f"{base}/conflict-checks",

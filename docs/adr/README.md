@@ -45,3 +45,4 @@ Partner Track inherits Tech Startup Tycoon's ADRs by reference where they apply.
 | [PT-0011](PT-0011-legal-ai-era.md) | Legal tech and AI act on tasks | Accepted |
 | [PT-0012](PT-0012-rng-streams.md) | Stream table; kernel ids reserved | Accepted |
 | [PT-0013](PT-0013-game-setting-decisions.md) | Reece's game-setting decisions; real lawyers and judges and their rules | Accepted |
+| [PT-0014](PT-0014-macro-history.md) | The macro history to 2015 as dated indices; history's client failures as data | Accepted |

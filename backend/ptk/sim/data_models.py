@@ -12,6 +12,8 @@ from ptk.sim.events.data import (
     EventTemplate,
     template_problems,
 )
+from ptk.sim.macro_data import SERIES as MACRO_SERIES
+from ptk.sim.macro_data import MacroBalance, MacroData
 from ptk.sim.rivals.data import RivalsBalance, RivalsData, WorldBalance
 
 type AccountType = Literal["asset", "liability", "equity", "income", "expense"]
@@ -1191,6 +1193,7 @@ class Balance(_Strict):
     pro_bono: ProBonoBalance  # PT-M7a
     assessment: AssessmentBalance  # PT-M7a
     rates: RatesBalance  # PT-M7a
+    macro: MacroBalance  # PT-M7: the macro and legal indices
     holiday: HolidayBalance  # PT-M7a
 
 
@@ -1320,7 +1323,8 @@ class PracticeDef(_Strict):
     short_label: str = Field(min_length=1)
     demand_cents: int = Field(gt=0)  # NY 2005 annual demand base D0 (spec 6)
     driver: str = Field(min_length=1)
-    beta: float  # sensitivity to the driver index (indices are 1.0 until PT-M7)
+    beta: float  # sensitivity to the driver index (spec 6)
+    index: str  # PT-M7: the driver's macro_history.yaml series
     sigma: float = Field(ge=0)  # monthly LogNormal demand noise
     rates: dict[str, int]  # rate band -> cents an hour
     leverage: float = Field(gt=0)
@@ -1400,11 +1404,22 @@ class SectorDef(_Strict):
     suffixes: tuple[str, ...] = Field(min_length=1)  # generated client names
 
 
+class ClientFailureDef(_Strict):
+    """PT-M7: a real client's dated failure (docs/research/v1-macro.md). A bankruptcy leaves
+    the firm's open bills unpaid and keeps the estate instructing restructuring work; a rescue
+    (a distressed sale) pays its bills and its wallet ends after `macro.rescue_months`."""
+
+    ym: tuple[int, int]
+    kind: Literal["bankruptcy", "rescue"]
+    src: str = Field(min_length=1)
+
+
 class RealClientDef(_Strict):
     name: str = Field(min_length=1)
     sector: str
     revenue_bn: float = Field(gt=0)
     country: str = "us"
+    fails: ClientFailureDef | None = None  # PT-M7
 
 
 class PanelFirmDef(_Strict):
@@ -1639,6 +1654,7 @@ class GameData(_Strict):
     courts: CourtsData  # PT-M3a: courts.yaml
     rivals: RivalsData  # PT-M5: firms.yaml, notables.yaml, judges.yaml
     event_templates: tuple[EventTemplate, ...] = ()  # PT-M6: events/*.yaml (TST 16.4)
+    macro: MacroData  # PT-M7: macro_history.yaml
 
     @model_validator(mode="after")
     def _unique(self) -> GameData:
@@ -1666,6 +1682,8 @@ class GameData(_Strict):
             if len(keys) != len(set(keys)):
                 raise ValueError(f"duplicate {name} keys")
         self._check_references()
+        if bad := sorted({p.index for p in self.practices} - set(MACRO_SERIES)):
+            raise ValueError(f"practices: unknown macro index {bad}")
         self.rivals.check(set(self.practice_keys), {c.key for c in self.courts.courts})
         if problems := template_problems(self.event_templates):
             raise ValueError("event templates: " + "; ".join(problems))

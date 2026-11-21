@@ -245,11 +245,11 @@ def test_auto_resolve_skips_written_critical(
     assert done.events.event(event.id).status == "auto"  # type: ignore[union-attr]
 
 
-def test_wip_writedown_goes_through_billing(
-    base: GameState, data: GameData, balance: Balance
-) -> None:
+def test_wip_writedown_goes_through_billing(data: GameData, balance: Balance) -> None:
     """PT-M3b merged: a write-down sets the matter's next-bill write-down (bp), held to
-    billing.writedown_max_bp; matters not billed by the hour are unchanged."""
+    billing.writedown_max_bp; matters not billed by the hour are unchanged. PT-M7: its own
+    seed 4 (seed 3's firm, in the universe with Chrysler, has no hourly engagement at turn 8)."""
+    base = played(data, balance, seed=4, turns=8)
     hourly = [
         e
         for e in base.billing.engagements

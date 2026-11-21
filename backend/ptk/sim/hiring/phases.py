@@ -84,6 +84,7 @@ from ptk.sim.ledger import (
     LedgerLine,
 )
 from ptk.sim.log import LogItem, inbox_item
+from ptk.sim.macro import lateral_heat
 from ptk.sim.matters.pro_bono import morale_term as pro_bono_morale
 from ptk.sim.money import Cents, pct_of
 from ptk.sim.people.generator import generate_person, people_gen_stream, weighted_pick
@@ -539,6 +540,7 @@ def morale_and_departures(
     cfg = balance.morale
     month = _ym(state)[1]
     december = month == balance.pay.bonus_month
+    heat = lateral_heat(state.turn, state.save_meta.start_ym, data, balance)  # PT-M7
     moved: list[PersonState] = []
     for employment, person in _employees(state):
         target = morale_target(
@@ -567,6 +569,7 @@ def morale_and_departures(
             lifer=LIFER in person.tags,
             burnout=burnout_effects_active(person, state.turn, balance),
             month_mult=month_multiplier(person.level, month, balance),
+            heat=heat,
         )
         roll = int(rng.stream(state.turn, "resign", person.id).integers(0, ROLL_RANGE))
         if not roll_succeeds(roll, chance):

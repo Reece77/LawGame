@@ -21,13 +21,15 @@ from tests.matters_support import game, play
 def test_january_raises_the_card_by_the_market_by_default(data: GameData, balance: Balance) -> None:
     state = game(data, balance)
     assert state.player.rate_index == 1.0
-    state, logs = yearly_rise(state, balance)  # turn 0: never
+    state, logs = yearly_rise(state, data, balance)  # turn 0: never
     assert state.player.rate_index == 1.0 and not logs
     state, _ = play(state, data, balance, 13)  # through January 2006 (turn 12)
-    rise = market_rise_bp(balance) / 10000
+    rise = market_rise_bp(2006, data, balance) / 10000
     assert state.player.rate_index == pytest.approx(1.0 + rise)
-    assert market_index(state.turn, state.save_meta.start_ym, balance) == pytest.approx(1 + rise)
-    assert price_term(state, state.player.id, balance) == pytest.approx(0.0)
+    assert market_index(state.turn, state.save_meta.start_ym, data, balance) == pytest.approx(
+        1 + rise
+    )
+    assert price_term(state, state.player.id, data, balance) == pytest.approx(0.0)
 
 
 def test_a_player_policy_and_the_price_term(data: GameData, balance: Balance) -> None:
@@ -38,7 +40,7 @@ def test_a_player_policy_and_the_price_term(data: GameData, balance: Balance) ->
         g.act(SetRatePolicy(g.founder_id, balance.rates.rise_max_bp + 1))
     g.advance(13)
     assert g.state.player.rate_index == pytest.approx(1.08)
-    term = price_term(g.state, g.state.player.id, balance)
+    term = price_term(g.state, g.state.player.id, data, balance)
     assert term < 0
     client = g.state.market.client(g.state.market.relationships[0].client_id)
     rel = g.state.market.relationships[0]

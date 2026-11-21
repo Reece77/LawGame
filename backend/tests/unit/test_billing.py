@@ -148,14 +148,16 @@ def _close(state: GameState, matter_id: int, outcome: str) -> GameState:
 def test_retainer_defers_income_then_bills_hourly_after_its_term(
     data: GameData, balance: Balance
 ) -> None:
-    game = played(data, balance, 24, 4, seed=2)
+    # PT-M7: seed 3 (seed 2's universe now holds a retainer of its own; this test needs none)
+    game = played(data, balance, 24, 4, seed=3)
+    assert game.state.billing.deferred_cents == 0  # no other retainer's deferred income
     mid = _open_matter(game.state)
     e = game.state.billing.engagement(mid)
     assert e is not None
     state = _with_engagement(
         game.state, replace(e, model="retainer", price_cents=500_000, term_months=2, wip_cents=0)
     )
-    month = billing_month(state, RngFactory(2), data, balance)
+    month = billing_month(state, RngFactory(3), data, balance)
     first = month.state.billing.engagement(mid)
     assert first is not None and first.advance_turn == state.turn + 1 and first.months_billed == 1
     deferred = sum(
@@ -164,7 +166,7 @@ def test_retainer_defers_income_then_bills_hourly_after_its_term(
     assert deferred == -500_000  # next month billed in advance, not yet earned
     assert month.state.billing.deferred_cents == 500_000
     nxt = replace(month.state, turn=state.turn + 1)
-    second = billing_month(nxt, RngFactory(2), data, balance)
+    second = billing_month(nxt, RngFactory(3), data, balance)
     earned = sum(ln.amount for x in second.entries for ln in x.lines if ln.account == DEFERRED_FEES)
     after = second.state.billing.engagement(mid)
     assert earned == 500_000  # earned out of deferred income, and the term is over

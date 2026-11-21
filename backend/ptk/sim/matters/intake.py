@@ -231,7 +231,7 @@ def intake(
 ) -> IntakeResult:
     turn = state.turn
     market = state.market
-    shares: Wallets = wallets(market.clients, data, balance)
+    shares: Wallets = wallets(market.clients, data, balance, turn, state.save_meta.start_ym)
     key = key_clients(market, firm_id, balance)
     keys = data.practice_keys
     reps = {p: firm_reputation(state, firm_id, p) for p in keys}
@@ -239,7 +239,9 @@ def intake(
     flow_fees: dict[tuple[int, str], float] = {}
     logs: list[LogItem] = []
     named_min = balance.matters.named_min_cents
-    price = price_term(state, firm_id, balance)  # PT-M7a: the firm's card against the market's
+    price = price_term(
+        state, firm_id, data, balance
+    )  # PT-M7a: the firm's card against the market's
     for rel in [r for r in market.relationships if r.firm_id == firm_id]:
         client = state.market.client(rel.client_id)
         if adverse_to(state.market, firm_id, client.id):

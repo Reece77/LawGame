@@ -67,6 +67,7 @@ def load_game_data(data_dir: Path) -> GameData:
                 },
             },
             event_templates=_event_templates(data_dir / "events"),
+            macro=_read(data_dir / "macro_history.yaml"),  # PT-M7
         )
     except (ValidationError, KeyError, FileNotFoundError) as exc:
         raise InvalidDataError(f"invalid seed data: {exc}") from exc

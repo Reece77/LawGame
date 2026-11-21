@@ -260,18 +260,20 @@ def staffing_board(
 # --- Practices screen ------------------------------------------------------------------------
 
 
-def demand_trend(state: GameState, data: GameData) -> list[tuple[int, tuple[int, ...]]]:
+def demand_trend(
+    state: GameState, data: GameData, balance: Balance
+) -> list[tuple[int, tuple[int, ...]]]:
     """The market's demand in the months played (up to TREND_MONTHS), oldest first: the same
     seeded draws the turn made, recomputed (a pure function of the seed and the month)."""
     rng = RngFactory(state.save_meta.master_seed)
     first = max(0, state.turn - TREND_MONTHS)
-    return [(t, monthly_demand(rng, t, state, data)) for t in range(first, state.turn)]
+    return [(t, monthly_demand(rng, t, state, data, balance)) for t in range(first, state.turn)]
 
 
 def practices_screen(state: GameState, data: GameData, balance: Balance) -> list[PracticeScreenOut]:
     firm = state.player.id
     start = state.save_meta.start_ym
-    trend = demand_trend(state, data)
+    trend = demand_trend(state, data, balance)
     last = trend[-1][1] if trend else tuple(0 for _ in data.practices)
     earners = fee_earners(state, firm, data, balance)
     worked = _hours_by_person(state)

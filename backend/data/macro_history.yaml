@@ -1,0 +1,46 @@
+# The macro and legal indices, 2005-2015 (PT-M7; spec 6 demand, spec 14). Each index is 1.0 at
+# the 2005 average. Points are dated months; a month between two points is interpolated, a
+# month after the last holds it (seeded cycles to 2034 are PT-M10's). Mid-year points carry
+# each year's annual figure; the October 2008 and April 2009 points carry the crash's timing
+# (Lehman, 15 September 2008; the trough in the spring of 2009).
+#
+# Source tags as in docs/research/v1-market.md: [S] seen in the source, [D] derived, [A] assumed.
+# The dossier with every figure and its source: docs/research/v1-macro.md. Volume indices are
+# damped (about the square root of the dollar volume's ratio, [D/A]): legal work follows deal
+# counts and hours more than deal values (dossier s2).
+#
+# How the indices act is in balance.yaml `macro:` and ptk/sim/macro.py.
+
+sources:
+  growth: "[A] dossier s2: large-firm demand (hours) growth, Citi/Peer Monitor, net of the cycle the driver indices carry"
+  ma: "[D] dossier s2: US announced M&A value, damped"
+  pe: "[D] dossier s2: US buyout value, damped"
+  issuance: "[D] dossier s2: US IPO count and debt issuance, blended"
+  lending: "[D] dossier s2: US leveraged loan issuance, damped"
+  credit: "[D] dossier s2: square root of 2005's speculative-grade default rate over the year's (Moody's)"
+  cycle: "[A] dossier s2: real activity (GDP and corporate profits) relative to 2005"
+  enforcement: "[D] dossier s2: SEC enforcement actions and DOJ FCPA actions"
+  ip: "[D] dossier s2: patent suits filed, damped"
+  real_estate: "[D] dossier s2: US commercial property transaction volume, damped"
+  lateral_heat: "[D/A] dossier s2: lateral partner moves (Am Law Lateral Report) and associate hiring"
+  collections: "[A] dossier s2: lockup and days to pay (Citi Private Bank Law Firm Group)"
+
+points:
+  - { ym: [2005, 1], values: { growth: 1.00, ma: 1.00, pe: 1.00, issuance: 1.00, lending: 1.00, credit: 1.00, cycle: 1.00, enforcement: 1.00, ip: 1.00, real_estate: 1.00, lateral_heat: 1.00, collections: 1.00 } }
+  - { ym: [2005, 7], values: { growth: 1.00, ma: 1.00, pe: 1.00, issuance: 1.00, lending: 1.00, credit: 1.00, cycle: 1.00, enforcement: 1.00, ip: 1.00, real_estate: 1.00, lateral_heat: 1.00, collections: 1.00 } }
+  - { ym: [2006, 7], values: { growth: 1.02, ma: 1.15, pe: 1.39, issuance: 1.00, lending: 1.00, credit: 1.05, cycle: 1.03, enforcement: 0.95, ip: 1.03, real_estate: 1.04, lateral_heat: 1.05, collections: 0.98 } }
+  - { ym: [2007, 7], values: { growth: 1.04, ma: 1.15, pe: 1.53, issuance: 1.05, lending: 1.06, credit: 1.25, cycle: 1.04, enforcement: 1.10, ip: 1.07, real_estate: 1.19, lateral_heat: 1.12, collections: 1.00 } }
+  - { ym: [2008, 7], values: { growth: 1.05, ma: 0.95, pe: 1.05, issuance: 0.80, lending: 0.70, credit: 0.80, cycle: 0.99, enforcement: 1.15, ip: 1.05, real_estate: 0.85, lateral_heat: 1.00, collections: 1.05 } }
+  - { ym: [2008, 10], values: { growth: 1.05, ma: 0.82, pe: 0.75, issuance: 0.55, lending: 0.45, credit: 0.55, cycle: 0.95, enforcement: 1.18, ip: 1.03, real_estate: 0.62, lateral_heat: 0.85, collections: 1.12 }, note: "Lehman (15 September 2008) and the freeze" }
+  - { ym: [2009, 4], values: { growth: 1.05, ma: 0.72, pe: 0.55, issuance: 0.62, lending: 0.36, credit: 0.33, cycle: 0.86, enforcement: 1.22, ip: 1.00, real_estate: 0.38, lateral_heat: 0.55, collections: 1.20 }, note: "the trough" }
+  - { ym: [2009, 7], values: { growth: 1.05, ma: 0.76, pe: 0.63, issuance: 0.70, lending: 0.40, credit: 0.37, cycle: 0.88, enforcement: 1.22, ip: 1.00, real_estate: 0.40, lateral_heat: 0.60, collections: 1.18 } }
+  - { ym: [2010, 7], values: { growth: 1.05, ma: 0.87, pe: 1.00, issuance: 0.90, lending: 0.70, credit: 0.75, cycle: 0.93, enforcement: 1.30, ip: 1.15, real_estate: 0.58, lateral_heat: 0.80, collections: 1.10 } }
+  - { ym: [2011, 7], values: { growth: 1.06, ma: 1.02, pe: 1.10, issuance: 0.88, lending: 0.88, credit: 1.00, cycle: 0.96, enforcement: 1.25, ip: 1.30, real_estate: 0.73, lateral_heat: 1.00, collections: 1.05 } }
+  - { ym: [2012, 7], values: { growth: 1.06, ma: 0.91, pe: 1.17, issuance: 0.92, lending: 0.98, credit: 0.83, cycle: 0.98, enforcement: 1.15, ip: 1.50, real_estate: 0.86, lateral_heat: 1.00, collections: 1.04 } }
+  - { ym: [2013, 7], values: { growth: 1.07, ma: 1.00, pe: 1.15, issuance: 1.05, lending: 1.12, credit: 0.80, cycle: 1.00, enforcement: 1.10, ip: 1.65, real_estate: 0.94, lateral_heat: 1.00, collections: 1.03 } }
+  - { ym: [2014, 7], values: { growth: 1.08, ma: 1.15, pe: 1.32, issuance: 1.12, lending: 1.06, credit: 0.95, cycle: 1.03, enforcement: 1.15, ip: 1.50, real_estate: 1.05, lateral_heat: 1.05, collections: 1.03 } }
+  - { ym: [2015, 7], values: { growth: 1.09, ma: 1.38, pe: 1.37, issuance: 0.95, lending: 0.96, credit: 0.73, cycle: 1.04, enforcement: 1.18, ip: 1.60, real_estate: 1.17, lateral_heat: 1.10, collections: 1.03 } }
+
+# The market's January rate rise (dossier s2: worked-rate growth, Peer Monitor and Citi) [S/A].
+# After 2015, rivals.rate_inflation (balance.yaml).
+rate_rise: { 2006: 0.065, 2007: 0.065, 2008: 0.06, 2009: 0.025, 2010: 0.03, 2011: 0.04, 2012: 0.034, 2013: 0.033, 2014: 0.033, 2015: 0.03 }

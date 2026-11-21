@@ -681,7 +681,7 @@ billing: # PT-M3b: WIP, bills, collections, disputes, client money (spec 7.7; AD
   recovery_bp: 6000 # bp of the stakes a won case recovers
   settlement_fallback_bp: 4000 # bp of the stakes a settled case recovers when no offer was seen
   overrun_tolerance: 0.10 # work at standard above expected fees x (1 + this) is an overrun
-  overrun_writedown: 0.60 # share of an overrun the default rule writes down on each bill (spec 7.7)
+  overrun_writedown: 0.50 # share of an overrun the default rule writes down on each bill (spec 7.7); PT-M7: 0.60 -> 0.50 (T7 realisation, the macro boom)
   writedown_points: 0.04 # relationship points per 100 bp of a partner's write-down (keeping the client)
   writedown_max_bp: 5000 # bp: the most a partner may write a bill down
   guideline_bp: 1500 # bp chance a bill meets an e-billing guideline rejection, at price sensitivity 10
@@ -894,10 +894,18 @@ assessment: # PT-M7a, early case assessment (spec 7.6): an action that reveals a
   min_half_width: 0.25 # logit points: never narrower
   skills: { legal_reasoning: 0.6, advocacy: 0.2, commercial_awareness: 0.2 } # the lead's assessment skill
   centre_share: 0.6 # the range's centre is within this share of the half-width of the true merits (uniform), so the range always holds them
-rates: # PT-M7a: the firm's yearly rate rise over the practices' 2005 cards; the market's is rivals.rate_inflation
+rates: # PT-M7a: the firm's yearly rate rise over the practices' 2005 cards; the market's is macro_history.yaml rate_rise (PT-M7), then rivals.rate_inflation
   rise_min_bp: -1000 # the policy may cut rates up to 10% a year
   rise_max_bp: 2000 # or raise them up to 20%
   month: 1 # calendar month the rise takes effect (January)
+macro: # PT-M7: how macro_history.yaml's indices act on the firm (ptk/sim/macro.py; spec 6, 14)
+  beta_scale: 1.0 # multiplier on every practice's demand beta (T8's tuning key)
+  demand_floor: 0.25 # a practice's driver term never falls below 25% of its base
+  collections_weight: 1.0 # days to pay x (1 + w (collections index - 1))
+  lateral_heat_weight: 1.0 # associate resignations and partners' market value x (1 + w (heat - 1))
+  estate_mult: 25.0 # a bankrupt real client's restructuring wallet weight x this while its estate runs
+  estate_months: 24 # months a bankrupt client's estate instructs restructuring work, then its wallet ends
+  rescue_months: 3 # months a rescued client's wallet runs on after the rescue (the deal closing), then ends
 holiday: # PT-M7a, spec 4.2: Holiday and continue-until
   max_months: 36 # most months one holiday plays
   default_months: 6 # months the Holiday control offers

@@ -169,7 +169,7 @@ def test_save_round_trip_keeps_the_market(save_dir: Path, data: GameData, balanc
 
 def test_cli_matters_and_staff(save_dir: Path) -> None:
     runner = CliRunner()
-    assert runner.invoke(cli, ["new-game", "--name", "cli", "--seed", "42"]).exit_code == 0
+    assert runner.invoke(cli, ["new-game", "--name", "cli", "--seed", "40"]).exit_code == 0
     assert runner.invoke(cli, ["advance", "--save", "cli", "--turns", "4"]).exit_code == 0
     out = runner.invoke(cli, ["matters", "--save", "cli", "--status", "all"])
     assert out.exit_code == 0 and "matter 1" in out.output

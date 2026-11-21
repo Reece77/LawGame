@@ -14,9 +14,9 @@
 
 ## Acceptance criteria
 
-- [ ] T1, T2, T11 and T12 pass; the bands pass or are carried with a recorded decision for Reece.
-- [ ] Golden snapshots and the state cache recorded for v1.
-- [ ] `make check`, e2e and nightly green; `Milestone-Tag: pt-m7-done`.
+- [x] T1, T11 and T12 pass; T2 is a known miss by Reece's decision (2026-11-21); the bands pass or are carried with a recorded decision (known misses, PT-M7b).
+- [x] Golden snapshots and the state cache recorded for v1.
+- [x] `make check`, e2e and nightly green; `Milestone-Tag: pt-m7-done`.
 
 ## Manual check (Reece)
 
@@ -65,7 +65,7 @@ During tuning one intermediate configuration (overhead $13,300, write-down 0.50)
 
 **The gate and the bands carried to Reece, with why the keys cannot reach them:**
 
-- **T2 (a pass/fail gate)**: steady is the strongest strategy in v1's engine. It grows with its demand and laterals, keeps leverage at 4-5 lawyers per equity partner and rarely dissolves, so whatever the score reads (the founder's earnings, or PEP x sqrt(equity partners)), it wins wherever it survives; the other strategies win only on seeds where it dies. No tuning key separates them without breaking another target or an earlier guard. Proposed default: make the strategies' risks real, which is what T5 and T9 measure (decisions 4 and 5), and read T2 again; or define the score as PEP alone (boutique wins on PEP once T4's bands hold). **The branch is not merged while T2 fails** (CLAUDE.md section 9: a guard rules 1-4 cannot resolve).
+- **T2 (a pass/fail gate)**: steady is the strongest strategy in v1's engine. It grows with its demand and laterals, keeps leverage at 4-5 lawyers per equity partner and rarely dissolves, so whatever the score reads (the founder's earnings, or PEP x sqrt(equity partners)), it wins wherever it survives; the other strategies win only on seeds where it dies. No tuning key separates them without breaking another target or an earlier guard. Proposed default: make the strategies' risks real, which is what T5 and T9 measure (decisions 4 and 5), and read T2 again; or define the score as PEP alone (boutique wins on PEP once T4's bands hold). It went to Reece (CLAUDE.md section 9: a guard rules 1-4 cannot resolve); his decision (below) records it as a known miss for PT-M7b.
 - **T5**: steady dissolves on no seed at any difficulty, because the difficulty only scales the starting capital (`capital_mult_bp`) and steady never draws its revolver hard. Proposed default: hard also cuts the revolver and the founders' books (two new difficulty fields), or T5 measures the pyramid or the rocket.
 - **T3 lawyers and T4 PEP** ask for a firm of 100-250 lawyers at about $600k revenue per lawyer (T3's $60-150M) and PEPs of an Am Law mid-table firm. v1's rate cards are a top New York firm's 2005 card (`practices.yaml`, dossier v1-market s5), and with history's rate rises a lawyer bills about $1.2M in 2015: steady reaches T3's revenue with half T3's lawyers, and PEP is RPL x margin x leverage = about 3x the band. Proposed default: keep the cards and move T3 to 50-120 lawyers and T4 to steady $2-5M, boutique $2.5-5M, pyramid $1.5-3.5M (Am Law 50's 2015 range); or give a new firm a lower card (a rate index below 1 at the start).
 - **T8**: a two-practice or small firm is capacity-bound: its clients' wallets exceed its hours even after a 45% fall in corporate demand, so its revenue barely moves. 2009's real declines came with clients' discounts and write-downs (spec 14: "rates frozen; clients demand discounts"), which v1 does not model. Proposed default: a crisis discount (the macro's `collections` stress also raising clients' discounts and short payments in 2009-2010), a small rule for PT-M7b. The restructuring reading is 3 runs, 5 points above the band.
@@ -79,10 +79,18 @@ During tuning one intermediate configuration (overhead $13,300, write-down 0.50)
 14. **pt-2008** (`ptk/practice.py`) is built, not hand-written: the spin-out plays January 2005 to June 2008 over the pure sim, then grows at once to 60 lawyers (14 equity partners through PT-M4's arrival hook, 7 income partners, 39 associates, 31 clients worth the firm's capacity, $15M of capital). The candidate is a corporate seventh-year (eighth from September, eligible at track 8). History's failing clients are left out of its panels. `ptk practice-save`, `POST /api/practice/{key}`, the Main menu's Practice button.
 15. **Fixtures re-picked** because Chrysler's row shifts generated clients (decision 2), each asserting the precondition it needs: PT-M3b's retainer test (seed 3: seed 2 now has a retainer), PT-M6's event property test (seed 8: seed 7 has no open matter at turn 8), its write-down test (seed 4), PT-M7a's assessment tests (seed 4: no case in three years on seed 3), the CLI matters test (seed 40), PT-M4's true-up test (seed 3: with overhead, seed 2's founders drew more than the first year's cash profit), PT-M4's partnership API round trip (seed 5: the untouched group lift on seed 4 dissolves in its fourteenth month); PT-M1b's hiring round trip runs under `solvent(balance)` on both sides (it hires two people a month from $600k of capital and now dissolves by month 6; it tests the round trip, PT-M4's pattern); the golden seeds play until the campaign ends or the firm dissolves (seed 2's unmanaged firm now dissolves before 2034); `e2e/m4.spec.ts` founds its group lift on seed 5 through the API (on a random seed it timed out when the firm dissolved before December). No assertion was loosened.
 
+**Reece's decisions on PT-M7** (via the product manager, 2026-11-21):
+
+1. Merge PT-M7 now. T2, T3 (lawyers), T4 (steady and pyramid), T5 (standard and hard), T8, T9 and T10 are recorded in `ptk/balance/known_misses.py`, each owned by PT-M7b with its fix named; T6's 7.7% is accepted as sampling noise. T2's measure is unchanged. Each known miss's bound is a little beyond PT-M7's reading (the rows' scores in `report.py` are oriented so that larger is worse).
+2. T1 is confirmed in 2005 dollars, deflated by the game's rate index (`docs/balance-targets.md`, Measures).
+3. The untouched group lift dissolving on 4 of 12 seeds is accepted (do-nothing should fail); first-year draws are not cut.
+4. `docs/tasks/PT-M7b-pressure-and-balance.md` carries the fixes: a new firm's rate card, difficulty teeth, crisis discounts, an earlier CFO warning, an hours policy, then T2 re-read with December comp rounds in the scripts.
+
+`nightly.yml`'s temporary push trigger is removed in the merge (the workflow is on `main` from now and dispatchable).
+
 ## Follow-ups
 
-- **PT-M7b (proposed):** Reece's answers on the bands above (T3, T4, T6 partners, T8, T9, T10), then the small rules they need (a crisis discount, an hours policy, a capitalised T9 start).
-- Steady's partners leave when underpaid against their market value: a December comp round in the scripts (`CompRound`) would keep more of them; the engine has it, the scripts do not use it.
+- **PT-M7b** (`docs/tasks/PT-M7b-pressure-and-balance.md`): the known misses' fixes.
 - A client's GC change and panel churn for a firm that does no BD (do-nothing's clients are sticky; T1 then needs no deflation).
 - History: a rankings tab by PEP and RPL, and the timeline's events linked to their screens.
 - Holiday's stop reasons for a client's failure (`client_failed`), so a player on holiday sees Lehman.

@@ -9,8 +9,6 @@ on:
   schedule:
     - cron: "17 4 * * *" # 04:17 UTC
   workflow_dispatch:
-  push: # TEMPORARY (PT-M7): a new workflow cannot be dispatched before it is on main; removed before the merge
-    branches: [pt-m7-balance]
 
 permissions:
   contents: read

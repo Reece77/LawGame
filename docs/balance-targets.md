@@ -41,14 +41,18 @@ All strategies staff named matters by the default rule, bill monthly, accept the
 | T11 | **Rivals hold history:** each pinned rival's revenue within ±15% of its path in December 2009 and December 2015; the top 10 by revenue in 2015 contains at least 8 of history's | pass/fail |
 | T12 | **Turn time:** median turn ≤ 250 ms at December 2015 on the steady save | pass/fail |
 
+## Known misses
+
+Recorded in `backend/ptk/balance/known_misses.py` by Reece's decision on PT-M7 (2026-11-21), each owned by PT-M7b (`docs/tasks/PT-M7b-pressure-and-balance.md`): T2, T3 (lawyers), T4 (steady and pyramid), T5 (standard and hard), T8, T9 and T10. T6's class reading (7.7% against 8%) is accepted as sampling noise.
+
 ## Measures (PT-M7)
 
 How `ptk/balance/report.py` reads each target (`make balance`; `tools/balance_runner.py --runs` prints one line per run). Year 1 is 2005, year 5 2009, year 11 2015; a run is 132 turns of `biglaw_spinout` over the pure sim, critical events answered with their first choice, events written by `MockLLMAdapter`.
 
 | # | Measure |
 | --- | --- |
-| T1 | do-nothing runs where the firm dissolved, or 2009's revenue (the year's fees) is below $3M and below 2008's |
-| T2 | the **firm score** at December 2015 = PEP x sqrt(equity partners) (= sqrt(PEP x the partners' profit): the partners' reward and the firm's size together; 0 if dissolved); a strategy wins a seed with the best score (a tie wins nobody) |
+| T1 | do-nothing runs where the firm dissolved, or 2009's revenue (the year's fees) is below 2008's and below $3M **in 2005 dollars**: deflated by the game's market rate index for 2009 (the macro history's January rises; Reece, 2026-11-21). The nominal count is printed beside it |
+| T2 | the score at December 2015 = the founding partner's earnings: the December allocations of the partner the player plays, summed over 2005-2015 (TST's founder value, for a partnership; 0 if the firm dissolved); a strategy wins a seed with the best score (a tie wins nobody) |
 | T3 | steady's lawyers on the books in December 2015 and its 2015 revenue, medians over seeds |
 | T4 | PEP (trailing 12 months) in December 2015, a dissolved firm counting 0, medians |
 | T5 | steady's share of seeds dissolved by December 2015 at each difficulty |

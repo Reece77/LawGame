@@ -344,7 +344,7 @@ def _t3(results: Sequence[RunResult]) -> list[Row]:
             f"{lawyers}",
             "100-250",
             _in(lawyers, 100, 250),
-            score=lawyers,
+            score=None if lawyers is None else -lawyers,  # fewer is worse
         ),
         Row(
             "T3.revenue",
@@ -377,6 +377,7 @@ def _t4(results: Sequence[RunResult]) -> list[Row]:
                 _m(pep),
                 f"${lo}M-${hi}M",
                 _in(pep, lo * MILLION, hi * MILLION),
+                score=None if pep is None else pep / MILLION,  # $M: higher is worse (above band)
             )
         )
     return out
@@ -396,6 +397,7 @@ def _t5(results: Sequence[RunResult]) -> list[Row]:
                 _pct(rate),
                 f"{lo:.0%}-{hi:.0%}",
                 _in(rate, lo, hi),
+                score=-rate,  # too few dissolve is the miss: fewer is worse
             )
         )
     return out
@@ -504,6 +506,7 @@ def _t8(results: Sequence[RunResult]) -> list[Row]:
             _pct(c),
             "-30% to -10%",
             _in(c, -0.30, -0.10),
+            score=c,  # a smaller fall is worse
         ),
         Row(
             "T8.restructuring",
@@ -511,6 +514,7 @@ def _t8(results: Sequence[RunResult]) -> list[Row]:
             _pct(s),
             "-5% to +20%",
             _in(s, -0.05, 0.20),
+            score=s,  # more growth is worse
         ),
     ]
 
@@ -527,6 +531,7 @@ def _t9(results: Sequence[RunResult]) -> list[Row]:
                 f"{n}/{len(rocket)}",
                 "3-6/10",
                 3 <= n <= 6,
+                score=float(n),  # too many dissolve: more is worse
             )
         )
     heeded = _runs(results, "lateral-rocket-heeded")
@@ -539,6 +544,7 @@ def _t9(results: Sequence[RunResult]) -> list[Row]:
                 f"{n}/{len(heeded)}",
                 "<= 1/10",
                 n <= 1,
+                score=float(n),
             )
         )
     return out
@@ -561,6 +567,7 @@ def _t10(results: Sequence[RunResult]) -> list[Row]:
             "-" if ratio is None else f"{ratio:.2f}x",
             ">= 2x",
             ratio is not None and ratio >= 2.0,
+            score=None if ratio is None else -ratio,  # a smaller ratio is worse
         ),
         Row(
             "T10.steady",

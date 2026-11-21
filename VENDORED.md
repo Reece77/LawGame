@@ -86,6 +86,11 @@ Files copied or ported from Tech Startup Tycoon (`Reece77/Tech_Executive_Tycoon`
 | `frontend/src/lib/explain.ts` | `frontend/src/lib/explain.ts` | ported | — |
 | `backend/ptk/sim/rivals/formulas.py` | `backend/tst/sim/rivals/formulas.py` | ported | — |
 | `backend/ptk/sim/rivals/models.py` | `backend/tst/sim/rivals/models.py` | ported | — |
+| `backend/ptk/balance/game.py` | `backend/tst/balance/game.py` | ported | — |
+| `backend/ptk/balance/report.py` | `backend/tst/balance/report.py` | ported | — |
+| `backend/ptk/balance/known_misses.py` | `backend/tst/balance/known_misses.py` | ported | — |
+| `tools/balance_runner.py` | `tools/balance_runner.py` | ported | — |
+| `.github/workflows/nightly.yml` | `.github/workflows/nightly.yml` | ported | — |
 | `backend/ptk/sim/partnership/governance.py` | `backend/tst/sim/finance/board.py` | ported | — |
 | `backend/ptk/sim/partnership/formulas.py` | `backend/tst/sim/finance/formulas.py` | ported | — |
 
@@ -153,3 +158,11 @@ Changes in ported files:
 PT-M5 (rival firms) ported `tst/sim/rivals/formulas.py` and `models.py` from upstream commit **`121d3180`** (2026-11-20, TST at M44), not the commit above: each file's header names it and what changed.
 - `backend/ptk/sim/partnership/governance.py` (PT-M4, the monthly confidence step of `board_month`): equity partners' confidence in the managing partner; the months-below counter becomes the no-confidence petition (an election, ADR PT-0007 3); no meetings; votes added.
 - `backend/ptk/sim/partnership/formulas.py` (PT-M4, the confidence functions only): `clamp_confidence` and `next_confidence` as is; ADR PT-0007 1's target terms; the whip count's label and ranges for TST's confidence label.
+
+PT-M7 (balance and v1 close) ported TST's balance runner framework from upstream commit **`121d318a`** (2026-11-19, TST at M44), not the commit above: each file's header names it and what changed.
+- `backend/ptk/balance/game.py`: Partner Track's actions (player actions and org actions), the turn answers critical events and writes events with the mock adapter, each month records the law targets' numbers (revenue, profit, PEP, people, burnout, ratios, practice revenue) instead of founder value.
+- `backend/ptk/balance/report.py`: the framework (`play`, `run_all` with worker processes, `Row`, `table`, `runs_table`) as TST's; Partner Track's targets T1-T12, strategies and the T5/T8/T9 extra runs.
+- `backend/ptk/balance/known_misses.py`: TST's `KnownMiss`, `Reading` and `verdict` as they are; Partner Track's own (empty) list.
+- `tools/balance_runner.py`: Partner Track's package, 132 turns and the extra runs.
+- `.github/workflows/nightly.yml`: two parts (`make balance`, `make nightly`), no shards; the changed-main skip as TST's.
+- Holiday was ported in PT-M7a (`backend/ptk/holiday.py`, TST 17.1's stop reasons; synchronous, see its brief).

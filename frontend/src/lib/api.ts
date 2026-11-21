@@ -91,6 +91,8 @@ export function useAdvance(slug: string) {
         'policies',
         'history',
         'guidance',
+        'founder', // PT-M17
+        'family',
       ]) {
         void client.invalidateQueries({ queryKey: [key, slug] });
       }
@@ -920,6 +922,194 @@ export function usePracticeSave() {
       unwrap(await api.POST('/api/practice/{key}', { params: { path: { key } } })),
     onSettled: () => {
       void client.invalidateQueries({ queryKey: ['saves'] });
+    },
+  });
+}
+
+// --- PT-M17: the Founder and Family screens and the succession flow -------------------------
+
+export type Founder = Schemas['FounderOut'];
+export type SuccessorCandidate = Schemas['SuccessorCandidateOut'];
+export type Family = Schemas['FamilyOut'];
+export type FamilyMember = Schemas['MemberOut'];
+
+export const useFounder = (slug: string) =>
+  useQuery({
+    queryKey: ['founder', slug],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/saves/{slug}/founder', { params: { path: { slug } } })),
+  });
+
+export const useFamily = (slug: string) =>
+  useQuery({
+    queryKey: ['family', slug],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/saves/{slug}/family', { params: { path: { slug } } })),
+  });
+
+// Every founder action returns the Founder screen's data (ADR-0014: one action each).
+export type FounderAction =
+  | { kind: 'foundation'; cause: string; name?: string }
+  | { kind: 'gift'; amount_cents: number }
+  | { kind: 'invest'; amount_cents: number }
+  | { kind: 'family_office'; mandate: string; amount_cents: number }
+  | { kind: 'committee'; on: boolean }
+  | { kind: 'spend'; monthly_cents: number }
+  | { kind: 'stand' }
+  | { kind: 'plan'; person_id: number | null }
+  | { kind: 'name'; person_id: number }
+  | { kind: 'retirement_age'; age: number }
+  | { kind: 'annuities'; share_bp: number; years: number };
+
+async function runFounderAction(slug: string, a: FounderAction): Promise<Founder> {
+  const params = { path: { slug } };
+  switch (a.kind) {
+    case 'foundation':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/founder/foundation', {
+          params,
+          body: { cause: a.cause, name: a.name ?? '' },
+        }),
+      );
+    case 'gift':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/founder/foundation/gift', {
+          params,
+          body: { amount_cents: a.amount_cents },
+        }),
+      );
+    case 'invest':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/founder/invest', {
+          params,
+          body: { amount_cents: a.amount_cents },
+        }),
+      );
+    case 'family_office':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/founder/family-office', {
+          params,
+          body: { mandate: a.mandate, amount_cents: a.amount_cents },
+        }),
+      );
+    case 'committee':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/founder/bar/committee', { params, body: { on: a.on } }),
+      );
+    case 'spend':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/founder/bar/spend', {
+          params,
+          body: { monthly_cents: a.monthly_cents },
+        }),
+      );
+    case 'stand':
+      return unwrap(await api.POST('/api/saves/{slug}/founder/bar/stand', { params }));
+    case 'plan':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/founder/succession/plan', {
+          params,
+          body: { person_id: a.person_id },
+        }),
+      );
+    case 'name':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/founder/succession/name', {
+          params,
+          body: { person_id: a.person_id },
+        }),
+      );
+    case 'retirement_age':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/founder/retirement-age', {
+          params,
+          body: { age: a.age },
+        }),
+      );
+    case 'annuities':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/founder/annuities', {
+          params,
+          body: { share_bp: a.share_bp, years: a.years },
+        }),
+      );
+  }
+}
+
+export function useFounderAction(slug: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (a: FounderAction) => runFounderAction(slug, a),
+    onSuccess: (data) => {
+      client.setQueryData(['founder', slug], data);
+      void client.invalidateQueries({ queryKey: ['game', slug] });
+      void client.invalidateQueries({ queryKey: ['partnership', slug] });
+    },
+  });
+}
+
+export type FamilyAction =
+  | { kind: 'time'; energy: number }
+  | { kind: 'education'; child_id: number; stage: 'school' | 'law_school'; tier: string }
+  | { kind: 'join'; child_id: number }
+  | { kind: 'mentor'; child_id: number; on: boolean }
+  | { kind: 'gift'; child_id: number; amount_cents: number }
+  | { kind: 'trust'; amount_cents: number };
+
+async function runFamilyAction(slug: string, a: FamilyAction): Promise<Family> {
+  const params = { path: { slug } };
+  switch (a.kind) {
+    case 'time':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/family/time', { params, body: { energy: a.energy } }),
+      );
+    case 'education':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/family/education', {
+          params,
+          body: { child_id: a.child_id, stage: a.stage, tier: a.tier },
+        }),
+      );
+    case 'join':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/family/join', {
+          params,
+          body: { child_id: a.child_id },
+        }),
+      );
+    case 'mentor':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/family/mentor', {
+          params,
+          body: { child_id: a.child_id, on: a.on },
+        }),
+      );
+    case 'gift':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/family/gift', {
+          params,
+          body: { child_id: a.child_id, amount_cents: a.amount_cents },
+        }),
+      );
+    case 'trust':
+      return unwrap(
+        await api.POST('/api/saves/{slug}/family/trust', {
+          params,
+          body: { amount_cents: a.amount_cents },
+        }),
+      );
+  }
+}
+
+export function useFamilyAction(slug: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (a: FamilyAction) => runFamilyAction(slug, a),
+    onSuccess: (data) => {
+      client.setQueryData(['family', slug], data);
+      void client.invalidateQueries({ queryKey: ['founder', slug] });
+      void client.invalidateQueries({ queryKey: ['game', slug] });
+      void client.invalidateQueries({ queryKey: ['people', slug] });
     },
   });
 }

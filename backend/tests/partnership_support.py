@@ -24,6 +24,7 @@ from ptk.sim.state import GameState, with_people, with_reveals
 from ptk.sim.turn import TurnResult, advance_turn
 
 EXTRA_SEARCH = 9_000  # people_gen search id for test partners (never a real search's)
+TEST_PARTNER_MAX_AGE = 55  # PT-M17: ten years under the default retirement age
 
 
 @dataclass
@@ -135,6 +136,10 @@ def add_partner(
         jurisdiction="us_ny",
     )
     person = replace(person, book_cents=book_cents)
+    # PT-M17: partners retire at the agreement's age; a test partner is young enough that a
+    # scripted scenario's years never reach it (at most `TEST_PARTNER_MAX_AGE`)
+    if person.age(state.turn) > TEST_PARTNER_MAX_AGE:
+        person = replace(person, birth_turn=state.turn - 12 * TEST_PARTNER_MAX_AGE)
     state = with_people(state, [person])
     reveal = new_reveal_state(
         observer_firm_id=state.player.id,

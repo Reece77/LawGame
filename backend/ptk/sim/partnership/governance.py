@@ -20,7 +20,6 @@ The player sees a predicted range only (`predicted`).
 
 from __future__ import annotations
 
-
 import statistics
 from dataclasses import dataclass, replace
 

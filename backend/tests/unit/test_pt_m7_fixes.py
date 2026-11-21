@@ -50,3 +50,40 @@ def test_a_vote_on_someone_who_has_left_is_withdrawn(data: GameData, balance: Ba
     month = resolve_votes(state, RngFactory(1), balance, data)
     got = next(v for v in firm_partnership(month.state, fp.firm_id).votes if v.id == 99)
     assert got.status == "withdrawn" and got.resolved_turn == state.turn
+
+
+def test_an_approach_to_someone_who_has_left_is_withdrawn(data: GameData, balance: Balance) -> None:
+    """A partner approached by a rival whose employment ended another way (a resignation's
+    notice) had their approach resolved into a departure, which raised; it is withdrawn."""
+    from ptk.sim.partnership.flight import FLIGHT_HOOK
+    from ptk.sim.partnership.models import Approach, with_approach
+
+    state = game(data, balance)
+    fp = firm_partnership(state, state.player.id)
+    partner = fp.equity_partners[0]
+    approach = Approach(
+        id=7,
+        firm_id=fp.firm_id,
+        person_id=partner.person_id,
+        suitor_key="skadden",
+        suitor_name="Skadden",
+        suitor_firm_id=None,
+        offer_comp_cents=200_000_000,
+        guarantee_years=0,
+        made_turn=state.turn,
+        respond_by_turn=state.turn,
+    )
+    state = put(state, with_approach(fp, approach))
+    state = replace(
+        state, employments=tuple(e for e in state.employments if e.person_id != partner.person_id)
+    )
+    res = FLIGHT_HOOK.resolve(
+        state,
+        7,
+        draws=lambda: RngFactory(1).stream(0, "misc", 1),
+        balance=balance,
+        data=data,
+        balances={},
+    )
+    got = firm_partnership(res.state, fp.firm_id).approach(7)
+    assert got is not None and got.status == "withdrawn"

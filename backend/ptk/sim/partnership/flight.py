@@ -246,6 +246,10 @@ class FlightHook:
         fp, a = _open_approach(state, approach_id)
         p = fp.partner(a.person_id)
         assert p is not None
+        if state.employment_of(a.person_id) is None:
+            # PT-M7: they left another way first (a resignation's notice ended): nothing to decide
+            gone = with_approach(fp, replace(a, status="withdrawn", resolved_turn=state.turn))
+            return HookResult(put(state, gone))
         gen = draws()
         stays = float(gen.random()) < self.stay_probability(state, a, balance)
         if stays:

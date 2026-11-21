@@ -911,3 +911,15 @@ export const useGuidance = (slug: string) =>
     queryFn: async () =>
       unwrap(await api.GET('/api/saves/{slug}/guidance', { params: { path: { slug } } })),
   });
+
+// PT-M7: a practice save (pt-2008); a 409 means it was made before and simply opens
+export function usePracticeSave() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: async (key: string) =>
+      unwrap(await api.POST('/api/practice/{key}', { params: { path: { key } } })),
+    onSettled: () => {
+      void client.invalidateQueries({ queryKey: ['saves'] });
+    },
+  });
+}

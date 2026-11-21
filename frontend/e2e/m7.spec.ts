@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { advanceMonths } from './helpers';
+import { advanceMonths } from './helpers.js';
 
 // PT-M7: the Overview's What next and Getting started (the guided first year: a step ticks
 // from state, the checklist dismisses), and the History screen's years and timeline.
@@ -14,7 +14,7 @@ test('the guided first year and the firm history', async ({ page }) => {
   await expect(page.getByTestId('what-next')).toBeVisible();
   const checklist = page.getByTestId('getting-started');
   await expect(checklist).toBeVisible();
-  await expect(page.getByTestId('step-policy').locator('input')).not.toBeChecked();
+  await expect(page.getByTestId('step-policy')).not.toBeChecked();
 
   // set a policy on Org; the step ticks
   await page.goto('/game/history-test/org');
@@ -23,7 +23,7 @@ test('the guided first year and the firm history', async ({ page }) => {
   await page.getByTestId('rate-save').click();
   await expect(page.getByTestId('rate-current')).toContainText('4.00% each January');
   await page.getByRole('link', { name: 'Overview' }).click();
-  await expect(page.getByTestId('step-policy').locator('input')).toBeChecked();
+  await expect(page.getByTestId('step-policy')).toBeChecked();
 
   // a year played, then the History screen ranks the firm's first year
   await advanceMonths(page, 'history-test', 13);
@@ -38,4 +38,14 @@ test('the guided first year and the firm history', async ({ page }) => {
   await page.getByRole('link', { name: 'Overview' }).click();
   await page.getByTestId('getting-started').getByRole('button', { name: 'Dismiss' }).click();
   await expect(page.getByTestId('getting-started')).toHaveCount(0);
+});
+
+// PT-M7: the practice save opens from the Main menu in June 2008.
+test('the practice save opens in June 2008', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.goto('/');
+  await page.getByTestId('practice-2008').click();
+  await expect(page.getByTestId('date')).toHaveText('Jun 2008', { timeout: 60_000 });
+  await page.getByRole('link', { name: 'People' }).click();
+  await expect(page.getByRole('heading', { name: 'People' })).toBeVisible();
 });

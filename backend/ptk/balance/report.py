@@ -21,6 +21,7 @@ from typing import Final
 
 from ptk.balance.game import PLAYER, Game, Month, start_game
 from ptk.balance.known_misses import known_miss, verdict
+from ptk.balance.seats import fill_seats
 from ptk.balance.strategies import PLAYABLE, STRATEGIES
 from ptk.loader import load_balance, load_game_data
 from ptk.sim.calendar import ym_to_turn
@@ -113,6 +114,8 @@ def play(
     for _ in range(turns):
         if game.state.ended:
             break
+        if strategy != "do_nothing":
+            fill_seats(game)  # PT-M8: a sensible player fills seats as they open
         script(game)
         game.turn()
     return _result(game, strategy, seed, difficulty, turns, time.perf_counter() - started)

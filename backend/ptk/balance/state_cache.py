@@ -34,6 +34,7 @@ from typing import Final
 
 from ptk.balance.game import Game, start_game
 from ptk.balance.report import SCENARIO
+from ptk.balance.seats import fill_seats
 from ptk.loader import load_balance, load_game_data
 from ptk.sim.data_models import Balance, GameData
 
@@ -142,6 +143,8 @@ def run_hashes(job: tuple[str, int], turns: int = TURNS) -> list[str]:
     digester = Digester()
     out: list[str] = []
     while game.state.turn < turns and not game.state.ended:
+        if name != "do_nothing":
+            fill_seats(game)  # PT-M8: as report.play
         script(game)
         game.turn()
         out.append(month_digest(digester, game))

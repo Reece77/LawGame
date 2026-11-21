@@ -1546,6 +1546,91 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/saves/{slug}/leadership": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Leadership */
+        get: operations["getLeadership"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/leadership/appoint": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Appoint */
+        post: operations["appointSeat"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/leadership/authority": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Authority */
+        post: operations["setSeatAuthority"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/leadership/exco-term": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Exco Term */
+        post: operations["proposeExcoTerm"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/leadership/pitches/{pitch_id}/answer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Answer */
+        post: operations["answerPitch"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1563,6 +1648,28 @@ export interface components {
         AmountIn: {
             /** Amount Cents */
             amount_cents: number;
+        };
+        /** AnswerIn */
+        AnswerIn: {
+            /**
+             * Answer
+             * @enum {string}
+             */
+            answer: "approve" | "modify" | "decline";
+            /** Value */
+            value?: number | null;
+        };
+        /** AppointIn */
+        AppointIn: {
+            /** Seat */
+            seat: string;
+            /**
+             * Slot
+             * @default 0
+             */
+            slot?: number;
+            /** Person Id */
+            person_id?: number | null;
         };
         /** ApproachOut */
         ApproachOut: {
@@ -1621,6 +1728,23 @@ export interface components {
             lo: number;
             /** Hi */
             hi: number;
+        };
+        /** AuthorityIn */
+        AuthorityIn: {
+            /** Seat */
+            seat: string;
+            /**
+             * Slot
+             * @default 0
+             */
+            slot?: number;
+            /** Enabled */
+            enabled: boolean;
+            /**
+             * Guardrails
+             * @default []
+             */
+            guardrails?: components["schemas"]["GuardrailIn"][];
         };
         /** BackgroundOut */
         BackgroundOut: {
@@ -1762,6 +1886,8 @@ export interface components {
             /** Expires Label */
             expires_label: string;
         };
+        /** @enum {string} */
+        CaseUnitOut: "cents" | "people" | "bp" | "morale";
         /** ChannelOptionOut */
         ChannelOptionOut: {
             /** Key */
@@ -2069,6 +2195,11 @@ export interface components {
         };
         /** @enum {string} */
         EventStatusOut: "pending" | "open" | "answered" | "auto";
+        /** ExcoTermIn */
+        ExcoTermIn: {
+            /** Elected */
+            elected: boolean;
+        };
         /** ExplainItemOut */
         ExplainItemOut: {
             /** Label */
@@ -2157,6 +2288,10 @@ export interface components {
             /** Name */
             name: string;
         };
+        /** @enum {string} */
+        FitBand: "weak" | "fair" | "good" | "strong" | "unknown";
+        /** @enum {string} */
+        FollowThroughOut: "hit" | "miss";
         /** ForumIn */
         ForumIn: {
             /** Court */
@@ -2201,6 +2336,13 @@ export interface components {
             done: boolean;
             /** Link Kind */
             link_kind: string;
+        };
+        /** GuardrailIn */
+        GuardrailIn: {
+            /** Key */
+            key: string;
+            /** Value */
+            value: number;
         };
         /** GuidanceItemOut */
         GuidanceItemOut: {
@@ -2433,6 +2575,22 @@ export interface components {
         LeaderIn: {
             /** Person Id */
             person_id: number | null;
+        };
+        /** LeadershipOut */
+        LeadershipOut: {
+            /** Stage */
+            stage: number;
+            /**
+             * Exco Mode
+             * @enum {string}
+             */
+            exco_mode: "appointed" | "elected";
+            /** Exco Proposed */
+            exco_proposed: boolean | null;
+            /** Seats */
+            seats: components["schemas"]["SeatOut"][];
+            /** Pitches */
+            pitches: components["schemas"]["SeatPitchOut"][];
         };
         /** MarketOut */
         MarketOut: {
@@ -3218,6 +3376,8 @@ export interface components {
             claims?: string[];
         };
         /** @enum {string} */
+        PitchStatusOut: "pending" | "approved" | "declined" | "lapsed" | "failed";
+        /** @enum {string} */
         PlanChannel: "job_post" | "recruiter" | "referral" | "campus" | "any";
         /** @enum {string} */
         PlanFocus: "current" | "potential";
@@ -3739,6 +3899,131 @@ export interface components {
             /** Open Candidates */
             open_candidates: number;
         };
+        /** SeatCandidateOut */
+        SeatCandidateOut: {
+            /** Person Id */
+            person_id: number;
+            /** Name */
+            name: string;
+            /** Level */
+            level: string;
+            fit: components["schemas"]["FitBand"];
+        };
+        /** SeatDecisionOut */
+        SeatDecisionOut: {
+            /** Turn */
+            turn: number;
+            /** Date Label */
+            date_label: string;
+            /** Text */
+            text: string;
+        };
+        /** SeatGuardrailOut */
+        SeatGuardrailOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Value */
+            value: number;
+            /** Min */
+            min: number;
+            /** Max */
+            max: number;
+        };
+        /** SeatHolderOut */
+        SeatHolderOut: {
+            /** Person Id */
+            person_id: number;
+            /** Name */
+            name: string;
+            /** Level */
+            level: string;
+            /** Ranges */
+            ranges: components["schemas"]["SkillRangeOut"][];
+            fit: components["schemas"]["FitBand"];
+            /** Eligible */
+            eligible: boolean;
+            /** Hits */
+            hits: number;
+            /** Misses */
+            misses: number;
+        };
+        /** SeatOut */
+        SeatOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Short */
+            short: string;
+            /** Stage */
+            stage: number;
+            /** Open */
+            open: boolean;
+            /** Who */
+            who: string;
+            /** Effect */
+            effect: string;
+            /** Authority Does */
+            authority_does: string;
+            /** Slots */
+            slots: components["schemas"]["SeatSlotOut"][];
+        };
+        /** SeatPitchOut */
+        SeatPitchOut: {
+            /** Id */
+            id: number;
+            /** Seat */
+            seat: string;
+            /** Seat Label */
+            seat_label: string;
+            /** Holder Id */
+            holder_id: number;
+            /** Holder Name */
+            holder_name: string;
+            /** Kind */
+            kind: string;
+            /** Title */
+            title: string;
+            /** Why */
+            why: string;
+            /** Made Label */
+            made_label: string;
+            /** Cost Cents */
+            cost_cents: number;
+            case_unit: components["schemas"]["CaseUnitOut"];
+            /** Low */
+            low: number;
+            /** Central */
+            central: number;
+            /** High */
+            high: number;
+            status: components["schemas"]["PitchStatusOut"];
+            /** Modifiable */
+            modifiable: boolean;
+            follow_through: components["schemas"]["FollowThroughOut"] | null;
+            /** Measured */
+            measured: number | null;
+            /** Text */
+            text: string;
+        };
+        /** SeatSlotOut */
+        SeatSlotOut: {
+            /** Slot */
+            slot: number;
+            /** Label */
+            label: string;
+            holder: components["schemas"]["SeatHolderOut"] | null;
+            /** Candidates */
+            candidates: components["schemas"]["SeatCandidateOut"][];
+            /** Authority Enabled */
+            authority_enabled: boolean;
+            /** Guardrails */
+            guardrails: components["schemas"]["SeatGuardrailOut"][];
+            /** Decisions */
+            decisions: components["schemas"]["SeatDecisionOut"][];
+        };
         /** SettlementIn */
         SettlementIn: {
             /** Accept */
@@ -3765,6 +4050,17 @@ export interface components {
             salary_cents: number;
             /** Start Label */
             start_label: string;
+        };
+        /** SkillRangeOut */
+        SkillRangeOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Lo */
+            lo: number;
+            /** Hi */
+            hi: number;
         };
         /** SponsorIn */
         SponsorIn: {
@@ -3836,7 +4132,7 @@ export interface components {
             value: string | number | boolean;
         };
         /** @enum {string} */
-        TextKindOut: "headlines" | "matter_brief" | "pitch_letter" | "partner_memo" | "year_end_letter";
+        TextKindOut: "headlines" | "matter_brief" | "pitch_letter" | "partner_memo" | "year_end_letter" | "seat_report";
         /** TextOut */
         TextOut: {
             /** Turn */
@@ -9466,6 +9762,313 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GuidanceOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getLeadership: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeadershipOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    appointSeat: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppointIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeadershipOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    setSeatAuthority: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AuthorityIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeadershipOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    proposeExcoTerm: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExcoTermIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeadershipOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    answerPitch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                pitch_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnswerIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeadershipOut"];
                 };
             };
             /** @description Bad Request */

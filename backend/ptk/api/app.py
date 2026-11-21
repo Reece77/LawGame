@@ -13,6 +13,7 @@ from ptk.api import recruitment
 from ptk.api.events import blocking_event_id, make_events_router
 from ptk.api.finance import make_finance_router
 from ptk.api.history import make_history_router
+from ptk.api.leadership import make_leadership_router
 from ptk.api.market import make_market_router
 from ptk.api.matters import make_matters_router
 from ptk.api.org import make_org_router
@@ -39,10 +40,12 @@ from ptk.sim.errors import (
     MatterActionError,
     NotFoundError,
     OfferExistsError,
+    OneOffError,
     OverCapacityError,
     PartnershipError,
     SaveExistsError,
     SaveNotFoundError,
+    SeatRuleError,
     SimError,
     StaffingError,
     UnknownDifficultyError,
@@ -53,6 +56,8 @@ from ptk.sim.people.founder import FounderSpec
 
 _STATUS: dict[type[SimError], int] = {
     HolidayError: 400,  # PT-M7a
+    SeatRuleError: 409,  # PT-M8
+    OneOffError: 409,  # PT-M8
     SaveNotFoundError: 404,
     NotFoundError: 404,
     InvalidFounderError: 400,
@@ -305,6 +310,7 @@ def create_app() -> FastAPI:
     app.include_router(make_market_router(errors))  # PT-M5
     app.include_router(make_partnership_router(errors))
     app.include_router(make_history_router(errors))  # PT-M7
+    app.include_router(make_leadership_router(errors))  # PT-M8
     return app
 
 

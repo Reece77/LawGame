@@ -75,7 +75,6 @@ QUARTER: Final = 3  # tunable-exempt: calendar
 DRAWS: Final = 2  # tunable-exempt: uniforms a draw month: whether, then which (27.1)
 BP: Final = 10_000  # tunable-exempt: basis points
 MORALE_SCALE: Final = 10  # tunable-exempt: fit_out's case unit (morale points x 10)
-BUSY_BP: Final = 8000  # tunable-exempt: a group this busy is worth a lateral or a class
 DEFAULT_BOOK_CENTS: Final = 100_000_000  # tunable-exempt: $1M, a book with no partners to judge by
 CASE_UNIT: Final[dict[PitchKind, Literal["cents", "people", "bp", "morale"]]] = {
     "lateral_partner": "cents",
@@ -161,7 +160,7 @@ def _lateral(state: GameState, firm: int, slot: int, b: Balance, data: GameData)
     if unit is None or unit.practice is None:
         return []
     util = utilisation_bp(state, _members(state, unit.id), data, b)
-    if util is None or util < BUSY_BP:
+    if util is None or util < b.pitches.busy_bp:
         return []
     book = round(
         _partner_book(state, firm, unit.practice, data) * b.pitches.kinds["lateral_partner"].central
@@ -216,7 +215,7 @@ def _campus(state: GameState, firm: int, b: Balance, data: GameData) -> list[Can
         if any(p.unit_id == unit.id and p.campus for p in plans):
             continue
         util = utilisation_bp(state, _members(state, unit.id), data, b)
-        if util is None or util < BUSY_BP:
+        if util is None or util < b.pitches.busy_bp:
             continue
         step = b.pitches.campus_step
         out.append(
@@ -238,7 +237,7 @@ def _rate(state: GameState, firm: int, b: Balance, data: GameData) -> list[Candi
 
     people = tuple(e.person_id for e in state.staff(firm))
     util = utilisation_bp(state, people, data, b)
-    if util is None or util < BUSY_BP:
+    if util is None or util < b.pitches.busy_bp:
         return []
     year = turn_to_ym(state.turn, state.save_meta.start_ym)[0] + 1
     market = market_rise_bp(year, data, b)
@@ -403,13 +402,14 @@ def _with_pitch(state: GameState, pitch: Pitch) -> GameState:
 
 
 def draw_pitches(
-    state: GameState, rng: RngFactory, b: Balance, data: GameData
+    state: GameState, rng: RngFactory, b: Balance, data: GameData, *, force: bool = False
 ) -> tuple[GameState, list[LogItem]]:
-    """Phase 2, a quarter's first month: each holder with authority may pitch once."""
+    """Phase 2, a quarter's first month: each holder with authority may pitch once.
+    `force` (the e2e suite's debug route only): every holder pitches now."""
     from ptk.sim.org.authority import acting_holders
 
     logs: list[LogItem] = []
-    if not state.firms or not is_draw_month(state):
+    if not state.firms or not (force or is_draw_month(state)):
         return state, logs
     firm = state.player.id
     exco_bonus = b.seats.effects.exco_quality * effect(state, firm, EXCO, b, data)
@@ -423,7 +423,7 @@ def draw_pitches(
         gen = rng.stream(state.turn, "pitch", firm, pid)
         u_pitch, u_pick = (float(gen.random()) for _ in range(DRAWS))
         person = state.person(pid)
-        if u_pitch >= chance(person.personality["ambition"], b):  # true ambition, never shown
+        if not force and u_pitch >= chance(person.personality["ambition"], b):  # true, unshown
             continue
         ranked = candidates(state, firm, seat, slot, b, data)
         if not ranked:

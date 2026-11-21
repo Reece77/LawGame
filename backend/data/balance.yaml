@@ -950,7 +950,7 @@ authority: # PT-M8: seat holders with authority act in phase 2 (TST formulas.md 
   hire_step: 2 # people a PGL's hiring plan asks for at once (one fewer on a mistake)
   plan_ratio_bp: 10000 # a seat's hiring plans offer this share of the candidate's ask
 pitches: # PT-M8: big moves seat holders pitch each quarter (TST formulas.md 27.1)
-  base: 0.25 # P(pitch this quarter) = clamp(base + per_ambition x (ambition - 10), chance_clamp), true ambition
+  base: 0.35 # P(pitch this quarter) = clamp(base + per_ambition x (ambition - 10), chance_clamp), true ambition
   per_ambition: 0.02
   chance_clamp: [0.05, 0.9]
   record_months: 24 # months after approval a pitch is scored hit or miss against its central case
@@ -972,6 +972,7 @@ pitches: # PT-M8: big moves seat holders pitch each quarter (TST formulas.md 27.
   cost_saving_bp: 500 # bp of a month's rent and admin a cost programme saves, each month
   cost_months: 12 # months a cost programme runs
   cost_morale_pct: -2 # percent on morale targets while it runs
+  busy_bp: 7500 # last month's utilisation (bp) from which a group (or the firm) is busy enough for a lateral, a class or a rate move
   rate_step_bp: 200 # bp above the market's rise a pricing director's rate move asks
   campus_step: 2 # first-years a group a CHRO's class-size pitch adds
   kinds: # central: the central case's scale (unit by kind); cost_cents: the up-front cost

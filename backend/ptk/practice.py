@@ -155,7 +155,21 @@ def build(
         )
     state, more = _grow(state, spec, rng, data, balance, balances)
     entries += more
-    return state, entries
+    return _at_stage(state, data, balance), entries
+
+
+def _at_stage(state: GameState, data: GameData, balance: Balance) -> GameState:
+    """PT-M8: the grown firm opens at the stage its lawyers give (spec 3), as phase 10 would
+    set it at the month's end, so the seats of its stage can be filled at once."""
+    from ptk.sim.org.rules import lawyer_count
+    from ptk.sim.partnership.formulas import stage_for
+    from ptk.sim.state import with_firm
+
+    firm = state.player
+    stage = max(
+        firm.stage, stage_for(lawyer_count(state, firm.id, data), balance.partnership.stages)
+    )
+    return with_firm(state, replace(firm, stage=stage))
 
 
 def _grow(

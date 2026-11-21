@@ -5,14 +5,17 @@ from __future__ import annotations
 
 from dataclasses import replace
 
+from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance, GameData
+from ptk.sim.hiring.models import PersonState
+from ptk.sim.hiring.pay import firm_pay_cents
 from ptk.sim.org.actions import CreateUnit, MovePerson, apply_org_action
 from ptk.sim.org.seats import AppointSeat, SetAuthority, apply_seat_action
 from ptk.sim.partnership.effects import admit
 from ptk.sim.people.generator import generate_person, people_gen_stream
 from ptk.sim.people.models import Employment
 from ptk.sim.rng import RngFactory
-from ptk.sim.state import GameState, with_firm, with_people
+from ptk.sim.state import GameState, with_firm, with_people, with_person_states
 from tests.matters_support import grown_firm
 
 BS_SEARCH = 9_100  # people_gen search id for test business-services people
@@ -69,7 +72,13 @@ def add_bs(
         jurisdiction="us_ny",
     )
     state = with_people(state, [person])
-    emp = Employment(id=pid, person_id=pid, firm_id=state.player.id, start_turn=state.turn)
+    firm = state.player
+    ym = turn_to_ym(state.turn, state.save_meta.start_ym)
+    salary = firm_pay_cents(data, balance, level, ym, firm.home_city, firm.pay_policy)
+    emp = Employment(
+        id=pid, person_id=pid, firm_id=firm.id, start_turn=state.turn, salary_cents=salary
+    )
+    state = with_person_states(state, [PersonState(pid, morale=balance.morale.start)])
     return replace(state, employments=(*state.employments, emp)), pid
 
 
@@ -130,3 +139,101 @@ def _refill(state: GameState, balance: Balance) -> GameState:
 
     ps = state.person_state(mp(state))
     return with_person_states(state, [replace(ps, energy=balance.energy.per_month)])
+
+
+def steady(balance: Balance) -> Balance:
+    """Resignations and partner flight off: the seats' comparisons hold the people constant
+    (the grown fixture otherwise sheds a fifth of its people a year, on main as here)."""
+    resign = balance.resign.model_copy(update={"base_bp": 0.0})
+    flight = balance.partnership.flight.model_copy(update={"base_bp": 0.0, "cap_bp": 0})
+    p = balance.partnership.model_copy(update={"flight": flight})
+    return balance.model_copy(update={"resign": resign, "partnership": p})
+
+
+CHIEFS = (
+    ("finance", "cfo"),
+    ("operations", "coo"),
+    ("marketing_bd", "cmo"),
+    ("human_resources", "chro"),
+    ("finance", "pricing_director"),
+)
+
+
+def led_firm(data: GameData, balance: Balance, seed: int = 1, lawyers: int = 110) -> GameState:
+    """A stage-3 firm with a practice group per practice and every seat filled by the best
+    displayed fit (chiefs hired at chief level), each given authority with default rails."""
+    from ptk.sim.org.seats import candidates
+
+    state = appointed_committee(staged(data, balance, lawyers=lawyers, seed=seed))
+    for practice in data.practice_keys:
+        if any(
+            state.person(e.person_id).role == data.practice_role(practice).key
+            for e in state.staff(state.player.id)
+        ):
+            state, _ = group(state, data, balance, practice)
+    for n, (role, seat) in enumerate(CHIEFS):
+        state, pid = add_bs(state, data, balance, role, n=n)
+        state = appoint(state, data, balance, seat, pid)
+    firm = state.player.id
+    used: set[int] = set()
+    for u in state.org.firm_units(firm):
+        if u.kind != "practice_group":
+            continue
+        pick = next(
+            (
+                pid
+                for pid, _ in candidates(state, firm, data.seat("practice_group_leader"), balance)
+                if pid not in used
+            ),
+            None,
+        )
+        if pick is not None:
+            state = appoint(state, data, balance, "practice_group_leader", pick, slot=u.id)
+            used.add(pick)
+    gc = next(
+        pid
+        for pid, _ in candidates(state, firm, data.seat("general_counsel"), balance)
+        if pid not in used
+    )
+    state = appoint(state, data, balance, "general_counsel", gc)
+    for slot, (pid, _) in enumerate(
+        candidates(state, firm, data.seat("executive_committee"), balance)[:3], start=1
+    ):
+        state = appoint(state, data, balance, "executive_committee", pid, slot=slot)
+    for seat in ("cfo", "coo", "cmo", "chro", "pricing_director", "general_counsel"):
+        state = authorise(state, data, balance, seat)
+    for u in state.org.firm_units(firm):
+        if u.kind == "practice_group" and u.leader_id is not None:
+            state = authorise(state, data, balance, "practice_group_leader", slot=u.id)
+    return state
+
+
+def funded(state: GameState) -> dict[tuple[int, str], int]:
+    """$50M of partners' capital in cash, so a carried ledger stays solvent."""
+    from ptk.sim.ledger import CASH, PARTNERS_CAPITAL
+
+    firm = state.player.id
+    return {(firm, CASH): 5_000_000_000, (firm, PARTNERS_CAPITAL): -5_000_000_000}
+
+
+def run(
+    state: GameState,
+    data: GameData,
+    balance: Balance,
+    turns: int,
+    balances: dict[tuple[int, str], int] | None = None,
+):  # type: ignore[no-untyped-def]
+    """Advance `turns` months carrying the ledger; returns (state, results, balances)."""
+    from ptk.sim.decisions import Decisions
+    from ptk.sim.ledger import apply_entries
+    from ptk.sim.turn import advance_turn
+
+    carried = dict(balances if balances is not None else funded(state))
+    results = []
+    rng = RngFactory(state.save_meta.master_seed)
+    for _ in range(turns):
+        r = advance_turn(state, Decisions(), rng, balance, data, carried, answer_critical=True)
+        carried = dict(apply_entries(carried, r.ledger_entries))
+        results.append(r)
+        state = r.new_state
+    return state, results, carried

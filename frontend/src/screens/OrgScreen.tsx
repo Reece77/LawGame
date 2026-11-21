@@ -16,6 +16,7 @@ import { createColumnHelper, tableFeatures, useTable } from '@tanstack/react-tab
 import { useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { FirmPolicies } from '../components/FirmPolicies';
+import { LeadershipPanel } from '../components/LeadershipPanel';
 import { humanize } from '../lib/format';
 import {
   supervisorColor,
@@ -73,6 +74,7 @@ export function OrgScreen() {
           {action.error.message}
         </Alert>
       )}
+      <LeadershipPanel slug={slug} />
       <SimpleGrid cols={{ base: 1, md: 2 }}>
         <NewUnits org={o} act={action.mutate} busy={action.isPending} />
         <Supervisors org={o} slug={slug} />

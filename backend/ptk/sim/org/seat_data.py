@@ -185,6 +185,7 @@ class PitchesBalance(_Strict):
     cost_months: int = Field(ge=1)
     cost_morale_pct: float
     rate_step_bp: int = Field(ge=0)
+    busy_bp: int = Field(ge=0)
     campus_step: int = Field(ge=1)
     kinds: dict[PitchKind, PitchKindBalance]
 

@@ -7257,6 +7257,400 @@
           }
         }
       }
+    },
+    "/api/saves/{slug}/leadership": {
+      "get": {
+        "summary": "Get Leadership",
+        "operationId": "getLeadership",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadershipOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/leadership/appoint": {
+      "post": {
+        "summary": "Appoint",
+        "operationId": "appointSeat",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppointIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadershipOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/leadership/authority": {
+      "post": {
+        "summary": "Authority",
+        "operationId": "setSeatAuthority",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorityIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadershipOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/leadership/exco-term": {
+      "post": {
+        "summary": "Exco Term",
+        "operationId": "proposeExcoTerm",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExcoTermIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadershipOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/leadership/pitches/{pitch_id}/answer": {
+      "post": {
+        "summary": "Answer",
+        "operationId": "answerPitch",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "pitch_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Pitch Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnswerIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadershipOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -7296,6 +7690,64 @@
           "amount_cents"
         ],
         "title": "AmountIn"
+      },
+      "AnswerIn": {
+        "properties": {
+          "answer": {
+            "type": "string",
+            "enum": [
+              "approve",
+              "modify",
+              "decline"
+            ],
+            "title": "Answer"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "answer"
+        ],
+        "title": "AnswerIn"
+      },
+      "AppointIn": {
+        "properties": {
+          "seat": {
+            "type": "string",
+            "title": "Seat"
+          },
+          "slot": {
+            "type": "integer",
+            "title": "Slot",
+            "default": 0
+          },
+          "person_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Person Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "seat"
+        ],
+        "title": "AppointIn"
       },
       "ApproachOut": {
         "properties": {
@@ -7459,6 +7911,37 @@
           "hi"
         ],
         "title": "AttributeOut"
+      },
+      "AuthorityIn": {
+        "properties": {
+          "seat": {
+            "type": "string",
+            "title": "Seat"
+          },
+          "slot": {
+            "type": "integer",
+            "title": "Slot",
+            "default": 0
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "guardrails": {
+            "items": {
+              "$ref": "#/components/schemas/GuardrailIn"
+            },
+            "type": "array",
+            "title": "Guardrails",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "seat",
+          "enabled"
+        ],
+        "title": "AuthorityIn"
       },
       "BackgroundOut": {
         "properties": {
@@ -7864,6 +8347,15 @@
           "expires_label"
         ],
         "title": "CandidateOut"
+      },
+      "CaseUnitOut": {
+        "type": "string",
+        "enum": [
+          "cents",
+          "people",
+          "bp",
+          "morale"
+        ]
       },
       "ChannelOptionOut": {
         "properties": {
@@ -8699,6 +9191,19 @@
           "auto"
         ]
       },
+      "ExcoTermIn": {
+        "properties": {
+          "elected": {
+            "type": "boolean",
+            "title": "Elected"
+          }
+        },
+        "type": "object",
+        "required": [
+          "elected"
+        ],
+        "title": "ExcoTermIn"
+      },
       "ExplainItemOut": {
         "properties": {
           "label": {
@@ -8981,6 +9486,23 @@
         ],
         "title": "FirmRefOut"
       },
+      "FitBand": {
+        "type": "string",
+        "enum": [
+          "weak",
+          "fair",
+          "good",
+          "strong",
+          "unknown"
+        ]
+      },
+      "FollowThroughOut": {
+        "type": "string",
+        "enum": [
+          "hit",
+          "miss"
+        ]
+      },
       "ForumIn": {
         "properties": {
           "court": {
@@ -9099,6 +9621,24 @@
           "link_kind"
         ],
         "title": "GettingStartedStepOut"
+      },
+      "GuardrailIn": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "value": {
+            "type": "integer",
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "value"
+        ],
+        "title": "GuardrailIn"
       },
       "GuidanceItemOut": {
         "properties": {
@@ -9797,6 +10337,56 @@
           "person_id"
         ],
         "title": "LeaderIn"
+      },
+      "LeadershipOut": {
+        "properties": {
+          "stage": {
+            "type": "integer",
+            "title": "Stage"
+          },
+          "exco_mode": {
+            "type": "string",
+            "enum": [
+              "appointed",
+              "elected"
+            ],
+            "title": "Exco Mode"
+          },
+          "exco_proposed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exco Proposed"
+          },
+          "seats": {
+            "items": {
+              "$ref": "#/components/schemas/SeatOut"
+            },
+            "type": "array",
+            "title": "Seats"
+          },
+          "pitches": {
+            "items": {
+              "$ref": "#/components/schemas/SeatPitchOut"
+            },
+            "type": "array",
+            "title": "Pitches"
+          }
+        },
+        "type": "object",
+        "required": [
+          "stage",
+          "exco_mode",
+          "exco_proposed",
+          "seats",
+          "pitches"
+        ],
+        "title": "LeadershipOut"
       },
       "MarketOut": {
         "properties": {
@@ -12335,6 +12925,16 @@
         ],
         "title": "PitchIn"
       },
+      "PitchStatusOut": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "approved",
+          "declined",
+          "lapsed",
+          "failed"
+        ]
+      },
       "PlanChannel": {
         "type": "string",
         "enum": [
@@ -13826,6 +14426,367 @@
         ],
         "title": "SearchOut"
       },
+      "SeatCandidateOut": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "fit": {
+            "$ref": "#/components/schemas/FitBand"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "name",
+          "level",
+          "fit"
+        ],
+        "title": "SeatCandidateOut"
+      },
+      "SeatDecisionOut": {
+        "properties": {
+          "turn": {
+            "type": "integer",
+            "title": "Turn"
+          },
+          "date_label": {
+            "type": "string",
+            "title": "Date Label"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "turn",
+          "date_label",
+          "text"
+        ],
+        "title": "SeatDecisionOut"
+      },
+      "SeatGuardrailOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "value": {
+            "type": "integer",
+            "title": "Value"
+          },
+          "min": {
+            "type": "integer",
+            "title": "Min"
+          },
+          "max": {
+            "type": "integer",
+            "title": "Max"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "value",
+          "min",
+          "max"
+        ],
+        "title": "SeatGuardrailOut"
+      },
+      "SeatHolderOut": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "ranges": {
+            "items": {
+              "$ref": "#/components/schemas/SkillRangeOut"
+            },
+            "type": "array",
+            "title": "Ranges"
+          },
+          "fit": {
+            "$ref": "#/components/schemas/FitBand"
+          },
+          "eligible": {
+            "type": "boolean",
+            "title": "Eligible"
+          },
+          "hits": {
+            "type": "integer",
+            "title": "Hits"
+          },
+          "misses": {
+            "type": "integer",
+            "title": "Misses"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "name",
+          "level",
+          "ranges",
+          "fit",
+          "eligible",
+          "hits",
+          "misses"
+        ],
+        "title": "SeatHolderOut"
+      },
+      "SeatOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "short": {
+            "type": "string",
+            "title": "Short"
+          },
+          "stage": {
+            "type": "integer",
+            "title": "Stage"
+          },
+          "open": {
+            "type": "boolean",
+            "title": "Open"
+          },
+          "who": {
+            "type": "string",
+            "title": "Who"
+          },
+          "effect": {
+            "type": "string",
+            "title": "Effect"
+          },
+          "authority_does": {
+            "type": "string",
+            "title": "Authority Does"
+          },
+          "slots": {
+            "items": {
+              "$ref": "#/components/schemas/SeatSlotOut"
+            },
+            "type": "array",
+            "title": "Slots"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "short",
+          "stage",
+          "open",
+          "who",
+          "effect",
+          "authority_does",
+          "slots"
+        ],
+        "title": "SeatOut"
+      },
+      "SeatPitchOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "seat": {
+            "type": "string",
+            "title": "Seat"
+          },
+          "seat_label": {
+            "type": "string",
+            "title": "Seat Label"
+          },
+          "holder_id": {
+            "type": "integer",
+            "title": "Holder Id"
+          },
+          "holder_name": {
+            "type": "string",
+            "title": "Holder Name"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "why": {
+            "type": "string",
+            "title": "Why"
+          },
+          "made_label": {
+            "type": "string",
+            "title": "Made Label"
+          },
+          "cost_cents": {
+            "type": "integer",
+            "title": "Cost Cents"
+          },
+          "case_unit": {
+            "$ref": "#/components/schemas/CaseUnitOut"
+          },
+          "low": {
+            "type": "integer",
+            "title": "Low"
+          },
+          "central": {
+            "type": "integer",
+            "title": "Central"
+          },
+          "high": {
+            "type": "integer",
+            "title": "High"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PitchStatusOut"
+          },
+          "modifiable": {
+            "type": "boolean",
+            "title": "Modifiable"
+          },
+          "follow_through": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FollowThroughOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "measured": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Measured"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "seat",
+          "seat_label",
+          "holder_id",
+          "holder_name",
+          "kind",
+          "title",
+          "why",
+          "made_label",
+          "cost_cents",
+          "case_unit",
+          "low",
+          "central",
+          "high",
+          "status",
+          "modifiable",
+          "follow_through",
+          "measured",
+          "text"
+        ],
+        "title": "SeatPitchOut"
+      },
+      "SeatSlotOut": {
+        "properties": {
+          "slot": {
+            "type": "integer",
+            "title": "Slot"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "holder": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SeatHolderOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/SeatCandidateOut"
+            },
+            "type": "array",
+            "title": "Candidates"
+          },
+          "authority_enabled": {
+            "type": "boolean",
+            "title": "Authority Enabled"
+          },
+          "guardrails": {
+            "items": {
+              "$ref": "#/components/schemas/SeatGuardrailOut"
+            },
+            "type": "array",
+            "title": "Guardrails"
+          },
+          "decisions": {
+            "items": {
+              "$ref": "#/components/schemas/SeatDecisionOut"
+            },
+            "type": "array",
+            "title": "Decisions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "slot",
+          "label",
+          "holder",
+          "candidates",
+          "authority_enabled",
+          "guardrails",
+          "decisions"
+        ],
+        "title": "SeatSlotOut"
+      },
       "SettlementIn": {
         "properties": {
           "accept": {
@@ -13897,6 +14858,34 @@
           "start_label"
         ],
         "title": "SignedOut"
+      },
+      "SkillRangeOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "lo": {
+            "type": "integer",
+            "title": "Lo"
+          },
+          "hi": {
+            "type": "integer",
+            "title": "Hi"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "lo",
+          "hi"
+        ],
+        "title": "SkillRangeOut"
       },
       "SponsorIn": {
         "properties": {
@@ -14108,7 +15097,8 @@
           "matter_brief",
           "pitch_letter",
           "partner_memo",
-          "year_end_letter"
+          "year_end_letter",
+          "seat_report"
         ]
       },
       "TextOut": {

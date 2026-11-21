@@ -89,6 +89,8 @@ export function useAdvance(slug: string) {
         'texts',
         'partnership',
         'policies',
+        'history',
+        'guidance',
       ]) {
         void client.invalidateQueries({ queryKey: [key, slug] });
       }
@@ -890,3 +892,22 @@ export function usePartnershipAction(slug: string) {
     },
   });
 }
+
+// --- PT-M7: History and the Overview's guidance --------------------------------------------
+
+export type HistoryData = Schemas['HistoryOut'];
+export type Guidance = Schemas['GuidanceOut'];
+
+export const useHistory = (slug: string) =>
+  useQuery({
+    queryKey: ['history', slug],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/saves/{slug}/history', { params: { path: { slug } } })),
+  });
+
+export const useGuidance = (slug: string) =>
+  useQuery({
+    queryKey: ['guidance', slug],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/saves/{slug}/guidance', { params: { path: { slug } } })),
+  });

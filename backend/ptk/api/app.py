@@ -12,6 +12,7 @@ from ptk import loader
 from ptk.api import recruitment
 from ptk.api.events import blocking_event_id, make_events_router
 from ptk.api.finance import make_finance_router
+from ptk.api.history import make_history_router
 from ptk.api.market import make_market_router
 from ptk.api.matters import make_matters_router
 from ptk.api.org import make_org_router
@@ -285,6 +286,7 @@ def create_app() -> FastAPI:
     app.include_router(make_finance_router(errors))
     app.include_router(make_market_router(errors))  # PT-M5
     app.include_router(make_partnership_router(errors))
+    app.include_router(make_history_router(errors))  # PT-M7
     return app
 
 

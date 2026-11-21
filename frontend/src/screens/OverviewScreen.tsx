@@ -1,5 +1,6 @@
 import { Card, Group, Table, Text, Title } from '@mantine/core';
 import { useParams } from 'react-router';
+import { Guidance } from '../components/Guidance';
 import { useGame, usePayroll, useTexts } from '../lib/api';
 import { formatMoney } from '../lib/format';
 
@@ -35,6 +36,7 @@ export function OverviewScreen() {
           </Text>
         </Card>
       </Group>
+      <Guidance slug={slug} />
       {latest && (
         <Card withBorder mt="md" maw={560} data-testid="legal-news">
           <Title order={4}>Legal news, {latest.date_label}</Title>

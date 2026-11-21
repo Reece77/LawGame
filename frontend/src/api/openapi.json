@@ -7049,6 +7049,144 @@
           }
         }
       }
+    },
+    "/api/saves/{slug}/history": {
+      "get": {
+        "summary": "Get History",
+        "operationId": "getHistory",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoryOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/guidance": {
+      "get": {
+        "summary": "Get Guidance",
+        "operationId": "getGuidance",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuidanceOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -8864,6 +9002,97 @@
         ],
         "title": "GeneralCounselOut"
       },
+      "GettingStartedStepOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "done": {
+            "type": "boolean",
+            "title": "Done"
+          },
+          "link_kind": {
+            "type": "string",
+            "title": "Link Kind"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "text",
+          "done",
+          "link_kind"
+        ],
+        "title": "GettingStartedStepOut"
+      },
+      "GuidanceItemOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "link_kind": {
+            "type": "string",
+            "title": "Link Kind"
+          },
+          "link_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "text",
+          "link_kind"
+        ],
+        "title": "GuidanceItemOut"
+      },
+      "GuidanceOut": {
+        "properties": {
+          "what_next": {
+            "items": {
+              "$ref": "#/components/schemas/GuidanceItemOut"
+            },
+            "type": "array",
+            "title": "What Next"
+          },
+          "getting_started": {
+            "items": {
+              "$ref": "#/components/schemas/GettingStartedStepOut"
+            },
+            "type": "array",
+            "title": "Getting Started"
+          },
+          "first_year": {
+            "type": "boolean",
+            "title": "First Year"
+          }
+        },
+        "type": "object",
+        "required": [
+          "what_next",
+          "getting_started",
+          "first_year"
+        ],
+        "title": "GuidanceOut"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -8885,6 +9114,111 @@
           "job_post",
           "referral"
         ]
+      },
+      "HistoryOut": {
+        "properties": {
+          "years": {
+            "items": {
+              "$ref": "#/components/schemas/HistoryYearOut"
+            },
+            "type": "array",
+            "title": "Years"
+          },
+          "timeline": {
+            "items": {
+              "$ref": "#/components/schemas/TimelineItemOut"
+            },
+            "type": "array",
+            "title": "Timeline"
+          }
+        },
+        "type": "object",
+        "required": [
+          "years",
+          "timeline"
+        ],
+        "title": "HistoryOut"
+      },
+      "HistoryYearOut": {
+        "properties": {
+          "year": {
+            "type": "integer",
+            "title": "Year"
+          },
+          "revenue_cents": {
+            "type": "integer",
+            "title": "Revenue Cents"
+          },
+          "pep_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pep Cents"
+          },
+          "rpl_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rpl Cents"
+          },
+          "margin_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Margin Bp"
+          },
+          "equity_partners": {
+            "type": "integer",
+            "title": "Equity Partners"
+          },
+          "rank": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rank"
+          },
+          "firms_ranked": {
+            "type": "integer",
+            "title": "Firms Ranked"
+          },
+          "complete": {
+            "type": "boolean",
+            "title": "Complete"
+          }
+        },
+        "type": "object",
+        "required": [
+          "year",
+          "revenue_cents",
+          "pep_cents",
+          "rpl_cents",
+          "margin_bp",
+          "equity_partners",
+          "rank",
+          "firms_ranked",
+          "complete"
+        ],
+        "title": "HistoryYearOut"
       },
       "HolidayIn": {
         "properties": {
@@ -13738,6 +14072,56 @@
           "source"
         ],
         "title": "TextOut"
+      },
+      "TimelineItemOut": {
+        "properties": {
+          "turn": {
+            "type": "integer",
+            "title": "Turn"
+          },
+          "date_label": {
+            "type": "string",
+            "title": "Date Label"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "link_kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link Kind"
+          },
+          "link_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "turn",
+          "date_label",
+          "kind",
+          "title"
+        ],
+        "title": "TimelineItemOut"
       },
       "TrendPointOut": {
         "properties": {

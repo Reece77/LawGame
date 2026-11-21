@@ -24,6 +24,7 @@ from ptk.sim.calendar import format_turn
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import NotFoundError
 from ptk.sim.matters.actions import (
+    AssessCase,
     AssignToMatter,
     ChooseForum,
     DefaultStaffing,
@@ -35,12 +36,16 @@ from ptk.sim.matters.actions import (
     SetConflictChecks,
     SetMatterHours,
     SetMatterLead,
+    SetProBonoCredit,
+    SetRatePolicy,
 )
+from ptk.sim.matters.assessment import merits_words
 from ptk.sim.matters.formulas import TENTHS
 from ptk.sim.matters.intake import key_clients
 from ptk.sim.matters.market import base_monthly_demand, wallets
 from ptk.sim.matters.models import Client, Matter, Relationship
-from ptk.sim.matters.staffing import completed_share, home_practice
+from ptk.sim.matters.rates import market_index, market_rise_bp
+from ptk.sim.matters.staffing import completed_share, credit_hours, home_practice
 from ptk.sim.rivals.views import name_for_key, opposing_counsel
 from ptk.sim.state import GameState
 
@@ -161,6 +166,7 @@ class MatterRowOut(BaseModel):
     settlement: SettlementOut | None
     risk: RiskOut  # from what the firm sees: pace, budget, deadlines (PT-M3c)
     risk_notes: list[str]
+    pro_bono: bool = False  # PT-M7a: work for the pro bono client, no fees (spec 7.8)
 
 
 class TeamMemberOut(BaseModel):
@@ -185,6 +191,9 @@ class MatterOut(MatterRowOut):
     waiver: bool
     opposing_counsel: str | None = None  # PT-M5: the other side's firm (a name, never quality)
     opposing_firm_id: int | None = None  # a rival firm's page, when it is one
+    # PT-M7a: early case assessment (spec 7.6): the revealed range in words, never the merits
+    assessed_merits: str | None = None
+    can_assess: bool = False
 
 
 class ConflictChecksOut(BaseModel):
@@ -402,6 +411,7 @@ def _row_fields(m: Matter, state: GameState, data: GameData) -> dict[str, Any]:
         "judge": f"Judge {judge.first_name} {judge.last_name}" if judge is not None else None,
         "errors_caught": m.errors_caught,
         "missed_deadlines": m.missed_deadlines,
+        "pro_bono": m.pro_bono,
         "settlement": None
         if s is None or state.turn > s.expires_turn
         else SettlementOut(
@@ -468,6 +478,13 @@ def matter_view(state: GameState, matter_id: int, data: GameData, balance: Balan
             **_row_fields(m, state, data),
             "team": team,
             "phases": phases,
+            "assessed_merits": None
+            if m.assessment is None
+            else merits_words(m.assessment.lo, m.assessment.hi),
+            "can_assess": m.is_open
+            and kind.outcome == "case"
+            and m.assessment is None
+            and m.lead_id is not None,
             "forums": forums,
             "checked": m.checked,
             "waiver": m.waiver,
@@ -514,6 +531,43 @@ class IntroduceIn(BaseModel):
 
 class ConflictChecksIn(BaseModel):
     enabled: bool
+
+
+class FirmPoliciesOut(BaseModel):
+    """PT-M7a: the Org screen's firm policies: pro bono credit (spec 7.8) and rates."""
+
+    pro_bono_credit_hours: int  # hours a year counting toward each lawyer's billable target
+    pro_bono_credit_max_hours: int
+    pro_bono_hours_per_lawyer: float  # the firm's pro bono, hours a lawyer a year (average)
+    rate_rise_bp: int | None  # None: follows the market's
+    market_rise_bp: int
+    rate_rise_min_bp: int
+    rate_rise_max_bp: int
+    rate_index_bp: int  # the firm's card against 2005's (10000 = the 2005 card)
+    market_index_bp: int
+
+
+class ProBonoCreditIn(BaseModel):
+    hours: int
+
+
+class RatePolicyIn(BaseModel):
+    rise_bp: int | None  # None: follow the market
+
+
+def policies_view(state: GameState, balance: Balance) -> FirmPoliciesOut:
+    firm = state.player
+    return FirmPoliciesOut(
+        pro_bono_credit_hours=credit_hours(state, firm.id, balance),
+        pro_bono_credit_max_hours=balance.pro_bono.credit_max_hours,
+        pro_bono_hours_per_lawyer=round(firm.pro_bono_avg_tenths * 12 / TENTHS, 1),
+        rate_rise_bp=firm.rate_rise_bp,
+        market_rise_bp=market_rise_bp(balance),
+        rate_rise_min_bp=balance.rates.rise_min_bp,
+        rate_rise_max_bp=balance.rates.rise_max_bp,
+        rate_index_bp=round(firm.rate_index * 10000),
+        market_index_bp=round(market_index(state.turn, state.save_meta.start_ym, balance) * 10000),
+    )
 
 
 def _path(slug: str) -> Path:
@@ -692,6 +746,45 @@ def make_matters_router(errors: dict[int | str, dict[str, Any]]) -> APIRouter:
     )
     def choose_forum(slug: str, matter_id: int, body: ForumIn) -> MatterOut:
         return matter_out(_act(slug, lambda a: ChooseForum(a, matter_id, body.court)), matter_id)
+
+    @router.post(
+        f"{base}/matters/{{matter_id}}/assessment",
+        response_model=MatterOut,
+        responses=errors,
+        operation_id="assessCase",
+    )
+    def assess_case(slug: str, matter_id: int) -> MatterOut:
+        """PT-M7a: early case assessment (energy and the lead's hours this month)."""
+        return matter_out(_act(slug, lambda a: AssessCase(a, matter_id)), matter_id)
+
+    @router.get(
+        f"{base}/policies",
+        response_model=FirmPoliciesOut,
+        responses=errors,
+        operation_id="getFirmPolicies",
+    )
+    def get_policies(slug: str) -> FirmPoliciesOut:
+        return policies_view(_state(slug), loader.balance())
+
+    @router.put(
+        f"{base}/policies/pro-bono",
+        response_model=FirmPoliciesOut,
+        responses=errors,
+        operation_id="setProBonoCredit",
+    )
+    def set_pro_bono(slug: str, body: ProBonoCreditIn) -> FirmPoliciesOut:
+        return policies_view(
+            _act(slug, lambda a: SetProBonoCredit(a, body.hours)), loader.balance()
+        )
+
+    @router.put(
+        f"{base}/policies/rates",
+        response_model=FirmPoliciesOut,
+        responses=errors,
+        operation_id="setRatePolicy",
+    )
+    def set_rates(slug: str, body: RatePolicyIn) -> FirmPoliciesOut:
+        return policies_view(_act(slug, lambda a: SetRatePolicy(a, body.rise_bp)), loader.balance())
 
     @router.get(
         f"{base}/conflict-checks",

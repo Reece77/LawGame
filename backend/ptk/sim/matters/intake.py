@@ -27,6 +27,7 @@ from ptk.sim.matters import formulas as fx
 from ptk.sim.matters.conflicts import ConflictIndex, adverse_to, affected_client, conflict_index
 from ptk.sim.matters.market import Wallets, firm_reputation, player_share, wallets
 from ptk.sim.matters.models import Client, MarketState, Matter, Relationship
+from ptk.sim.matters.rates import price_term
 from ptk.sim.matters.staffing import staff_matter
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
@@ -92,6 +93,7 @@ def new_matter(
     turn: int,
     data: GameData,
     balance: Balance,
+    rate_index: float = 1.0,
 ) -> Matter:
     """A named matter's intake draws, in a fixed order: months, critical, adverse, merits,
     opposing counsel, stakes, forum."""
@@ -131,7 +133,7 @@ def new_matter(
         name=f"{client.name}: {label}",
         opened_turn=turn,
         planned_months=months,
-        expected_fees_cents=size_cents,
+        expected_fees_cents=size_cents if rate_index == 1.0 else round(size_cents * rate_index),
         hours_needed_tenths=hours,
         adverse_client_id=adverse_id,
         adverse_name=adverse_name,
@@ -237,6 +239,7 @@ def intake(
     flow_fees: dict[tuple[int, str], float] = {}
     logs: list[LogItem] = []
     named_min = balance.matters.named_min_cents
+    price = price_term(state, firm_id, balance)  # PT-M7a: the firm's card against the market's
     for rel in [r for r in market.relationships if r.firm_id == firm_id]:
         client = state.market.client(rel.client_id)
         if adverse_to(state.market, firm_id, client.id):
@@ -247,7 +250,7 @@ def intake(
         for p in rel.practices:
             practice = data.practice(p)
             fees = shares.wallet(client.id, keys.index(p), demand) * player_share(
-                client, rel, p, reps[p], False, data, balance, appeals
+                client, rel, p, reps[p], False, data, balance, appeals, price
             )
             if fees <= 0:
                 continue
@@ -278,6 +281,7 @@ def intake(
                         turn,
                         data,
                         balance,
+                        state.firm(firm_id).rate_index,  # PT-M7a: fees on the firm's card
                     )
                     index = conflict_index(state.market, firm_id, turn, balance)
                     state, items = open_checked(state, matter, index, data, balance, key)

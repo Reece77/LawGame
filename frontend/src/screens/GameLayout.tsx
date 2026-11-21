@@ -1,6 +1,7 @@
 import { AppShell, Button, Group, Modal, NavLink, Text } from '@mantine/core';
 import { Link, Outlet, useParams } from 'react-router';
 import { EventCard } from '../components/EventCard';
+import { HolidayButton } from '../components/HolidayButton';
 import { useAdvance, useEvent, useGame, useInbox } from '../lib/api';
 
 export function GameLayout() {
@@ -21,6 +22,7 @@ export function GameLayout() {
           <Text fw={600}>{game.data?.firm_name ?? 'Partner Track'}</Text>
           <Group>
             <Text data-testid="date">{game.data?.date_label ?? ''}</Text>
+            <HolidayButton slug={slug} disabled={ended || !game.data || blockingId !== null} />
             <Button
               onClick={() => advance.mutate()}
               loading={advance.isPending}

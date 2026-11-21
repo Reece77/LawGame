@@ -91,6 +91,10 @@ def insert_new(session: Session, state: GameState, entries: tuple[LedgerEntry, .
                 pay_policy_mode=firm.pay_policy.mode,
                 pay_policy_bp=firm.pay_policy.pct_bp,
                 conflict_checks=firm.conflict_checks,
+                pro_bono_credit_hours=firm.pro_bono_credit_hours,
+                pro_bono_avg_tenths=firm.pro_bono_avg_tenths,
+                rate_rise_bp=firm.rate_rise_bp,
+                rate_index=firm.rate_index,
             )
         )
     session.flush()
@@ -128,6 +132,10 @@ def load_state(session: Session) -> GameState:
             home_city=f.home_city,
             pay_policy=PayPolicy(mode=f.pay_policy_mode, pct_bp=f.pay_policy_bp),  # type: ignore[arg-type]
             conflict_checks=f.conflict_checks,
+            pro_bono_credit_hours=f.pro_bono_credit_hours,
+            pro_bono_avg_tenths=f.pro_bono_avg_tenths,
+            rate_rise_bp=f.rate_rise_bp,
+            rate_index=f.rate_index,
         )
         for f in session.scalars(select(FirmRow).order_by(FirmRow.id))
         if f.id not in rival_ids
@@ -172,7 +180,12 @@ def load_state(session: Session) -> GameState:
         ),
         offers=tuple(_offer(r) for r in session.scalars(select(OfferRow).order_by(OfferRow.id))),
         person_states=tuple(
-            PersonState(person_id=r.person_id, energy=r.energy, morale=r.morale)
+            PersonState(
+                person_id=r.person_id,
+                energy=r.energy,
+                morale=r.morale,
+                pro_bono_ytd_tenths=r.pro_bono_ytd_tenths,
+            )
             for r in session.scalars(select(PersonStateRow).order_by(PersonStateRow.person_id))
         ),
         rivals=rivals,
@@ -280,7 +293,14 @@ def write_hiring(session: Session, state: GameState) -> None:
             )
         )
     for ps in state.person_states:
-        session.merge(PersonStateRow(person_id=ps.person_id, energy=ps.energy, morale=ps.morale))
+        session.merge(
+            PersonStateRow(
+                person_id=ps.person_id,
+                energy=ps.energy,
+                morale=ps.morale,
+                pro_bono_ytd_tenths=ps.pro_bono_ytd_tenths,
+            )
+        )
 
 
 # --- People -----------------------------------------------------------------------------------
@@ -517,6 +537,10 @@ def write_firms(session: Session, state: GameState) -> None:
         row.name, row.stage = firm.name, firm.stage
         row.pay_policy_mode, row.pay_policy_bp = firm.pay_policy.mode, firm.pay_policy.pct_bp
         row.conflict_checks = firm.conflict_checks
+        row.pro_bono_credit_hours = firm.pro_bono_credit_hours  # PT-M7a
+        row.pro_bono_avg_tenths = firm.pro_bono_avg_tenths
+        row.rate_rise_bp = firm.rate_rise_bp
+        row.rate_index = firm.rate_index
 
 
 def with_turn(state: GameState, turn: int) -> GameState:

@@ -9,7 +9,7 @@
 1. **Macro and legal indices 2005–2015** (`macro_history.yaml` extended): M&A, PE, IPO, default rate, litigation, enforcement, lateral heat, rate inflation; a dossier with sources; connect to demand, collections stress and lateral heat.
 2. **Strategy scripts** for the five strategies; the runner (TST's framework), nightly workflow, `known_misses.py`.
 3. **Tune** to T1–T12, recording before and after values in "Decisions made".
-4. **Holiday** with stop reasons (critical events, votes, offers), **History** (firm timeline, rankings by year), **onboarding** (TST M29's guided first year and What next).
+4. **History** (firm timeline, rankings by year), **onboarding** (TST M29's guided first year and What next). Holiday with its stop reasons came early, in PT-M7a.
 5. **The 10-year run** printed; a practice save `pt-2008` (a 60-lawyer firm in June 2008).
 
 ## Acceptance criteria

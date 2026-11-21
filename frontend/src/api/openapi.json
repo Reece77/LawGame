@@ -249,6 +249,86 @@
         }
       }
     },
+    "/api/saves/{slug}/holiday": {
+      "post": {
+        "summary": "Holiday",
+        "description": "PT-M7a: one Continue a month until a stop reason (spec 4.2). 409 while a critical\nevent waits; 400 for months or a date out of range.",
+        "operationId": "holiday",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HolidayIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HolidayOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/saves/{slug}/people": {
       "get": {
         "summary": "List People",
@@ -3596,6 +3676,312 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/MatterOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/matters/{matter_id}/assessment": {
+      "post": {
+        "summary": "Assess Case",
+        "description": "PT-M7a: early case assessment (energy and the lead's hours this month).",
+        "operationId": "assessCase",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "matter_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Matter Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatterOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/policies": {
+      "get": {
+        "summary": "Get Policies",
+        "operationId": "getFirmPolicies",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FirmPoliciesOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/policies/pro-bono": {
+      "put": {
+        "summary": "Set Pro Bono",
+        "operationId": "setProBonoCredit",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProBonoCreditIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FirmPoliciesOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/policies/rates": {
+      "put": {
+        "summary": "Set Rates",
+        "operationId": "setRatePolicy",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RatePolicyIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FirmPoliciesOut"
                 }
               }
             }
@@ -8308,6 +8694,67 @@
         ],
         "title": "FinanceOut"
       },
+      "FirmPoliciesOut": {
+        "properties": {
+          "pro_bono_credit_hours": {
+            "type": "integer",
+            "title": "Pro Bono Credit Hours"
+          },
+          "pro_bono_credit_max_hours": {
+            "type": "integer",
+            "title": "Pro Bono Credit Max Hours"
+          },
+          "pro_bono_hours_per_lawyer": {
+            "type": "number",
+            "title": "Pro Bono Hours Per Lawyer"
+          },
+          "rate_rise_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rate Rise Bp"
+          },
+          "market_rise_bp": {
+            "type": "integer",
+            "title": "Market Rise Bp"
+          },
+          "rate_rise_min_bp": {
+            "type": "integer",
+            "title": "Rate Rise Min Bp"
+          },
+          "rate_rise_max_bp": {
+            "type": "integer",
+            "title": "Rate Rise Max Bp"
+          },
+          "rate_index_bp": {
+            "type": "integer",
+            "title": "Rate Index Bp"
+          },
+          "market_index_bp": {
+            "type": "integer",
+            "title": "Market Index Bp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pro_bono_credit_hours",
+          "pro_bono_credit_max_hours",
+          "pro_bono_hours_per_lawyer",
+          "rate_rise_bp",
+          "market_rise_bp",
+          "rate_rise_min_bp",
+          "rate_rise_max_bp",
+          "rate_index_bp",
+          "market_index_bp"
+        ],
+        "title": "FirmPoliciesOut",
+        "description": "PT-M7a: the Org screen's firm policies: pro bono credit (spec 7.8) and rates."
+      },
       "FirmRefOut": {
         "properties": {
           "id": {
@@ -8438,6 +8885,91 @@
           "job_post",
           "referral"
         ]
+      },
+      "HolidayIn": {
+        "properties": {
+          "months": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Months"
+          },
+          "until_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Until Year"
+          },
+          "until_month": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 12.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Until Month"
+          }
+        },
+        "type": "object",
+        "title": "HolidayIn",
+        "description": "PT-M7a: Holiday (`months`) or continue until a month (`until_year`, `until_month`)."
+      },
+      "HolidayOut": {
+        "properties": {
+          "months_played": {
+            "type": "integer",
+            "title": "Months Played"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "reason_text": {
+            "type": "string",
+            "title": "Reason Text"
+          },
+          "from_label": {
+            "type": "string",
+            "title": "From Label"
+          },
+          "to_label": {
+            "type": "string",
+            "title": "To Label"
+          },
+          "max_months": {
+            "type": "integer",
+            "title": "Max Months"
+          },
+          "default_months": {
+            "type": "integer",
+            "title": "Default Months"
+          }
+        },
+        "type": "object",
+        "required": [
+          "months_played",
+          "reason",
+          "reason_text",
+          "from_label",
+          "to_label",
+          "max_months",
+          "default_months"
+        ],
+        "title": "HolidayOut"
       },
       "HoursIn": {
         "properties": {
@@ -9167,6 +9699,11 @@
             "type": "array",
             "title": "Risk Notes"
           },
+          "pro_bono": {
+            "type": "boolean",
+            "title": "Pro Bono",
+            "default": false
+          },
           "team": {
             "items": {
               "$ref": "#/components/schemas/TeamMemberOut"
@@ -9217,6 +9754,22 @@
               }
             ],
             "title": "Opposing Firm Id"
+          },
+          "assessed_merits": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assessed Merits"
+          },
+          "can_assess": {
+            "type": "boolean",
+            "title": "Can Assess",
+            "default": false
           }
         },
         "type": "object",
@@ -9410,6 +9963,11 @@
             },
             "type": "array",
             "title": "Risk Notes"
+          },
+          "pro_bono": {
+            "type": "boolean",
+            "title": "Pro Bono",
+            "default": false
           }
         },
         "type": "object",
@@ -10967,6 +11525,17 @@
             ],
             "title": "Salary Cents"
           },
+          "pro_bono_hours": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pro Bono Hours"
+          },
           "first_name": {
             "type": "string",
             "title": "First Name"
@@ -11252,6 +11821,17 @@
               }
             ],
             "title": "Salary Cents"
+          },
+          "pro_bono_hours": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pro Bono Hours"
           }
         },
         "type": "object",
@@ -11864,6 +12444,19 @@
         ],
         "title": "PracticeScreenOut"
       },
+      "ProBonoCreditIn": {
+        "properties": {
+          "hours": {
+            "type": "integer",
+            "title": "Hours"
+          }
+        },
+        "type": "object",
+        "required": [
+          "hours"
+        ],
+        "title": "ProBonoCreditIn"
+      },
       "PromiseIn": {
         "properties": {
           "person_id": {
@@ -12001,6 +12594,26 @@
           "cents"
         ],
         "title": "RateOut"
+      },
+      "RatePolicyIn": {
+        "properties": {
+          "rise_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rise Bp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rise_bp"
+        ],
+        "title": "RatePolicyIn"
       },
       "RecruitmentOut": {
         "properties": {

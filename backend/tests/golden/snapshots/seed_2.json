@@ -3,27 +3,27 @@
     [
       1,
       "1000_cash",
-      124005076
+      152947549
     ],
     [
       1,
       "1100_unbilled_wip",
-      206478000
+      253373208
     ],
     [
       1,
       "1110_wip_provision",
-      -64902786
+      -114518333
     ],
     [
       1,
       "1200_receivables",
-      28415509
+      33755298
     ],
     [
       1,
       "1210_bad_debt_provision",
-      -337850
+      -337552
     ],
     [
       1,
@@ -33,17 +33,17 @@
     [
       1,
       "2700_partner_current_accounts",
-      -40933288
+      -35276941
     ],
     [
       1,
       "3000_partners_capital",
-      -83071788
+      -117670608
     ],
     [
       1,
       "3100_undistributed_profit",
-      4688073200
+      7678420678
     ],
     [
       1,
@@ -53,27 +53,27 @@
     [
       1,
       "4000_fees",
-      -5481848072
+      -8551686557
     ],
     [
       1,
       "4100_success_fees",
-      -81440384
+      -41840855
     ],
     [
       1,
       "5000_associate_salaries",
-      244984355
+      253260186
     ],
     [
       1,
       "5010_bonuses",
-      50250000
+      52000000
     ],
     [
       1,
       "5200_benefits",
-      61246083
+      63315036
     ],
     [
       1,
@@ -83,12 +83,12 @@
     [
       1,
       "6700_write_offs",
-      6276699
+      3920267
     ],
     [
       1,
       "6900_general_admin",
-      86905246
+      114438624
     ],
     [
       101,
@@ -3276,7 +3276,7 @@
   "matter_outcomes": [
     [
       "closed",
-      23
+      13
     ],
     [
       "collapsed",
@@ -3284,7 +3284,7 @@
     ],
     [
       "done",
-      4
+      24
     ],
     [
       "lost",
@@ -3292,21 +3292,21 @@
     ],
     [
       "open",
-      23
+      2
     ],
     [
       "won",
-      3
+      4
     ]
   ],
-  "matters": "7b6bac3ca0c372c82e3bac16b1e8d2270ff257d1779cc081a6a0818e9e3c5c51",
+  "matters": "45877a7512ab3a8a291db84eddd57542fda3410d719dcc178c280905d76bd72e",
   "names": [
     "Sarah Williams",
     "Kevin Stewart",
     "Luis Allen",
     "Logan Robinson"
   ],
-  "people": "46376d9fd76114e92476e6a10de3eff768f60d6818e16330ebddd94dec661d78",
-  "relationships": "6feac7adcac95b616c290cc9750b74c5b1078958bf351346abd1322826d780da",
-  "sha256": "e8748bb6db33a59fd1c7052e9f2900f63b1277418338e867842e226f314bb734"
+  "people": "cc9e72a85f07fdc3ef6d7ddc794ddfa910cab15752ecb041a615c70fef5ad791",
+  "relationships": "e79ef1853cec922aefcab1aa561044011af3d57df6e409dedc6c6bcf21b62f6d",
+  "sha256": "cedaa869b247c2aad2087bde2125544d162906bddbd6bb0292550744bf9b0eac"
 }

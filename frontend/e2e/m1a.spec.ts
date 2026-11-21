@@ -9,7 +9,7 @@ test('found a firm, see its people, open a profile', async ({ page }) => {
   const table = page.getByTestId('people-table');
   await expect(table.locator('tbody tr')).toHaveCount(4);
   await expect(table).toContainText('Equity partner');
-  await expect(table).toContainText('Associate 3');
+  await expect(table).toContainText('Associate 4'); // PT-M7a: the spin-out's fourth-year
   await page.getByRole('button', { name: 'Continue' }).click();
   await expect(page.getByTestId('date')).toHaveText('Feb 2005');
   await table.locator('tbody tr').first().getByRole('link').click();

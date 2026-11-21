@@ -39,6 +39,11 @@ class FirmRow(Base):
     pay_policy_mode: Mapped[str] = mapped_column(String(10))  # PT-M1b: match, lag, lead
     pay_policy_bp: Mapped[int] = mapped_column(Integer)  # bp of the market scale
     conflict_checks: Mapped[bool]  # PT-M3a (ADR PT-0009 5)
+    # PT-M7a: pro bono (spec 7.8) and the yearly rate rise
+    pro_bono_credit_hours: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    pro_bono_avg_tenths: Mapped[float] = mapped_column(Float, default=0.0)
+    rate_rise_bp: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    rate_index: Mapped[float] = mapped_column(Float, default=1.0)
 
 
 class LedgerEntryRow(Base):
@@ -194,6 +199,7 @@ class PersonStateRow(Base):
     person_id: Mapped[int] = mapped_column(ForeignKey("person.id"), primary_key=True)
     energy: Mapped[int | None] = mapped_column(Integer, nullable=True)
     morale: Mapped[float | None] = mapped_column(Float, nullable=True)
+    pro_bono_ytd_tenths: Mapped[int] = mapped_column(Integer, default=0)  # PT-M7a
 
 
 class InboxItemRow(Base):

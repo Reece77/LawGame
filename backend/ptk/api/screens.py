@@ -7,8 +7,9 @@ card) and Explain (utilisation, realisation, matter margin and a matter's outloo
 
 Hidden values (CLAUDE.md section 10): a matter's outlook is built from what the firm *sees*:
 the team's revealed skill and familiarity ranges against an average opposing counsel with
-neutral merits. Merits, opposing counsel's quality, hidden traits and the true chance never
-enter a view; `tests/integration/test_screens_api.py` enumerates every schema here for them.
+neutral merits, or (PT-M7a) the midpoint of an early case assessment's revealed range.
+Merits, opposing counsel's quality, hidden traits and the true chance never enter a view;
+`tests/integration/test_screens_api.py` enumerates every schema here for them.
 """
 
 from __future__ import annotations
@@ -31,6 +32,7 @@ from ptk.sim.calendar import format_turn
 from ptk.sim.data_models import PARTNER_LEVELS, Balance, GameData
 from ptk.sim.errors import NotFoundError
 from ptk.sim.matters import formulas as fx
+from ptk.sim.matters.assessment import merits_words
 from ptk.sim.matters.market import monthly_demand
 from ptk.sim.matters.models import Matter
 from ptk.sim.matters.staffing import fee_earners, planned_load
@@ -482,7 +484,9 @@ def _explain_outlook(state: GameState, m: Matter, data: GameData, balance: Balan
         lo, hi = craft
         mid = (lo + hi) / 2
         if case:
-            chance = fx.sigmoid(out.case_k * (mid - out.opposing_mean))
+            # PT-M7a: early case assessment's revealed range, its midpoint; else even merits
+            seen = 0.0 if m.assessment is None else (m.assessment.lo + m.assessment.hi) / 2
+            chance = fx.sigmoid(out.case_k * (mid - out.opposing_mean) + seen)
         else:
             chance = fx.p_close(mid, m.critical, out)
         band = outlook_band(chance)
@@ -499,7 +503,14 @@ def _explain_outlook(state: GameState, m: Matter, data: GameData, balance: Balan
     if case:
         items += [
             _item("Opposing counsel", None, "text", "Unknown: taken as a typical large firm"),
-            _item("Merits", None, "text", "Not assessed: taken as even"),
+            _item("Merits", None, "text", "Not assessed: taken as even")
+            if m.assessment is None
+            else _item(
+                "Merits, as assessed",
+                None,
+                "text",
+                merits_words(m.assessment.lo, m.assessment.hi).capitalize(),
+            ),
             _item("Judge", None, "text", "A judge never favours a side"),
         ]
     else:

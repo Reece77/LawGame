@@ -227,3 +227,16 @@ Rival firms are current state in one JSON document, rewritten each turn and afte
 | `judge` | `from_turn`, `until_turn` | int, int | The first turn on the bench and the first turn off it (null: never leaves); real judges from `judges.yaml` by their years, then generated successors |
 
 `decision_log` gains rows with `source` `rival`: each rival move's fields, for history only (ADR-0015 5: replay recomputes them). `inbox_item` gains templates `rfp_open`, `rfp_won`, `rfp_lost` (link kind `rfp`), `rival_approach`, `rival_poached`, `rival_approach_declined` and `rival_joined`.
+
+## Schema v10 (`0010_v1_gaps`, PT-M7a)
+
+| Table | Column | Type | Meaning |
+| --- | --- | --- | --- |
+| `firm` | `pro_bono_credit_hours` | int, null | Pro bono hours a year credited toward each lawyer's billable target (spec 7.8); null: `pro_bono.credit_hours` (50) |
+| | `pro_bono_avg_tenths` | float | The firm's pro bono tenths a lawyer a month, a moving average (`pro_bono.average_rate`); its recruiting appeal |
+| | `rate_rise_bp` | int, null | Each January's rate rise in bp; null: the market's (`rivals.rate_inflation`) |
+| | `rate_index` | float | The firm's rate card over the practices' 2005 cards (1.0 at the start); every hour's standard value, blended rates and new matters' expected fees use it |
+| `person_state` | `pro_bono_ytd_tenths` | int | Pro bono worked this calendar year (reset by January's month); its credit is capped by the firm's policy |
+| `client` | row `id` 0 | | The pro bono client (`PRO_BONO_CLIENT`): pro bono matters reference it; it is never loaded into the client universe (no wallet, panel or relationship) |
+
+`matter.data_json` gains `assessment` (PT-M7a, early case assessment: `[turn, lo, hi]`, the revealed range of the case's merits in logit points, always holding the hidden `merits`; null until assessed). A pro bono matter has `client_id` 0 and `expected_fees_cents` 0. `hours_log` rows for pro bono work have `client_id` 0 and `value_cents` 0: they post no WIP and are not billable (utilisation is billable hours over capacity). `inbox_item` gains templates `rates_rose`, `case_assessed` and `pro_bono_opened`.

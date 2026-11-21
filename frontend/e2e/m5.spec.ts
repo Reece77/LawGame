@@ -24,8 +24,11 @@ test('see the rivals, open a rival, approach its people, read the news', async (
 
   await page.getByTestId('approach-rival').click();
   await expect(page.getByTestId('approach-done')).toBeVisible();
-  await page.getByRole('link', { name: 'Recruitment screen' }).click();
-  await expect(page.getByText('Robert C. Sheehan').first()).toBeVisible({ timeout: 10_000 });
+  // Approached partners are lateral partner candidates (PT-M7a: the old check matched the
+  // rival page before the Recruitment screen loaded, where they never were).
+  await page.getByRole('link', { name: 'Partnership screen' }).click();
+  await expect(page.getByRole('heading', { name: 'Partnership', level: 2 })).toBeVisible();
+  await expect(page.getByTestId('laterals')).toContainText('Robert C. Sheehan');
 
   await continueMonth(page);
   await expect(page.getByTestId('date')).toHaveText('Feb 2005');

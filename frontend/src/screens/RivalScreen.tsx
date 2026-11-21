@@ -124,8 +124,8 @@ export function RivalScreen() {
         {approach.error && <Alert color="red">{approach.error.message}</Alert>}
         {approach.isSuccess && (
           <Alert color="teal" data-testid="approach-done">
-            They are now candidates on the{' '}
-            <Link to={`/game/${slug}/recruitment`}>Recruitment screen</Link>.
+            They are now lateral candidates on the{' '}
+            <Link to={`/game/${slug}/partnership`}>Partnership screen</Link>.
           </Alert>
         )}
         <Table>

@@ -26,6 +26,8 @@ from ptk.sim.ledger import (
     WIP_PROVISION,
 )
 from ptk.sim.matters import formulas as fx
+from ptk.sim.matters.models import PRO_BONO_CLIENT_ID
+from ptk.sim.matters.rates import indexed_rate
 from ptk.sim.money import round_half_even
 from tests.billing_support import Played, played
 
@@ -46,7 +48,13 @@ def test_wip_at_standard_is_hours_times_rate(
         for r in result.new_state.market.hours:
             if r.turn != before.turn:
                 continue
-            rate = fx.rate_cents(data.practice(r.practice), people[r.person_id].level, data)
+            if r.client_id == PRO_BONO_CLIENT_ID:  # PT-M7a: pro bono has no value
+                assert r.value_cents == 0
+                continue
+            rate = indexed_rate(
+                fx.rate_cents(data.practice(r.practice), people[r.person_id].level, data),
+                result.new_state.firm(1).rate_index,  # PT-M7a: the card after January's rise
+            )
             assert r.value_cents == round_half_even(r.tenths * rate, fx.TENTHS)
             if r.matter_id is not None:
                 worked[r.matter_id] += r.value_cents

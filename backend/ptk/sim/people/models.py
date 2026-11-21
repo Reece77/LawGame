@@ -193,6 +193,8 @@ class WorkMonth:
     substantive_tenths: int = 0
     other_tenths: int = 0
     rest: Rest = "none"
+    pro_bono_tenths: int = 0  # PT-M7a: of practice_tenths, pro bono (no fees; spec 7.8)
+    credited_tenths: int = 0  # PT-M7a: of pro_bono_tenths, credited toward the billable target
 
     @property
     def total_tenths(self) -> int:

@@ -184,7 +184,12 @@ class _Run:
                 e, price_cents=max(1, times(v.expected_fees_cents, monthly)), term_months=months
             )
         elif model == "blended":
-            rate = times(blended_rate_cents(v.practice, v.kind_key, self.data), cfg.blended_mult)
+            rate = times(
+                blended_rate_cents(
+                    v.practice, v.kind_key, self.data, self.state.firm(self.firm_id).rate_index
+                ),
+                cfg.blended_mult,
+            )
             e = replace(e, rate_cents=rate)
         elif model == "success":
             e = replace(

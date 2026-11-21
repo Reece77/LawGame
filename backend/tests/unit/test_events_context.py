@@ -17,6 +17,7 @@ from ptk.sim.data_models import Balance, GameData
 from ptk.sim.events.director import eligible_targets
 from ptk.sim.events.models import GameEvent
 from ptk.sim.matters.intake import with_matter
+from ptk.sim.matters.models import MeritsAssessment
 from ptk.sim.state import GameState, with_people
 from tests.events_support import played
 
@@ -25,6 +26,7 @@ OPPOSING = 17.6543
 PORTABILITY = 7321
 POTENTIAL = 187.6543
 HIDDEN = 19.4321
+RANGE_LO, RANGE_HI = 0.7345678, 1.7345678  # PT-M7a: an early case assessment's range
 STRAY = "toxic_high_performer"  # a tag the firm has not noticed
 
 
@@ -45,7 +47,15 @@ def _plant(state: GameState, data: GameData) -> GameState:
     state = with_people(state, people)
     market = state.market
     for m in market.matters:
-        market = with_matter(market, replace(m, merits=MERITS, opposing_quality=OPPOSING))
+        market = with_matter(
+            market,
+            replace(
+                m,
+                merits=MERITS,
+                opposing_quality=OPPOSING,
+                assessment=MeritsAssessment(turn=0, lo=RANGE_LO, hi=RANGE_HI),
+            ),
+        )
     return replace(state, market=market)
 
 
@@ -96,7 +106,7 @@ def test_prompts_never_carry_hidden_values(
             planted, event, template, eligible_targets(planted, event), kpis, balance, data
         )
         text = system + user
-        for marker in (MERITS, OPPOSING, PORTABILITY, POTENTIAL, HIDDEN):
+        for marker in (MERITS, OPPOSING, PORTABILITY, POTENTIAL, HIDDEN, RANGE_LO, RANGE_HI):
             assert str(marker) not in text, (event.template_id, marker)
         assert stray_label not in text and STRAY not in text
         context = json.loads(user)

@@ -88,9 +88,64 @@ export function useAdvance(slug: string) {
         'events',
         'texts',
         'partnership',
+        'policies',
       ]) {
         void client.invalidateQueries({ queryKey: [key, slug] });
       }
+    },
+  });
+}
+
+// --- PT-M7a: Holiday and continue-until -------------------------------------------------------
+
+export type HolidayBody = Schemas['HolidayIn'];
+export type HolidayResult = Schemas['HolidayOut'];
+
+export function useHoliday(slug: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: HolidayBody) =>
+      unwrap(await api.POST('/api/saves/{slug}/holiday', { params: { path: { slug } }, body })),
+    onSuccess: () => {
+      void client.invalidateQueries({ predicate: (q) => q.queryKey.includes(slug) });
+    },
+  });
+}
+
+// --- PT-M7a: firm policies (pro bono credit, the yearly rate rise) -------------------------
+
+export type FirmPolicies = Schemas['FirmPoliciesOut'];
+
+export const useFirmPolicies = (slug: string) =>
+  useQuery({
+    queryKey: ['policies', slug],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/saves/{slug}/policies', { params: { path: { slug } } })),
+  });
+
+export type PolicyAction =
+  { kind: 'pro_bono'; hours: number } | { kind: 'rates'; riseBp: number | null };
+
+export function usePolicyAction(slug: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: async (a: PolicyAction) =>
+      a.kind === 'pro_bono'
+        ? unwrap(
+            await api.PUT('/api/saves/{slug}/policies/pro-bono', {
+              params: { path: { slug } },
+              body: { hours: a.hours },
+            }),
+          )
+        : unwrap(
+            await api.PUT('/api/saves/{slug}/policies/rates', {
+              params: { path: { slug } },
+              body: { rise_bp: a.riseBp },
+            }),
+          ),
+    onSuccess: (policies) => {
+      client.setQueryData(['policies', slug], policies);
+      void client.invalidateQueries({ queryKey: ['game', slug] });
     },
   });
 }
@@ -360,7 +415,8 @@ export type MatterAction =
   | { kind: 'default' }
   | { kind: 'waiver'; advance: boolean }
   | { kind: 'settlement'; accept: boolean }
-  | { kind: 'forum'; court: string };
+  | { kind: 'forum'; court: string }
+  | { kind: 'assess' };
 
 async function runMatter(slug: string, id: number, a: MatterAction): Promise<MatterDetail> {
   const path = { slug, matter_id: id };
@@ -418,6 +474,10 @@ async function runMatter(slug: string, id: number, a: MatterAction): Promise<Mat
           params: { path },
           body: { court: a.court },
         }),
+      );
+    case 'assess': // PT-M7a: early case assessment
+      return unwrap(
+        await api.POST('/api/saves/{slug}/matters/{matter_id}/assessment', { params: { path } }),
       );
   }
 }

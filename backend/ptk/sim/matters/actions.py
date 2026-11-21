@@ -27,9 +27,10 @@ from ptk.sim.errors import (
 from ptk.sim.hiring.actions import Outcome, acting_firm, spend_energy
 from ptk.sim.log import inbox_item
 from ptk.sim.matters import formulas as fx
+from ptk.sim.matters.assessment import merits_range, merits_words
 from ptk.sim.matters.conflicts import affected_client, conflict_index
 from ptk.sim.matters.intake import bump, with_matter, with_relationship
-from ptk.sim.matters.models import Matter, TeamMember, TeamRole
+from ptk.sim.matters.models import Matter, MeritsAssessment, TeamMember, TeamRole
 from ptk.sim.matters.progress import settle
 from ptk.sim.matters.staffing import fee_earners, planned_load, staff_matter
 from ptk.sim.state import GameState, with_firm
@@ -122,6 +123,33 @@ class ChooseForum:
     kind: Literal["choose_forum"] = "choose_forum"
 
 
+@dataclass(frozen=True, slots=True)
+class AssessCase:
+    """PT-M7a: early case assessment (spec 7.6) on an open case."""
+
+    actor_id: int
+    matter_id: int
+    kind: Literal["assess_case"] = "assess_case"
+
+
+@dataclass(frozen=True, slots=True)
+class SetProBonoCredit:
+    """PT-M7a: the firm's pro bono credit policy (spec 7.8), hours a year."""
+
+    actor_id: int
+    hours: int
+    kind: Literal["set_pro_bono_credit"] = "set_pro_bono_credit"
+
+
+@dataclass(frozen=True, slots=True)
+class SetRatePolicy:
+    """PT-M7a: each January's rate rise in bp; None follows the market."""
+
+    actor_id: int
+    rise_bp: int | None
+    kind: Literal["set_rate_policy"] = "set_rate_policy"
+
+
 type MatterAction = (
     AssignToMatter
     | SetMatterHours
@@ -133,6 +161,9 @@ type MatterAction = (
     | RespondSettlement
     | SetConflictChecks
     | ChooseForum
+    | AssessCase
+    | SetProBonoCredit
+    | SetRatePolicy
 )
 
 MATTER_ACTION_TYPES: dict[str, type[MatterAction]] = {
@@ -146,6 +177,9 @@ MATTER_ACTION_TYPES: dict[str, type[MatterAction]] = {
     "respond_settlement": RespondSettlement,
     "set_conflict_checks": SetConflictChecks,
     "choose_forum": ChooseForum,
+    "assess_case": AssessCase,  # PT-M7a
+    "set_pro_bono_credit": SetProBonoCredit,
+    "set_rate_policy": SetRatePolicy,
 }
 
 
@@ -446,6 +480,57 @@ def choose_forum(state: GameState, a: ChooseForum, balance: Balance, data: GameD
     return Outcome(state=replace(state, market=with_matter(state.market, moved)))
 
 
+def assess_case(
+    state: GameState, a: AssessCase, draws: Draws, balance: Balance, data: GameData
+) -> Outcome:
+    """Early case assessment (spec 7.6): energy from the actor and `assessment.lead_hours`
+    of the lead's non-billable time this month; the merits are revealed as a range."""
+    firm = acting_firm(state, a.actor_id)
+    matter = _matter(state, firm, a.matter_id)
+    if data.market.kinds[matter.kind].outcome != "case":
+        raise MatterActionError("only a case's merits can be assessed")
+    if matter.assessment is not None:
+        raise MatterActionError(f"{matter.name} has been assessed already")
+    if matter.lead_id is None:
+        raise MatterActionError(f"{matter.name} has no lead to assess it")
+    state = spend_energy(state, a.actor_id, "case_assessment", balance)
+    lead = state.person(matter.lead_id)
+    lo, hi = merits_range(matter.merits, lead, float(draws().random()), balance)
+    assessed = replace(matter, assessment=MeritsAssessment(turn=state.turn, lo=lo, hi=hi))
+    item = inbox_item(
+        state.turn,
+        firm,
+        "case_assessed",
+        link_kind="matter",
+        link_id=matter.id,
+        name=f"{lead.first_name} {lead.last_name}",
+        matter=matter.name,
+        merits=merits_words(lo, hi),
+    )
+    return Outcome(state=replace(state, market=with_matter(state.market, assessed)), log=(item,))
+
+
+def set_pro_bono_credit(state: GameState, a: SetProBonoCredit, balance: Balance) -> Outcome:
+    firm = acting_firm(state, a.actor_id)
+    if not 0 <= a.hours <= balance.pro_bono.credit_max_hours:
+        raise MatterActionError(
+            f"the credit policy is 0 to {balance.pro_bono.credit_max_hours} hours a year"
+        )
+    state = spend_energy(state, a.actor_id, "pro_bono_policy", balance)
+    return Outcome(state=with_firm(state, replace(state.firm(firm), pro_bono_credit_hours=a.hours)))
+
+
+def set_rate_policy(state: GameState, a: SetRatePolicy, balance: Balance) -> Outcome:
+    firm = acting_firm(state, a.actor_id)
+    cfg = balance.rates
+    if a.rise_bp is not None and not cfg.rise_min_bp <= a.rise_bp <= cfg.rise_max_bp:
+        raise MatterActionError(
+            f"the yearly rise is {cfg.rise_min_bp / 100:+.0f}% to {cfg.rise_max_bp / 100:+.0f}%"
+        )
+    state = spend_energy(state, a.actor_id, "rate_policy", balance)
+    return Outcome(state=with_firm(state, replace(state.firm(firm), rate_rise_bp=a.rise_bp)))
+
+
 def apply_matter_action(
     state: GameState, action: MatterAction, draws: Draws, balance: Balance, data: GameData
 ) -> Outcome:
@@ -470,3 +555,9 @@ def apply_matter_action(
             return set_conflict_checks(state, action, balance)
         case ChooseForum():
             return choose_forum(state, action, balance, data)
+        case AssessCase():
+            return assess_case(state, action, draws, balance, data)
+        case SetProBonoCredit():
+            return set_pro_bono_credit(state, action, balance)
+        case SetRatePolicy():
+            return set_rate_policy(state, action, balance)

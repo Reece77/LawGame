@@ -39,8 +39,13 @@ def offer_pitch(state: GameState, actor_id: int, balance: Balance) -> float:
 
 
 def prestige(state: GameState, firm_id: int, balance: Balance) -> float:
-    """The firm's prestige term in offer scores: a constant until PT-M5 and PT-M16."""
-    return balance.hiring.prestige_term
+    """The firm's prestige term in offer scores: a constant until PT-M16, plus (PT-M7a, spec
+    7.8) the recruiting appeal of the firm's pro bono hours a lawyer."""
+    from ptk.sim.matters.pro_bono import recruiting_appeal
+
+    firm = next((f for f in state.firms if f.id == firm_id), None)
+    pro_bono = recruiting_appeal(firm.pro_bono_avg_tenths, balance) if firm is not None else 0.0
+    return balance.hiring.prestige_term + pro_bono
 
 
 def floor_cents(ask_cents: int, balance: Balance) -> int:

@@ -113,7 +113,12 @@ def test_resignations_are_seeded_and_give_notice(data: GameData, balance: Balanc
             if e.end_reason == "resigned":
                 found = True
                 assert e.status == "ended"
-                assert any(i.kind == "resigned" and i.link_id == e.person_id for i in game.log)
+                # PT-M7a: biglaw_spinout's fourth-year now meets up or out in December 2008
+                # and moves on (recorded as resigned, with PT-M4's notices)
+                assert any(
+                    i.kind in ("resigned", "moved_on") and i.link_id == e.person_id
+                    for i in game.log
+                )
                 assert any(i.kind == "employee_left" for i in game.log)
     assert found
 

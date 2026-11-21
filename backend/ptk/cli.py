@@ -68,6 +68,35 @@ def new_game_cmd(
 
 
 @app.command()
+def holiday(
+    save: str = typer.Option(...),
+    months: int = typer.Option(6, min=1),
+    until: str | None = typer.Option(None, help="Continue until this month, YYYY-MM"),
+) -> None:
+    """PT-M7a: Holiday or continue until a month; stops for what needs you (spec 4.2)."""
+    from ptk.holiday import REASON_TEXT, run_holiday
+    from ptk.sim.calendar import ym_to_turn
+
+    path = saves.open_save(get_settings().resolved_save_dir(), save)
+    start = saves.read_state(path)[0].save_meta.start_ym
+    until_turn = None
+    if until is not None:
+        year, month = (int(x) for x in until.split("-"))
+        until_turn = ym_to_turn(year, month, start)
+    result = run_holiday(
+        path,
+        loader.balance(),
+        loader.game_data(),
+        months=None if until_turn is not None else months,
+        until_turn=until_turn,
+    )
+    typer.echo(
+        f"{save}: {result.months_played} months, now {format_turn(result.end_turn, start)}; "
+        f"stopped because {REASON_TEXT[result.reason]}"
+    )
+
+
+@app.command()
 def advance(
     save: str = typer.Option(...),
     turns: int = typer.Option(1, min=1),

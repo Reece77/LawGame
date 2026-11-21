@@ -83,6 +83,15 @@ const baseColumns = [
       </span>
     ),
   }),
+  helper.display({
+    id: 'pro_bono',
+    header: 'Pro bono',
+    cell: ({ row }) => (
+      <span className="tst-num" title="Pro bono hours this year">
+        {row.original.pro_bono_hours == null ? '—' : formatWhole(row.original.pro_bono_hours)}
+      </span>
+    ),
+  }),
 ];
 
 export function PeopleScreen() {

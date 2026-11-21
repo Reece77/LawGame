@@ -141,6 +141,13 @@ class Difficulty(_Strict):
     id: str
     name: str
     capital_mult_bp: int = Field(gt=0)
+    # PT-M7b (difficulty teeth): x the founders' books, x the revolver (its facility and its
+    # January floor), points on the founders' clients' starting relationships (0-100), x the
+    # new firm's starting card (rates.card.start_bp)
+    books_mult_bp: int = Field(default=10000, gt=0)
+    revolver_mult_bp: int = Field(default=10000, gt=0)
+    loyalty_points: float = Field(default=0.0, ge=-50, le=50)
+    card_mult_bp: int = Field(default=10000, gt=0)
 
 
 class CampaignBalance(_Strict):
@@ -403,6 +410,7 @@ ENERGY_ACTIONS: Final = (
     "case_assessment",  # early case assessment on a case (spec 7.6)
     "pro_bono_policy",  # the firm's pro bono credit policy (spec 7.8)
     "rate_policy",  # the firm's yearly rate rise
+    "hours_policy",  # PT-M7b: the firm's billable target
 )
 LATERAL_CHANNELS: Final = ("referral", "job_post", "recruiter")
 
@@ -708,6 +716,10 @@ class StaffingBalance(_Strict):
     output_floor: float = Field(gt=0, le=1)
     output_cap: float = Field(ge=1)
     plan_fill: float = Field(gt=0, le=1.5)
+    # PT-M7b: the firm's hours policy (a firm-wide billable target, hours a year)
+    policy_min_hours: int = Field(gt=0)
+    policy_max_hours: int = Field(gt=0)
+    policy_fill_max: float = Field(ge=1, le=1.5)  # the most of capacity the policy may plan
 
 
 class ProBonoKindDef(_Strict):
@@ -750,12 +762,22 @@ class AssessmentBalance(_Strict):
     )  # the true merits sit within this share of the half-width of the centre
 
 
+class CardBalance(_Strict):
+    """PT-M7b: a new firm's rate card by practice, a share of the practices' 2005 cards."""
+
+    start_bp: int = Field(gt=0, le=10000)  # a new firm's share of the top card in each practice
+    full_reputation: float = Field(gt=0, le=1)  # reputation (0-1) at which the target is 100%
+    curve: float = Field(gt=0)  # target = start + (1 - start) x (rep / full)^curve
+    step_bp: int = Field(gt=0)  # most a practice's share moves toward its target each January
+
+
 class RatesBalance(_Strict):
     """PT-M7a: the firm's yearly rate rise (bp a year; the market's is rivals.rate_inflation)."""
 
     rise_min_bp: int
     rise_max_bp: int
     month: int = Field(ge=1, le=12)
+    card: CardBalance  # PT-M7b
 
 
 class HolidayBalance(_Strict):
@@ -1035,6 +1057,9 @@ class RevolverBalance(_Strict):
     cure_months: int = Field(gt=0)
     call_months: int = Field(gt=0)
     warning_headroom_bp: int = Field(ge=0, le=10000)
+    # PT-M7b: the CFO's forecast (spec 8.7): covenants projected from the trailing trend
+    forecast_months: int = Field(gt=0)  # months ahead the CFO projects (and warns)
+    forecast_window: int = Field(ge=2, le=12)  # trailing months the trend is fitted on
 
 
 class ConfidenceBalance(_Strict):

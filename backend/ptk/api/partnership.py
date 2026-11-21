@@ -182,6 +182,14 @@ class CovenantOut(BaseModel):
     near: bool
 
 
+class ForecastOut(BaseModel):
+    """PT-M7b: the CFO's projected breach on the trailing trend (spec 8.7)."""
+
+    covenant: str
+    months: int
+    drawn_cents: int
+
+
 class RevolverOut(BaseModel):
     facility_cents: int
     drawn_cents: int
@@ -190,6 +198,7 @@ class RevolverOut(BaseModel):
     breach_months: int
     called: bool
     covenants: list[CovenantOut]
+    forecast: ForecastOut | None  # PT-M7b: None while the trend breaks no covenant
 
 
 class PepExplainOut(BaseModel):
@@ -516,6 +525,14 @@ def partnership_view(
     from ptk.sim.billing.kpis import receivables_cents, wip_cents
 
     drawn = drawn_cents(balances, firm)
+    departed = sum(
+        d.book_cents for d in fp.departures if d.equity and turn - d.turn < 12
+    )  # tunable-exempt
+    ahead = (
+        fx.forecast_breach(fp.pnl, departed, cfg.revolver)
+        if fp.called_turn is None and fp.breach_months == 0
+        else None
+    )
     covs = fx.covenants(
         drawn,
         revenue_12m(fp),
@@ -549,6 +566,11 @@ def partnership_view(
             )
             for c in covs
         ],
+        forecast=(
+            ForecastOut(covenant=ahead.covenant, months=ahead.months, drawn_cents=ahead.drawn_cents)
+            if ahead is not None
+            else None
+        ),
     )
     ex = explain(state, fp)
     whip = whip_count(fp, balance)

@@ -45,6 +45,8 @@
 | `rival_fate` | 39 | `(*rival_key,)` | A rival's collapse hazard roll (drawn only when the hazard is above zero), then its people's scatter | PT-M5 |
 | `rival_poach` | 40 | `(*rival_key, 0, made_turn)` | The answer to a rival's approach to one of the player's people (TST 15.6's key; PT-M4's flight keeps `poach`) | PT-M5 |
 | `pro_bono` | 41 | `(firm_id,)` | A month's named pro bono matter: arrival, kind, hours, months, merits, opposing counsel, forum (spec 7.8) | PT-M7a |
+| `crisis` | 42 | `(kind, id)` | A bill's crisis write-down request: whether the client asks, then its size; kind 0 a matter's bill (id: the matter), kind 1 + the practice's index a client's flow bill (id: the client) (spec 14) | PT-M7b |
+| `deal_collapse` | 43 | `(matter_id,)` | A deal's monthly chance to collapse in progress while its practice's driver index is below 1 (spec 14) | PT-M7b |
 | `founder_life` | 50 | `(purpose, *key)`: `(1, person_id)` a retiring partner's departure (PT-M4's `depart` draws with it); `(2, person_id)` a bar election | The founder's life (one call site, `ptk.sim.founder.streams.life_stream`; lane C's range 50-59) | PT-M17 |
 | `family` | 51 | `(head_id, index)` a member's making (index from 1); `(head_id, 0, k)` a month's life event of kind k (0 a partner met, 1 a child born); `(person_id, 1)` a child's month of development; `(head_id, 2, 0)` the January health step-back | The player's family and the health trigger of succession (one call site, `ptk.sim.family.people.family_stream`) | PT-M17 |
 | `investments` | 52 | `(person_id,)` | A player's month of investment and family-office returns (one call site, `ptk.sim.founder.personal.investment_stream`) | PT-M17 |

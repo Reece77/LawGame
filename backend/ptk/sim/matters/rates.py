@@ -10,6 +10,14 @@ firm's index: the market's rate inflation reaches revenue through the index (PT-
 
 The appeal's price term (spec 7.1) is `1 - firm index / market index`: 0 for a firm that rises
 with the market, negative for one above it.
+
+PT-M7b: a new firm's **card by practice**. The firm starts each practice at `rates.card.start_bp`
+of the top card (practices.yaml's 2005 cards; times the difficulty's `card_mult_bp`) and each
+January moves at most `step_bp` toward its target, which rises with its reputation in the
+practice (`matters.market.firm_reputation`, the stand-in until PT-M16): start + (1 - start) x
+min(1, rep / full_reputation)^curve. A practice's effective index is the firm's rate index times
+its share: every hour's standard value, blended rates and new matters' expected fees use it, and
+the price term reads it against the market's index. Rival firms keep their own rates.
 """
 
 from __future__ import annotations
@@ -49,10 +57,68 @@ def market_index(turn: int, start: tuple[int, int], data: GameData, balance: Bal
     return index
 
 
-def price_term(state: GameState, firm_id: int, data: GameData, balance: Balance) -> float:
-    """The appeal's price term (spec 7.1): 1 - the firm's index / the market's."""
+def card_bp(firm: FirmState, practice: str) -> int:
+    """PT-M7b: the firm's share of a practice's top card (bp); a practice not on its card bills
+    at the full card (a save from before PT-M7b)."""
+    for key, bp in firm.rate_card:
+        if key == practice:
+            return bp
+    return BP_DENOMINATOR
+
+
+def practice_index(firm: FirmState, practice: str) -> float:
+    """PT-M7b: the index a practice bills at: the firm's rate index times its card share."""
+    bp = card_bp(firm, practice)
+    return firm.rate_index if bp == BP_DENOMINATOR else firm.rate_index * bp / BP_DENOMINATOR
+
+
+def start_card_bp(difficulty: str, data: GameData, balance: Balance) -> int:
+    """A new firm's share in every practice: the start share times the difficulty's card."""
+    level = data.difficulty(difficulty)
+    mult = level.card_mult_bp if level is not None else BP_DENOMINATOR
+    return min(BP_DENOMINATOR, round(balance.rates.card.start_bp * mult / BP_DENOMINATOR))
+
+
+def starting_card(difficulty: str, data: GameData, balance: Balance) -> tuple[tuple[str, int], ...]:
+    """PT-M7b: a new firm's card, every practice at the start share (sorted by key)."""
+    start = start_card_bp(difficulty, data, balance)
+    return tuple((key, start) for key in sorted(data.practice_keys))
+
+
+def card_target_bp(reputation: float, start_bp: int, balance: Balance) -> int:
+    """The share a practice's reputation earns: start + (1 - start) x min(1, rep / full)^curve."""
+    cfg = balance.rates.card
+    progress = float(min(1.0, max(0.0, reputation / cfg.full_reputation)) ** cfg.curve)
+    return min(BP_DENOMINATOR, round(start_bp + (BP_DENOMINATOR - start_bp) * progress))
+
+
+def card_moved(
+    state: GameState, firm: FirmState, data: GameData, balance: Balance
+) -> tuple[tuple[str, int], ...]:
+    """January's move of each practice's share toward its reputation's target, at most
+    `step_bp` either way."""
+    from ptk.sim.matters.market import firm_reputation
+
+    if not firm.rate_card:
+        return firm.rate_card
+    start = start_card_bp(state.save_meta.difficulty, data, balance)
+    step = balance.rates.card.step_bp
+    out = []
+    for key, bp in firm.rate_card:
+        target = card_target_bp(firm_reputation(state, firm.id, key), start, balance)
+        out.append((key, bp + max(-step, min(step, target - bp))))
+    return tuple(out)
+
+
+def price_term(
+    state: GameState, firm_id: int, data: GameData, balance: Balance, practice: str | None = None
+) -> float:
+    """The appeal's price term (spec 7.1): 1 - the firm's index / the market's; with `practice`
+    (PT-M7b), that practice's card times the index."""
     market = market_index(state.turn, state.save_meta.start_ym, data, balance)
-    return 1.0 - state.firm(firm_id).rate_index / market
+    firm = state.firm(firm_id)
+    index = firm.rate_index if practice is None else practice_index(firm, practice)
+    return 1.0 - index / market
 
 
 def indexed_rate(card_cents: int, index: float) -> int:
@@ -70,7 +136,8 @@ def yearly_rise(
     firm = state.player
     bp = rise_bp(firm, year, data, balance)
     index = firm.rate_index * (1.0 + bp / BP_DENOMINATOR)
-    state = with_firm(state, replace(firm, rate_index=index))
+    card = card_moved(state, firm, data, balance)  # PT-M7b: the card earns its reputation
+    state = with_firm(state, replace(firm, rate_index=index, rate_card=card))
     item = inbox_item(
         state.turn,
         firm.id,

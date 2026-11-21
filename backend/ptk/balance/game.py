@@ -43,7 +43,9 @@ PLAYER = 1
 ASSOCIATE_PREFIX = "associate_"
 SENIOR_ASSOCIATE = "senior_associate"
 DECEMBER = 12  # tunable-exempt: the allocation month
-BANK_WARNINGS = frozenset({"cfo_warning", "covenant_breach", "revolver_called", "insolvent"})
+BANK_WARNINGS = frozenset(
+    {"cfo_forecast", "cfo_warning", "covenant_breach", "revolver_called", "insolvent"}
+)  # PT-M7b: the forecast too
 
 
 def is_associate(level: str) -> bool:

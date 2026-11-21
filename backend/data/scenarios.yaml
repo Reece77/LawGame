@@ -58,8 +58,12 @@ jurisdictions:
   - { key: us_ny, label: New York }
   - { key: us_dc, label: District of Columbia }
   - { key: uspto, label: USPTO patent bar }
+# PT-M7b (difficulty teeth): books_mult_bp x the founders' books; revolver_mult_bp x the
+# scenario's revolver (the facility and its January floor); loyalty_points added to the
+# founders' clients' starting relationships (0-100); card_mult_bp x the new firm's starting
+# card (balance.yaml rates.card.start_bp). Omitted fields are standard's (10000 bp, 0 points).
 difficulties:
-  - { id: easy, name: Easy, capital_mult_bp: 15000 }
+  - { id: easy, name: Easy, capital_mult_bp: 15000, books_mult_bp: 11000, revolver_mult_bp: 15000, loyalty_points: 5, card_mult_bp: 10500 }  # PT-M7b: books 12000 -> 11000 (T5: bigger books mean bigger first-year draws)
   - { id: standard, name: Standard, capital_mult_bp: 10000 }
-  - { id: hard, name: Hard, capital_mult_bp: 8000 }  # PT-M7: 6000 -> 8000 (T5: steady dissolved on 7 of 10 seeds at 6000)
+  - { id: hard, name: Hard, capital_mult_bp: 8000, books_mult_bp: 8500, revolver_mult_bp: 7500, loyalty_points: -5, card_mult_bp: 9500 }  # PT-M7: capital 6000 -> 8000 (T5: steady dissolved on 7 of 10 seeds at 6000); PT-M7b: the brief's books 7000, revolver 5000, loyalty -10, card 9000 dissolved steady on 10 of 10 seeds (most in year one), tuned to 8500, 7500, -5, 9500
   - { id: ironman, name: Ironman, capital_mult_bp: 10000 }  # difficulty from no reloads

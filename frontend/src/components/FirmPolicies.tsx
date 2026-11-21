@@ -4,13 +4,14 @@ import { formatBpPercent, formatWhole } from '../lib/format';
 import { useFirmPolicies, usePolicyAction, type FirmPolicies as Policies } from '../lib/api';
 
 // PT-M7a: the firm's policies on the Org screen: the pro bono credit (spec 7.8) and each
-// January's rate rise. The engine owns every rule and number; this only sends the choice.
+// January's rate rise; PT-M7b: the hours policy (a firm-wide billable target the default
+// staffing rule plans toward). The engine owns every rule and number; this only sends the choice.
 export function FirmPolicies({ slug }: { slug: string }) {
   const policies = useFirmPolicies(slug);
   const p = policies.data;
   if (!p) return <Text c="dimmed">Loading…</Text>;
   // the form restarts from the engine's values whenever they change
-  const key = `${p.pro_bono_credit_hours}/${p.rate_rise_bp ?? 'market'}`;
+  const key = `${p.pro_bono_credit_hours}/${p.rate_rise_bp ?? 'market'}/${p.billable_target_hours ?? 'levels'}`;
   return <PolicyForm key={key} slug={slug} p={p} />;
 }
 
@@ -19,6 +20,12 @@ function PolicyForm({ slug, p }: { slug: string; p: Policies }) {
   const [credit, setCredit] = useState<number | string>(p.pro_bono_credit_hours);
   const [rise, setRise] = useState<number | string>((p.rate_rise_bp ?? p.market_rise_bp) / 100);
   const [market, setMarket] = useState(p.rate_rise_bp === null);
+  const [levels, setLevels] = useState(
+    p.billable_target_hours === null || p.billable_target_hours === undefined,
+  );
+  const [target, setTarget] = useState<number | string>(
+    p.billable_target_hours ?? p.associate_target_hours,
+  );
   return (
     <div className="tst-panel" data-testid="firm-policies">
       <h3 className="tst-ptitle">Firm policies</h3>
@@ -90,6 +97,40 @@ function PolicyForm({ slug, p }: { slug: string; p: Policies }) {
             : `${formatBpPercent(p.rate_rise_bp)} each January (market ${formatBpPercent(p.market_rise_bp)}).`}{' '}
           Card {formatBpPercent(p.rate_index_bp)} of 2005's; market{' '}
           {formatBpPercent(p.market_index_bp)}.
+        </Text>
+        <Group align="end">
+          <Switch
+            label="Each level's own billable target"
+            checked={levels}
+            onChange={(e) => setLevels(e.currentTarget.checked)}
+            data-testid="hours-levels"
+          />
+          <NumberInput
+            label="Billable target, hours a year"
+            min={p.billable_target_min_hours}
+            max={p.billable_target_max_hours}
+            step={50}
+            disabled={levels}
+            value={target}
+            onChange={setTarget}
+            data-testid="hours-target"
+            w={220}
+          />
+          <Button
+            size="xs"
+            loading={action.isPending}
+            onClick={() =>
+              action.mutate({ kind: 'hours', hours: levels ? null : Math.round(Number(target)) })
+            }
+            data-testid="hours-save"
+          >
+            Set
+          </Button>
+        </Group>
+        <Text size="sm" c="dimmed" data-testid="hours-current">
+          {p.billable_target_hours === null || p.billable_target_hours === undefined
+            ? `Each level's target (an associate ${formatWhole(p.associate_target_hours)} h a year).`
+            : `${formatWhole(p.billable_target_hours)} h a year for everyone: staffing plans toward it, and above capacity strain follows.`}
         </Text>
       </Stack>
     </div>

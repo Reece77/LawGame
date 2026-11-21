@@ -6,14 +6,17 @@ simply not made."""
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Final
 
 from ptk.balance.game import PLAYER, Game, is_associate
 from ptk.sim.hiring.actions import Interview, MakeOffer, OpenSearch
 from ptk.sim.ledger import REVOLVER
-from ptk.sim.matters.actions import Introduce, SetMatterHours, SetRatePolicy
+from ptk.sim.matters.actions import Introduce, SetHoursPolicy, SetMatterHours, SetRatePolicy
+from ptk.sim.money import BP_DENOMINATOR
 from ptk.sim.org.actions import CreatePlan, CreateUnit, MovePerson, SetLeader
 from ptk.sim.partnership.actions import (
     CapitalCall,
+    CompRound,
     Diligence,
     ElectionChoice,
     LateralOffer,
@@ -178,6 +181,9 @@ def set_rates(g: Game, rise_bp: int | None) -> None:
         g.act(SetRatePolicy(g.founder_id, rise_bp))
 
 
+KEEP_GAP: Final = 0.25  # a partner this far under their market value moves two gate steps
+
+
 def comp_system(g: Game, system: str, two_tier: bool | None = None) -> None:
     """Put the strategy's comp system (and tiering) to the partnership once."""
     fp = g.state.partnership.of(PLAYER)
@@ -217,6 +223,39 @@ def december_votes(g: Game, admit: int, track: str = "equity") -> None:
         else:
             continue  # up or out
         g.act(ProposePartner(g.founder_id, p.id, choice))  # type: ignore[arg-type]
+
+
+def comp_round(g: Game) -> int:
+    """PT-M7b: December's comp round, the partners the strategy would keep, by its comp system:
+    under modified lockstep an equity partner whose market value is above what the firm pays
+    them moves up the gate (two steps when 25% above); under committee their share moves up by
+    the gap (at most the round's cap). Lockstep and eat what you kill have no lever. Returns
+    the partners moved."""
+    from ptk.sim.partnership.flight import FLIGHT_HOOK, firm_comp_cents
+
+    if g.ym[1] != DECEMBER:
+        return 0
+    fp = g.state.partnership.of(PLAYER)
+    if fp is None or fp.agreement.comp_system not in ("modified_lockstep", "committee"):
+        return 0
+    cfg = g.balance.partnership
+    moved = 0
+    for p in fp.equity_partners:
+        if p.person_id == g.founder_id:
+            continue
+        market = FLIGHT_HOOK.market_value_cents(g.state, p.person_id, g.balance, g.data)
+        paid = firm_comp_cents(p)
+        if market <= paid:
+            continue
+        gap = market / paid - 1
+        if fp.agreement.comp_system == "modified_lockstep":
+            steps = min(cfg.modified.gate_max_steps, 2 if gap > KEEP_GAP else 1)
+            action = CompRound(g.founder_id, p.person_id, gate_steps=steps)
+        else:
+            adjust = min(cfg.committee.adjust_max_bp, round(gap * BP_DENOMINATOR))
+            action = CompRound(g.founder_id, p.person_id, adjust_bp=adjust)
+        moved += g.act(action)
+    return moved
 
 
 def _first_look(g: Game, fp: FirmPartnership, person_id: int) -> bool:
@@ -316,10 +355,11 @@ def bank_quiet(g: Game, months: int = 6, cash_months: float = 2.0) -> bool:
 
 
 def heed_warning(g: Game) -> bool:
-    """T9's rule: when the CFO warns (or a covenant breaks), stop guarantees, suspend draws and
-    repay the revolver from spare cash. Returns whether the warning has come."""
+    """T9's rule: when the CFO warns (PT-M7b: the forecast warning first) or a covenant breaks,
+    stop guarantees, suspend draws and repay the revolver from spare cash. Returns whether the
+    warning has come."""
     if not g.notes.get("warned") and any(
-        t in ("cfo_warning", "covenant_breach", "revolver_called", "insolvent")
+        t in ("cfo_forecast", "cfo_warning", "covenant_breach", "revolver_called", "insolvent")
         for t in g.templates()
     ):
         g.notes["warned"] = 1
@@ -405,6 +445,12 @@ def cross_sell(g: Game, n: int, min_score: float = 50.0) -> int:
         ):
             made += 1
     return made
+
+
+def hours_policy(g: Game, hours: int | None) -> None:
+    """PT-M7b: the firm's billable target (hours a year), set when it differs."""
+    if g.state.player.billable_target_hours != hours:
+        g.act(SetHoursPolicy(g.founder_id, hours))
 
 
 def push_hours(g: Game, monthly_hours: int) -> int:

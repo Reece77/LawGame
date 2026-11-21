@@ -4099,6 +4099,86 @@
         }
       }
     },
+    "/api/saves/{slug}/policies/hours": {
+      "put": {
+        "summary": "Set Hours Policy",
+        "description": "PT-M7b: the firm's billable target (hours a year), or None for the levels'.",
+        "operationId": "setHoursPolicy",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HoursPolicyIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FirmPoliciesOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/saves/{slug}/conflict-checks": {
       "get": {
         "summary": "Get Checks",
@@ -10729,6 +10809,29 @@
           "market_index_bp": {
             "type": "integer",
             "title": "Market Index Bp"
+          },
+          "billable_target_hours": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Billable Target Hours"
+          },
+          "billable_target_min_hours": {
+            "type": "integer",
+            "title": "Billable Target Min Hours"
+          },
+          "billable_target_max_hours": {
+            "type": "integer",
+            "title": "Billable Target Max Hours"
+          },
+          "associate_target_hours": {
+            "type": "integer",
+            "title": "Associate Target Hours"
           }
         },
         "type": "object",
@@ -10741,7 +10844,11 @@
           "rate_rise_min_bp",
           "rate_rise_max_bp",
           "rate_index_bp",
-          "market_index_bp"
+          "market_index_bp",
+          "billable_target_hours",
+          "billable_target_min_hours",
+          "billable_target_max_hours",
+          "associate_target_hours"
         ],
         "title": "FirmPoliciesOut",
         "description": "PT-M7a: the Org screen's firm policies: pro bono credit (spec 7.8) and rates."
@@ -10763,6 +10870,30 @@
           "name"
         ],
         "title": "FirmRefOut"
+      },
+      "ForecastOut": {
+        "properties": {
+          "covenant": {
+            "type": "string",
+            "title": "Covenant"
+          },
+          "months": {
+            "type": "integer",
+            "title": "Months"
+          },
+          "drawn_cents": {
+            "type": "integer",
+            "title": "Drawn Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "covenant",
+          "months",
+          "drawn_cents"
+        ],
+        "title": "ForecastOut",
+        "description": "PT-M7b: the CFO's projected breach on the trailing trend (spec 8.7)."
       },
       "ForumIn": {
         "properties": {
@@ -11469,6 +11600,26 @@
           "hours"
         ],
         "title": "HoursIn"
+      },
+      "HoursPolicyIn": {
+        "properties": {
+          "hours": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hours"
+          }
+        },
+        "type": "object",
+        "required": [
+          "hours"
+        ],
+        "title": "HoursPolicyIn"
       },
       "InboxItemOut": {
         "properties": {
@@ -15276,6 +15427,10 @@
             "type": "integer",
             "title": "Card Cents"
           },
+          "firm_card_cents": {
+            "type": "integer",
+            "title": "Firm Card Cents"
+          },
           "ours_cents": {
             "anyOf": [
               {
@@ -15292,6 +15447,7 @@
         "required": [
           "band",
           "card_cents",
+          "firm_card_cents",
           "ours_cents"
         ],
         "title": "PracticeRateOut"
@@ -15377,6 +15533,18 @@
             },
             "type": "array",
             "title": "Rates"
+          },
+          "card_bp": {
+            "type": "integer",
+            "title": "Card Bp"
+          },
+          "card_target_bp": {
+            "type": "integer",
+            "title": "Card Target Bp"
+          },
+          "market_index_bp": {
+            "type": "integer",
+            "title": "Market Index Bp"
           }
         },
         "type": "object",
@@ -15395,7 +15563,10 @@
           "utilisation_bp",
           "leverage",
           "leverage_norm",
-          "rates"
+          "rates",
+          "card_bp",
+          "card_target_bp",
+          "market_index_bp"
         ],
         "title": "PracticeScreenOut"
       },
@@ -15736,6 +15907,16 @@
             },
             "type": "array",
             "title": "Covenants"
+          },
+          "forecast": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ForecastOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -15746,7 +15927,8 @@
           "rate_bp",
           "breach_months",
           "called",
-          "covenants"
+          "covenants",
+          "forecast"
         ],
         "title": "RevolverOut"
       },

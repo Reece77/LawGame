@@ -97,6 +97,8 @@ def insert_new(session: Session, state: GameState, entries: tuple[LedgerEntry, .
                 pro_bono_avg_tenths=firm.pro_bono_avg_tenths,
                 rate_rise_bp=firm.rate_rise_bp,
                 rate_index=firm.rate_index,
+                rate_card=_card_json(firm.rate_card),  # PT-M7b
+                billable_target_hours=firm.billable_target_hours,
             )
         )
     session.flush()
@@ -140,6 +142,8 @@ def load_state(session: Session) -> GameState:
             pro_bono_avg_tenths=f.pro_bono_avg_tenths,
             rate_rise_bp=f.rate_rise_bp,
             rate_index=f.rate_index,
+            rate_card=_card_tuple(f.rate_card),  # PT-M7b
+            billable_target_hours=f.billable_target_hours,
         )
         for f in session.scalars(select(FirmRow).order_by(FirmRow.id))
         if f.id not in rival_ids
@@ -550,7 +554,18 @@ def write_firms(session: Session, state: GameState) -> None:
         row.pro_bono_avg_tenths = firm.pro_bono_avg_tenths
         row.rate_rise_bp = firm.rate_rise_bp
         row.rate_index = firm.rate_index
+        row.rate_card = _card_json(firm.rate_card)  # PT-M7b
+        row.billable_target_hours = firm.billable_target_hours
 
 
 def with_turn(state: GameState, turn: int) -> GameState:
     return replace(state, turn=turn)
+
+
+def _card_json(card: tuple[tuple[str, int], ...]) -> str:
+    """PT-M7b: a firm's card by practice as stored ({practice: bp}, keys sorted)."""
+    return json.dumps(dict(card), sort_keys=True)
+
+
+def _card_tuple(text: str) -> tuple[tuple[str, int], ...]:
+    return tuple(sorted((str(k), int(v)) for k, v in json.loads(text or "{}").items()))

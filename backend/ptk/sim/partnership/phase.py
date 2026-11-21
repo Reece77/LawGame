@@ -16,7 +16,7 @@ from dataclasses import replace
 from ptk.sim.billing.kpis import receivables_cents, wip_cents
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.interfaces import month_hours
-from ptk.sim.ledger import AccountCode, LedgerEntry
+from ptk.sim.ledger import CASH, PARTNERS_CAPITAL, REVOLVER, AccountCode, LedgerEntry
 from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.partnership import formulas as fx
 from ptk.sim.partnership.books import MoneyMonth, drawn_cents, financing_month
@@ -28,7 +28,7 @@ from ptk.sim.partnership.governance import confidence_month, resolve_votes
 from ptk.sim.partnership.kpis import explain, leverage_bp
 from ptk.sim.partnership.laterals import books_arrive
 from ptk.sim.partnership.laterals import resolve_offers as resolve_lateral_offers
-from ptk.sim.partnership.models import PnlPoint, with_approach, with_partner
+from ptk.sim.partnership.models import FirmPartnership, PnlPoint, with_approach, with_partner
 from ptk.sim.rng import RngFactory
 from ptk.sim.snapshot import FirmSnapshot
 from ptk.sim.state import GameState, with_firm
@@ -141,6 +141,38 @@ def financing(
     return financing_month(state, balances, ar, wip, balance, data)
 
 
+def cfo_forecast(
+    fp: FirmPartnership, turn: int, balance: Balance
+) -> tuple[FirmPartnership, tuple[LogItem, ...]]:
+    """PT-M7b: the CFO's forecast warning (spec 8.7), at most once a cooldown: a covenant the
+    trailing trend breaks within `forecast_months` (`fx.forecast_breach`)."""
+    cfg = balance.partnership.revolver
+    if fp.called_turn is not None or fp.breach_months > 0:
+        return fp, ()
+    cooled = (
+        fp.last_forecast_turn is None
+        or turn - fp.last_forecast_turn >= balance.partnership.cfo_warning_cooldown
+    )
+    if not cooled:
+        return fp, ()
+    departed = sum(
+        d.book_cents for d in fp.departures if d.equity and turn - d.turn < fx.MONTHS_PER_YEAR
+    )
+    found = fx.forecast_breach(fp.pnl, departed, cfg)
+    if found is None:
+        return fp, ()
+    item = inbox_item(
+        turn,
+        fp.firm_id,
+        "cfo_forecast",
+        link_kind="finance",
+        covenant=found.covenant,
+        months=found.months,
+        drawn_cents=found.drawn_cents,
+    )
+    return replace(fp, last_forecast_turn=turn), (item,)
+
+
 def month_end(
     state: GameState, balances: Mapping[tuple[int, AccountCode], int], balance: Balance
 ) -> tuple[GameState, tuple[LogItem, ...]]:
@@ -158,13 +190,24 @@ def month_end(
                 )
         revenue, costs = cumulative_pnl(balances, fp.firm_id)
         n_law = lawyers(state, fp.firm_id, balance)
-        point = PnlPoint(state.turn, revenue, costs, len(fp.equity_partners), n_law)
+        point = PnlPoint(
+            state.turn,
+            revenue,
+            costs,
+            len(fp.equity_partners),
+            n_law,
+            drawn_cents=-balances.get((fp.firm_id, REVOLVER), 0),  # PT-M7b: the forecast's
+            capital_cents=-balances.get((fp.firm_id, PARTNERS_CAPITAL), 0),
+            cash_cents=balances.get((fp.firm_id, CASH), 0),
+        )
         fp = replace(
             fp,
             pnl=(*fp.pnl, point)[-PNL_POINTS:],
             equity_months=fp.equity_months + len(fp.equity_partners),
             months=fp.months + 1,
         )
+        fp, forecast = cfo_forecast(fp, state.turn, balance)  # PT-M7b (spec 8.7)
+        logs.extend(forecast)
         state = put(state, fp)
         firm = state.firm(fp.firm_id)
         stage = max(firm.stage, fx.stage_for(n_law, balance.partnership.stages))

@@ -169,9 +169,19 @@ def _exodus(data: GameData, balance: Balance, seed: int, respond: bool) -> str:
         if month in (0, 2, 4) and g.fp.partner(corp[month // 2]) is not None:
             depart(g, corp[month // 2])
         if respond:
-            if not warned and any(
-                t in ("cfo_warning", "covenant_breach", "revolver_called", "insolvent")
-                for t in g.templates()[-60:]
+            if (
+                not warned
+                and any(  # PT-M7b: T9's rule heeds the CFO's forecast first
+                    t
+                    in (
+                        "cfo_forecast",
+                        "cfo_warning",
+                        "covenant_breach",
+                        "revolver_called",
+                        "insolvent",
+                    )
+                    for t in g.templates()[-60:]
+                )
             ):
                 warned = True
                 g.act(SetDraws(g.founder, True))

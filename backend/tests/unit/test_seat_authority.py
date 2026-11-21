@@ -143,3 +143,107 @@ def test_reports_are_requested_quarterly_and_carry_no_hidden_values(led, data: G
     assert "score" not in text.lower()
     assert report_requests(after, b, data) == ()  # April: not a quarter's end
     del facts
+
+
+def test_every_pitch_kind_executes_and_is_scored(led, data: GameData) -> None:  # type: ignore[no-untyped-def]
+    from ptk.sim.org.pitches import _with_pitch, candidates, follow_through
+    from ptk.sim.org.seat_models import Pitch
+
+    state, b = led
+    state, _, balances = run(state, data, b, 4)
+    firm = state.player.id
+    made: dict[str, str] = {}
+    for seat in data.seats.seats:
+        if not seat.pitches:
+            continue
+        slots = [0]
+        if seat.key == "practice_group_leader":
+            slots = [u.id for u in state.org.firm_units(firm) if u.kind == "practice_group"]
+        for slot in slots:
+            holder = next(
+                (h.person_id for h in state.leadership.holders if h.seat == seat.key), None
+            )
+            if seat.key == "practice_group_leader":
+                holder = state.org.unit(slot).leader_id  # type: ignore[union-attr]
+            if holder is None:
+                continue
+            for c in candidates(state, firm, seat, slot, b, data):
+                if c.kind in made:
+                    continue
+                pid = state.leadership.next_pitch_id
+                p = Pitch(pid, firm, seat.key, slot, holder, c.kind, c.title, c.why,
+                          state.turn, c.cost_cents, c.central, c.central, c.central,
+                          c.params, baseline=c.baseline)  # fmt: skip
+                st = _with_pitch(state, p)
+                rng = RngFactory(1)
+                out = answer_pitch(
+                    st,
+                    AnswerPitch(mp(st), pid, "approve"),
+                    rng,
+                    lambda: rng.stream(st.turn, "actions", 1),  # noqa: B023
+                    b,
+                    data,
+                    balances,
+                )
+                done = out.state.leadership.pitch(pid)
+                assert done is not None
+                made[c.kind] = done.status
+                if done.status == "approved":
+                    later = replace(out.state, turn=out.state.turn + b.pitches.record_months)
+                    scored, _, logs = follow_through(later, b, data, balances)
+                    record = scored.leadership.pitch(pid)
+                    assert record is not None and record.outcome in ("hit", "miss")
+                    assert any(i.template == "pitch_scored" for i in logs)
+    assert made, "no candidates in the fixture"
+    assert all(status in ("approved", "failed") for status in made.values()), made
+    assert {"cost_programme", "panel_push", "fit_out"} <= set(made)
+
+
+def test_group_class_and_rate_pitches_execute(led, data: GameData) -> None:  # type: ignore[no-untyped-def]
+    from ptk.sim.org.actions import ClosePlan, DissolveUnit, apply_org_action
+    from ptk.sim.org.pitches import _with_pitch
+    from ptk.sim.org.seat_models import Pitch
+
+    state, b = led
+    firm = state.player.id
+    units = [u for u in state.org.firm_units(firm) if u.kind == "practice_group"]
+    dissolved, campus = units[0], units[1]
+    actor = mp(state)
+    state = apply_org_action(state, DissolveUnit(actor, dissolved.id), b, data).state
+    for plan in state.org.firm_plans(firm):
+        if plan.campus and plan.unit_id == campus.id:
+            state = apply_org_action(state, ClosePlan(actor, plan.id), b, data).state
+    practice = data.practice_keys.index(dissolved.practice or "")
+    holder = campus.leader_id
+    assert holder is not None
+    chro = next(h.person_id for h in state.leadership.holders if h.seat == "chro")
+    pricing = next(h.person_id for h in state.leadership.holders if h.seat == "pricing_director")
+    rng = RngFactory(1)
+    cases = [
+        ("practice_group_leader", campus.id, holder, "new_group", (("practice", practice),)),
+        ("chro", 0, chro, "campus_size", (("size", 2), ("unit", campus.id))),
+        ("pricing_director", 0, pricing, "rate_move", (("rise_bp", 500),)),
+    ]
+    for seat, slot, pid_, kind, params in cases:
+        pid = state.leadership.next_pitch_id
+        p = Pitch(pid, firm, seat, slot, pid_, kind, kind, "why", state.turn, 0, 1, 1, 1, params)  # type: ignore[arg-type]
+        st = _with_pitch(state, p)
+        answer = "modify" if kind == "campus_size" else "approve"
+        out = answer_pitch(
+            st,
+            AnswerPitch(mp(st), pid, answer, 3 if answer == "modify" else None),  # type: ignore[arg-type]
+            rng,
+            lambda: rng.stream(st.turn, "actions", 1),  # noqa: B023
+            b,
+            data,
+            {},
+        )
+        done = out.state.leadership.pitch(pid)
+        assert done is not None and done.status == "approved", (kind, out.log)
+        if kind == "new_group":
+            assert done.param("unit") in {u.id for u in out.state.org.firm_units(firm)}
+        if kind == "campus_size":
+            plan = out.state.org.plan(done.param("plan"))
+            assert plan is not None and plan.campus and plan.target == 3
+        if kind == "rate_move":
+            assert out.state.firm(firm).rate_rise_bp == 500

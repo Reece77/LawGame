@@ -536,7 +536,8 @@ def answer_pitch(
         state = _with_pitch(state, failed)
         item = _item(state, pitch, "pitch_answered", outcome="could not go ahead", detail=str(exc))
         return PitchOutcome(state, (), (item,))
-    done = replace(pitch, status="approved", resolved_turn=state.turn)
+    current = state.leadership.pitch(pitch.id) or pitch  # execute may record what it made
+    done = replace(current, status="approved", resolved_turn=state.turn)
     state = _with_pitch(state, done)
     item = _item(state, done, "pitch_answered", outcome="approved", detail=pitch_text(state, done))
     return PitchOutcome(state, entries, (*logs, item))

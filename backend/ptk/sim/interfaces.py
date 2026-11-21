@@ -46,6 +46,7 @@ if TYPE_CHECKING:
     from ptk.sim.log import LogItem
     from ptk.sim.matters.models import HoursRecord
     from ptk.sim.money import Cents
+    from ptk.sim.rng import RngFactory
     from ptk.sim.state import GameState
 
 # Spec 5.7: campus (summer programme, offers in August, start the September after), and the
@@ -677,3 +678,419 @@ def has_sponsor(state: GameState, person_id: int) -> bool:
     firm = state.employer_of(person_id)
     fp = state.partnership.of(firm) if firm is not None else None
     return fp is not None and fp.sponsor_of(person_id) is not None
+
+
+# --- PT-M17 (founder's life and succession, lane C): what lane C reads and asks of the
+# partnership (PT-M4), without editing `ptk.sim.partnership` ---------------------------------
+#
+# The founder's personal book mirrors their draws, true-up, capital and capital return from
+# the partnership's sub-ledgers (`partner_account`); succession and the retirement-age vote run
+# through PT-M4's vote functions (`open_partnership_vote`, `election_utility`,
+# `election_noise`, `record_vote`); the hand-over is PT-M4's `hand_over`; a retiring partner
+# leaves through the flight hook's `depart` (reason "retired"). Views carry nothing hidden
+# except where marked engine-only.
+
+
+@dataclass(frozen=True, slots=True)
+class PartnerAccountView:
+    """A partner's (or a departed partner's) accounts in the partnership's sub-ledgers."""
+
+    person_id: int
+    firm_id: int
+    equity: bool
+    partner: bool  # still a partner (False: left, with a capital return running)
+    drawn_ytd_cents: int
+    current_cents: int  # 2700: allocated, not yet paid
+    capital_cents: int  # 3000: paid in
+    comp_last_cents: int  # the last December allocation
+    return_current_cents: int  # a departed partner's current account still to be repaid
+    return_capital_cents: int  # and their capital
+
+
+def partner_account(state: GameState, firm_id: int, person_id: int) -> PartnerAccountView | None:
+    fp = state.partnership.of(firm_id)
+    if fp is None:
+        return None
+    p = fp.partner(person_id)
+    ret = next((r for r in fp.capital_returns if r.person_id == person_id), None)
+    if p is None and ret is None:
+        return None
+    return PartnerAccountView(
+        person_id=person_id,
+        firm_id=firm_id,
+        equity=p is not None and p.equity,
+        partner=p is not None,
+        drawn_ytd_cents=p.drawn_ytd_cents if p else 0,
+        current_cents=p.current_cents if p else 0,
+        capital_cents=p.capital_cents if p else 0,
+        comp_last_cents=p.comp_last_cents if p else 0,
+        return_current_cents=ret.remaining_current_cents if ret else 0,
+        return_capital_cents=ret.remaining_capital_cents if ret else 0,
+    )
+
+
+def equity_partner_ids(state: GameState, firm_id: int) -> tuple[int, ...]:
+    fp = state.partnership.of(firm_id)
+    return () if fp is None else tuple(p.person_id for p in fp.equity_partners)
+
+
+def managing_partner(state: GameState, firm_id: int) -> int | None:
+    fp = state.partnership.of(firm_id)
+    return None if fp is None else fp.mp_id
+
+
+def set_managing_partner(state: GameState, firm_id: int, person_id: int) -> GameState:
+    """The MP seat passes to `person_id` (a succession the partnership elected): a clean
+    slate, no ousted founder and no open election result."""
+    from dataclasses import replace
+
+    from ptk.sim.partnership.models import with_firm_partnership
+
+    fp = state.partnership.of(firm_id)
+    if fp is None:
+        return state
+    fp = replace(fp, mp_id=person_id, ousted_mp_id=None, election_lost_turn=None)
+    return replace(state, partnership=with_firm_partnership(state.partnership, fp))
+
+
+def ousted_founder(state: GameState, firm_id: int) -> bool:
+    """The player lost an MP election and has not answered it (ADR PT-0007 3)."""
+    fp = state.partnership.of(firm_id)
+    return fp is not None and fp.election_lost_turn is not None
+
+
+def retirement_age(state: GameState, firm_id: int, balance: Balance) -> int:
+    """The agreement's mandatory retirement age (spec 8.6)."""
+    fp = state.partnership.of(firm_id)
+    return (
+        balance.partnership.agreement.retirement_age if fp is None else fp.agreement.retirement_age
+    )
+
+
+def hand_over(
+    state: GameState, firm_id: int, founder_id: int, successor_id: int, balance: Balance
+) -> GameState:
+    """PT-M4's hand-over (TST 45.5's play the heir): the player flag and the month's energy
+    pass to the successor; the old player keeps their partnership."""
+    from ptk.sim.partnership.actions import hand_over as _hand_over
+
+    return _hand_over(state, firm_id, founder_id, successor_id, balance)
+
+
+def open_partnership_vote(
+    state: GameState,
+    firm_id: int,
+    kind: Literal["terms", "election"],
+    subject_id: int | None,
+    params: Mapping[str, str | int | float | bool],
+) -> tuple[GameState, int]:
+    """Open a vote with PT-M4's `open_vote` (its threshold from the agreement). A "terms"
+    vote counts in phase 1 like any (PT-M4); an "election" vote is never counted by PT-M4's
+    phases (elections run in phase 10 from the MP's term), so the caller counts it."""
+    from ptk.sim.partnership.governance import open_vote
+
+    state, vote = open_vote(state, firm_id, kind, subject_id, dict(params))
+    return state, vote.id
+
+
+def open_vote_kinds(state: GameState, firm_id: int) -> tuple[tuple[int, str, str | None], ...]:
+    """Open votes as (vote id, kind, term) for a lane that must not open the same twice."""
+    fp = state.partnership.of(firm_id)
+    if fp is None:
+        return ()
+    out = []
+    for v in fp.votes:
+        if v.status == "open":
+            term = v.param("term")
+            out.append((v.id, v.kind, term if isinstance(term, str) else None))
+    return tuple(out)
+
+
+def election_utility(
+    state: GameState, firm_id: int, vote_id: int, person_id: int, balance: Balance, data: GameData
+) -> float:
+    """PT-M4's utility of one partner for an open election vote (their confidence in the
+    MP, lobbying): engine-only, never shown."""
+    from ptk.sim.partnership.governance import base_utility
+
+    fp = state.partnership.of(firm_id)
+    assert fp is not None
+    vote = fp.vote(vote_id)
+    p = fp.partner(person_id)
+    assert vote is not None and p is not None
+    return base_utility(state, fp, vote, p, balance, data)
+
+
+def election_noise(
+    rng: RngFactory, turn: int, vote_id: int, person_id: int, balance: Balance
+) -> float:
+    """PT-M4's vote noise (stream `vote`, keyed (vote_id, person_id); its one call site)."""
+    from ptk.sim.partnership.governance import vote_noise
+
+    return vote_noise(rng, turn, vote_id, person_id, balance.partnership.votes.noise_sd)
+
+
+def vote_weight(state: GameState, firm_id: int, person_id: int) -> float:
+    """A partner's weight under the agreement's voting rule (per capita, or points)."""
+    fp = state.partnership.of(firm_id)
+    p = fp.partner(person_id) if fp is not None else None
+    if fp is None or p is None or not p.equity:
+        return 0.0
+    return p.points if fp.agreement.voting == "points" else 1.0
+
+
+def vote_threshold_bp(state: GameState, firm_id: int, vote_id: int) -> int:
+    fp = state.partnership.of(firm_id)
+    vote = fp.vote(vote_id) if fp is not None else None
+    assert vote is not None
+    return vote.threshold_bp
+
+
+def record_vote(
+    state: GameState,
+    firm_id: int,
+    vote_id: int,
+    ballots: tuple[tuple[int, bool], ...],
+    yes: float,
+    no: float,
+    passed: bool,
+) -> GameState:
+    """Write a counted vote back (the partnership's record: status, weights, ballots)."""
+    from dataclasses import replace
+
+    from ptk.sim.partnership.models import with_firm_partnership, with_vote
+
+    fp = state.partnership.of(firm_id)
+    vote = fp.vote(vote_id) if fp is not None else None
+    assert fp is not None and vote is not None
+    vote = replace(
+        vote,
+        status="passed" if passed else "failed",
+        resolved_turn=state.turn,
+        yes_weight=yes,
+        no_weight=no,
+        ballots=tuple(sorted(ballots)),
+    )
+    return replace(state, partnership=with_firm_partnership(state.partnership, with_vote(fp, vote)))
+
+
+def withdraw_vote(state: GameState, firm_id: int, vote_id: int) -> GameState:
+    from dataclasses import replace
+
+    from ptk.sim.partnership.models import with_firm_partnership, with_vote
+
+    fp = state.partnership.of(firm_id)
+    vote = fp.vote(vote_id) if fp is not None else None
+    if fp is None or vote is None or vote.status != "open":
+        return state
+    vote = replace(vote, status="withdrawn", resolved_turn=state.turn)
+    return replace(state, partnership=with_firm_partnership(state.partnership, with_vote(fp, vote)))
+
+
+def rival_nominee(
+    state: GameState, firm_id: int, balance: Balance, exclude: frozenset[int]
+) -> int | None:
+    """PT-M4's rival candidate: the most ambitious equity partner not excluded."""
+    from ptk.sim.partnership.election import rival_candidate
+
+    fp = state.partnership.of(firm_id)
+    return None if fp is None else rival_candidate(state, fp, balance, set(exclude))
+
+
+def candidate_rating(state: GameState, firm_id: int, person_id: int, data: GameData) -> float:
+    """A candidate's ability as the firm sees it, 1-20 (PT-M4's `candidate_quality`)."""
+    from ptk.sim.partnership.governance import candidate_quality
+
+    return candidate_quality(state, firm_id, person_id, data)
+
+
+def predict_k(balance: Balance) -> float:
+    """PT-M4's band of indifference for a predicted vote range."""
+    return balance.partnership.votes.predict_k
+
+
+def retire_partner(
+    state: GameState,
+    person_id: int,
+    *,
+    draws: Callable[[], np.random.Generator],
+    balance: Balance,
+    data: GameData,
+    balances: Mapping[tuple[int, AccountCode], Cents],
+) -> HookResult:
+    """A partner retires (spec 2.5, 8.6): PT-M4's departure with reason "retired" and no
+    suitor (their clients pass to a colleague; capital and current account repaid over
+    three years)."""
+    return partner_flight().depart(
+        state,
+        person_id,
+        None,
+        "retired",
+        draws=draws,
+        balance=balance,
+        data=data,
+        balances=balances,
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class PartnershipMonthView:
+    """What the partnership did this turn that moves the founder's persona (spec 2.3).
+    `unhappy` counts equity partners unhappy with their December share (engine-only)."""
+
+    deequitisations: int  # de-equitisation votes passed this turn
+    laterals_hired: tuple[tuple[int, int], ...]  # (person id, guarantee years), hired this turn
+    counter_guarantees: int  # counter-offers with a guarantee that kept a partner this turn
+    breach_started: bool  # a covenant breach's first month
+    revolver_drawn_cents: int
+    facility_cents: int
+    unhappy: int
+    equity_partners: int
+    last_revenue_cents: int | None
+
+
+def partnership_month(
+    state: GameState, firm_id: int, balances: Mapping[tuple[int, AccountCode], Cents]
+) -> PartnershipMonthView | None:
+    from ptk.sim.ledger import REVOLVER
+
+    fp = state.partnership.of(firm_id)
+    if fp is None:
+        return None
+    turn = state.turn
+    return PartnershipMonthView(
+        deequitisations=sum(
+            1
+            for v in fp.votes
+            if v.kind == "deequity" and v.status == "passed" and v.resolved_turn == turn
+        ),
+        laterals_hired=tuple(
+            (c.person_id, c.offer_guarantee_years)
+            for c in fp.laterals
+            if c.status == "hired" and c.resolved_turn == turn
+        ),
+        counter_guarantees=sum(
+            1
+            for a in fp.approaches
+            if a.countered
+            and a.counter_guarantee_years > 0
+            and a.status == "stayed"
+            and a.resolved_turn == turn
+        ),
+        breach_started=fp.breach_months == 1 and fp.called_turn is None,
+        revolver_drawn_cents=-balances.get((firm_id, REVOLVER), 0),
+        facility_cents=fp.facility_cents,
+        unhappy=sum(1 for p in fp.equity_partners if p.satisfaction < 0),
+        equity_partners=len(fp.equity_partners),
+        last_revenue_cents=fp.last_revenue_cents,
+    )
+
+
+def partner_ids(state: GameState, firm_id: int) -> tuple[int, ...]:
+    """Every current partner (equity and income), by person id."""
+    fp = state.partnership.of(firm_id)
+    return () if fp is None else tuple(p.person_id for p in fp.partners)
+
+
+def partner_confidence(state: GameState, firm_id: int, person_id: int) -> float | None:
+    """An equity partner's confidence in the MP, 0-100. Engine-only: never shown."""
+    fp = state.partnership.of(firm_id)
+    p = fp.partner(person_id) if fp is not None else None
+    return None if p is None or not p.equity else p.confidence
+
+
+def terms_bias(balance: Balance) -> tuple[float, float]:
+    """PT-M4's (confidence weight, status-quo bias) for a vote on the agreement's terms."""
+    v = balance.partnership.votes
+    return v.confidence_weight, v.terms_bias
+
+
+def clear_election_result(state: GameState, firm_id: int) -> GameState:
+    """The player has answered a lost MP election (PT-M4's ElectionChoice does the same)."""
+    from dataclasses import replace
+
+    from ptk.sim.partnership.models import with_firm_partnership
+
+    fp = state.partnership.of(firm_id)
+    if fp is None:
+        return state
+    fp = replace(fp, election_lost_turn=None)
+    return replace(state, partnership=with_firm_partnership(state.partnership, fp))
+
+
+# --- PT-M17's effects on hiring (spec 2.3: the persona, the foundation and bar politics) ----
+
+
+def founder_recruiting_term(state: GameState, firm_id: int, balance: Balance) -> float:
+    """Offer-score points the player's founding partner adds to every offer of their firm:
+    Visionary at the effect line, an education or local foundation's grants, influence.
+    0 for any other firm, and for a founder with none of these."""
+    from ptk.sim.founder import foundation, influence, persona
+
+    if firm_id != state.player.id:
+        return 0.0
+    pid = state.founder_of(firm_id)
+    if pid is None:
+        return 0.0
+    fl = state.founder_life
+    life = fl.life(pid)
+    return (
+        persona.recruiting_points(life, balance)
+        + foundation.recruiting_points(fl.foundation(pid), state.turn, balance)
+        + influence.recruiting_points(life, balance)
+    )
+
+
+def founder_resign_mult(state: GameState, firm_id: int, balance: Balance) -> float:
+    """The player's resignation factor: Beloved at the effect line, an access-to-justice or
+    health foundation's grants. 1.0 for any other firm."""
+    from ptk.sim.founder import foundation, persona
+
+    if firm_id != state.player.id:
+        return 1.0
+    pid = state.founder_of(firm_id)
+    if pid is None:
+        return 1.0
+    fl = state.founder_life
+    return persona.resign_mult(fl.life(pid), balance) * foundation.resign_mult(
+        fl.foundation(pid), state.turn, balance
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class VoteSummary:
+    """A partnership vote as lane C reads it (the adviser): no utilities, no ballots."""
+
+    vote_id: int
+    kind: str
+    status: str
+    opened_turn: int
+    resolved_turn: int | None
+    title: str
+    succession: bool  # a succession election (PT-M17's own)
+
+
+def partnership_votes(state: GameState, firm_id: int) -> tuple[VoteSummary, ...]:
+    from ptk.sim.partnership.governance import vote_title
+
+    fp = state.partnership.of(firm_id)
+    if fp is None:
+        return ()
+    return tuple(
+        VoteSummary(
+            v.id,
+            v.kind,
+            v.status,
+            v.opened_turn,
+            v.resolved_turn,
+            vote_title(state, v),
+            bool(v.param("succession")),
+        )
+        for v in fp.votes
+    )
+
+
+def terms_threshold_bp(state: GameState, firm_id: int, balance: Balance) -> int:
+    """The agreement's threshold for a change to its terms."""
+    fp = state.partnership.of(firm_id)
+    return balance.partnership.agreement.terms_bp if fp is None else fp.agreement.terms_bp

@@ -914,3 +914,183 @@ macro: # PT-M7: how macro_history.yaml's indices act on the firm (ptk/sim/macro.
 holiday: # PT-M7a, spec 4.2: Holiday and continue-until
   max_months: 36 # most months one holiday plays
   default_months: 6 # months the Holiday control offers
+founder_life: # PT-M17: the founding partner's life (spec 2.3, 8.4; TST formulas.md 32; ADR PT-0003 4-5)
+  energy: # energy each founder action spends (TST 32.3's 5 for a foundation)
+    foundation: 5 # create the foundation
+    gift: 0 # a gift to it
+    committee: 4 # a month on a bar committee (taken from each month's energy while on it)
+    stand: 5 # stand for bar office
+    invest: 0 # move personal cash into or out of investments
+    family_office: 5 # form the family office
+    education: 0 # choose a child's school or law school
+    mentor: 3 # mentor a child at the firm (a month)
+    successor: 10 # name a successor (the partnership votes)
+    plan: 2 # name a successor-designate (the succession plan)
+    trust: 5 # set up the family trust
+    gift_heir: 0 # a gift to a child
+  personal: # the founder's own book (TST 32.2)
+    tax_rate: 0.45 # share of the founder's profit share paid in income tax as it is paid out (draws, true-up): US federal top rate plus New York State and City, rounded (ADR PT-0003 4)
+    start_cents: 50000000 # $500,000 of savings when the founder's book opens
+    successor_start_cents: 50000000 # a successor's savings when their book opens
+    loan_rate: 0.06 # the capital loan's yearly rate (prime plus a margin)
+    loan_months: 120 # principal repaid over ten years: loan / 120 a month, as cash allows
+    invest_return: 0.07 # self-managed investments: yearly expected return
+    invest_vol: 0.04 # sd of the monthly return (about 14% a year)
+    history: 24 # months of income statements the Founder screen shows
+  family_office: # TST 37.4
+    min_cents: 500000000 # $5M of personal wealth to form one
+    fee: 0.01 # a year on the balance
+    mandates:
+      conservative: { expected: 0.04, vol: 0.015 }
+      balanced: { expected: 0.06, vol: 0.03 }
+      aggressive: { expected: 0.09, vol: 0.05 }
+  persona: # TST 32.4: four traits 0-100, sources from spec 2.3
+    start: 20 # every trait starts here and drifts back
+    drift: 2 # points a month toward start
+    effect_at: 60 # a trait's effects apply at this or more
+    history: 12 # causes shown
+    sources: # points each time (TST 32.4's values where TST had the source)
+      new_practice: 5 # TST's launch in a new category
+      first_region: 5 # v2 (offices)
+      early_ai: 15 # v2 (TST's causing an era)
+      deequitisation: 10 # TST's layoffs of 10%+
+      hostile_lateral: 3 # TST's poaching a rival's key person
+      layoffs: 10 # TST's layoffs
+      pro_bono: 5 # December, a year of pro bono at the line (TST's Best places to work)
+      raises: 2 # TST's raises across the company
+      comp_fairness: 4 # December, no equity partner unhappy (TST's kept promise)
+      guarantee: 6 # TST's broken promise (a guarantee is a promise the firm may not keep)
+      revolver_leverage: 2 # a month drawn above leverage_share (TST's runway burn)
+      covenant_breach: 8 # TST's covenant breach
+      broken_claim: 6 # PT-M16's press (TST's broken promise)
+    layoff_share: 0.1 # fired in a month as a share of the firm (TST's 10%)
+    raise_share: 0.5 # raises to half the staff in a month count as raises across the firm
+    pro_bono_tenths: 40 # tenths a lawyer a month (4 hours, about 50 a year: the Pro Bono Institute's challenge)
+    leverage_share: 0.5 # drawn above half the facility
+    leverage_year_cap: 12 # revolver_leverage points at most a calendar year (TST's runway cap)
+    visionary_recruiting: 0.03 # offer-score points on every offer (TST's +0.03 hiring appeal)
+    ruthless_confidence: -0.4 # partner confidence a month (TST's staff morale -2, as an equilibrium of about -2 points)
+    beloved_resign: 0.9 # resignation chance x this (TST's 0.9)
+    beloved_confidence: 0.2 # partner confidence a month
+    reckless_confidence: -0.4 # partner confidence a month (TST's lenders' rate +1 point: partners fear the bank)
+    heir_share: 0.25 # a child successor starts at start + 25% of the parent's gap (TST 45.5)
+  foundation: # TST 32.3
+    min_cents: 100000000 # $1M of personal cash to create one
+    payout: 0.05 # share of the endowment granted each December
+    beloved_cap: 10
+    beloved_k: 2 # Beloved +min(10, 2 log10(g / $100,000))
+    beloved_unit_dollars: 100000
+    recruiting: 0.03 # education or local: offer-score points at full grants (TST's hiring appeal)
+    recruiting_full_dollars: 10000000 # a year's grants reaching the full effect ($10M)
+    resign: 0.95 # access to justice or health: resignation chance x this
+    effect_months: 12
+    legacy_unit_dollars: 1000000 # TST 32.6: 100 x log10(1 + lifetime grants / $1M)
+  influence: # TST 32.5 as bar politics
+    committee: 1.5 # influence points a month on a bar committee
+    rate: 3 # points a month per sqrt(spend / $100k) (TST's lobbying rate)
+    unit_dollars: 100000
+    max_monthly_dollars: 250000 # the most the firm may spend on bar politics a month
+    decay: 0.03 # share lost a month (TST's)
+    cap: 100
+    office_at: 40 # influence to stand for bar president
+    office_month: 6 # the bar's elections (June)
+    office_years: 2 # a term
+    office_win_at: 70 # wins outright from here; between, with chance (I - 40) / 30
+    office_bonus: 1 # influence points a month in office
+    recruiting: 0.04 # offer-score points at influence 100 (the firm's standing)
+    confidence: 0.2 # partner confidence a month at influence 100
+    legacy_per_year: 10 # legacy points a year in bar office
+  legacy: # TST 32.6 in PT terms (spec 2.5's name on the door)
+    firm_points: 100 # x log10(1 + the best year's revenue / $10M)
+    firm_unit_dollars: 10000000
+    name_points: 50 # the firm still bears the player's name
+    child_partner_points: 20 # each child who made partner
+    family_successor_points: 30 # a successor from the family
+  annuity: # spec 8.4, 8.6: retired partners' annuities, as the agreement grants
+    granted: false # default none (spec 8.6); a vote can grant them
+    share_bp: 2500 # if granted: 25% of the retiree's last allocation a year (a vote may set 0-max_share_bp)
+    years: 10 # for 10 years
+    max_share_bp: 5000 # the most a vote may grant
+family: # PT-M17: the player's family (spec 2.4; TST formulas.md 45.1-45.3, 45.6)
+  default_time: 10 # family time a month (energy) once a family exists
+  max_time: 20
+  calm: 6 # strain points a month at max_time (TST's stress)
+  bond: 2 # relationship points a month at the extremes
+  bond_pivot: 8 # family time that holds the relationship steady
+  burnout_strain: 3 # relationship points lost a burnout month
+  relationship_start: 70
+  closeness_start: 60
+  divorce_below: 15
+  divorce_months: 6
+  divorce_share: 0.5 # of the personal book's cash, investments and family office
+  divorce_beloved: 10
+  inherit: 0.5 # a child's personality: this share the parents' mean
+  trait_noise_sd: 1.5
+  partner_rate: 0.15 # a year: meeting a partner (no partner, age within partner_ages, strain under partner_strain_below)
+  partner_ages: [24, 45]
+  partner_strain_below: 60
+  partner_age_sd: 3
+  marriage_months: 18 # months after meeting until they marry
+  child_rate: 0.2 # a year while the partner is under child_parent_age_max
+  child_parent_age_max: 45
+  max_children: 4
+  start_child_ages: [0, 25]
+  child_pa: [80, 170] # potential ability, uniform (hidden)
+  child_skill_birth: 1.0
+  child_skill_year: 0.3 # skill points for each year before develop_from
+  child_skill_sd: 0.5
+  child_growth: 0.6 # a year: the share of the gap to potential closed is this x e x bond / potential (1-20 scale)
+  develop_from: 5
+  milestones: [5, 12, 18, 25]
+  reveal_rate: 0.05 # half-widths x (1 - this x time / max_time) a month
+  pa_hw_floor: 15 # potential's range never narrows below this (never shown exactly)
+  education:
+    school_age: 12
+    law_school_age: 18 # college and law school
+    qualify_age: 25 # admitted: may join the firm as a first-year associate
+    mult: { school_standard: 1.0, school_elite: 1.2, law_none: 1.0, law_standard: 1.15, law_top: 1.3 }
+    cents: { elite_school: 30000000, law_standard: 25000000, law_top: 40000000 } # elite school $300k, law school (and college) $250k or $400k
+    reveal: 0.1
+  join_closeness: 40 # a child joins the firm when asked only with closeness at least this
+  mentor_growth: 0.03 # leadership skill points a month while mentored
+  mentor_closeness: 1
+  nepotism_confidence: -2 # partners' confidence when a child below the median of their level is promoted
+  merit_confidence: 0.5 # and above it
+  estate: # US federal estate tax (top rate, basic exclusion), IRS figures by year; 2010's repeal year at 0
+    - { year: 2005, rate: 0.47, exemption_cents: 150000000 }
+    - { year: 2006, rate: 0.46, exemption_cents: 200000000 }
+    - { year: 2007, rate: 0.45, exemption_cents: 200000000 }
+    - { year: 2009, rate: 0.45, exemption_cents: 350000000 }
+    - { year: 2010, rate: 0.0, exemption_cents: 0 }
+    - { year: 2011, rate: 0.35, exemption_cents: 500000000 }
+    - { year: 2012, rate: 0.35, exemption_cents: 512000000 }
+    - { year: 2013, rate: 0.40, exemption_cents: 525000000 }
+    - { year: 2014, rate: 0.40, exemption_cents: 534000000 }
+    - { year: 2015, rate: 0.40, exemption_cents: 543000000 }
+    - { year: 2016, rate: 0.40, exemption_cents: 545000000 }
+    - { year: 2017, rate: 0.40, exemption_cents: 549000000 }
+    - { year: 2018, rate: 0.40, exemption_cents: 1118000000 }
+    - { year: 2019, rate: 0.40, exemption_cents: 1140000000 }
+    - { year: 2020, rate: 0.40, exemption_cents: 1158000000 }
+    - { year: 2021, rate: 0.40, exemption_cents: 1170000000 }
+    - { year: 2022, rate: 0.40, exemption_cents: 1206000000 }
+    - { year: 2023, rate: 0.40, exemption_cents: 1292000000 }
+    - { year: 2024, rate: 0.40, exemption_cents: 1361000000 }
+    - { year: 2025, rate: 0.40, exemption_cents: 1399000000 }
+    - { year: 2026, rate: 0.40, exemption_cents: 1500000000 }
+  trust_setup_cents: 2500000 # $25,000 to set up the family trust
+  history: 40 # family notes kept
+succession: # PT-M17: spec 2.5, TST 45.5; ADR PT-0007 3
+  plan_from_age: 60 # from 60 the partnership expects a succession plan
+  no_plan_confidence: -0.5 # partner confidence a month without one
+  grace_months: 3 # at the retirement age: months to name a successor before the plan's (or the strongest) is named
+  quality_weight: 1.0 # utility per quality_scale points of rating between the successor and the rival nominee
+  quality_scale: 2.0 # rating points (1-20, as the firm sees them)
+  endorse_weight: 1.0 # partners' confidence in the MP carries to the MP's candidate
+  retry_months: 12 # after losing a succession vote by choice
+  step_back_from: 70 # TST 45.5's health step-back from this age
+  step_back_rate: 0.1 # a year: x (age - 69)
+  persona_reset: true # a successor who is not the player's child starts from persona.start
+  adviser_oppose: 2 # confidence points when a vote the senior partner opposed passes
+  adviser_memory: 20 # opinions kept
+  risky_votes: [capital_call, terms] # votes a bold senior partner backs

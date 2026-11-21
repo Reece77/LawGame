@@ -1,7 +1,9 @@
 import { BrowserRouter, Route, Routes } from 'react-router';
 import { ClientScreen } from './screens/ClientScreen';
 import { ClientsScreen } from './screens/ClientsScreen';
+import { FamilyScreen } from './screens/FamilyScreen';
 import { FinanceScreen } from './screens/FinanceScreen';
+import { FounderScreen } from './screens/FounderScreen';
 import { GameLayout } from './screens/GameLayout';
 import { InboxScreen } from './screens/InboxScreen';
 import { MainMenu } from './screens/MainMenu';
@@ -46,6 +48,8 @@ export default function App() {
           <Route path="market/rivals/:firmId" element={<RivalScreen />} />
           <Route path="partnership" element={<PartnershipScreen />} />
           <Route path="history" element={<HistoryScreen />} />
+          <Route path="founder" element={<FounderScreen />} />
+          <Route path="family" element={<FamilyScreen />} />
         </Route>
       </Routes>
     </BrowserRouter>

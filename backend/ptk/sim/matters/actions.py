@@ -150,6 +150,15 @@ class SetRatePolicy:
     kind: Literal["set_rate_policy"] = "set_rate_policy"
 
 
+@dataclass(frozen=True, slots=True)
+class SetHoursPolicy:
+    """PT-M7b: the firm-wide billable target, hours a year; None: the levels' targets."""
+
+    actor_id: int
+    hours: int | None
+    kind: Literal["set_hours_policy"] = "set_hours_policy"
+
+
 type MatterAction = (
     AssignToMatter
     | SetMatterHours
@@ -164,6 +173,7 @@ type MatterAction = (
     | AssessCase
     | SetProBonoCredit
     | SetRatePolicy
+    | SetHoursPolicy
 )
 
 MATTER_ACTION_TYPES: dict[str, type[MatterAction]] = {
@@ -180,6 +190,7 @@ MATTER_ACTION_TYPES: dict[str, type[MatterAction]] = {
     "assess_case": AssessCase,  # PT-M7a
     "set_pro_bono_credit": SetProBonoCredit,
     "set_rate_policy": SetRatePolicy,
+    "set_hours_policy": SetHoursPolicy,
 }
 
 
@@ -531,6 +542,18 @@ def set_rate_policy(state: GameState, a: SetRatePolicy, balance: Balance) -> Out
     return Outcome(state=with_firm(state, replace(state.firm(firm), rate_rise_bp=a.rise_bp)))
 
 
+def set_hours_policy(state: GameState, a: SetHoursPolicy, balance: Balance) -> Outcome:
+    firm = acting_firm(state, a.actor_id)
+    cfg = balance.staffing
+    if a.hours is not None and not cfg.policy_min_hours <= a.hours <= cfg.policy_max_hours:
+        raise MatterActionError(
+            f"the billable target is {cfg.policy_min_hours} to {cfg.policy_max_hours} hours a year"
+        )
+    state = spend_energy(state, a.actor_id, "hours_policy", balance)
+    firm_state = replace(state.firm(firm), billable_target_hours=a.hours)
+    return Outcome(state=with_firm(state, firm_state))
+
+
 def apply_matter_action(
     state: GameState, action: MatterAction, draws: Draws, balance: Balance, data: GameData
 ) -> Outcome:
@@ -561,3 +584,5 @@ def apply_matter_action(
             return set_pro_bono_credit(state, action, balance)
         case SetRatePolicy():
             return set_rate_policy(state, action, balance)
+        case SetHoursPolicy():
+            return set_hours_policy(state, action, balance)

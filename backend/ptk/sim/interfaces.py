@@ -344,6 +344,7 @@ class ClientBillingView:
     price_sensitivity: float  # 1-20
     gc_temperament: float  # 1-20
     gc_integrity: float  # 1-20
+    sector: str = ""  # PT-M7b: the crisis factor reads the client's sector
 
 
 def billing_matters(
@@ -440,6 +441,7 @@ def billing_client(state: GameState, client_id: int) -> ClientBillingView:
         price_sensitivity=c.price_sensitivity,
         gc_temperament=c.gc.personality["temperament"],
         gc_integrity=c.gc.personality["integrity"],
+        sector=c.sector,
     )
 
 

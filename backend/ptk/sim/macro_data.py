@@ -71,6 +71,27 @@ class MacroData(_Strict):
         return self
 
 
+class CrisisBalance(_Strict):
+    """balance.yaml `macro.crisis:` (PT-M7b; spec 14's 2008-2009: "clients demand discounts").
+
+    The month's stress is 0-1: the larger of the collections index's rise above
+    `collections_from` (1 at `collections_full`) and the credit index's fall below `credit_from`
+    (1 at `credit_full`)."""
+
+    collections_from: float = Field(gt=0)
+    collections_full: float = Field(gt=0)
+    credit_from: float = Field(gt=0)
+    credit_full: float = Field(ge=0)
+    sector_weight: float = Field(ge=0)  # a client's factor x (1 + w x its sector's stress)
+    sensitivity_neutral: float = Field(gt=0)  # price sensitivity at which the factor is 1
+    discount_bp: int = Field(ge=0)  # bp off new engagements at stress 1 and factor 1
+    discount_max_bp: int = Field(ge=0)  # the most a crisis discount reaches
+    ask_bp: int = Field(ge=0, le=10000)  # chance a bill meets a write-down request (stress 1)
+    writedown_bp: tuple[int, int]  # the request's size, bp of the bill, uniform
+    collapse_month_bp: int = Field(ge=0, le=10000)  # a deal's monthly collapse chance per unit
+    close_k: float = Field(ge=0)  # logit points off p_close per unit of the driver's shortfall
+
+
 class MacroBalance(_Strict):
     """balance.yaml `macro:` (PT-M7): how the indices act on the firm."""
 
@@ -81,3 +102,4 @@ class MacroBalance(_Strict):
     estate_mult: float = Field(ge=0)  # a bankrupt client's restructuring weight multiplier
     estate_months: int = Field(ge=0)  # months the estate keeps instructing restructuring work
     rescue_months: int = Field(ge=0)  # months a rescued client's wallet runs on, then ends
+    crisis: CrisisBalance  # PT-M7b: crisis discounts, write-downs and collapsing deals

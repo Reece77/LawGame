@@ -27,7 +27,7 @@ from ptk.sim.ledger import (
 )
 from ptk.sim.matters import formulas as fx
 from ptk.sim.matters.models import PRO_BONO_CLIENT_ID
-from ptk.sim.matters.rates import indexed_rate
+from ptk.sim.matters.rates import indexed_rate, practice_index
 from ptk.sim.money import round_half_even
 from tests.billing_support import Played, played
 
@@ -53,7 +53,8 @@ def test_wip_at_standard_is_hours_times_rate(
                 continue
             rate = indexed_rate(
                 fx.rate_cents(data.practice(r.practice), people[r.person_id].level, data),
-                result.new_state.firm(1).rate_index,  # PT-M7a: the card after January's rise
+                # PT-M7a: the card after January's rise; PT-M7b: the practice's card share
+                practice_index(result.new_state.firm(1), r.practice),
             )
             assert r.value_cents == round_half_even(r.tenths * rate, fx.TENTHS)
             if r.matter_id is not None:

@@ -31,6 +31,7 @@ from typing import Final
 from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance, GameData, KindDef
 from ptk.sim.log import LogItem, inbox_item
+from ptk.sim.macro import driver_shortfall
 from ptk.sim.matters import formulas as fx
 from ptk.sim.matters.intake import bump, with_matter, with_relationship
 from ptk.sim.matters.models import (
@@ -200,10 +201,13 @@ def resolve(
     people: Mapping[int, Person],
     data: GameData,
     balance: Balance,
+    shortfall: float = 0.0,
 ) -> tuple[Outcome, float]:
-    """The outcome and its quality (1-20) for a matter at its end (spec 7.6)."""
+    """The outcome and its quality (1-20) for a matter at its end (spec 7.6). `shortfall`
+    (PT-M7b): the deal's driver index below 1, which lowers its chance to close."""
     kind = data.market.kinds[matter.kind]
     out = balance.outcomes
+    crisis_k = balance.macro.crisis.close_k
     craft_mean = matter.craft_hours / matter.craft_weight if matter.craft_weight > 0 else 10.0
     if kind.outcome == "case":
         lead = people.get(matter.lead_id) if matter.lead_id is not None else None
@@ -214,7 +218,8 @@ def resolve(
         ), q
     if kind.outcome == "deal":
         q = craft_mean - out.prep * max(0.0, 1.0 - prep)
-        return ("closed" if u < fx.p_close(q, matter.critical, out) else "collapsed"), q
+        p = fx.p_close(q, matter.critical, out, crisis_k * shortfall)  # PT-M7b
+        return ("closed" if u < p else "collapsed"), q
     return "done", craft_mean
 
 
@@ -240,7 +245,9 @@ def close_matter(
     quality: float,
     turn: int,
     balance: Balance,
+    points: float | None = None,
 ) -> tuple[MarketState, LogItem]:
+    """`points` (PT-M7b): the relationship's move, when not the outcome's (a pulled deal)."""
     closed = replace(
         matter,
         status="closed",
@@ -251,9 +258,9 @@ def close_matter(
         team=matter.team,
     )
     market = with_matter(market, closed)
-    market = bump(
-        market, matter.client_id, matter.firm_id, outcome_points(matter, outcome, quality, balance)
-    )
+    if points is None:
+        points = outcome_points(matter, outcome, quality, balance)
+    market = bump(market, matter.client_id, matter.firm_id, points)
     item = inbox_item(
         turn,
         matter.firm_id,
@@ -369,11 +376,27 @@ def matter_month(
         if judge is not None and u[U_SJ] < sj:
             outcome, quality = resolve(matter, 1.0, u[U_OUTCOME], people, data, balance)
     due = matter.opened_turn + matter.planned_months + balance.matters.max_slip_months
+    # PT-M7b: a deal's driver index below 1 (the crisis) lowers its chance to close
+    shortfall = (
+        driver_shortfall(
+            data.practice(matter.practice), turn_to_ym(turn, state.save_meta.start_ym), data
+        )
+        if kind.outcome == "deal"
+        else 0.0
+    )
     if outcome is None and finished:
-        outcome, quality = resolve(matter, 1.0, u[U_OUTCOME], people, data, balance)
+        outcome, quality = resolve(matter, 1.0, u[U_OUTCOME], people, data, balance, shortfall)
     elif outcome is None and turn >= due and kind.outcome in ("case", "deal"):
         prep = _completed(matter, kind)
-        outcome, quality = resolve(matter, prep, u[U_OUTCOME], people, data, balance)
+        outcome, quality = resolve(matter, prep, u[U_OUTCOME], people, data, balance, shortfall)
+    collapse_points: float | None = None
+    if outcome is None and shortfall > 0:
+        # ... and may collapse it in progress (stream `deal_collapse`): the client pulls the
+        # deal, which costs the firm the rest of its fees but not the relationship
+        hazard = balance.macro.crisis.collapse_month_bp / 10000 * shortfall
+        if float(rng.stream(turn, "deal_collapse", matter.id).random()) < hazard:
+            outcome, collapse_points = "collapsed", 0.0
+            quality = matter.craft_hours / matter.craft_weight if matter.craft_weight > 0 else 10.0
     # settlement offers (cases): the other side's view of our expected recovery
     if outcome is None and matter.kind in CASE_KINDS and matter.stakes_cents > 0:
         if matter.settlement is not None and turn > matter.settlement.expires_turn:
@@ -418,7 +441,9 @@ def matter_month(
                     )
                 )
     if outcome is not None:
-        market, item = close_matter(market, matter, outcome, quality, turn, balance)
+        market, item = close_matter(
+            market, matter, outcome, quality, turn, balance, collapse_points
+        )
         logs.append(item)
     else:
         market = with_matter(market, matter)

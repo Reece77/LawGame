@@ -25,7 +25,13 @@ DECEMBER: Final = 12  # tunable-exempt: the December vote
 NOVEMBER: Final = 11  # tunable-exempt: a month's warning of it
 BUSY_BP: Final = 9000  # tunable-exempt: a guidance threshold, not a rule (utilisation)
 IDLE_BP: Final = 6500  # tunable-exempt: a guidance threshold, not a rule
-WARNINGS: Final = ("cfo_warning", "covenant_breach", "revolver_called", "insolvent")
+WARNINGS: Final = (
+    "cfo_forecast",  # PT-M7b
+    "cfo_warning",
+    "covenant_breach",
+    "revolver_called",
+    "insolvent",
+)
 
 
 @dataclass(frozen=True, slots=True)

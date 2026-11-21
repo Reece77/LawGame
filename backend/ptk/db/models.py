@@ -44,6 +44,9 @@ class FirmRow(Base):
     pro_bono_avg_tenths: Mapped[float] = mapped_column(Float, default=0.0)
     rate_rise_bp: Mapped[int | None] = mapped_column(Integer, nullable=True)
     rate_index: Mapped[float] = mapped_column(Float, default=1.0)
+    # PT-M7b: the card by practice ({practice: bp}, JSON) and the firm's hours policy
+    rate_card: Mapped[str] = mapped_column(Text, default="{}")
+    billable_target_hours: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
 
 class LedgerEntryRow(Base):

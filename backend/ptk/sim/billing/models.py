@@ -152,6 +152,7 @@ class MonthTotals:
     resolved_paid_cents: int = 0  # cash those bills brought in
     billable_tenths: int = 0
     capacity_tenths: int = 0
+    crisis_writedown_cents: int = 0  # PT-M7b: write-downs the crisis's requests took off bills
 
 
 @dataclass(frozen=True, slots=True)

@@ -134,6 +134,9 @@ templates:
   cfo_warning:
     title: "The finance team warns: {covenant}"
     body: "The {covenant} covenant is close to its limit or breached, with {drawn_cents} drawn on the revolver. Consider stopping guarantees and draws, a capital call, or repaying the bank."
+  cfo_forecast:
+    title: "The finance team's forecast: {covenant} in {months} months"
+    body: "On the last months' trend of fees, cash and borrowing, the {covenant} covenant breaks in about {months} months, with {drawn_cents} drawn on the revolver by then. There is time to act: slow guarantees and hiring, suspend draws, call capital or repay the bank."
   insolvent:
     title: "The firm is out of cash"
     body: "Cash is {cash_cents} after the revolver. {months} more month ends like this and the firm dissolves."

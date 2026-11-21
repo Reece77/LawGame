@@ -177,6 +177,8 @@ def founders_books(
     founders = [p for p in state.people if p.founding_partner and p.id in staff]
     chosen: dict[int, Relationship] = {}
     mid_score = (cfg.start_relationship.lo + cfg.start_relationship.hi) / 2
+    level = data.difficulty(state.save_meta.difficulty)
+    loyalty = level.loyalty_points if level is not None else 0.0  # PT-M7b: difficulty
     for founder_index, person in enumerate(founders):
         if person.book_cents <= 0:
             continue
@@ -209,6 +211,7 @@ def founders_books(
                 break
             pick = int(_weighted(gen, {str(cid): f for cid, f in expected.items()}))
             score = float(gen.uniform(cfg.start_relationship.lo, cfg.start_relationship.hi))
+            score = min(100.0, max(0.0, score + loyalty))  # tunable-exempt: the 0-100 scale
             chosen[pick] = Relationship(
                 client_id=pick,
                 firm_id=firm_id,

@@ -91,6 +91,56 @@ def market_rise(year: int, data: GameData, balance: Balance) -> float:
     return data.macro.rate_rise.get(year, balance.rivals.rate_inflation)
 
 
+# --- PT-M7b: the crisis (spec 14) ----------------------------------------------------------
+
+
+def _ramp(value: float, start: float, full: float) -> float:
+    """0 at `start`, 1 at `full` (either direction), clipped."""
+    if full == start:
+        return 0.0
+    return min(1.0, max(0.0, (value - start) / (full - start)))
+
+
+def crisis_stress(turn: int, start: tuple[int, int], data: GameData, b: Balance) -> float:
+    """The month's crisis stress, 0-1: the larger of the collections and credit stresses."""
+    cfg = b.macro.crisis
+    collections = _ramp(
+        at_turn(data, "collections", turn, start), cfg.collections_from, cfg.collections_full
+    )
+    credit = _ramp(at_turn(data, "credit", turn, start), cfg.credit_from, cfg.credit_full)
+    return max(collections, credit)
+
+
+def driver_shortfall(practice: PracticeDef, ym: tuple[int, int], data: GameData) -> float:
+    """A pro-cyclical practice's driver index below 1 (0 for a counter-cyclical one)."""
+    if practice.beta <= 0:
+        return 0.0
+    return max(0.0, 1.0 - level(data.macro, practice.index, ym))
+
+
+def sector_shortfall(sector: str, ym: tuple[int, int], data: GameData) -> float:
+    """A client sector's mix-weighted driver shortfall (how stressed its own business is)."""
+    table = next((x for x in data.clients.sectors if x.key == sector), None)
+    if table is None:
+        return 0.0
+    total = sum(table.mix.values())
+    if total <= 0:
+        return 0.0
+    return (
+        sum(w * driver_shortfall(data.practice(p), ym, data) for p, w in table.mix.items()) / total
+    )
+
+
+def crisis_factor(
+    price_sensitivity: float, sector: str, ym: tuple[int, int], data: GameData, b: Balance
+) -> float:
+    """A client's crisis factor: price-sensitive clients and stressed sectors ask for more."""
+    cfg = b.macro.crisis
+    return (price_sensitivity / cfg.sensitivity_neutral) * (
+        1.0 + cfg.sector_weight * sector_shortfall(sector, ym, data)
+    )
+
+
 # --- Real clients' dated failures (clients.yaml `fails`; dossier s1) -------------------------
 
 _FAILURES: dict[int, dict[str, ClientFailureDef]] = {}

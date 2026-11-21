@@ -638,6 +638,12 @@ export function RevolverCard({ p, act }: { p: Partnership; act?: Act }) {
           {money(c.limit_cents)}
         </Text>
       ))}
+      {r.forecast && (
+        <Text size="sm" c="orange" data-testid="cfo-forecast">
+          Forecast: on the last months&apos; trend the {r.forecast.covenant} covenant breaks in
+          about {r.forecast.months} months ({money(r.forecast.drawn_cents)} drawn by then).
+        </Text>
+      )}
       {act && r.drawn_cents > 0 && (
         <Button
           mt="xs"

@@ -52,6 +52,11 @@ class FirmState:
     pro_bono_avg_tenths: float = 0.0  # pro bono tenths a lawyer a month, a moving average
     rate_rise_bp: int | None = None  # each January's rise; None: the market's
     rate_index: float = 1.0  # the firm's rate card over the practices' 2005 cards
+    # PT-M7b: the firm's share of each practice's top card, bp by practice key, sorted; a
+    # practice not listed bills at the full card (10000)
+    rate_card: tuple[tuple[str, int], ...] = ()
+    # PT-M7b: the firm-wide billable target, hours a year; None: the levels' targets
+    billable_target_hours: int | None = None
 
 
 @dataclass(frozen=True, slots=True)

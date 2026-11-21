@@ -49,6 +49,7 @@ from ptk.sim.billing.models import (
     FlowAccount,
     MonthTotals,
 )
+from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance, BillingBalance, GameData
 from ptk.sim.interfaces import (
     ClientBillingView,
@@ -74,12 +75,17 @@ from ptk.sim.ledger import (
     LedgerEntry,
 )
 from ptk.sim.log import LogItem, inbox_item
-from ptk.sim.macro import bankrupt_by, collections_stress
+from ptk.sim.macro import bankrupt_by, collections_stress, crisis_factor, crisis_stress
+from ptk.sim.matters.rates import practice_index
 from ptk.sim.money import BP_DENOMINATOR, pct_of, round_half_even, times
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState, with_reveals
 
 PADDER_TAG = "rule_bender"  # tags.yaml: billing padding risk (hidden until a dispute)
+# PT-M7b: stream `crisis` keys: (CRISIS_MATTER, matter id) for a matter's bill,
+# (CRISIS_FLOW + the practice's index, client id) for a client's flow bill in a practice
+CRISIS_MATTER = 0
+CRISIS_FLOW = 1
 WIN_OUTCOMES = frozenset({"won", "closed"})
 DONE_OUTCOMES = frozenset({"won", "closed", "done", "settled"})
 
@@ -108,6 +114,9 @@ class _Run:
         self.cfg: BillingBalance = balance.billing
         # PT-M7: clients pay slower when the macro's collections index is stressed
         self.stress = collections_stress(state.turn, state.save_meta.start_ym, data, balance)
+        # PT-M7b: the crisis's discounts and write-down requests (spec 14)
+        self.crisis = crisis_stress(state.turn, state.save_meta.start_ym, data, balance)
+        self.ym = turn_to_ym(state.turn, state.save_meta.start_ym)
         self.eng: dict[int, Engagement] = {
             e.matter_id: e for e in b.engagements if not e.closed and e.firm_id == firm_id
         }
@@ -145,6 +154,37 @@ class _Run:
     def add(self, key: str, amount: int) -> None:
         self.totals[key] = self.totals.get(key, 0) + amount
 
+    def crisis_bp(self, client_id: int) -> int:
+        """PT-M7b: the crisis discount a client asks on new work this month (bp)."""
+        if self.crisis <= 0:
+            return 0
+        c = self.client(client_id)
+        cfg = self.balance.macro.crisis
+        factor = crisis_factor(c.price_sensitivity, c.sector, self.ym, self.data, self.balance)
+        return min(cfg.discount_max_bp, round(cfg.discount_bp * self.crisis * factor))
+
+    def discount_bp(self, client_id: int) -> int:
+        """The client's discount plus the crisis's (PT-M7b), never above the whole fee."""
+        base = fx.client_discount_bp(self.client(client_id), self.cfg)
+        return min(BP_DENOMINATOR, base + self.crisis_bp(client_id))
+
+    def crisis_writedown(self, client_id: int, key: tuple[int, int], fee: int) -> int:
+        """PT-M7b: a client under the crisis may ask for a bill to be written down (stream
+        `crisis`, keyed by (kind, id): two draws, whether it asks and how much)."""
+        if self.crisis <= 0 or fee <= 0:
+            return 0
+        c = self.client(client_id)
+        cfg = self.balance.macro.crisis
+        factor = crisis_factor(c.price_sensitivity, c.sector, self.ym, self.data, self.balance)
+        gen = self.rng.stream(self.turn, "crisis", *key)
+        ask, size = (float(x) for x in gen.random(2))
+        if ask >= cfg.ask_bp / BP_DENOMINATOR * self.crisis * factor:
+            return 0
+        lo, hi = cfg.writedown_bp
+        cut = pct_of(fee, round(fx.uniform(lo, hi, size)))
+        self.add("crisis_writedown_cents", cut)
+        return cut
+
     def point(self, client_id: int, points: float) -> None:
         if points:
             self.points[client_id] = self.points.get(client_id, 0.0) + points
@@ -171,7 +211,7 @@ class _Run:
             model=model,
             opened_turn=self.turn,
             cycle_months=3 if u[1] < cfg.quarterly_bp / BP_DENOMINATOR else 1,
-            discount_bp=fx.client_discount_bp(client, cfg),
+            discount_bp=self.discount_bp(v.client_id),  # PT-M7b: the crisis's too
         )
         if model == "capped":
             e = replace(
@@ -189,7 +229,10 @@ class _Run:
         elif model == "blended":
             rate = times(
                 blended_rate_cents(
-                    v.practice, v.kind_key, self.data, self.state.firm(self.firm_id).rate_index
+                    v.practice,
+                    v.kind_key,
+                    self.data,
+                    practice_index(self.state.firm(self.firm_id), v.practice),  # PT-M7b
                 ),
                 cfg.blended_mult,
             )
@@ -427,6 +470,7 @@ class _Run:
         if e.writedown_bp:
             fee -= pct_of(fee, e.writedown_bp)
             self.point(e.client_id, cfg.writedown_points * e.writedown_bp / 100)
+        fee -= self.crisis_writedown(e.client_id, (CRISIS_MATTER, e.matter_id), fee)
         pad_standard, pad_fee = self.padding(v, wip, fee)
         bill = self.issue(
             client_id=e.client_id,
@@ -526,7 +570,13 @@ class _Run:
             f = self.flows[key]
             if f.wip_cents <= 0:
                 continue
-            disc = fx.client_discount_bp(self.client(f.client_id), self.cfg)
+            disc = self.discount_bp(f.client_id)  # PT-M7b: flow is new work each month
+            fee = fx.after_discount(f.wip_cents, disc)
+            fee -= self.crisis_writedown(
+                f.client_id,
+                (CRISIS_FLOW + self.data.practice_keys.index(f.practice), f.client_id),
+                fee,
+            )
             bill = self.issue(
                 client_id=f.client_id,
                 matter_id=None,
@@ -534,7 +584,7 @@ class _Run:
                 model="hourly",
                 kind="fees",
                 standard=f.wip_cents,
-                fee=fx.after_discount(f.wip_cents, disc),
+                fee=fee,
                 memo=bk.BILLS,
             )
             self.realised(f.wip_cents, bill.billed_cents)
@@ -759,7 +809,7 @@ class _Run:
             target += e.wip_cents - fx.expected_value(e, v.progress if v else 0.0, self.cfg)
         for f in self.flows.values():
             if f.wip_cents > 0:
-                disc = fx.client_discount_bp(self.client(f.client_id), self.cfg)
+                disc = self.discount_bp(f.client_id)
                 target += f.wip_cents - fx.after_discount(f.wip_cents, disc)
         self.books.move(bk.PROVISIONS, FEES, WIP_PROVISION, target - self.wip_provision)
         self.wip_provision = target

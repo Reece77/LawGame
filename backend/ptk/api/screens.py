@@ -33,9 +33,18 @@ from ptk.sim.data_models import PARTNER_LEVELS, Balance, GameData
 from ptk.sim.errors import NotFoundError
 from ptk.sim.matters import formulas as fx
 from ptk.sim.matters.assessment import merits_words
-from ptk.sim.matters.market import monthly_demand
+from ptk.sim.matters.market import firm_reputation, monthly_demand
 from ptk.sim.matters.models import Matter
+from ptk.sim.matters.rates import (
+    card_bp,
+    card_target_bp,
+    indexed_rate,
+    market_index,
+    practice_index,
+    start_card_bp,
+)
 from ptk.sim.matters.staffing import fee_earners, planned_load
+from ptk.sim.money import BP_DENOMINATOR
 from ptk.sim.people.formulas import fam_factor
 from ptk.sim.people.models import Person, fam_key
 from ptk.sim.people.reveal import revealed_range
@@ -110,7 +119,8 @@ class TrendPointOut(BaseModel):
 
 class PracticeRateOut(BaseModel):
     band: str
-    card_cents: int  # the rate card, an hour
+    card_cents: int  # the rate card, an hour (the top 2005 card)
+    firm_card_cents: int  # PT-M7b: the firm's card in the band: card x share x rate index
     ours_cents: int | None  # the firm's standard value an hour last month in the band
 
 
@@ -130,6 +140,9 @@ class PracticeScreenOut(BaseModel):
     leverage: float | None  # non-partner fee earners per partner
     leverage_norm: float
     rates: list[PracticeRateOut]
+    card_bp: int  # PT-M7b: the firm's share of the practice's top card
+    card_target_bp: int  # the share its reputation earns; January moves the card toward it
+    market_index_bp: int  # the market's rate index (10000 = 2005)
 
 
 class ExplainItemOut(BaseModel):
@@ -277,8 +290,12 @@ def practices_screen(state: GameState, data: GameData, balance: Balance) -> list
     last = trend[-1][1] if trend else tuple(0 for _ in data.practices)
     earners = fee_earners(state, firm, data, balance)
     worked = _hours_by_person(state)
+    player = state.player
+    start_bp = start_card_bp(state.save_meta.difficulty, data, balance)
+    market = round(market_index(state.turn, start, data, balance) * BP_DENOMINATOR)
     out = []
     for i, p in enumerate(data.practices):
+        index = practice_index(player, p.key)
         home = [e for e in earners if e.home == p.key]
         partners = sum(1 for e in home if e.person.level in PARTNER_LEVELS)
         lawyers = [e for e in home if data.role(e.person.role).kind == "lawyer"]
@@ -298,6 +315,7 @@ def practices_screen(state: GameState, data: GameData, balance: Balance) -> list
                 PracticeRateOut(
                     band=band,
                     card_cents=card,
+                    firm_card_cents=indexed_rate(card, index),
                     ours_cents=round(value * TENTHS / tenths) if tenths else None,
                 )
             )
@@ -320,6 +338,11 @@ def practices_screen(state: GameState, data: GameData, balance: Balance) -> list
                 leverage=round((len(home) - partners) / partners, 2) if partners else None,
                 leverage_norm=p.leverage,
                 rates=rates,
+                card_bp=card_bp(player, p.key),
+                card_target_bp=card_target_bp(
+                    firm_reputation(state, player.id, p.key), start_bp, balance
+                ),
+                market_index_bp=market,
             )
         )
     return out

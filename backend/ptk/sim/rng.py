@@ -55,6 +55,8 @@ STREAM_IDS: Final = MappingProxyType(
         "rival_fate": 39,  # (*rival_key,): a rival's collapse hazard and scatter (PT-M5)
         "rival_poach": 40,  # (*rival_key, 0, made_turn): a rival's approach answered (PT-M5)
         "pro_bono": 41,  # (firm_id,): a month's named pro bono matter, its kind and size (PT-M7a)
+        "crisis": 42,  # (kind, id): a bill's crisis write-down request and its size (PT-M7b)
+        "deal_collapse": 43,  # (matter_id,): a deal's crisis collapse in progress (PT-M7b)
         "misc": 99,  # tests only
     }
 )

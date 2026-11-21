@@ -126,25 +126,32 @@ export const useFirmPolicies = (slug: string) =>
   });
 
 export type PolicyAction =
-  { kind: 'pro_bono'; hours: number } | { kind: 'rates'; riseBp: number | null };
+  | { kind: 'pro_bono'; hours: number }
+  | { kind: 'rates'; riseBp: number | null }
+  | { kind: 'hours'; hours: number | null };
+
+async function putPolicy(slug: string, a: PolicyAction) {
+  const params = { path: { slug } };
+  switch (a.kind) {
+    case 'pro_bono':
+      return unwrap(
+        await api.PUT('/api/saves/{slug}/policies/pro-bono', { params, body: { hours: a.hours } }),
+      );
+    case 'rates':
+      return unwrap(
+        await api.PUT('/api/saves/{slug}/policies/rates', { params, body: { rise_bp: a.riseBp } }),
+      );
+    case 'hours': // PT-M7b: the firm's billable target
+      return unwrap(
+        await api.PUT('/api/saves/{slug}/policies/hours', { params, body: { hours: a.hours } }),
+      );
+  }
+}
 
 export function usePolicyAction(slug: string) {
   const client = useQueryClient();
   return useMutation({
-    mutationFn: async (a: PolicyAction) =>
-      a.kind === 'pro_bono'
-        ? unwrap(
-            await api.PUT('/api/saves/{slug}/policies/pro-bono', {
-              params: { path: { slug } },
-              body: { hours: a.hours },
-            }),
-          )
-        : unwrap(
-            await api.PUT('/api/saves/{slug}/policies/rates', {
-              params: { path: { slug } },
-              body: { rise_bp: a.riseBp },
-            }),
-          ),
+    mutationFn: async (a: PolicyAction) => putPolicy(slug, a),
     onSuccess: (policies) => {
       client.setQueryData(['policies', slug], policies);
       void client.invalidateQueries({ queryKey: ['game', slug] });

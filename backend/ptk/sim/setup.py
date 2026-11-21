@@ -14,8 +14,9 @@ from ptk.sim.data_models import Balance, GameData, Scenario
 from ptk.sim.errors import UnknownDifficultyError, UnknownScenarioError
 from ptk.sim.hiring.phases import starting_pay
 from ptk.sim.ledger import CASH, PARTNERS_CAPITAL, LedgerEntry
+from ptk.sim.matters.rates import starting_card
 from ptk.sim.matters.setup import new_market
-from ptk.sim.money import pct_of
+from ptk.sim.money import BP_DENOMINATOR, pct_of
 from ptk.sim.partnership.setup import founding_partnership
 from ptk.sim.people.founder import FounderSpec, build_founder
 from ptk.sim.people.generator import generate_person, people_gen_stream
@@ -69,10 +70,18 @@ def new_game(
         stage=0,
         founded_turn=0,
         home_city=scenario.home_city,
+        rate_card=starting_card(level.id, data, balance),  # PT-M7b: a new firm's card
     )
     people, employments, reveals = _starting_people(
         scenario, founder, RngFactory(master_seed), data, balance
     )
+    if level.books_mult_bp != BP_DENOMINATOR:  # PT-M7b: the difficulty's books
+        people = tuple(
+            replace(p, book_cents=pct_of(p.book_cents, level.books_mult_bp))
+            if p.founding_partner
+            else p
+            for p in people
+        )
     state = GameState(
         save_meta=meta,
         turn=0,
@@ -92,7 +101,7 @@ def new_game(
     capital = pct_of(scenario.partners_capital_cents, level.capital_mult_bp)
     # PT-M4: the founders' agreement, capital accounts and the revolver's facility
     state = replace(
-        state, partnership=founding_partnership(state, firm.id, capital, scenario, balance)
+        state, partnership=founding_partnership(state, firm.id, capital, scenario, balance, data)
     )
     entries: tuple[LedgerEntry, ...] = ()
     if capital:

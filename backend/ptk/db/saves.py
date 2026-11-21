@@ -13,6 +13,7 @@ from sqlalchemy import func, select
 from ptk.db import backup, migrate
 from ptk.db.billing_io import write_billing
 from ptk.db.events_io import add_text_requests, write_events, write_pending
+from ptk.db.founder_io import write_founder_life
 from ptk.db.leadership_io import write_leadership, write_seat_decisions
 from ptk.db.market_io import write_market
 from ptk.db.models import DecisionLogRow, FirmRow, SaveMetaRow, TurnSnapshotRow
@@ -37,6 +38,7 @@ from ptk.sim.calendar import format_turn
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
 from ptk.sim.errors import InvalidSaveNameError, SaveExistsError, SaveNotFoundError
+from ptk.sim.family.setup import FamilySpec
 from ptk.sim.hiring.actions import Outcome
 from ptk.sim.people.founder import FounderSpec
 from ptk.sim.rng import MAX_SEED, RngFactory
@@ -77,6 +79,7 @@ def create_save(
     seed: int | None = None,
     founder: FounderSpec | None = None,
     real_people: bool | None = None,
+    family: FamilySpec | None = None,
 ) -> GameState:
     path = save_path(save_dir, slug)
     if path.exists():
@@ -92,6 +95,7 @@ def create_save(
         balance=balance,
         founder=founder,
         real_people=real_people,
+        family=family,
     )
     save_dir.mkdir(parents=True, exist_ok=True)
     migrate.upgrade_new(path)
@@ -150,6 +154,7 @@ def run_turn(
             result.snapshot,
             data.inbox_templates,
             result.client_book,
+            result.personal_book,
         )
         write_delegate_actions(session, state.turn, result.delegate_actions)
         write_rival_moves(session, state.turn, result.rival_moves)  # PT-M5
@@ -194,6 +199,7 @@ def run_action(path: Path, action: Action, balance: Balance, data: GameData) -> 
         write_partnership(session, outcome.state.partnership)
         write_org(session, outcome.state)  # PT-M8: a group leader's seat is the unit's leader
         write_leadership(session, outcome.state.leadership)  # PT-M8
+        write_founder_life(session, outcome.state.founder_life, outcome.state.family)  # PT-M17
         session.add(
             DecisionLogRow(
                 turn=state.turn,

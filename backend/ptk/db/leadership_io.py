@@ -1,4 +1,4 @@
-"""Load and write seats, authority, pitches and seat decisions (schema v11, PT-M8): one row
+"""Load and write seats, authority, pitches and seat decisions (schema v12, PT-M8): one row
 holding the `LeadershipState` as JSON (current state, rewritten when it changes).
 
 The codec rebuilds the frozen dataclasses of `ptk.sim.org.seat_models` from their type hints,

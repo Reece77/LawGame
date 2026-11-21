@@ -100,6 +100,21 @@ Files copied or ported from Tech Startup Tycoon (`Reece77/Tech_Executive_Tycoon`
 | `backend/ptk/sim/org/authority.py` | `backend/tst/sim/org/authority.py` | ported | — |
 | `backend/ptk/sim/org/pitches.py` | `backend/tst/sim/org/pitches.py` | ported | — |
 | `backend/ptk/sim/org/reports.py` | `backend/tst/sim/org/reports.py` | ported | — |
+| `backend/ptk/sim/founder/config.py` | `backend/tst/sim/founder/config.py` | ported | — |
+| `backend/ptk/sim/founder/models.py` | `backend/tst/sim/founder/models.py` | ported | — |
+| `backend/ptk/sim/founder/personal.py` | `backend/tst/sim/founder/personal.py` | ported | — |
+| `backend/ptk/sim/founder/persona.py` | `backend/tst/sim/founder/persona.py` | ported | — |
+| `backend/ptk/sim/founder/foundation.py` | `backend/tst/sim/founder/foundation.py` | ported | — |
+| `backend/ptk/sim/founder/influence.py` | `backend/tst/sim/founder/influence.py` | ported | — |
+| `backend/ptk/sim/founder/legacy.py` | `backend/tst/sim/founder/legacy.py` | ported | — |
+| `backend/ptk/sim/founder/phase.py` | `backend/tst/sim/founder/phase.py` | ported | — |
+| `backend/ptk/sim/family/models.py` | `backend/tst/sim/family/models.py` | ported | — |
+| `backend/ptk/sim/family/people.py` | `backend/tst/sim/family/people.py` | ported | — |
+| `backend/ptk/sim/family/setup.py` | `backend/tst/sim/family/setup.py` | ported | — |
+| `backend/ptk/sim/family/phase.py` | `backend/tst/sim/family/phase.py` | ported | — |
+| `backend/ptk/sim/family/estate.py` | `backend/tst/sim/family/estate.py` | ported | — |
+| `backend/ptk/sim/family/adviser.py` | `backend/tst/sim/family/adviser.py` | ported | — |
+| `backend/ptk/sim/family/succession.py` | `backend/tst/sim/family/succession.py` | ported | — |
 
 Changes in ported files:
 
@@ -181,3 +196,23 @@ PT-M8 (seats, authority and pitches) ported TST's executives from upstream commi
 - `backend/ptk/sim/org/authority.py` (from `org/authority.py`): Partner Track's seat rules through the player's actions; its own energy budget; stream `seat_act` (45) keyed (seat index, firm, slot); spec 9.4's one-offs refused.
 - `backend/ptk/sim/org/pitches.py` (from `org/pitches.py`): Partner Track's kinds; stream `pitch` (46) keyed (firm, person); the committee's effect on quality; no Holiday auto-approval; follow-through against the central case.
 - `backend/ptk/sim/org/reports.py` (from `org/reports.py` and `org/voices.py`): reports through PT-M6's read-only texts; the voice from revealed traits and tags; the partners' meeting and the committee's December.
+PT-M17 (the founder's life, family and succession, lane C) ported `tst/sim/founder/` and `tst/sim/family/` from upstream commit **`121d318a`** (2026-11-19, TST at M44), not the commit above: each file's header names it and what changed. TST's founder modules with no Partner Track counterpart (`angel.py`, `shares.py`, `investing*.py`, `wealth.py`, `draws.py`, `events.py`, `stress.py`, `effects.py`, `family_office.py`) and family modules (`answers.py`, `divorce.py`, `dynasty.py`, `rules.py`, `steps.py`, `transfers.py`, `config.py`) were read, not copied: stress is the person's strain (ADR PT-0006), there are no shares, and dynasty mode is v3; the parts used are folded into the files below.
+- `backend/ptk/sim/founder/config.py` (with `tst/sim/family/config.py`): one module for `founder_life.*`, `family.*` and `succession.*`; personal book, persona sources (spec 2.3), causes (access to justice added, climate dropped), bar politics, legacy, annuities; school and law school; the US estate tax by year; succession.
+- `backend/ptk/sim/founder/models.py`: Partner Track's personal chart (draws, true-up, capital in the firm and its loan, tax, annuity income); a `PersonalBook` of running balances per player; status, bar politics and the succession plan on a life; annuities, succession records and the adviser's opinions; no hidden scandal risk.
+- `backend/ptk/sim/founder/personal.py`: the month's mirror of PT-M4's sub-ledgers (draws, true-up, capital and its return), tax on the profit share as paid, the capital loan, investment and family-office returns; the income statement.
+- `backend/ptk/sim/founder/persona.py`: spec 2.3's sources; effects on partner confidence and recruiting; a successor's starting persona (TST 45.5).
+- `backend/ptk/sim/founder/foundation.py`: causes and their effects in Partner Track's units (recruiting; resignations); no cities.
+- `backend/ptk/sim/founder/influence.py`: bar politics (a committee, spend on 6950, bar office) instead of regional lobbying; no scandals.
+- `backend/ptk/sim/founder/legacy.py`: the firm's best year, the name on the door, the foundation, the persona, the family and bar office; no company score or net worth.
+- `backend/ptk/sim/founder/phase.py`: Partner Track's phases 7 and 10 and the month's start (see its header).
+- `backend/ptk/sim/family/models.py`: no shares, trust holders, seats or dynasty generations; school and law school; a child at the firm.
+- `backend/ptk/sim/family/people.py`: Partner Track's generator; a child's monthly pull toward potential; never a real person.
+- `backend/ptk/sim/family/setup.py`: Partner Track's state; a founder flagged real has no family.
+- `backend/ptk/sim/family/phase.py`: family time eases strain; marriage after `marriage_months`; divorce splits liquid personal assets; nepotism through partner confidence; nothing for a real head.
+- `backend/ptk/sim/family/estate.py`: the personal book's estate; gifts to heirs and a trust; the US federal history.
+- `backend/ptk/sim/family/adviser.py`: opinions on partnership votes; partner confidence when overruled.
+- `backend/ptk/sim/family/succession.py`: any equity partner may succeed; the election through PT-M4's vote functions (`ptk.sim.interfaces`); Partner Track's triggers.
+- `backend/ptk/sim/hiring/phases.py` (PT-M17): the player's recruiting term on offers and resignation factor, through `ptk.sim.interfaces`.
+- `backend/ptk/sim/actions/__init__.py` (PT-M17): the founder's and family's actions.
+- `backend/ptk/sim/ledger.py` (PT-M17): accounts 2600 and 6950 posted by the engine.
+- `backend/ptk/sim/rng.py` (PT-M17): streams `founder_life` 50, `family` 51, `investments` 52.

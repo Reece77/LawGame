@@ -47,6 +47,9 @@
 | `pro_bono` | 41 | `(firm_id,)` | A month's named pro bono matter: arrival, kind, hours, months, merits, opposing counsel, forum (spec 7.8) | PT-M7a |
 | `seat_act` | 45 | `(seat_index, firm_id, slot)` | A seat holder's month under authority: the first uniform decides whether they take the right rule (TST 24.2); the actions' own draws follow on the same generator. seat_index: the seat's position in seats.yaml; slot: 0, or a practice group's unit id | PT-M8 |
 | `pitch` | 46 | `(firm_id, person_id)` | A holder's quarterly pitch: whether (by true ambition), then which candidate (by true seat score and the committee's effect) (TST 27.1) | PT-M8 |
+| `founder_life` | 50 | `(purpose, *key)`: `(1, person_id)` a retiring partner's departure (PT-M4's `depart` draws with it); `(2, person_id)` a bar election | The founder's life (one call site, `ptk.sim.founder.streams.life_stream`; lane C's range 50-59) | PT-M17 |
+| `family` | 51 | `(head_id, index)` a member's making (index from 1); `(head_id, 0, k)` a month's life event of kind k (0 a partner met, 1 a child born); `(person_id, 1)` a child's month of development; `(head_id, 2, 0)` the January health step-back | The player's family and the health trigger of succession (one call site, `ptk.sim.family.people.family_stream`) | PT-M17 |
+| `investments` | 52 | `(person_id,)` | A player's month of investment and family-office returns (one call site, `ptk.sim.founder.personal.investment_stream`) | PT-M17 |
 
 ## Consequences
 

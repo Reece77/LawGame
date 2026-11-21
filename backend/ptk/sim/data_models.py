@@ -12,6 +12,7 @@ from ptk.sim.events.data import (
     EventTemplate,
     template_problems,
 )
+from ptk.sim.founder.config import FamilyBalance, FounderLifeBalance, SuccessionBalance
 from ptk.sim.macro_data import SERIES as MACRO_SERIES
 from ptk.sim.macro_data import MacroBalance, MacroData
 from ptk.sim.org.seat_data import AuthorityBalance, PitchesBalance, SeatDef, SeatsBalance, SeatsData
@@ -1218,6 +1219,9 @@ class Balance(_Strict):
     seats: SeatsBalance  # PT-M8 (ptk.sim.org.seat_data)
     authority: AuthorityBalance  # PT-M8
     pitches: PitchesBalance  # PT-M8
+    founder_life: FounderLifeBalance  # PT-M17
+    family: FamilyBalance  # PT-M17
+    succession: SuccessionBalance  # PT-M17
 
 
 # --- People seed data (PT-M1a) ------------------------------------------------------------

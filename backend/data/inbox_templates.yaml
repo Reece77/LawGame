@@ -228,3 +228,58 @@ templates:
   exco_elected:
     title: "The partners elect the executive committee"
     body: "Elected for the year: {names}."
+  # PT-M17: the founder's life, family and succession
+  foundation_created:
+    title: "{name} is founded"
+    body: "Your foundation's cause is {cause}. Give to it from your personal account; each December it grants 5% of its endowment."
+  foundation_grants:
+    title: "{name} granted {amount_cents}"
+    body: "This year's grants went to {cause}. They count toward your legacy and the profession has noticed."
+  bar_office_won:
+    title: "You were elected bar president"
+    body: "The bar association elected you its president. Your influence grows while you serve, and the term counts toward your legacy."
+  bar_office_lost:
+    title: "You lost the bar election"
+    body: "The bar association chose another candidate. Build your influence on its committees and stand again next year."
+  annuity_granted:
+    title: "{name} retires with an annuity"
+    body: "{name} retires with {monthly_cents} a month for {years} years, booked to retired-partner annuities and paid from the firm's cash."
+  annuity_vote:
+    title: "The annuity vote {result}"
+    body: "The partners voted on retired partners' annuities: {yes} for, {no} against."
+  succession_due_retirement:
+    title: "You reach the retirement age"
+    body: "At {age} the partnership agreement retires you. Name a successor within {months} months, or your succession plan's (or the strongest partner) will be put to the vote."
+  succession_due_health:
+    title: "Your doctors advise you to step back"
+    body: "At {age} your health asks you to hand over. Name a successor within {months} months, or your succession plan's (or the strongest partner) will be put to the vote."
+  succession_elected:
+    title: "The partners elected {name}"
+    body: "{name} was elected managing partner: {yes} for, {no} against."
+  succession_lost:
+    title: "The partners did not elect {name}"
+    body: "{rival} won the partnership's support instead ({yes} for your candidate, {no} against)."
+  succession_handover:
+    title: "{name} is the managing partner"
+    body: "{founder} has handed over to {name}. From now on you play {name}; {founder} stays on as senior partner and adviser until retirement."
+  adviser_opinion:
+    title: "{name} would {stance} {subject}"
+    body: "\"{text}\""
+  family_divorce:
+    title: "Your marriage has ended"
+    body: "Your partner has left, with half of your personal savings and investments."
+  family_milestone:
+    title: "{name} turns {age}"
+    body: "A milestone for {name}. School is chosen at 12 and law school at 18; at 25 a qualified child may join the firm."
+  family_partner_met:
+    title: "You met {name}"
+    body: "Time with your family keeps the relationship strong."
+  family_married:
+    title: "You married"
+    body: "Congratulations. Family time keeps the relationship strong; burnout strains it."
+  family_child_born:
+    title: "{name} is born"
+    body: "Your family has grown."
+  family_joined_firm:
+    title: "{name} joins the firm"
+    body: "{name} starts as a first-year associate. The partners will watch how fast they rise."

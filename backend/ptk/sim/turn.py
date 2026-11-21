@@ -20,6 +20,8 @@ from ptk.sim.errors import GameOverError
 from ptk.sim.events import colleagues, director, effects
 from ptk.sim.events import modifiers as event_modifiers
 from ptk.sim.events.models import EventRequest, TextRequest
+from ptk.sim.founder import phase as founder_life
+from ptk.sim.founder.models import PersonalEntry
 from ptk.sim.hiring import phases as hiring
 from ptk.sim.interfaces import DelegateHiringHook, delegate_hiring
 from ptk.sim.ledger import CASH, AccountCode, LedgerBalances, LedgerEntry, apply_entries
@@ -53,6 +55,7 @@ class TurnResult:
     client_book: tuple[ClientBookEntry, ...] = ()  # client-money entries (PT-M3b)
     rival_moves: tuple[RivalMove, ...] = ()  # rival decisions, recomputed on replay (PT-M5)
     seat_decisions: tuple[SeatDecision, ...] = ()  # PT-M8: recomputed on replay (ADR-0015)
+    personal_book: tuple[PersonalEntry, ...] = ()  # the players' personal books (PT-M17)
 
 
 @dataclass(frozen=True, slots=True)
@@ -79,6 +82,7 @@ class TurnContext:
     client_book: tuple[ClientBookEntry, ...] = ()  # PT-M3b: the client-money book's entries
     rival_moves: tuple[RivalMove, ...] = ()  # PT-M5
     seat_decisions: tuple[SeatDecision, ...] = ()  # PT-M8
+    personal_book: tuple[PersonalEntry, ...] = ()  # PT-M17: the personal books' entries
 
     def take(self, done: rival_phase.Phase) -> TurnContext:
         """Take a rivals phase's results (PT-M5)."""
@@ -169,9 +173,15 @@ def payroll_and_operating_costs(ctx: TurnContext) -> TurnContext:
 
 def financing(ctx: TurnContext) -> TurnContext:
     """7. Capital in and out, revolver interest, draws, the December allocation and true-up,
-    the revolver's draws and covenants, insolvency (PT-M4)."""
+    the revolver's draws and covenants, insolvency (PT-M4); the founder's personal book
+    mirrors their draws, true-up and capital, annuities are paid, partners at the retirement
+    age retire (PT-M17)."""
+    before = ctx.state
     month = partnership.financing(ctx.state, ctx.balances, ctx.balance, ctx.data)
-    return replace(ctx, state=month.state).post(*month.entries).log(*month.log)
+    ctx = replace(ctx, state=month.state).post(*month.entries).log(*month.log)
+    life = founder_life.financing(ctx.state, before, ctx.rng, ctx.balances, ctx.balance, ctx.data)
+    ctx = replace(ctx, state=life.state, personal_book=ctx.personal_book + life.personal)
+    return ctx.post(*life.entries).log(*life.log)
 
 
 def people_updates(ctx: TurnContext) -> TurnContext:
@@ -202,9 +212,15 @@ def market_and_macro_update(ctx: TurnContext) -> TurnContext:
 
 def stage_checks(ctx: TurnContext) -> TurnContext:
     """10. Stages, the month's P&L, partner confidence, petitions and elections, dissolution
-    (PT-M4)."""
+    (PT-M4); the founder's persona, bar politics, foundation, family, adviser and succession
+    (PT-M17)."""
     state, logs = partnership.stage_checks(ctx.state, ctx.rng, ctx.balances, ctx.balance, ctx.data)
-    return replace(ctx, state=state).log(*logs)
+    ctx = replace(ctx, state=state).log(*logs)
+    life = founder_life.month(
+        ctx.state, ctx.start or ctx.state, ctx.rng, ctx.balances, ctx.balance, ctx.data
+    )
+    ctx = replace(ctx, state=life.state, personal_book=ctx.personal_book + life.personal)
+    return ctx.post(*life.entries).log(*life.log)
 
 
 def snapshot_and_month_end_report(ctx: TurnContext) -> TurnContext:
@@ -314,6 +330,7 @@ def advance_turn(
         raise RuntimeError("snapshot phase did not run")
     # The founding partner's energy resets after phase 12 for the new month (ADR-0014).
     next_state = hiring.reset_energy(replace(ctx.state, turn=state.turn + 1), balance)
+    next_state = founder_life.month_start(next_state, balance)  # PT-M17: committee, family time
     next_state = close_at_campaign_end(next_state, balance)
     return TurnResult(
         new_state=next_state,
@@ -326,4 +343,5 @@ def advance_turn(
         client_book=ctx.client_book,
         rival_moves=ctx.rival_moves,
         seat_decisions=ctx.seat_decisions,
+        personal_book=ctx.personal_book,
     )

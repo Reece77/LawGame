@@ -289,3 +289,24 @@ class OneOffError(SimError):
     """Spec 9.4's one-offs are always the player's proposals, never within authority."""
 
     code = "one_off"
+
+
+# --- PT-M17: the founder's life, family and succession ---------------------------------------
+
+
+class FounderLifeError(SimError):
+    """A founder-life rule forbids the action (the personal book, foundation, bar politics)."""
+
+    code = "founder_life"
+
+
+class FamilyError(SimError):
+    """A family rule forbids the action (education, a child joining, estate planning)."""
+
+    code = "family"
+
+
+class SuccessionError(SimError):
+    """A succession rule forbids the action (who may succeed, when)."""
+
+    code = "succession"

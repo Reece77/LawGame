@@ -14,6 +14,8 @@ from typing import Literal
 from ptk.sim.billing.models import EMPTY_BILLING, BillingState
 from ptk.sim.calendar import YearMonth
 from ptk.sim.events.models import EMPTY_EVENTS, EventsState
+from ptk.sim.family.models import EMPTY_FAMILY, FamilyState
+from ptk.sim.founder.models import EMPTY_FOUNDER_LIFE, FounderLifeState
 from ptk.sim.hiring.models import Candidate, Offer, PayPolicy, PersonState, Search
 from ptk.sim.matters.models import EMPTY_MARKET, MarketState
 from ptk.sim.org.models import EMPTY_ORG, OrgState
@@ -75,6 +77,8 @@ class GameState:
     rivals: RivalsState = EMPTY_RIVALS  # rival firms, their key people, RFPs (PT-M5)
     partnership: PartnershipState = EMPTY_PARTNERSHIP  # capital, comp, votes, flight (PT-M4)
     leadership: LeadershipState = EMPTY_LEADERSHIP  # seats, authority, pitches (PT-M8)
+    founder_life: FounderLifeState = EMPTY_FOUNDER_LIFE  # persona, personal book (PT-M17)
+    family: FamilyState = EMPTY_FAMILY  # the player's own family (PT-M17)
 
     @property
     def ended(self) -> bool:

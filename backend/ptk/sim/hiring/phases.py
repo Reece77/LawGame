@@ -9,6 +9,8 @@ Partner Track's terms (spec 5.3) and resignation its bonus timing; candidate poo
 channel and, in April, the campus pools (stream `campus`); summer months scout the summer
 associates; no rivals, options, offices, divisions, free agents, relocation or retirement.
 PT-M6: event modifiers multiply a person's morale target (ptk.sim.events.modifiers).
+PT-M17: the player's recruiting term on offers and their resignation factor (persona,
+foundation, bar politics; `ptk.sim.interfaces`).
 
 Each step is pure: state (plus the turn's generators) in; new state, ledger entries and log
 items out. People are processed in ascending id order; every random draw comes from its
@@ -69,7 +71,13 @@ from ptk.sim.hiring.rules import (
     offer_pitch,
     prestige,
 )
-from ptk.sim.interfaces import has_sponsor, manager_morale_term, seat_effect
+from ptk.sim.interfaces import (
+    founder_recruiting_term,
+    founder_resign_mult,
+    has_sponsor,
+    manager_morale_term,
+    seat_effect,
+)
 from ptk.sim.ledger import (
     BENEFITS,
     BONUSES,
@@ -205,7 +213,8 @@ def resolve_offers(
                 risk_appetite=person.personality["risk_appetite"],
                 offer=hiring.offer,
                 prestige=prestige(state, offer.firm_id, balance),
-                pitch=offer_pitch(state, offer.actor_id, balance),
+                pitch=offer_pitch(state, offer.actor_id, balance)
+                + founder_recruiting_term(state, offer.firm_id, balance),  # PT-M17
             )
             accepted = draw < acceptance_probability(score, hiring.offer)
         status: OfferStatus = "accepted" if accepted else "declined"
@@ -592,7 +601,7 @@ def morale_and_departures(
             lifer=LIFER in person.tags,
             burnout=burnout_effects_active(person, state.turn, balance),
             month_mult=month_multiplier(person.level, month, balance),
-            heat=heat,
+            heat=heat * founder_resign_mult(state, employment.firm_id, balance),  # PT-M17
         )
         roll = int(rng.stream(state.turn, "resign", person.id).integers(0, ROLL_RANGE))
         if not roll_succeeds(roll, chance):

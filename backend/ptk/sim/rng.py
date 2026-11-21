@@ -57,6 +57,10 @@ STREAM_IDS: Final = MappingProxyType(
         "pro_bono": 41,  # (firm_id,): a month's named pro bono matter, its kind and size (PT-M7a)
         "seat_act": 45,  # (seat_index, firm_id, slot): a holder's month under authority (PT-M8)
         "pitch": 46,  # (firm_id, person_id): a holder's quarterly pitch: whether, which (PT-M8)
+        # PT-M17 (lane C, ids 50-59): the founder's life and family
+        "founder_life": 50,  # (purpose, *key): retirement, a bar election, an annuity vote
+        "family": 51,  # (head_id, index) a member; (head_id, 0, k) events; (pid, 1); (pid, 2, 0)
+        "investments": 52,  # (person_id,): a player's month of investment returns
         "misc": 99,  # tests only
     }
 )

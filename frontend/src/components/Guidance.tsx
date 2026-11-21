@@ -62,7 +62,7 @@ export function Guidance({ slug }: { slug: string }) {
           <List size="sm" spacing={4}>
             {g.what_next.map((item) => (
               <List.Item key={item.key} data-testid="what-next-item">
-                <Link to={route(slug, item.link_kind, item.link_id)}>{item.text}</Link>
+                {item.text} <Link to={route(slug, item.link_kind, item.link_id)}>Open</Link>
               </List.Item>
             ))}
           </List>
@@ -83,11 +83,7 @@ export function Guidance({ slug }: { slug: string }) {
                 readOnly
                 checked={step.done}
                 data-testid={`step-${step.key}`}
-                label={
-                  <Link to={route(slug, step.link_kind)} style={{ color: 'inherit' }}>
-                    {step.text}
-                  </Link>
-                }
+                label={step.text}
               />
             ))}
           </Stack>

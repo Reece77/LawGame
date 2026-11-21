@@ -26,3 +26,13 @@ Each brief is a self-contained prompt for a coding agent, in Tech Startup Tycoon
 | [PT-M7a-v1-gaps.md](PT-M7a-v1-gaps.md) | Scenario fix, staffing for expected output, pro bono, early case assessment, rate rises, Holiday stops | PT-M3a–PT-M6 |
 | [PT-M7-balance-and-v1-close.md](PT-M7-balance-and-v1-close.md) | Strategies, macro history, balance, Holiday, History | all |
 | [PT-M7b-pressure-and-balance.md](PT-M7b-pressure-and-balance.md) | A new firm's card, difficulty teeth, crisis discounts, an earlier CFO warning, an hours policy; T2 re-read | PT-M7 |
+
+## v2, first wave (2026-11-21)
+
+| Brief | Milestone | Depends on |
+| --- | --- | --- |
+| [PT-M7b-pressure-and-balance.md](PT-M7b-pressure-and-balance.md) | Pressure and balance (v1's known misses) | PT-M7 |
+| [PT-M8-seats-authority-pitches.md](PT-M8-seats-authority-pitches.md) | Seats, authority, pitches, reports | PT-M7 (wires CFO, pricing and COO effects after PT-M7b) |
+| [PT-M17-founder-life-and-succession.md](PT-M17-founder-life-and-succession.md) | The founding partner's life, family and succession | PT-M7 |
+
+RNG ids by lane: PT-M7b 42-44, PT-M8 45-49, PT-M17 50-59.

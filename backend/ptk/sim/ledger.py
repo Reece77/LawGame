@@ -50,6 +50,9 @@ REVOLVER: Final = "2300_revolver"
 PARTNER_CURRENT: Final = "2700_partner_current_accounts"
 INTEREST: Final = "6800_interest"
 PROFESSIONAL_FEES: Final = "6600_professional_fees"
+# PT-M17: retired partners' annuities (spec 8.4) and bar politics (TST 32.5's lobbying).
+ANNUITIES: Final = "2600_retired_partner_annuities"
+LOBBYING: Final = "6950_lobbying"
 # The client-money book's accounts (never in a firm entry).
 CLIENT_BANK: Final = "C1000_client_bank"
 OWED_TO_CLIENTS: Final = "C2000_owed_to_clients"
@@ -78,6 +81,8 @@ ENGINE_ACCOUNTS: Final = (
     PARTNER_CURRENT,
     INTEREST,
     PROFESSIONAL_FEES,
+    ANNUITIES,
+    LOBBYING,
 )
 
 

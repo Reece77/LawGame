@@ -29,6 +29,8 @@ from ptk.sim.errors import (
     ConflictError,
     CriticalEventOpenError,
     EventActionError,
+    FamilyError,
+    FounderLifeError,
     GameOverError,
     InsufficientCashError,
     InsufficientEnergyError,
@@ -45,9 +47,11 @@ from ptk.sim.errors import (
     SaveNotFoundError,
     SimError,
     StaffingError,
+    SuccessionError,
     UnknownDifficultyError,
     UnknownScenarioError,
 )
+from ptk.sim.family.setup import FamilySpec
 from ptk.sim.ledger import CASH
 from ptk.sim.people.founder import FounderSpec
 
@@ -79,6 +83,10 @@ _STATUS: dict[type[SimError], int] = {
     CriticalEventOpenError: 409,
     # PT-M3b: billing
     BillingActionError: 409,
+    # PT-M17: the founder's life, family and succession
+    FounderLifeError: 409,
+    FamilyError: 409,
+    SuccessionError: 409,
 }
 
 
@@ -126,6 +134,9 @@ class NewGameIn(BaseModel):
     difficulty: str = "standard"
     seed: int | None = Field(default=None, ge=0, le=2**64 - 1)
     background: str | None = None  # the founding partner's; None = the scenario's default
+    founder_age: int | None = None  # PT-M17: the founding partner's age (founder.age_range)
+    family: Literal["none", "partner", "children"] = "none"  # PT-M17 (TST 45.1)
+    child_ages: list[int] = Field(default_factory=list)  # with "children": each child's age
 
 
 class HolidayIn(BaseModel):
@@ -152,9 +163,20 @@ class GameOut(BaseModel):
     turn: int
     date_label: str
     cash_cents: int
-    game_state: Literal["active", "campaign_complete", "dissolved"]
+    game_state: Literal["active", "campaign_complete", "dissolved", "election_lost"]
     turns_in_campaign: int
     blocking_event_id: int | None  # PT-M6: a critical event to answer before Continue
+
+
+def _founder_spec(body: NewGameIn) -> FounderSpec | None:
+    """The founding partner as chosen (PT-M17 adds the age); None: the scenario's default."""
+    if body.background is None and body.founder_age is None:
+        return None
+    scenario = loader.game_data().scenario(body.scenario_id)
+    background = body.background or (scenario.default_background if scenario else "")
+    if body.founder_age is None:
+        return FounderSpec(background=background)
+    return FounderSpec(background=background, age=body.founder_age)
 
 
 def _game(slug: str) -> GameOut:
@@ -229,7 +251,10 @@ def create_app() -> FastAPI:
             data=loader.game_data(),
             balance=loader.balance(),
             seed=body.seed,
-            founder=FounderSpec(background=body.background) if body.background else None,
+            founder=_founder_spec(body),
+            family=FamilySpec(body.family, tuple(body.child_ages))
+            if body.family != "none"
+            else None,
         )
         return _game(body.slug)
 

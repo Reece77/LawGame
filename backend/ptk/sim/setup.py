@@ -12,6 +12,7 @@ from dataclasses import dataclass, replace
 
 from ptk.sim.data_models import Balance, GameData, Scenario
 from ptk.sim.errors import UnknownDifficultyError, UnknownScenarioError
+from ptk.sim.family.setup import FamilySpec, start_family
 from ptk.sim.hiring.phases import starting_pay
 from ptk.sim.ledger import CASH, PARTNERS_CAPITAL, LedgerEntry
 from ptk.sim.matters.setup import new_market
@@ -48,6 +49,7 @@ def new_game(
     balance: Balance,
     founder: FounderSpec | None = None,
     real_people: bool | None = None,
+    family: FamilySpec | None = None,
 ) -> NewGame:
     scenario = data.scenario(scenario_id)
     if scenario is None or not scenario.available:
@@ -94,6 +96,8 @@ def new_game(
     state = replace(
         state, partnership=founding_partnership(state, firm.id, capital, scenario, balance)
     )
+    if family is not None:  # PT-M17: the player's family (default none: no record)
+        state = start_family(state, family, RngFactory(master_seed), balance, data)
     entries: tuple[LedgerEntry, ...] = ()
     if capital:
         entries = (

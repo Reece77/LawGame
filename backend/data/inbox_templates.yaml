@@ -207,9 +207,6 @@ templates:
   seat_vacated:
     title: "The {seat} seat is vacant"
     body: "Nobody holds the {seat} seat. A vacant seat from its stage counts against the firm until it is filled."
-  seat_decision:
-    title: "{name} ({seat}): {what}"
-    body: "{detail}"
   pitch:
     title: "{name} pitches: {what}"
     body: "{detail}"

@@ -950,7 +950,7 @@ authority: # PT-M8: seat holders with authority act in phase 2 (TST formulas.md 
   hire_step: 2 # people a PGL's hiring plan asks for at once (one fewer on a mistake)
   plan_ratio_bp: 10000 # a seat's hiring plans offer this share of the candidate's ask
 pitches: # PT-M8: big moves seat holders pitch each quarter (TST formulas.md 27.1)
-  base: 0.35 # P(pitch this quarter) = clamp(base + per_ambition x (ambition - 10), chance_clamp), true ambition
+  base: 0.45 # P(pitch this quarter) = clamp(base + per_ambition x (ambition - 10), chance_clamp), true ambition
   per_ambition: 0.02
   chance_clamp: [0.05, 0.9]
   record_months: 24 # months after approval a pitch is scored hit or miss against its central case

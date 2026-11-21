@@ -95,6 +95,11 @@ Files copied or ported from Tech Startup Tycoon (`Reece77/Tech_Executive_Tycoon`
 | `backend/tests/balance/test_state_cache.py` | `backend/tests/balance/test_m30_state_cache.py` | ported | — |
 | `backend/ptk/sim/partnership/governance.py` | `backend/tst/sim/finance/board.py` | ported | — |
 | `backend/ptk/sim/partnership/formulas.py` | `backend/tst/sim/finance/formulas.py` | ported | — |
+| `backend/ptk/sim/org/seats.py` | `backend/tst/sim/org/executives.py` | ported | — |
+| `backend/ptk/sim/org/seat_models.py` | `backend/tst/sim/org/models.py` | ported | — |
+| `backend/ptk/sim/org/authority.py` | `backend/tst/sim/org/authority.py` | ported | — |
+| `backend/ptk/sim/org/pitches.py` | `backend/tst/sim/org/pitches.py` | ported | — |
+| `backend/ptk/sim/org/reports.py` | `backend/tst/sim/org/reports.py` | ported | — |
 
 Changes in ported files:
 
@@ -169,3 +174,10 @@ PT-M7 (balance and v1 close) ported TST's balance runner framework from upstream
 - `.github/workflows/nightly.yml`: two parts (`make balance`, `make nightly`), no shards; the changed-main skip as TST's.
 - `backend/ptk/balance/state_cache.py` and `backend/tests/balance/test_state_cache.py`: TST M30's state cache (PT-M0 deferred it): Partner Track's strategies (steady, pyramid, boutique), 132 turns, its loader and fixture (`tests/fixtures/state_hashes.json`); the Digester and the fixture format as TST's.
 - Holiday was ported in PT-M7a (`backend/ptk/holiday.py`, TST 17.1's stop reasons; synchronous, see its brief).
+
+PT-M8 (seats, authority and pitches) ported TST's executives from upstream commit **`121d318aa2aa413ea21b90871482ce8cb1f4032b`** (2026-11-19, TST at M44), not the commit above: each file's header names it and what changed.
+- `backend/ptk/sim/org/seats.py` (from `org/executives.py` and the seat functions of `org/formulas.py`): seats from `seats.yaml` with a stage each; partner and business-services eligibility; the MP's seat is the partnership's MP and a practice group leader's is PT-M2's unit leader; the executive committee's slots and mean effect; appointing moves a partner holder's confidence by ambition (no exec salary); appoint, authority and exco-term actions.
+- `backend/ptk/sim/org/seat_models.py` (the seat, authority, decision and pitch records of `org/models.py`): slots; Partner Track's pitch kinds with integer cases; the firm's committee mode; one `LeadershipState`.
+- `backend/ptk/sim/org/authority.py` (from `org/authority.py`): Partner Track's seat rules through the player's actions; its own energy budget; stream `seat_act` (45) keyed (seat index, firm, slot); spec 9.4's one-offs refused.
+- `backend/ptk/sim/org/pitches.py` (from `org/pitches.py`): Partner Track's kinds; stream `pitch` (46) keyed (firm, person); the committee's effect on quality; no Holiday auto-approval; follow-through against the central case.
+- `backend/ptk/sim/org/reports.py` (from `org/reports.py` and `org/voices.py`): reports through PT-M6's read-only texts; the voice from revealed traits and tags; the partners' meeting and the committee's December.

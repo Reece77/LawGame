@@ -240,3 +240,13 @@ Rival firms are current state in one JSON document, rewritten each turn and afte
 | `client` | row `id` 0 | | The pro bono client (`PRO_BONO_CLIENT`): pro bono matters reference it; it is never loaded into the client universe (no wallet, panel or relationship) |
 
 `matter.data_json` gains `assessment` (PT-M7a, early case assessment: `[turn, lo, hi]`, the revealed range of the case's merits in logit points, always holding the hidden `merits`; null until assessed). A pro bono matter has `client_id` 0 and `expected_fees_cents` 0. `hours_log` rows for pro bono work have `client_id` 0 and `value_cents` 0: they post no WIP and are not billable (utilisation is billable hours over capacity). `inbox_item` gains templates `rates_rose`, `case_assessed` and `pro_bono_opened`.
+
+## Schema v11 (`0011_leadership`, PT-M8)
+
+| Table | Column | Type | Meaning |
+| --- | --- | --- | --- |
+| `leadership` | `id` | int, pk | Always 1 |
+| | `data_json` | text | `ptk.sim.org.seat_models.LeadershipState` as JSON: `holders` (firm, seat key, slot, person, appointed turn: 0 for a single seat, 1..9 for an executive committee member), `authorities` (firm, seat, slot, enabled, guardrails as `[key, value]` pairs; slot is a practice group's unit id for its leader), `decisions` (the last `authority.keep_decision_turns` months of what holders did under authority, with an engine-only mistake flag the API never shows), `pitches` (id, firm, seat, slot, holder, kind, title, why, made turn, cost, low/central/high cases in the kind's unit, params, status, resolved turn, follow-through baseline, outcome, measured), `firms` (the executive committee's `exco_elected` term, a proposed term awaiting the December vote, the last partners' meeting) and `next_pitch_id` |
+
+A practice group leader's seat is the unit's leader (`org_unit.leader_id`, PT-M2): it is not copied into `leadership`, so PT-M2's existing leaders are the holders. The managing partner's seat is the partnership's MP. `decision_log` gains `source` `seat` rows (a `SeatDecision` as JSON), recomputed on replay. `llm_text.kind` gains `seat_report` (`ref_id`: the holder). `inbox_item` gains templates `seat_appointed`, `seat_vacated`, `pitch`, `pitch_answered`, `pitch_lapsed`, `pitch_scored`, `partners_meeting`, `exco_term` and `exco_elected`, and link kinds `org` and `pitch`.
+

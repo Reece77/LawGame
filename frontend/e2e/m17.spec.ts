@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { continueMonth } from './helpers';
+import { continueMonth } from './helpers.js';
 
 // PT-M17: retire the founder at 65 with a successor elected, and play on as the successor.
 // A test-only route (PTK_DEBUG_ROUTES=1) makes the founder turn 65 in the first month, so

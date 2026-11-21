@@ -117,6 +117,7 @@ class _Run:
         # PT-M7b: the crisis's discounts and write-down requests (spec 14)
         self.crisis = crisis_stress(state.turn, state.save_meta.start_ym, data, balance)
         self.ym = turn_to_ym(state.turn, state.save_meta.start_ym)
+        self.factors: dict[int, float] = {}
         self.eng: dict[int, Engagement] = {
             e.matter_id: e for e in b.engagements if not e.closed and e.firm_id == firm_id
         }
@@ -158,10 +159,18 @@ class _Run:
         """PT-M7b: the crisis discount a client asks on new work this month (bp)."""
         if self.crisis <= 0:
             return 0
-        c = self.client(client_id)
         cfg = self.balance.macro.crisis
-        factor = crisis_factor(c.price_sensitivity, c.sector, self.ym, self.data, self.balance)
+        factor = self.crisis_factor(client_id)
         return min(cfg.discount_max_bp, round(cfg.discount_bp * self.crisis * factor))
+
+    def crisis_factor(self, client_id: int) -> float:
+        """The client's crisis factor this month (memoised: it reads every practice's index)."""
+        if client_id not in self.factors:
+            c = self.client(client_id)
+            self.factors[client_id] = crisis_factor(
+                c.price_sensitivity, c.sector, self.ym, self.data, self.balance
+            )
+        return self.factors[client_id]
 
     def discount_bp(self, client_id: int) -> int:
         """The client's discount plus the crisis's (PT-M7b), never above the whole fee."""
@@ -173,9 +182,8 @@ class _Run:
         `crisis`, keyed by (kind, id): two draws, whether it asks and how much)."""
         if self.crisis <= 0 or fee <= 0:
             return 0
-        c = self.client(client_id)
         cfg = self.balance.macro.crisis
-        factor = crisis_factor(c.price_sensitivity, c.sector, self.ym, self.data, self.balance)
+        factor = self.crisis_factor(client_id)
         gen = self.rng.stream(self.turn, "crisis", *key)
         ask, size = (float(x) for x in gen.random(2))
         if ask >= cfg.ask_bp / BP_DENOMINATOR * self.crisis * factor:

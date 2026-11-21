@@ -547,10 +547,10 @@ class FirmPoliciesOut(BaseModel):
     rate_index_bp: int  # the firm's card against 2005's (10000 = the 2005 card)
     market_index_bp: int
     # PT-M7b: the hours policy, a firm-wide billable target (hours a year); None: the levels'
-    billable_target_hours: int | None = None
-    billable_target_min_hours: int = 0
-    billable_target_max_hours: int = 0
-    associate_target_hours: int = 0  # the levels' default for an associate (shown beside it)
+    billable_target_hours: int | None
+    billable_target_min_hours: int
+    billable_target_max_hours: int
+    associate_target_hours: int  # the levels' default for an associate (shown beside it)
 
 
 class ProBonoCreditIn(BaseModel):

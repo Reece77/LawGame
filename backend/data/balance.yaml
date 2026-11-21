@@ -856,7 +856,7 @@ partnership: # PT-M4: capital, draws, comp, PEP, votes, confidence, elections, l
     book_range_bp: 5000 # the book is shown within +-this share before diligence
     diligence_range_bp: 1500 # and +-this after
     diligence_cost_cents: 2000000 # $20,000 of professional fees (6600)
-    comp_of_book_bp: 3500 # their comp demand: bp of their book
+    comp_of_book_bp: 2500 # their comp demand: bp of their book; PT-M7b tuning 3500 -> 2500 (T9: the rocket dissolved on 8 of 10 seeds at 3500, its guarantees ate the book before it arrived)
     notice_premium_bp: 300 # bp more demand per month of the agreement's notice period
     guarantee_years: [0, 3] # years of guarantee they ask for, uniform
     shelf_turns: 3 # months a lateral candidate stays open
@@ -910,16 +910,16 @@ rates: # PT-M7a: the firm's yearly rate rise over the practices' 2005 cards; the
   rise_max_bp: 2000 # or raise them up to 20%
   month: 1 # calendar month the rise takes effect (January)
   card: # PT-M7b: a new firm's card by practice, a share of the top 2005 card (practices.yaml), times the rate index
-    start_bp: 6500 # bp: a new firm starts every practice at 65% of the top card
+    start_bp: 9850 # bp: a new firm starts every practice at this share of the top card; PT-M7b tuning 6500 -> 9850 (T5: at 6500 steady dissolved on 9 of 10 seeds in its first year, 8500: 4, 9000: 3, 9500: 1; PT-M4's exodus guard: 3 of 10 heeded firms dissolved at 9500, 2 at 9750, 1 at 9850)
     full_reputation: 0.95 # reputation 0-1 (matters.market.firm_reputation) at which the target share is 100%
     curve: 2.0 # exponent: target = start + (100% - start) x min(1, reputation / full_reputation)^curve
-    step_bp: 250 # bp: the most a practice's share moves toward its target each January (a reputation is earned over years)
+    step_bp: 50 # bp: the most a practice's share moves toward its target each January (a reputation is earned over years); PT-M7b tuning 250 -> 50
 macro: # PT-M7: how macro_history.yaml's indices act on the firm (ptk/sim/macro.py; spec 6, 14)
   beta_scale: 1.3 # multiplier on every practice's demand beta (T8's tuning key); PT-M7 tuning 1.0 -> 1.3 (T1, T8)
   demand_floor: 0.25 # a practice's driver term never falls below 25% of its base
   collections_weight: 1.0 # days to pay x (1 + w (collections index - 1))
   lateral_heat_weight: 1.0 # associate resignations and partners' market value x (1 + w (heat - 1))
-  estate_mult: 25.0 # a bankrupt real client's restructuring wallet weight x this while its estate runs
+  estate_mult: 15.0 # PT-M7b tuning 25 -> 15 (T8 restructuring); a bankrupt real client's restructuring wallet weight x this while its estate runs
   estate_months: 24 # months a bankrupt client's estate instructs restructuring work, then its wallet ends
   rescue_months: 3 # months a rescued client's wallet runs on after the rescue (the deal closing), then ends
   crisis: # PT-M7b (spec 14: 2008-2009 "rates frozen; clients demand discounts"): ptk/sim/macro.py crisis_stress
@@ -929,12 +929,12 @@ macro: # PT-M7: how macro_history.yaml's indices act on the firm (ptk/sim/macro.
     credit_full: 0.35 # and is 1 here
     sector_weight: 1.0 # a client's factor x (1 + w x its sector's shortfall: its mix-weighted pro-cyclical indices below 1)
     sensitivity_neutral: 10.0 # 1-20: price sensitivity at which a client's factor is 1 (factor = sensitivity / this)
-    discount_bp: 1200 # bp off a new engagement (and a month's flow bill) at stress 1, factor 1
+    discount_bp: 1000 # bp off a new engagement (and a month's flow bill) at stress 1, factor 1; PT-M7b tuning 1200 -> 1000 (T8 corporate -10.8%; at 1200 with collapses, pyramid and steady died in the crash)
     discount_max_bp: 2500 # bp: the most a crisis discount reaches
-    ask_bp: 3000 # bp: a bill's chance of a write-down request at stress 1, factor 1 (stream crisis)
+    ask_bp: 2500 # bp: a bill's chance of a write-down request at stress 1, factor 1 (stream crisis); PT-M7b tuning 3000 -> 2500
     writedown_bp: [500, 2000] # bp of the bill a request writes down, uniform
-    collapse_month_bp: 2500 # bp a month: an open deal's collapse chance per unit of its driver's shortfall below 1 (stream deal_collapse)
-    close_k: 2.0 # logit points off a deal's p_close per unit of its driver's shortfall below 1
+    collapse_month_bp: 300 # bp a month: an open deal's collapse chance per unit of its driver's shortfall below 1 (stream deal_collapse); PT-M7b tuning 2500 -> 300 (at 1250-2500 pyramid and steady died in the crash on most seeds)
+    close_k: 0.3 # logit points off a deal's p_close per unit of its driver's shortfall below 1; PT-M7b tuning 2.0 -> 0.3
 holiday: # PT-M7a, spec 4.2: Holiday and continue-until
   max_months: 36 # most months one holiday plays
   default_months: 6 # months the Holiday control offers

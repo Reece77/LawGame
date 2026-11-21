@@ -22,6 +22,7 @@ from ptk.sim.partnership.actions import (
 from ptk.sim.partnership.governance import predicted
 from ptk.sim.partnership.models import FirmPartnership, with_partner
 from ptk.sim.state import with_firm, with_people
+from tests.matters_support import solvent
 from tests.partnership_support import Game, add_partner, start
 
 
@@ -211,7 +212,9 @@ def _with_term(g: Game, *, ambition: float = 20.0, turns: int = 1) -> int:
 
 
 def test_losing_an_election_never_ends_a_standard_game(data: GameData, balance: Balance) -> None:
-    g = start(data, balance, 13)
+    # PT-M7b: solvent, because it tests the election, not survival (an untouched group lift
+    # at a new firm's card can dissolve within the year, Reece's decision 3 on PT-M7)
+    g = start(data, solvent(balance), 13)
     for i in range(3):
         add_partner(g, "corporate_ma", 40_000_000, n=i)
     rival = _with_term(g)

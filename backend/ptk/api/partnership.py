@@ -198,7 +198,7 @@ class RevolverOut(BaseModel):
     breach_months: int
     called: bool
     covenants: list[CovenantOut]
-    forecast: ForecastOut | None = None  # PT-M7b: None while the trend breaks no covenant
+    forecast: ForecastOut | None  # PT-M7b: None while the trend breaks no covenant
 
 
 class PepExplainOut(BaseModel):

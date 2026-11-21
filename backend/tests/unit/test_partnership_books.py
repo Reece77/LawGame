@@ -177,6 +177,8 @@ def test_covenants() -> None:
         cure_months=3,
         call_months=3,
         warning_headroom_bp=2000,
+        forecast_months=6,  # PT-M7b: the CFO's forecast (not read by the covenants)
+        forecast_window=6,
     )
     assert fx.covenants(0, 10, 0, 0, cfg) == ()
     lev, cap, dep = fx.covenants(1_000, 10_000, 600, 1_000, cfg)

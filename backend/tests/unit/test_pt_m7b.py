@@ -139,17 +139,19 @@ def test_hard_and_easy_scale_books_revolver_loyalty_and_card(
         fp, fp0 = s.partnership.firms[0], std.partnership.firms[0]
         assert fp.facility_cents == round(fp0.facility_cents * lv[d].revolver_mult_bp / 10000)
         card = start_card_bp(d, data, balance)
-        assert card == round(balance.rates.card.start_bp * lv[d].card_mult_bp / 10000)
+        assert card == min(10000, round(balance.rates.card.start_bp * lv[d].card_mult_bp / 10000))
         assert dict(s.player.rate_card)["ip"] == card
     assert lv["standard"].books_mult_bp == lv["standard"].revolver_mult_bp == 10000
     assert lv["standard"].loyalty_points == 0 and lv["standard"].card_mult_bp == 10000
-    # starting relationships carry the difficulty's loyalty points (same draws, shifted)
-    std_scores = {r.client_id: r.score for r in std.market.relationships}
-    hard_scores = {r.client_id: r.score for r in hard.market.relationships}
-    shared = set(std_scores) & set(hard_scores)
-    assert shared
-    for cid in shared:
-        assert hard_scores[cid] == pytest.approx(std_scores[cid] + lv["hard"].loyalty_points)
+    # starting relationships carry the difficulty's loyalty points: each is drawn in the
+    # books' range and shifted (the books' size changes which clients are drawn)
+    lo, hi = balance.books.start_relationship.lo, balance.books.start_relationship.hi
+    for s, d in ((std, "standard"), (hard, "hard"), (easy, "easy")):
+        pts = lv[d].loyalty_points
+        scores = [r.score for r in s.market.relationships]
+        assert scores
+        assert all(lo + pts - 1e-9 <= x <= hi + pts + 1e-9 for x in scores)
+    assert lv["hard"].loyalty_points < 0 < lv["easy"].loyalty_points
 
 
 def test_difficulty_fields_are_validated_at_load() -> None:

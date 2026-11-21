@@ -23,7 +23,7 @@ PYRAMID_HOURS: Final = (
     175  # hours a month planned for each associate: 2,100 a year (docs/balance-targets.md)
 )
 # PT-M7b: pyramid's hours policy, a firm-wide billable target (the brief's 2,300-2,400)
-PYRAMID_POLICY_HOURS: Final = 2400
+PYRAMID_POLICY_HOURS: Final = 2300
 CORPORATE: Final = "corporate_ma"
 LITIGATION: Final = "commercial_litigation"
 # The order steady adds practices in (one at each 30 lawyers): cross-sell from M&A first.

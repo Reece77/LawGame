@@ -36,6 +36,12 @@ def _new(save_dir: Path, data: GameData, slug: str = "t", seed: int = 7) -> Path
 def test_full_campaign_ends_in_december_2034(
     save_dir: Path, data: GameData, balance: Balance
 ) -> None:
+    # PT-M16: this test is about the campaign's end and the save's books, not survival; the
+    # untouched seed-7 firm now dissolves in 2025, so it runs with insolvency switched off
+    # (PT-M4's pattern, as PT-M1b's round trip does)
+    from tests.matters_support import solvent
+
+    balance = solvent(balance)
     path = _new(save_dir, data)
     for turn in range(balance.campaign.standard_turns):
         state, _ = saves.read_state(path)  # a cold reload every month

@@ -11,6 +11,10 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field, replace
 
+from ptk.sim.automation import digest as auto_digest
+from ptk.sim.automation import events as auto_events
+from ptk.sim.automation.models import AreaDecision
+from ptk.sim.automation.run import automation_month, seat_masks
 from ptk.sim.billing.kpis import firm_snapshot
 from ptk.sim.billing.models import ClientBookEntry
 from ptk.sim.billing.phase import billing_month
@@ -56,6 +60,7 @@ class TurnResult:
     rival_moves: tuple[RivalMove, ...] = ()  # rival decisions, recomputed on replay (PT-M5)
     seat_decisions: tuple[SeatDecision, ...] = ()  # PT-M8: recomputed on replay (ADR-0015)
     personal_book: tuple[PersonalEntry, ...] = ()  # the players' personal books (PT-M17)
+    area_decisions: tuple[AreaDecision, ...] = ()  # PT-M9: recomputed on replay (ADR-0015)
 
 
 @dataclass(frozen=True, slots=True)
@@ -83,6 +88,7 @@ class TurnContext:
     rival_moves: tuple[RivalMove, ...] = ()  # PT-M5
     seat_decisions: tuple[SeatDecision, ...] = ()  # PT-M8
     personal_book: tuple[PersonalEntry, ...] = ()  # PT-M17: the personal books' entries
+    area_decisions: tuple[AreaDecision, ...] = ()  # PT-M9
 
     def take(self, done: rival_phase.Phase) -> TurnContext:
         """Take a rivals phase's results (PT-M5)."""
@@ -109,9 +115,14 @@ type Phase = Callable[[TurnContext], TurnContext]
 
 
 def apply_player_decisions(ctx: TurnContext) -> TurnContext:
-    """1. Last month's unanswered events take their first choice (PT-M6); notices end;
+    """1. Automated areas' owners answer their routine events (PT-M9); last month's other
+    unanswered events take their first choice (PT-M6); notices end;
     offers resolve; a signed campus class starts (PT-M1b); votes held this month count
     and lateral partners answer offers (PT-M4)."""
+    state, routine, routine_log = auto_events.answer_routine_events(
+        ctx.state, ctx.rng, ctx.balance, ctx.data
+    )  # PT-M9
+    ctx = replace(ctx, state=state).post(*routine).log(*routine_log)
     state, answered, answer_log = effects.auto_resolve(
         ctx.state, ctx.balance, ctx.data, critical=ctx.answer_critical
     )
@@ -127,11 +138,15 @@ def apply_player_decisions(ctx: TurnContext) -> TurnContext:
 
 def delegate_and_rival_decisions(ctx: TurnContext) -> TurnContext:
     """2. Seat holders with authority act and pitch, the MP's seat moves confidence (PT-M8);
-    delegates run their hiring plans (ADR-0015, PT-M2); automated areas (v2) and rival
-    firms (PT-M5) decide."""
-    seats = phase_two(ctx.state, ctx.rng, ctx.balance, ctx.data, ctx.balances)
+    automated areas decide (PT-M9: a seat whose area is automated runs its rule once, as the
+    area); delegates run their hiring plans (ADR-0015, PT-M2); rival firms (PT-M5) decide."""
+    masked = seat_masks(ctx.state, ctx.balance)
+    seats = phase_two(ctx.state, ctx.rng, ctx.balance, ctx.data, ctx.balances, masked)
     ctx = replace(ctx, state=seats.state, seat_decisions=ctx.seat_decisions + seats.decisions)
     ctx = ctx.post(*seats.entries).log(*seats.log)
+    auto = automation_month(ctx.state, ctx.rng, ctx.balance, ctx.data, ctx.balances)  # PT-M9
+    ctx = replace(ctx, state=auto.state, area_decisions=ctx.area_decisions + auto.decisions)
+    ctx = ctx.post(*auto.entries).log(*auto.log)
     state, entries, logs, taken = run_delegates(
         ctx.state, ctx.rng, ctx.balance, ctx.data, ctx.balances, ctx.hiring_hook
     )
@@ -239,7 +254,7 @@ def snapshot_and_month_end_report(ctx: TurnContext) -> TurnContext:
 def event_director_requests(ctx: TurnContext) -> TurnContext:
     """12. Candidates leave; lateral batches, the campus pools and the summer programme
     (PT-M1b); modifiers expire, colleagues' relationships move, then events for next month
-    and this month's read-only texts (PT-M6)."""
+    and this month's read-only texts (PT-M6); the automation digest (PT-M9)."""
     state = hiring.expire_candidates(ctx.state)
     state, batches = hiring.lateral_batches(state, ctx.rng, ctx.balance, ctx.data)
     state, pools = hiring.campus_pools(state, ctx.rng, ctx.balance, ctx.data)
@@ -253,13 +268,15 @@ def event_director_requests(ctx: TurnContext) -> TurnContext:
     texts = director.text_requests(state, ctx.balance)
     seats = phase_twelve(state, ctx.balance, ctx.data)  # PT-M8: committee, meeting, reports
     state, texts = seats.state, texts + seats.texts
+    digest = auto_digest.digest_item(state, ctx.turn, ctx.balance, ctx.data)  # PT-M9
+    month_end = (*seats.log, digest) if digest is not None else seats.log
     ctx = replace(
         ctx,
         state=state,
         event_requests=ctx.event_requests + requests,
         text_requests=ctx.text_requests + texts,
     )
-    return ctx.log(*batches, *pools, *seats.log)
+    return ctx.log(*batches, *pools, *month_end)
 
 
 PHASES: tuple[tuple[str, Phase], ...] = (
@@ -344,4 +361,5 @@ def advance_turn(
         rival_moves=ctx.rival_moves,
         seat_decisions=ctx.seat_decisions,
         personal_book=ctx.personal_book,
+        area_decisions=ctx.area_decisions,
     )

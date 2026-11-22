@@ -11,6 +11,7 @@ from pathlib import Path
 from sqlalchemy import func, select
 
 from ptk.db import backup, migrate
+from ptk.db.automation_io import write_area_decisions, write_automation
 from ptk.db.billing_io import write_billing
 from ptk.db.events_io import add_text_requests, write_events, write_pending
 from ptk.db.founder_io import write_founder_life
@@ -159,6 +160,7 @@ def run_turn(
         write_delegate_actions(session, state.turn, result.delegate_actions)
         write_rival_moves(session, state.turn, result.rival_moves)  # PT-M5
         write_seat_decisions(session, state.turn, result.seat_decisions)  # PT-M8
+        write_area_decisions(session, state.turn, result.area_decisions)  # PT-M9
         add_text_requests(session, result.text_requests)
     write_pending(path, balance, data, adapter=adapter)
     if result.new_state.turn % balance.backups.every_turns == 0:
@@ -199,6 +201,7 @@ def run_action(path: Path, action: Action, balance: Balance, data: GameData) -> 
         write_partnership(session, outcome.state.partnership)
         write_org(session, outcome.state)  # PT-M8: a group leader's seat is the unit's leader
         write_leadership(session, outcome.state.leadership)  # PT-M8
+        write_automation(session, outcome.state.automation)  # PT-M9
         write_founder_life(session, outcome.state.founder_life, outcome.state.family)  # PT-M17
         session.add(
             DecisionLogRow(

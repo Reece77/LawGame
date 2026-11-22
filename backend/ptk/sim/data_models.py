@@ -6,6 +6,7 @@ from typing import Final, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from ptk.sim.automation.config import AutomationBalance
 from ptk.sim.events.data import (
     ColleaguesBalance,
     EventsBalance,
@@ -1247,6 +1248,7 @@ class Balance(_Strict):
     founder_life: FounderLifeBalance  # PT-M17
     family: FamilyBalance  # PT-M17
     succession: SuccessionBalance  # PT-M17
+    automation: AutomationBalance  # PT-M9 (ptk.sim.automation.config)
 
 
 # --- People seed data (PT-M1a) ------------------------------------------------------------

@@ -1190,3 +1190,143 @@ succession: # PT-M17: spec 2.5, TST 45.5; ADR PT-0007 3
   adviser_oppose: 2 # confidence points when a vote the senior partner opposed passes
   adviser_memory: 20 # opinions kept
   risky_votes: [capital_call, terms] # votes a bold senior partner backs
+automation: # PT-M9: automation everywhere (spec 9.4; TST formulas.md 40)
+  change_energy: 2 # the MP's energy points to give an area or take it back (TST 40.1)
+  owner_energy: 100 # workload points an owner has a month for their areas (TST 40.3)
+  action_energy: 40 # energy points an owner's area has for its actions each month; the owner's own energy is left as it was
+  overload_per_energy: 0.004 # q falls by this for each workload point an owner's areas cost beyond owner_energy (the brief: overload lowers q)
+  overload_floor: 0.3 # q never falls below this from overload
+  quality: { base: 0.55, per_score: 0.03, min: 0.6, max: 0.98 } # P(the default rule's answer) = clamp(base + per_score x s), s the owner's TRUE seat score (spec 9.4)
+  mistake_noise: 0.3 # a mistake's noisy alternative: the rule's number x (1 +- up to this), within the guardrails
+  default_limit_bp: 200 # an area's default per-decision limit: bp of the firm's cash when given (TST 40.2)
+  min_limit_cents: 2500000 # and at least this ($25,000)
+  limit_round_cents: 1000000 # rounded down to this ($10,000)
+  monthly_limit_mult: 3 # the default monthly limit: this x the per-decision limit (TST 40.2)
+  commitment_months: 12 # a decision commits its cash cost over this many months plus its fixed obligations
+  proposal_months: 3 # an unanswered proposal expires (as declined) after this many months
+  repropose_months: 6 # an owner does not propose a declined or expired move again for this many months
+  keep_decision_turns: 24 # months of area decisions kept (the screen, the record, the digest)
+  near_limit_bp: 8000 # the digest flags a decision committing at least this share of its limit (bp)
+  take_back_morale: 2 # morale points a high-ego owner loses when an area is taken back soon after it was given (TST 40.1)
+  take_back_months: 6 # "soon": within this many months
+  high_ego: 15 # ego at or above which an owner minds
+  proposal_month: 11 # the development area proposes partnership candidates in this month, for December's vote
+  # Each area (spec 9.4's table; the order is the area index, stream auto_quality's key):
+  # label; rule; who (seat: the seat's holder owns it; partner: any partner but the MP);
+  # seat (seats.yaml); seat_rule (the area runs the seat's PT-M8 authority rule with the
+  # seat's guardrails, which are added to the area's own); available; energy (workload points
+  # a month); weights (s for a seatless owner); guardrails (key, label with its unit, default,
+  # min, max; integers); does (the screen's text).
+  areas:
+    staffing:
+      label: Staffing
+      rule: staffing
+      seat: practice_group_leader
+      seat_rule: true
+      energy: 20
+      does: "Opens associate hiring plans for the group when it runs hot, within a headcount cap; the firm's staffing rule allocates the group's work."
+    intake:
+      label: Intake and conflicts
+      rule: intake
+      seat: general_counsel
+      seat_rule: true
+      energy: 15
+      does: "Asks for waivers on held instructions; a waiver adverse to a key client comes to you."
+    billing:
+      label: Billing and collections
+      rule: billing
+      seat: cfo
+      seat_rule: true
+      energy: 20
+      guardrails:
+        - { key: revolver_months, label: "Keep the revolver under (months of fees)", default: 1, min: 0, max: 6 }
+      does: "Writes down long-unbilled time within a band and repays the revolver from spare cash."
+    pricing:
+      label: Pricing and rates
+      rule: pricing
+      seat: pricing_director
+      seat_rule: true
+      energy: 10
+      does: "Sets each January's rate rise within a band around the market's."
+    bd:
+      label: Business development
+      rule: bd
+      seat: cmo
+      seat_rule: true
+      energy: 25
+      guardrails:
+        - { key: intros_per_month, label: "Introductions a month", default: 1, min: 0, max: 5 }
+        - { key: min_relationship, label: "Introduce at clients with a relationship of at least", default: 50, min: 0, max: 100 }
+      does: "Pitches for open RFPs with the best team it can see and introduces colleagues to good clients."
+    hiring:
+      label: Associate hiring and campus
+      rule: hiring
+      seat: chro
+      seat_rule: true
+      energy: 25
+      guardrails:
+        - { key: busy_bp, label: "Hire laterals above this utilisation (bp)", default: 8000, min: 5000, max: 11000 }
+        - { key: lateral_step, label: "Lateral associates a plan asks for (people)", default: 2, min: 1, max: 10 }
+        - { key: pay_pct_bp, label: "Associate pay (bp of the market; above it comes to you)", default: 10000, min: 8000, max: 12000 }
+      does: "Registers campus classes, opens lateral associate plans when the firm is busy and keeps associate pay at the market."
+    development:
+      label: Associate development
+      rule: development
+      seat: chro
+      energy: 15
+      guardrails:
+        - { key: sponsors_per_month, label: "Sponsors assigned a month", default: 2, min: 0, max: 10 }
+        - { key: lawyers_per_equity, label: "Lawyers per equity partner (business case)", default: 4, min: 2, max: 20 }
+      does: "Finds sponsors for senior associates and proposes the partnership candidates the business case supports."
+    laterals:
+      label: Lateral partners
+      rule: laterals
+      seat: executive_committee
+      energy: 25
+      guardrails:
+        - { key: lawyers_per_practice, label: "A new practice for each (lawyers)", default: 30, min: 10, max: 200 }
+        - { key: leverage_x10, label: "Hire a partner above this leverage (associates a partner x 10)", default: 40, min: 10, max: 100 }
+        - { key: busy_bp, label: "and this utilisation (bp)", default: 8000, min: 5000, max: 11000 }
+        - { key: min_book_k, label: "Smallest book (low end, $k)", default: 1000, min: 0, max: 20000 }
+        - { key: guarantee_years, label: "Guaranteed years offered (a guarantee comes to you)", default: 0, min: 0, max: 3 }
+        - { key: cash_months, label: "Only with cash above (months of fees)", default: 2, min: 0, max: 12 }
+      does: "Screens and approaches lateral partners with books for new practices and leverage; every guarantee comes to you."
+    offices:
+      label: Offices and support
+      rule: offices
+      seat: coo
+      energy: 10
+      guardrails:
+        - { key: support_per_100, label: "Support staff per 100 lawyers (0: off)", default: 0, min: 0, max: 50 }
+      does: "Keeps business-services support at its level (fit-outs and leases come to you as pitches)."
+    knowledge:
+      label: Knowledge and AI
+      rule: knowledge
+      seat: cko
+      available: false
+      unavailable_reason: "arrives with knowledge and AI (PT-M14)"
+      energy: 15
+      does: "AI adoption within a budget and training (from PT-M14)."
+    risk:
+      label: Risk and claims
+      rule: risk
+      seat: general_counsel
+      energy: 5
+      does: "Keeps the conflict checks running (claims and insurance arrive with PT-M15)."
+    pro_bono:
+      label: Pro bono
+      rule: pro_bono
+      who: partner
+      energy: 10
+      weights: { leadership: 0.3, communication: 0.3, client_care: 0.2, supervision: 0.2 }
+      guardrails:
+        - { key: target_hours, label: "Pro bono hours a lawyer a year", default: 60, min: 0, max: 300 }
+        - { key: tolerance_pct, label: "Act when this far off (%)", default: 25, min: 5, max: 100 }
+        - { key: step_hours, label: "Credit step (hours a year)", default: 25, min: 5, max: 100 }
+      does: "Keeps pro bono hours at the policy level by moving the credit policy."
+    events:
+      label: Routine events
+      rule: events
+      seat: coo
+      energy: 10
+      does: "Answers routine events no other automated area answers; critical events always come to you."

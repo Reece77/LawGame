@@ -36,7 +36,9 @@ def test_a_month_of_decisions_is_seeded_and_respects_cooldowns(
 
 def test_history_happens_on_its_dates_without_the_player(data: GameData, balance: Balance) -> None:
     state = start(data, balance, 7)
-    state, results = play_until(state, data, balance, turn_of(state, 2015, 1), 7)
+    # PT-M10: history's dated events run to 2025 (the pin's end), so play past the last one
+    last = max(e.ym for e in data.rivals.firms.events)
+    state, results = play_until(state, data, balance, turn_of(state, last[0] + 1, 1), 7)
     status = {f.key: (f.status, f.ended_turn) for f in state.rivals.firms}
     for e in data.rivals.firms.events:
         when = turn_of(state, *e.ym)
@@ -51,6 +53,7 @@ def test_history_happens_on_its_dates_without_the_player(data: GameData, balance
             assert successor.founded_turn == when
     names = {f.key: f.name for f in state.rivals.firms}
     assert names["kl_gates"] == "K&L Gates" and names["hogan_hartson"] == "Hogan Lovells"
+    assert names["baker_mckenzie"] == "Baker McKenzie" and names["shearman"] == "A&O Shearman"
     # every month's rival ledger entries balance (ADR-0003) and post to rival firms only
     rival_ids = {f.id for f in state.rivals.firms}
     for r in results:

@@ -22,6 +22,8 @@ type Script = Callable[[Game], None]
 PYRAMID_HOURS: Final = (
     175  # hours a month planned for each associate: 2,100 a year (docs/balance-targets.md)
 )
+# PT-M7b: pyramid's hours policy, a firm-wide billable target (the brief's 2,300-2,400)
+PYRAMID_POLICY_HOURS: Final = 2300
 CORPORATE: Final = "corporate_ma"
 LITIGATION: Final = "commercial_litigation"
 # The order steady adds practices in (one at each 30 lawyers): cross-sell from M&A first.
@@ -115,6 +117,7 @@ def boutique(g: Game) -> None:
     mv.comp_system(g, "lockstep")
     mv.set_rates(g, _market_bp(g) + 100)
     mv.december_votes(g, 1 if g.ym[0] % 2 == 1 else 0)  # one partner every two years
+    mv.comp_round(g)  # PT-M7b: December's comp round (pure lockstep: no lever)
     practices = [CORPORATE, LITIGATION]
     lawyers = len(g.lawyers())
     leverage = mv.associates_per_partner(g)
@@ -138,6 +141,7 @@ def steady(g: Game, adds: tuple[str, ...] = STEADY_ADDS) -> None:
     mv.comp_system(g, "modified_lockstep")
     mv.set_rates(g, None)
     mv.december_votes(g, _admissions(g, 4.0))  # December's vote first (its energy)
+    mv.comp_round(g)  # PT-M7b: December's comp round, the partners it would keep
     held = mv.practices_held(g)
     lawyers = len(g.lawyers())
     mv.practice_groups(g)
@@ -185,6 +189,7 @@ def lateral_rocket(g: Game, heeded: bool = False) -> None:
     mv.comp_system(g, "eat_what_you_kill")
     mv.set_rates(g, None)
     mv.december_votes(g, 1)
+    mv.comp_round(g)  # PT-M7b (eat what you kill: no lever)
     warned = heeded and mv.heed_warning(g)
     if not warned and mv.bank_quiet(g):
         for practice in [CORPORATE, LITIGATION, *STEADY_ADDS][: 2 + len(g.lawyers()) // 15]:
@@ -215,8 +220,10 @@ def pyramid(g: Game) -> None:
     held = mv.practices_held(g)
     lawyers = len(g.lawyers())
     mv.december_votes(g, max(1, lawyers // 15), track="income")
+    mv.comp_round(g)  # PT-M7b: December's comp round, the partners it would keep
     mv.practice_groups(g)
     _campus_split(g, held, max(3, lawyers // 6), delegated=True)
+    mv.hours_policy(g, PYRAMID_POLICY_HOURS)  # PT-M7b: the staffing rule plans toward it
     mv.push_hours(g, PYRAMID_HOURS)  # a 2,100-hour year's plan for every associate
     if mv.utilisation(g) >= 0.90 and mv.bank_quiet(g, cash_months=1.0):
         _grow(g, held, max(2, lawyers // 6))

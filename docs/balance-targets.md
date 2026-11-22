@@ -20,7 +20,7 @@
 | **boutique** | grow to 25 lawyers, leverage ≤ 2 | two practices, high rates, premium clients | conservative | pure lockstep; admit one partner every two years |
 | **steady** | grow while utilisation ≥ 80%; campus class each year | add a practice at each 30 lawyers; cross-sell | revolver ≤ 1 × monthly fees | modified lockstep; admit by business case |
 | **lateral rocket** | lateral partners whenever a book of $2M+ is available, with guarantees | follow laterals' books | revolver to its covenant limit | eat what you kill |
-| **pyramid** | leverage 5+, utilisation targets 2,100 hours | volume work, fixed fees | moderate | two-tier; few equity admissions |
+| **pyramid** | leverage 5+, utilisation targets 2,100 hours (PT-M7b: an hours policy of 2,300) | volume work, fixed fees | moderate | two-tier; few equity admissions |
 
 All strategies staff named matters by the default rule, bill monthly, accept the first settlement offer above the expected value and never de-equitise (except pyramid).
 
@@ -44,6 +44,8 @@ All strategies staff named matters by the default rule, bill monthly, accept the
 ## Known misses
 
 Recorded in `backend/ptk/balance/known_misses.py` by Reece's decision on PT-M7 (2026-11-21), each owned by PT-M7b (`docs/tasks/PT-M7b-pressure-and-balance.md`): T2, T3 (lawyers), T4 (steady and pyramid), T5 (standard and hard), T8, T9 and T10. T6's class reading (7.7% against 8%) is accepted as sampling noise.
+
+PT-M7b (2026-11-21) removed T5 (standard and hard), T9 (the rocket and the heeded rocket) and T10 (the ratio), which now pass on seeds 1-10, and carries T2, T3 (lawyers), T4 (steady and pyramid) and T8 (corporate and restructuring) with its readings back to Reece (the brief's "Decisions made").
 
 ## Measures (PT-M7)
 

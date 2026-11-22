@@ -190,3 +190,31 @@ def test_effect_is_always_in_range(values: list[float]) -> None:
     score = sum(w * v for (_, w), v in zip(seat.weights.items(), values, strict=True))
     assert 1.0 <= score <= 20.0
     assert -0.5 <= effect_of_score(score, b) <= 1.0
+
+
+def test_cfo_pricing_and_coo_effects(data: GameData, balance: Balance) -> None:
+    """PT-M8 after PT-M7b: the CFO's days to pay, the pricing director's discounts and the
+    COO's rent, each x e (spec 9.1); vacant from their stages counts -0.5."""
+    from ptk.sim.billing.phase import _Run
+    from ptk.sim.hiring.formulas import rent_cents
+    from ptk.sim.hiring.phases import _office_rent
+    from ptk.sim.rng import RngFactory
+
+    state = staged(data, balance, stage=3)
+    firm = state.player.id
+    fx = balance.seats.effects
+    run = _Run(state, firm, RngFactory(1), data, balance)
+    assert run.pay_factor == pytest.approx(1 + 0.5 * fx.cfo_collection)  # vacant CFO
+    assert run.discount_cut_bp == round(-10_000 * 0.5 * fx.pricing_realisation)
+    for role, seat in (("finance", "cfo"), ("finance", "pricing_director"), ("operations", "coo")):
+        state, pid = add_bs(state, data, balance, role, n=len(seat))
+        state = with_score(state, data, pid, seat, 18.0)  # e = 1
+        state = appoint(state, data, balance, seat, pid)
+    run = _Run(state, firm, RngFactory(1), data, balance)
+    assert run.pay_factor == pytest.approx(1 - fx.cfo_collection)
+    assert run.discount_cut_bp == round(10_000 * fx.pricing_realisation)
+    heads = len(state.staff(firm))
+    rent = rent_cents(heads, state.player.home_city, balance.pay)
+    assert _office_rent(state, firm, heads, balance, data) == round(rent * (1 - fx.coo_office))
+    early = with_firm(state, replace(state.player, stage=1))
+    assert _office_rent(early, firm, heads, balance, data) == rent

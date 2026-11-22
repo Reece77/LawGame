@@ -60,6 +60,7 @@ from ptk.sim.partnership.models import (
     with_capital_return,
     with_partner,
 )
+from ptk.sim.partnership.setup import revolver_floor
 from ptk.sim.state import GameState
 
 FINANCE: LinkKind = "finance"
@@ -182,7 +183,7 @@ def financing_month(
         # 0. each January the bank resets the facility to a share of last year's revenue
         if month == 1 and fp.last_revenue_cents:
             scenario = data.scenario(state.save_meta.scenario_id)
-            floor = scenario.revolver_limit_cents if scenario else 0
+            floor = revolver_floor(state.save_meta.difficulty, scenario, data) if scenario else 0
             sized = pct_of(
                 fp.last_revenue_cents, balance.partnership.revolver.facility_of_revenue_bp
             )

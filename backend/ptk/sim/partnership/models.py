@@ -240,6 +240,19 @@ class PnlPoint:
     costs_cents: int
     equity_partners: int
     lawyers: int
+    # PT-M7b: the month end's balances, for the CFO's forecast
+    drawn_cents: int = 0
+    capital_cents: int = 0
+    cash_cents: int = 0
+
+
+@dataclass(frozen=True, slots=True)
+class Forecast:
+    """PT-M7b: the CFO's projected covenant breach (spec 8.7)."""
+
+    covenant: str
+    months: int  # months from now the breach is projected
+    drawn_cents: int  # the projected drawn balance then
 
 
 @dataclass(frozen=True, slots=True)
@@ -277,6 +290,7 @@ class FirmPartnership:
     insolvent_months: int = 0
     draws_suspended: bool = False  # the MP has stopped draws
     last_warning_turn: int | None = None  # the CFO's last warning
+    last_forecast_turn: int | None = None  # PT-M7b: the CFO's last forecast warning
     term_ends_turn: int | None = None  # the MP's term (from stage 2)
     low_confidence_months: int = 0
     election_lost_turn: int | None = None  # the player lost an election and must choose

@@ -9,6 +9,7 @@ patience; TST's confidence label becomes the whip count's label and ranges."""
 
 from __future__ import annotations
 
+import itertools
 import math
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
@@ -21,6 +22,7 @@ from ptk.sim.data_models import (
     RevolverBalance,
 )
 from ptk.sim.money import BP_DENOMINATOR, pct_of, round_half_even
+from ptk.sim.partnership.models import Forecast, PnlPoint
 
 MONTHS_PER_YEAR = 12  # tunable-exempt: the calendar
 
@@ -362,3 +364,53 @@ def stage_for(lawyers: int, thresholds: Sequence[int]) -> int:
         if lawyers >= t:
             stage = i
     return stage
+
+
+def _slope(values: Sequence[float]) -> float:
+    """Least-squares slope a month of an evenly spaced series (0 for fewer than two)."""
+    n = len(values)
+    if n < 2:
+        return 0.0
+    mx = (n - 1) / 2
+    my = sum(values) / n
+    den = sum((i - mx) ** 2 for i in range(n))
+    return sum((i - mx) * (v - my) for i, v in enumerate(values)) / den
+
+
+def forecast_breach(
+    pnl: Sequence[PnlPoint], departed_books: int, cfg: RevolverBalance
+) -> Forecast | None:
+    """PT-M7b (spec 8.7): the first covenant the trailing trend breaks within
+    `forecast_months`, or None. Revenue: each month's fees follow their fitted trend, and the
+    trailing 12 months roll forward; the drawn balance follows the trend of drawn less cash (a
+    firm spends its cash before it draws); capital follows its own trend. A covenant breached
+    now is the headroom warning's, not the forecast's."""
+    if len(pnl) < cfg.forecast_window + 1:
+        return None
+    monthly = [b.revenue_cents - a.revenue_cents for a, b in itertools.pairwise(pnl)]
+    recent = pnl[-cfg.forecast_window :]
+    rev_slope = _slope(monthly[-cfg.forecast_window :])
+    debt_slope = _slope([p.drawn_cents - p.cash_cents for p in recent])
+    drawn_slope = _slope([float(p.drawn_cents) for p in recent])
+    cap_slope = _slope([float(p.capital_cents) for p in recent])
+    last = pnl[-1]
+    window = list(monthly[-MONTHS_PER_YEAR:])
+    if len(window) < MONTHS_PER_YEAR:
+        window = [0] * (MONTHS_PER_YEAR - len(window)) + window
+    now = covenants(last.drawn_cents, sum(window), last.capital_cents, departed_books, cfg)
+    if any(not t.holds for t in now):
+        return None
+    month_fee = float(monthly[-1])
+    for k in range(1, cfg.forecast_months + 1):
+        month_fee = max(0.0, month_fee + rev_slope)
+        window = [*window[1:], round(month_fee)]
+        drawn = max(
+            0,
+            round(last.drawn_cents + k * drawn_slope),
+            round(last.drawn_cents - last.cash_cents + k * debt_slope),
+        )
+        capital = round(last.capital_cents + k * cap_slope)
+        for t in covenants(drawn, sum(window), capital, departed_books, cfg):
+            if not t.holds:
+                return Forecast(covenant=t.name, months=k, drawn_cents=drawn)
+    return None

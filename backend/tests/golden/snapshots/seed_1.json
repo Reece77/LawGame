@@ -3,27 +3,27 @@
     [
       1,
       "1000_cash",
-      105172458
+      33932020
     ],
     [
       1,
       "1100_unbilled_wip",
-      125283526
+      189391245
     ],
     [
       1,
       "1110_wip_provision",
-      -57882252
+      -94420894
     ],
     [
       1,
       "1200_receivables",
-      19957377
+      36122
     ],
     [
       1,
       "1210_bad_debt_provision",
-      -199573
+      -362
     ],
     [
       1,
@@ -33,17 +33,17 @@
     [
       1,
       "2700_partner_current_accounts",
-      -18791938
+      46329772
     ],
     [
       1,
       "3000_partners_capital",
-      -86380520
+      -80261792
     ],
     [
       1,
       "3100_undistributed_profit",
-      5637989527
+      5410131213
     ],
     [
       1,
@@ -53,12 +53,12 @@
     [
       1,
       "4000_fees",
-      -6710772455
+      -6490209457
     ],
     [
       1,
       "4100_success_fees",
-      -28763684
+      -28332228
     ],
     [
       1,
@@ -98,12 +98,12 @@
     [
       1,
       "6700_write_offs",
-      9746246
+      10064800
     ],
     [
       1,
       "6900_general_admin",
-      280037946
+      278736219
     ],
     [
       101,
@@ -3301,15 +3301,15 @@
   "matter_outcomes": [
     [
       "closed",
-      12
+      11
     ],
     [
       "collapsed",
-      2
+      3
     ],
     [
       "done",
-      12
+      13
     ],
     [
       "lost",
@@ -3324,14 +3324,14 @@
       1
     ]
   ],
-  "matters": "a39e2b39271b438335c1b3ca7079a39864352401488ecb2bebb8ed39de298720",
+  "matters": "42e8dd0b6a60fcbe0138c3348785200785d025456371eb2368d7cb554b951323",
   "names": [
     "Jennifer King",
     "Kevin Carter",
     "Ashley Cook",
     "Whitney Brown"
   ],
-  "people": "8623fffa8d64abed717cba234fc7351f7ebb02eee57ab9c9ad2bd8800b17b109",
-  "relationships": "96f25d1639f6853c1d22c8ef2fd60edbdb02d7ab52640a8d64a131d91c23f2a8",
-  "sha256": "7549e6e650b7d52f318047ad203769f48a116164f00cd2c39261b6c47a1c9dd4"
+  "people": "ca4a1768c8df483a91fa877fea9a7bf9fd883837416715cda6ef20f680d44920",
+  "relationships": "72a0d5f3e4171899e2a987a03948b46c2677d63ddc155abc589e2c9566f57552",
+  "sha256": "702609983757634ae86c21d0a5a254d496056abc012746c30a089c8407ed5af6"
 }

@@ -82,7 +82,7 @@ seats:
     who: business_services
     slots: one
     weights: { finance: 0.45, strategy: 0.2, negotiation: 0.2, communication: 0.15 }
-    effect: "Collections improve (from PT-M7b's billing)."
+    effect: "Clients pay sooner: days to pay fall with a strong CFO."
     authority:
       does: "Writes down the time on long-unbilled matters, within a band."
       guardrails:
@@ -96,7 +96,7 @@ seats:
     who: business_services
     slots: one
     weights: { operations: 0.35, leadership: 0.25, strategy: 0.2, communication: 0.2 }
-    effect: "Support coverage and office costs (from PT-M7b)."
+    effect: "Office costs: rent per head falls with a strong COO."
     authority: { does: "Keeps the offices running; proposes fit-outs as pitches.", guardrails: [] }
     pitches: [fit_out]
   - key: cmo
@@ -132,7 +132,7 @@ seats:
     who: business_services
     slots: one
     weights: { pricing: 0.45, numeracy: 0.25, negotiation: 0.15, communication: 0.15 }
-    effect: "Realisation improves (from PT-M7b's billing)."
+    effect: "Realisation: smaller client discounts on new work."
     authority:
       does: "Sets each January's rate rise within a band around the market's."
       guardrails:

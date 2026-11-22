@@ -126,6 +126,9 @@ class SeatEffects(_Strict):
     cmo_pitch_points: float
     chro_morale: float
     chro_campus_points: float
+    cfo_collection: float
+    pricing_realisation: float
+    coo_office: float
 
 
 class SeatsBalance(_Strict):

@@ -241,7 +241,7 @@ Rival firms are current state in one JSON document, rewritten each turn and afte
 
 `matter.data_json` gains `assessment` (PT-M7a, early case assessment: `[turn, lo, hi]`, the revealed range of the case's merits in logit points, always holding the hidden `merits`; null until assessed). A pro bono matter has `client_id` 0 and `expected_fees_cents` 0. `hours_log` rows for pro bono work have `client_id` 0 and `value_cents` 0: they post no WIP and are not billable (utilisation is billable hours over capacity). `inbox_item` gains templates `rates_rose`, `case_assessed` and `pro_bono_opened`.
 
-## Schema v12 (`0012_leadership`, PT-M8)
+## Schema v13 (`0013_leadership`, PT-M8)
 
 | Table | Column | Type | Meaning |
 | --- | --- | --- | --- |
@@ -268,3 +268,12 @@ The founder's life and family are current state in two JSON documents, rewritten
 | | `amount_cents` | bigint | Debit positive, credit negative; each entry sums to zero |
 
 Ledger accounts first posted in PT-M17: 2600 (retired-partner annuities: booked against 3100 at retirement, paid monthly from 1000) and 6950 (bar politics). `employment.end_reason` `retired` (mandatory retirement through PT-M4's departure). `save_meta.game_state` may be `election_lost` when a forced succession's vote is lost on ironman. `inbox_item` gains templates `foundation_created`, `foundation_grants`, `bar_office_won`, `bar_office_lost`, `annuity_granted`, `annuity_vote`, `succession_due_retirement`, `succession_due_health`, `succession_elected`, `succession_lost`, `succession_handover`, `adviser_opinion`, `family_divorce`, `family_milestone`, `family_partner_met`, `family_married`, `family_child_born` and `family_joined_firm`.
+
+## Schema v12 (`0012_pressure`, PT-M7b)
+
+| Table | Column | Type | Meaning |
+| --- | --- | --- | --- |
+| `firm` | `rate_card` | text (JSON) | The firm's card by practice: `{practice: bp}`, its share of each practice's top 2005 card (`practices.yaml`). A new firm starts every practice at `rates.card.start_bp` times the difficulty's `card_mult_bp`; each January a practice moves at most `rates.card.step_bp` toward the share its reputation earns. A practice's hours, blended rates and new matters' fees are valued at the card times `rate_index`. `{}` (a save from before PT-M7b): every practice at the full card |
+| | `billable_target_hours` | int, null | The hours policy: a firm-wide billable target, hours a year (`staffing.policy_min_hours`-`policy_max_hours`); the default staffing rule and flow plan toward it, above `staffing.plan_fill` and up to `staffing.policy_fill_max` of capacity. Null: each level's `billable_target_hours` |
+
+`partnership.data_json` gains (PT-M7b): each `pnl` point's `drawn_cents`, `capital_cents` and `cash_cents` (the month end's revolver balance, partners' capital and cash: the CFO's forecast reads their trailing trend), and `last_forecast_turn` (the CFO's last forecast warning). `billing_month.data_json` gains `crisis_writedown_cents` (the month's write-downs from clients' crisis requests). Difficulty's new fields (`books_mult_bp`, `revolver_mult_bp`, `loyalty_points`, `card_mult_bp`) are read from `scenarios.yaml` by the save's `difficulty`; they are not stored. `inbox_item` gains template `cfo_forecast` (link kind `finance`).

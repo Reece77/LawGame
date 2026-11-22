@@ -218,7 +218,7 @@ practices:
     short_label: Restruct
     demand_cents: 70000000000 # $0.7bn [A] s4 row 5 (range $0.5-1.0bn): SDNY 790 Chapter 11 cases in 2005 [S]
     driver: default rate and distressed debt
-    beta: -1.2 # [spec] counter-cyclical
+    beta: -0.8 # [spec] counter-cyclical (-1.2); PT-M7b tuning -1.2 -> -0.8 (T8: restructuring-heavy firms grew +40-70% in 2009 at -1.2 with beta_scale 1.3)
     index: credit # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.10
     rates: { partner: 80000, counsel: 65500, senior: 57000, mid: 47000, junior: 30500, paralegal: 21000 } # partner $750-850 [D/A]

@@ -5,15 +5,27 @@ budget is the founders' books at the budget margin."""
 
 from __future__ import annotations
 
-from ptk.sim.data_models import Balance, Scenario
+from ptk.sim.data_models import Balance, GameData, Scenario
 from ptk.sim.money import pct_of
 from ptk.sim.partnership import formulas as fx
 from ptk.sim.partnership.models import Agreement, FirmPartnership, Partner, PartnershipState
 from ptk.sim.state import GameState
 
 
+def revolver_floor(difficulty: str, scenario: Scenario, data: GameData) -> int:
+    """The scenario's revolver at this difficulty (PT-M7b's `revolver_mult_bp`): the facility
+    at the start and its floor at each January's reset."""
+    level = data.difficulty(difficulty)
+    return pct_of(scenario.revolver_limit_cents, level.revolver_mult_bp if level else 10000)
+
+
 def founding_partnership(
-    state: GameState, firm_id: int, capital_cents: int, scenario: Scenario, balance: Balance
+    state: GameState,
+    firm_id: int,
+    capital_cents: int,
+    scenario: Scenario,
+    balance: Balance,
+    data: GameData | None = None,
 ) -> PartnershipState:
     cfg = balance.partnership
     staff = set(state.staff_ids(firm_id))
@@ -42,6 +54,10 @@ def founding_partnership(
         agreement=Agreement.of(cfg.agreement),
         mp_id=mp,
         partners=partners,
-        facility_cents=scenario.revolver_limit_cents,
+        facility_cents=(
+            revolver_floor(state.save_meta.difficulty, scenario, data)
+            if data is not None
+            else scenario.revolver_limit_cents
+        ),
     )
     return PartnershipState(firms=(fp,))

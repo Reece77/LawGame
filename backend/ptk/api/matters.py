@@ -34,6 +34,7 @@ from ptk.sim.matters.actions import (
     RespondSettlement,
     SeekWaiver,
     SetConflictChecks,
+    SetHoursPolicy,
     SetMatterHours,
     SetMatterLead,
     SetProBonoCredit,
@@ -545,6 +546,11 @@ class FirmPoliciesOut(BaseModel):
     rate_rise_max_bp: int
     rate_index_bp: int  # the firm's card against 2005's (10000 = the 2005 card)
     market_index_bp: int
+    # PT-M7b: the hours policy, a firm-wide billable target (hours a year); None: the levels'
+    billable_target_hours: int | None
+    billable_target_min_hours: int
+    billable_target_max_hours: int
+    associate_target_hours: int  # the levels' default for an associate (shown beside it)
 
 
 class ProBonoCreditIn(BaseModel):
@@ -553,6 +559,10 @@ class ProBonoCreditIn(BaseModel):
 
 class RatePolicyIn(BaseModel):
     rise_bp: int | None  # None: follow the market
+
+
+class HoursPolicyIn(BaseModel):
+    hours: int | None  # None: the levels' billable targets
 
 
 def policies_view(state: GameState, data: GameData, balance: Balance) -> FirmPoliciesOut:
@@ -570,6 +580,10 @@ def policies_view(state: GameState, data: GameData, balance: Balance) -> FirmPol
         market_index_bp=round(
             market_index(state.turn, state.save_meta.start_ym, data, balance) * 10000
         ),
+        billable_target_hours=firm.billable_target_hours,
+        billable_target_min_hours=balance.staffing.policy_min_hours,
+        billable_target_max_hours=balance.staffing.policy_max_hours,
+        associate_target_hours=balance.people.levels["associate_1"].billable_target_hours,
     )
 
 
@@ -791,6 +805,20 @@ def make_matters_router(errors: dict[int | str, dict[str, Any]]) -> APIRouter:
     def set_rates(slug: str, body: RatePolicyIn) -> FirmPoliciesOut:
         return policies_view(
             _act(slug, lambda a: SetRatePolicy(a, body.rise_bp)),
+            loader.game_data(),
+            loader.balance(),
+        )
+
+    @router.put(
+        f"{base}/policies/hours",
+        response_model=FirmPoliciesOut,
+        responses=errors,
+        operation_id="setHoursPolicy",
+    )
+    def set_hours_policy(slug: str, body: HoursPolicyIn) -> FirmPoliciesOut:
+        """PT-M7b: the firm's billable target (hours a year), or None for the levels'."""
+        return policies_view(
+            _act(slug, lambda a: SetHoursPolicy(a, body.hours)),
             loader.game_data(),
             loader.balance(),
         )

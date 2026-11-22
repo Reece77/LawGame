@@ -353,6 +353,7 @@ def _open_matter(
 ) -> GameState:
     from ptk.sim.matters.conflicts import conflict_index
     from ptk.sim.matters.intake import key_clients, new_matter, open_checked
+    from ptk.sim.matters.rates import practice_index
 
     practice = data.practice(rfp.practices[0])
     kind = max(practice.matter_kinds, key=lambda k: (k.median_cents, k.key))
@@ -372,6 +373,7 @@ def _open_matter(
         state.turn,
         data,
         balance,
+        practice_index(state.player, practice.key),  # PT-M7b: fees on the practice's card
     )
     index = conflict_index(state.market, state.player.id, state.turn, balance)
     state, _logs = open_checked(

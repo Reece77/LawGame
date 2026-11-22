@@ -382,7 +382,7 @@ def monthly_cost_lines(
         ),
         CostLine("Staff salaries", STAFF_SALARIES, by_account.get(STAFF_SALARIES, 0)),
         CostLine("Benefits", BENEFITS, benefits),
-        CostLine("Rent", RENT, rent_cents(heads, firm.home_city, balance.pay)),
+        CostLine("Rent", RENT, _office_rent(state, firm_id, heads, balance, data)),
         *overhead_lines(lawyers, firm.home_city, balance),
         CostLine("Job posts", RECRUITING, balance.hiring.job_post_cost_cents * job_posts),
         CostLine("Summer programme", RECRUITING, summer),
@@ -854,6 +854,15 @@ def lateral_batches(
             )
         )
     return state, tuple(logs)
+
+
+def _office_rent(
+    state: GameState, firm_id: int, heads: int, balance: Balance, data: GameData
+) -> Cents:
+    """Rent per head; PT-M8 (spec 9.1): the COO's office costs x (1 - coo_office x e)."""
+    rent = rent_cents(heads, state.firm(firm_id).home_city, balance.pay)
+    e = seat_effect(state, firm_id, "coo", balance, data)
+    return rent if e == 0 else round(rent * (1.0 - balance.seats.effects.coo_office * e))
 
 
 def _lifted(person: Person, keys: tuple[str, ...], points: float) -> Person:

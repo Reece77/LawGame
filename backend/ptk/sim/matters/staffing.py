@@ -56,7 +56,7 @@ from ptk.sim.matters.models import (
     TeamMember,
     TeamRole,
 )
-from ptk.sim.matters.rates import indexed_rate
+from ptk.sim.matters.rates import indexed_rate, practice_index
 from ptk.sim.money import round_half_even
 from ptk.sim.people.models import Person, WorkMonth
 from ptk.sim.people.strain import monthly_capacity_tenths
@@ -163,6 +163,16 @@ def current_tasks(matter: Matter, kind: KindDef) -> Mapping[str, float]:
     return kind.phases[min(matter.phase_index, len(kind.phases) - 1)].tasks
 
 
+def policy_fill(e: FeeEarner, base: float, policy_hours: int | None, balance: Balance) -> float:
+    """PT-M7b: a person's fill under the firm's hours policy (a firm-wide billable target,
+    hours a year): the policy's share of their capacity when that is above `base`, never above
+    `staffing.policy_fill_max`. No policy (None) keeps `base`."""
+    if policy_hours is None or e.capacity <= 0:
+        return base
+    wanted = policy_hours * fx.TENTHS / 12 / e.capacity  # tunable-exempt: months a year
+    return max(base, min(balance.staffing.policy_fill_max, wanted))
+
+
 def monthly_need(matter: Matter) -> int:
     return max(1, round(matter.hours_needed_tenths / max(1, matter.planned_months)))
 
@@ -178,6 +188,7 @@ def default_team(
     data: GameData,
     balance: Balance,
     founder_id: int | None,
+    policy_hours: int | None = None,
 ) -> tuple[int | None, tuple[TeamMember, ...]]:
     """The default staffing rule: (lead id, team) for a matter (module docstring). Wants are
     output tenths; each person's hours are their output over `expected_output`."""
@@ -188,7 +199,12 @@ def default_team(
     need = min(monthly_need(matter), max(1, left_out))  # PT-M7a: never plan past the end
     step = balance.matters.staff_round_tenths
     fill = balance.staffing.plan_fill  # PT-M7a: the rule leaves headroom (strain)
-    free = {e.id: int(fill * e.capacity) - e.other - load.get(e.id, 0) for e in earners}
+    free = {  # PT-M7b: the firm's hours policy may plan above it (strain follows)
+        e.id: int(policy_fill(e, fill, policy_hours, balance) * e.capacity)
+        - e.other
+        - load.get(e.id, 0)
+        for e in earners
+    }
     pool = [e for e in earners if e.home == matter.practice]
     by_id = {e.id: e for e in earners}
     factors: dict[int, float] = {}
@@ -275,7 +291,13 @@ def staff_matter(state: GameState, matter: Matter, data: GameData, balance: Bala
     for tm in matter.team:  # re-staffing: its own plan does not count against itself
         load[tm.person_id] = load.get(tm.person_id, 0) - tm.planned_tenths
     lead, team = default_team(
-        matter, earners, load, data, balance, state.founder_of(matter.firm_id)
+        matter,
+        earners,
+        load,
+        data,
+        balance,
+        state.founder_of(matter.firm_id),
+        state.firm(matter.firm_id).billable_target_hours,  # PT-M7b: the hours policy
     )
     return replace(matter, lead_id=lead, team=team)
 
@@ -395,7 +417,8 @@ def month_hours(
 ) -> MonthHours:
     """Allocate the month: named matters first, then flow, then pro bono (module docstring)."""
     turn = state.turn
-    index = state.firm(firm_id).rate_index
+    firm = state.firm(firm_id)
+    index = {p: practice_index(firm, p) for p in data.practice_keys}  # PT-M7b: by practice
     earners = fee_earners(state, firm_id, data, balance)
     by_id = {e.id: e for e in earners}
     cap = {e.id: e.capacity for e in earners}
@@ -450,12 +473,13 @@ def month_hours(
                 phase.tasks,
                 data,
                 balance,
-                index,
+                index[m.practice],
             )
         )
         used[pid] += t
     # 2. flow, by practice: home pools first, then familiar fee earners, then anyone idle
-    fill = balance.matters.flow_fill
+    policy = firm.billable_target_hours  # PT-M7b: flow fills to the hours policy too
+    fills = {e.id: policy_fill(e, balance.matters.flow_fill, policy, balance) for e in earners}
     unserved: dict[tuple[int, str], float] = {}
     lost_t: dict[int, float] = {}
     all_t: dict[int, float] = {}
@@ -482,7 +506,7 @@ def month_hours(
             ],
         )
         for pool in pools:
-            free = {e.id: max(0, int(fill * cap[e.id]) - used[e.id]) for e in pool}
+            free = {e.id: max(0, int(fills[e.id] * cap[e.id]) - used[e.id]) for e in pool}
             room = sum(free.values())
             if room <= 0 or left <= 0:
                 continue
@@ -515,7 +539,7 @@ def month_hours(
                             flow_tasks,
                             data,
                             balance,
-                            index,
+                            index[practice],
                         )
                     )
     for cid, wanted_t in all_t.items():  # (client, "") -> its unserved share of all its flow

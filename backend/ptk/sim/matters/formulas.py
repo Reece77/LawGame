@@ -194,9 +194,10 @@ def p_win(q_us: float, q_them: float, merits: float, outcomes: OutcomesBalance) 
     return sigmoid(outcomes.case_k * (q_us - q_them) + merits)
 
 
-def p_close(q_deal: float, critical: bool, outcomes: OutcomesBalance) -> float:
+def p_close(q_deal: float, critical: bool, outcomes: OutcomesBalance, crisis: float = 0.0) -> float:
+    """`crisis` (PT-M7b): logit points off for the deal's driver index below 1."""
     crit = outcomes.critical_deal if critical else 0.0
-    return sigmoid(outcomes.deal_base + outcomes.deal_k * (q_deal - 10.0) + crit)
+    return sigmoid(outcomes.deal_base + outcomes.deal_k * (q_deal - 10.0) + crit - crisis)
 
 
 def error_chance(

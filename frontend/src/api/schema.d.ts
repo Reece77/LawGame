@@ -864,6 +864,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/saves/{slug}/policies/hours": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set Hours Policy
+         * @description PT-M7b: the firm's billable target (hours a year), or None for the levels'.
+         */
+        put: operations["setHoursPolicy"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/saves/{slug}/conflict-checks": {
         parameters: {
             query?: never;
@@ -2719,6 +2739,14 @@ export interface components {
             rate_index_bp: number;
             /** Market Index Bp */
             market_index_bp: number;
+            /** Billable Target Hours */
+            billable_target_hours: number | null;
+            /** Billable Target Min Hours */
+            billable_target_min_hours: number;
+            /** Billable Target Max Hours */
+            billable_target_max_hours: number;
+            /** Associate Target Hours */
+            associate_target_hours: number;
         };
         /** FirmRefOut */
         FirmRefOut: {
@@ -2731,6 +2759,18 @@ export interface components {
         FitBand: "weak" | "fair" | "good" | "strong" | "unknown";
         /** @enum {string} */
         FollowThroughOut: "hit" | "miss";
+        /**
+         * ForecastOut
+         * @description PT-M7b: the CFO's projected breach on the trailing trend (spec 8.7).
+         */
+        ForecastOut: {
+            /** Covenant */
+            covenant: string;
+            /** Months */
+            months: number;
+            /** Drawn Cents */
+            drawn_cents: number;
+        };
         /** ForumIn */
         ForumIn: {
             /** Court */
@@ -2963,6 +3003,11 @@ export interface components {
         HoursIn: {
             /** Hours */
             hours: number;
+        };
+        /** HoursPolicyIn */
+        HoursPolicyIn: {
+            /** Hours */
+            hours: number | null;
         };
         /** InboxItemOut */
         InboxItemOut: {
@@ -4213,6 +4258,8 @@ export interface components {
             band: string;
             /** Card Cents */
             card_cents: number;
+            /** Firm Card Cents */
+            firm_card_cents: number;
             /** Ours Cents */
             ours_cents: number | null;
         };
@@ -4248,6 +4295,12 @@ export interface components {
             leverage_norm: number;
             /** Rates */
             rates: components["schemas"]["PracticeRateOut"][];
+            /** Card Bp */
+            card_bp: number;
+            /** Card Target Bp */
+            card_target_bp: number;
+            /** Market Index Bp */
+            market_index_bp: number;
         };
         /** ProBonoCreditIn */
         ProBonoCreditIn: {
@@ -4370,6 +4423,7 @@ export interface components {
             called: boolean;
             /** Covenants */
             covenants: components["schemas"]["CovenantOut"][];
+            forecast: components["schemas"]["ForecastOut"] | null;
         };
         /** RfpOut */
         RfpOut: {
@@ -8091,6 +8145,68 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["RatePolicyIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FirmPoliciesOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    setHoursPolicy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HoursPolicyIn"];
             };
         };
         responses: {

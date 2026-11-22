@@ -18,7 +18,8 @@ import {
 import { gameTableFeatures, type GameTableFeatures } from '../lib/table';
 
 // Practices (spec 16): demand trend, our revenue and share, capacity, utilisation, leverage
-// and rates against the rate card. Every number is the API's.
+// and rates against the rate card; PT-M7b: the firm's card by practice (its share of the top
+// card, and in brackets the share its reputation has earned). Every number is the API's.
 const helper = createColumnHelper<GameTableFeatures, PracticeScreenRow>();
 type Rate = PracticeScreenRow['rates'][number];
 const rateHelper = createColumnHelper<GameTableFeatures, Rate>();
@@ -50,6 +51,16 @@ const columns = helper.columns([
     header: 'Share',
     sortFn: 'basic',
     cell: ({ getValue }) => <span className="tst-num">{formatBpShort(getValue())}</span>,
+  }),
+  helper.accessor('card_bp', {
+    header: 'Our card (earned)',
+    sortFn: 'basic',
+    cell: ({ row }) => (
+      <span className="tst-num" data-testid="practice-card">
+        {formatBpShort(row.original.card_bp)}{' '}
+        <span className="tst-muted">({formatBpShort(row.original.card_target_bp)})</span>
+      </span>
+    ),
   }),
   helper.accessor('lawyers', {
     header: 'Lawyers',
@@ -105,7 +116,11 @@ const rateColumns = rateHelper.columns([
     cell: ({ getValue }) => humanize(getValue()),
   }),
   rateHelper.accessor('card_cents', {
-    header: 'Rate card',
+    header: 'Top card (2005)',
+    cell: ({ getValue }) => <span className="tst-num">{formatMoneyWhole(getValue())}</span>,
+  }),
+  rateHelper.accessor('firm_card_cents', {
+    header: 'Our card',
     cell: ({ getValue }) => <span className="tst-num">{formatMoneyWhole(getValue())}</span>,
   }),
   rateHelper.accessor((r) => r.ours_cents ?? null, {

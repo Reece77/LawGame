@@ -38,8 +38,9 @@ All strategies staff named matters by the default rule, bill monthly, accept the
 | T8 | **The crash bites:** 2009 revenue against 2008, a corporate-heavy firm −10% to −30%; a firm with a restructuring practice above 20% of revenue −5% to +20% | band |
 | T9 | **The spiral is real but survivable:** lateral rocket dissolves on 3–6 of 10 seeds by 2015; the same strategy with the CFO's warnings heeded (a script rule: stop guarantees and repay the revolver when the warning comes) dissolves on at most 1 | band |
 | T10 | **Strain matters:** pyramid's associates burn out at least twice as often as steady's; steady's at most 5% a year | band |
-| T11 | **Rivals hold history:** each pinned rival's revenue within ±15% of its path in December 2009 and December 2015; the top 10 by revenue in 2015 contains at least 8 of history's | pass/fail |
-| T12 | **Turn time:** median turn ≤ 250 ms at December 2015 on the steady save | pass/fail |
+| T11 | **Rivals hold history:** each pinned rival's revenue within ±15% of its path in December 2009, 2015, 2020 and 2025 (PT-M10); the top 10 by revenue in 2015 (and in 2025 on the long runs) contains at least 8 of history's | pass/fail |
+| T12 | **Turn time:** median turn ≤ 250 ms at December 2025 (PT-M10; PT-M5: 2015) on the steady save | pass/fail |
+| T8.2020 | **The pandemic bites (PT-M10):** a corporate-heavy firm's April-June 2020 revenue falls 10-30% against January-March, recovering by Q4 2021 | band |
 
 ## Known misses
 
@@ -72,5 +73,7 @@ How `ptk/balance/report.py` reads each target (`make balance`; `tools/balance_ru
 | T8 | 2009's revenue over 2008's: "corporate-heavy" = M&A, PE, capital markets and banking at least half of 2008's revenue; "restructuring" = restructuring above 20% of 2009's, **on firms with at least 10 lawyers in December 2008** (Reece, 2026-11-22); every standard run that qualifies (the `restructuring` variant, steady with a restructuring lateral from 2005, makes sure some do). Corporate-heavy's −9% (PT-M7b) is accepted as noise |
 | T9 | lateral rocket's dissolutions by December 2015; the `lateral-rocket-heeded` variant: when the CFO warns (or a covenant breaks), it stops new laterals, suspends draws, calls $1M of capital and repays the revolver from spare cash; and (Reece, 2026-11-22) before any guaranteed lateral it asks the CFO's forecast (the Finance screen's): none until six months of trend (`forecast_window` + 1 month ends) show headroom on every covenant now and for `forecast_months` |
 | T10 | burnout starts among associates / associate-years, pooled over each strategy's runs |
-| T11 | PT-M5's measure (`tests/balance/test_pt_m5.py`), read from the steady runs' rivals |
-| T12 | printed: the steady runs' median turn in 2015 (pure sim, on the runner's machine with its workers sharing cores); the gate is `make check-timing`'s test (PT-M5's, run alone, CLAUDE.md §9 rule 6) |
+| T11 | PT-M5's measure (`tests/balance/test_pt_m5.py`), read from the steady runs' rivals at 2009 and 2015 (top 10 at 2015), and (PT-M10) from `steady-30y`'s rivals, steady played to December 2034, at 2009, 2015, 2020 and 2025 (top 10 at 2025): row `T11.2025` |
+| T12 | printed: the steady runs' median turn in 2015 (pure sim, on the runner's machine with its workers sharing cores); the gate is `make check-timing`'s test (PT-M5's, run alone, CLAUDE.md §9 rule 6), timing 2025's turns from PT-M10 |
+| T8.2020 | `steady-30y` runs with M&A, PE, capital markets and banking at least half of 2019's revenue: the median of 2020 Q2's revenue over Q1's; recovered when most of them have Q4 2021's revenue at least Q1 2020's (PT-M10) |
+| 30y | printed for information: `steady-30y` at December 2034 (lawyers, revenue, PEP medians, dissolved); PT-M18 sets the 30-year targets |

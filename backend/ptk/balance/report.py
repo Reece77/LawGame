@@ -684,13 +684,15 @@ def _shock(results: Sequence[RunResult]) -> list[Row]:
     change = _med(c for c, _ in readings)
     back = sum(ok for _, ok in readings)
     lo, hi = SHOCK_BAND
+    # recovered: the median firm's Q4 2021 is back to its Q1 2020 (a quarter's revenue is
+    # lumpy, so a firm-by-firm "all" reads deal timing; PT-M10's decision)
     return [
         Row(
             "T8.2020",
             f"2020 Q2 vs Q1, corporate-heavy firms (n={len(readings)}); back by Q4 2021",
             f"{_pct(change)}, {back}/{len(readings)}",
-            "-30% to -10%, all",
-            _in(change, lo, hi) and back == len(readings),
+            "-30% to -10%, most back",
+            _in(change, lo, hi) and 2 * back > len(readings),
             score=change,
         )
     ]

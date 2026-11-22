@@ -76,6 +76,6 @@ shocks:
   - from: [2020, 4]
     months: 2
     demand: { commercial_litigation: 0.35, white_collar: 0.25, employment: 0.15, ip: 0.20 }
-    hours: { corporate_ma: 0.30, private_equity: 0.30, capital_markets: 0.20, banking_finance: 0.20, real_estate: 0.30, commercial_litigation: 0.30, white_collar: 0.20, ip: 0.20, employment: 0.10 }
+    hours: { corporate_ma: 0.15, private_equity: 0.15, capital_markets: 0.10, banking_finance: 0.10, real_estate: 0.15, commercial_litigation: 0.15, white_collar: 0.10, ip: 0.10, employment: 0.05 } # PT-M10 tuning: 0.30/0.20/0.10 -> half (T8.2020 read -41.1% median on seeds 1-10)
     docket: true
     src: "history-2016-2025 s2 (the pandemic's shape): lockdowns from mid-March 2020, courts' trials suspended, deals paused; shares [A]"

@@ -30,7 +30,10 @@ test('automate billing, read the digest, take over', async ({ page }) => {
 
   await advanceMonths(page, 'pt-2008', 1);
   await page.getByRole('link', { name: 'Inbox' }).click();
-  await page.getByRole('link', { name: /Your month:/ }).first().click();
+  await page
+    .getByRole('link', { name: /Your month:/ })
+    .first()
+    .click();
   await expect(page.getByTestId('digest')).toContainText('Billing and collections');
 
   await page.getByRole('link', { name: 'Finance' }).click();

@@ -9,7 +9,7 @@ test('a March submission and an October band', async ({ page }) => {
   test.setTimeout(240_000);
   const slug = 'standing-test';
   const made = await page.request.post('/api/saves', {
-    data: { slug, firm_name: 'Standing Test LLP', seed: 5 },
+    data: { slug, firm_name: 'Standing Test LLP', seed: 1 }, // seed 1 earns band 6 by October 2006
   });
   expect(made.ok()).toBeTruthy();
   await advanceMonths(page, slug, 14);

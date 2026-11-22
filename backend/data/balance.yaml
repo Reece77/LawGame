@@ -1211,7 +1211,7 @@ reputation: # PT-M16: reputation by (firm, practice, region), 0-100, public (spe
   star_leave: 2.0 # and lost when one leaves
   rival_departure: 0.3 # points a rival loses in each practice per key partner who leaves it
   league: { top3: 1.0, top10: 0.4 } # points for a quarter's league-table place (top three; four to ten)
-  bands: [2.0, 1.2, 0.6, 0.0, -0.4, -0.8] # October's points by directory band 1..6 (spec 12.1)
+  bands: [2.0, 1.2, 0.6, 0.2, 0.0, 0.0] # PT-M16 tuning [.., 0.0, -0.4, -0.8] -> [.., 0.2, 0.0, 0.0] (a band 6 entry cost reputation that being unranked did not); October's points by directory band 1..6 (spec 12.1)
   prestige: { pep_points: 10, offer_weight: 0.2 } # prestige = revenue-weighted reputation + 10 x PEP percentile; offer-score points at prestige 100 (campus and laterals)
   card: { full_share: 0.95, curve: 2.0, top_quantile: 0.9 } # PT-M7b's card target: full card at 95% of the market's top-decile reputation in the practice, curve 2 (replaces rates.card.full_reputation and curve)
   appeal_span: 0.2 # the appeal's Rep (spec 7.1) added by reputation 0 to 100, on top of the partners' own standing in the practice (best partner's familiarity, 0-1): a new firm +0.02-0.03, a top-decile firm (80+) about +0.16. PT-M16 tuning against PT-M4's exodus guard (heeded <= 1 and ignored >= 3 of 10 dissolved; main 1 and 3+): 0.05 1/3, 0.1 1/2, 0.15 2/3, 0.2 1/3, 0.25 2/4, 0.3 3/3 (a flat floor in place of the standing failed every floor tried: decision 3)
@@ -1273,7 +1273,7 @@ rankings: # PT-M16: tables, league tables, directory bands, the associates' surv
     places: 10 # places published (the player's row is always shown)
   directory:
     month: 10 # October's bands
-    thresholds: [72, 60, 50, 40, 30, 20] # score (reputation + the player's key matters and submission) for band 1..6; below 20 not ranked (2005: every dossier strength scores 76+, so history's leaders are band 1)
+    thresholds: [72, 60, 50, 40, 30, 15] # PT-M16 tuning band 6 20 -> 15 (a spin-out of strong partners enters band 6 in its founders' practice within two years, as up-and-coming firms do); score (reputation + the player's key matters and submission) for band 1..6; below 15 not ranked (2005: every dossier strength scores 76+, so history's leaders are band 1)
     submission_months: [3, 4] # the March-April submission window
     max_matters: 5
     max_referees: 5

@@ -2,10 +2,11 @@ import { expect, test } from '@playwright/test';
 
 // PT-M3c: staff a new named matter on the board (drag, hours, the engine's refusal), read its
 // outlook as a band, see it billed with its realisation, then introduce a colleague to the
-// client. Group lift, seed 3: the first month brings an M&A matter.
+// client. Group lift, seed 18 (PT-M16: seed 3's first month no longer brings one): the first
+// month brings an M&A matter.
 test('staff a named matter, bill it, see realisation, introduce a colleague', async ({ page }) => {
   const made = await page.request.post('/api/saves', {
-    data: { slug: 'm3c', firm_name: 'Screens LLP', seed: 3, scenario_id: 'group_lift' },
+    data: { slug: 'm3c', firm_name: 'Screens LLP', seed: 18, scenario_id: 'group_lift' },
   });
   expect(made.ok()).toBeTruthy();
   await page.goto('/game/m3c');

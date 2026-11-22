@@ -225,7 +225,7 @@ def people_bands(
         for v in rival_key_people(state, r.firm_id, data, balance):
             if v.notable_standing is not None and v.notable_standing in db.standing_band:
                 band = db.standing_band[v.notable_standing]
-                out.append(PersonBand(year, v.practice, v.person_id, r.firm_id, v.name, band))
+                out.append(PersonBand(year, v.practice, v.person_id, r.firm_id, band))
     pid = state.player.id
     staff = set(state.staff_ids(pid))
     since = state.turn - 3 * YEAR
@@ -252,8 +252,7 @@ def people_bands(
         firm_band = mine.get(person.role, len(db.thresholds))
         band = firm_band + db.people_offset - (n - db.people_min_matters)
         band = max(1, min(len(db.thresholds), band))
-        name = f"{person.first_name} {person.last_name}"
-        out.append(PersonBand(year, person.role, person.id, pid, name, band))
+        out.append(PersonBand(year, person.role, person.id, pid, band))
     return tuple(sorted(out, key=lambda b: (b.practice, b.band, b.person_id)))
 
 

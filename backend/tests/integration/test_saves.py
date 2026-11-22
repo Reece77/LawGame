@@ -158,7 +158,17 @@ def test_hiring_round_trips_and_replays(save_dir: Path, data: GameData, balance:
     state, balances = saves.read_state(path)
     from dataclasses import replace
 
-    assert state == replace(game.state, save_meta=replace(game.state.save_meta, name="h"))
+    # the loader holds only open engagements (billing_io); in memory an engagement closed in
+    # the last turn stays until the next billing month drops it, and billing never reads a
+    # closed one, so the comparison drops it too (PT-M16: seed 19 now closes one in turn 7)
+    mem = game.state
+    mem = replace(
+        mem,
+        billing=replace(
+            mem.billing, engagements=tuple(e for e in mem.billing.engagements if not e.closed)
+        ),
+    )
+    assert state == replace(mem, save_meta=replace(mem.save_meta, name="h"))
     assert balances == {k: v for k, v in game.balances.items() if v != 0} | {
         k: v for k, v in balances.items() if v == 0
     }

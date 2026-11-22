@@ -29,7 +29,7 @@ def _client(save_dir: Path, turns: int = 3) -> TestClient:
     client = TestClient(create_app())
     made = client.post(
         "/api/saves",
-        json={"slug": "scr", "firm_name": "Screens LLP", "seed": 3, "scenario_id": "group_lift"},
+        json={"slug": "scr", "firm_name": "Screens LLP", "seed": 1, "scenario_id": "group_lift"},
     )
     assert made.status_code == 200, made.text
     for _ in range(turns):
@@ -39,7 +39,9 @@ def _client(save_dir: Path, turns: int = 3) -> TestClient:
 
 def _first_open(client: TestClient) -> dict[str, Any]:
     matters: list[dict[str, Any]] = client.get("/api/saves/scr/matters").json()
-    assert matters, "group lift, seed 3, has an open matter by March"
+    # PT-M16: seed 1 (seed 3 opens no named matter by March since reputation moved its intake;
+    # seed 1 opens a case by March on main as here)
+    assert matters, "group lift, seed 1, has an open matter by March"
     return matters[0]
 
 
@@ -144,7 +146,7 @@ def test_no_hidden_value_in_any_screens_schema_or_response(save_dir: Path) -> No
 
 @pytest.fixture(scope="module")
 def played(data: GameData, balance: Balance) -> GameState:
-    return play(game(data, balance, 3, "group_lift"), data, balance, 3, seed=3)[0]
+    return play(game(data, balance, 1, "group_lift"), data, balance, 3, seed=1)[0]  # PT-M16
 
 
 def test_outlook_ignores_hidden_values(played: GameState, data: GameData, balance: Balance) -> None:

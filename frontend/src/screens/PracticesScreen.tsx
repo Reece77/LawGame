@@ -15,10 +15,12 @@ import {
   formatRatio,
   humanize,
 } from '../lib/format';
+import { bandText, signedDelta } from '../lib/standing';
 import { gameTableFeatures, type GameTableFeatures } from '../lib/table';
 
 // Practices (spec 16): demand trend, our revenue and share, capacity, utilisation, leverage
-// and rates against the rate card; PT-M7b: the firm's card by practice (its share of the top
+// and rates against the rate card; PT-M16: reputation (and the market's top decile), the
+// directory band and each practice's latest reputation causes; PT-M7b: the firm's card by practice (its share of the top
 // card, and in brackets the share its reputation has earned). Every number is the API's.
 const helper = createColumnHelper<GameTableFeatures, PracticeScreenRow>();
 type Rate = PracticeScreenRow['rates'][number];
@@ -61,6 +63,21 @@ const columns = helper.columns([
         <span className="tst-muted">({formatBpShort(row.original.card_target_bp)})</span>
       </span>
     ),
+  }),
+  helper.accessor('reputation', {
+    header: 'Reputation (top)',
+    sortFn: 'basic',
+    cell: ({ row }) => (
+      <span className="tst-num" data-testid="practice-reputation">
+        {row.original.reputation} <span className="tst-muted">({row.original.reputation_top})</span>
+      </span>
+    ),
+  }),
+  helper.accessor((r) => r.band ?? 99, {
+    id: 'band',
+    header: 'Band',
+    sortFn: 'basic',
+    cell: ({ row }) => <span data-testid="practice-band">{bandText(row.original.band)}</span>,
   }),
   helper.accessor('lawyers', {
     header: 'Lawyers',
@@ -166,10 +183,42 @@ export function PracticesScreen() {
             rowTestId="practice-row"
             empty="No practices."
           />
+          <ReputationCauses data={data} />
           <Rates data={data} />
         </>
       )}
     </Stack>
+  );
+}
+
+const CAUSES_PER_PRACTICE = 3; // display: each practice's latest reputation changes
+
+function ReputationCauses({ data }: { data: PracticeScreenRow[] }) {
+  const shown = data.filter((p) => p.reputation_causes.length > 0);
+  return (
+    <div className="tst-panel" data-testid="reputation-causes">
+      <h3 className="tst-ptitle">Recent reputation changes</h3>
+      {shown.length === 0 ? (
+        <Text size="sm" c="dimmed">
+          No changes yet.
+        </Text>
+      ) : (
+        <Stack gap={4}>
+          {shown.map((p) => (
+            <Text size="xs" key={p.key}>
+              <b>{p.label}:</b>{' '}
+              {p.reputation_causes.slice(0, CAUSES_PER_PRACTICE).map((c, i) => (
+                <span key={i}>
+                  {i > 0 && ' · '}
+                  <span className="tst-num">{signedDelta(c.delta)}</span> {c.cause}{' '}
+                  <span className="tst-muted">({c.date_label})</span>
+                </span>
+              ))}
+            </Text>
+          ))}
+        </Stack>
+      )}
+    </div>
   );
 }
 

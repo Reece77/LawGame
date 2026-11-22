@@ -129,7 +129,10 @@ def test_lateral_partner_search_to_arrival(data: GameData, balance: Balance) -> 
 
 
 def test_a_guarantee_is_a_floor(data: GameData, balance: Balance) -> None:
-    g = start(data, balance, 6)
+    # PT-M16: seed 5 (this $900k guarantee sinks the group lift within the year on seeds 2-4
+    # and 7 on main as on PT-M16, and seed 6 now too); the test is about the floor, so it uses
+    # a firm that survives the year, as it asserts
+    g = start(data, balance, 5)
     pid = add_partner(g, "corporate_ma", 90_000_000, guarantee_years=2, n=1)
     g.advance(12)
     assert not g.state.ended

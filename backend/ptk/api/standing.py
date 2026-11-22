@@ -303,7 +303,7 @@ def rankings_out(state: GameState, path: Path, data: GameData, balance: Balance)
         people=[
             PersonBandOut(
                 person_id=x.person_id,
-                name=x.name,
+                name=_person_name(state, x.person_id, data, balance),
                 firm_id=x.firm_id,
                 firm=state.player.name
                 if x.firm_id == pid
@@ -349,6 +349,7 @@ class CauseOut(BaseModel):
 
 class MomentOut(BaseModel):
     id: int
+    person: str | None  # the person it is about (professional moments only, ADR PT-0013)
     trigger: str
     about: str
     date_label: str
@@ -450,6 +451,11 @@ def press_out(state: GameState, data: GameData, balance: Balance) -> PressOut:
                 status=m.status,
                 open=m.status == "open" and m.due_turn == state.turn,
                 detail=str(dict(m.facts).get("result", dict(m.facts).get("promise", ""))),
+                person=(
+                    _person_name(state, m.person_id, data, balance)
+                    if m.person_id is not None
+                    else None
+                ),
                 practice=m.practice,
                 rival=rival_name(state, m.rival_id) if m.rival_id is not None else None,
                 tone=m.tone,
@@ -477,7 +483,7 @@ def press_out(state: GameState, data: GameData, balance: Balance) -> PressOut:
                 rival=rival_name(state, s.rival_id) or "",
                 date_label=label(s.turn),
                 kind=s.kind,
-                text=s.text,
+                text=_spoken(state, s.rival_id, s.person_id, s.text, data, balance),
             )
             for s in sorted(press.statements, key=lambda s: -s.id)[:STATEMENTS_SHOWN]
         ],
@@ -500,6 +506,31 @@ def press_out(state: GameState, data: GameData, balance: Balance) -> PressOut:
         energy=balance.energy.cost["press_answer"],
         lawyers=claim_rules.public_lawyers(state, data),
     )
+
+
+def _person_name(state: GameState, person_id: int, data: GameData, balance: Balance) -> str:
+    """A person's name as the save shows it (`world.real_people` applies)."""
+    from ptk.sim.rivals.people import find_person
+
+    person = find_person(state, person_id, data, balance)
+    return f"{person.first_name} {person.last_name}" if person is not None else "a partner"
+
+
+def _spoken(
+    state: GameState,
+    rival_id: int,
+    person_id: int | None,
+    words: str,
+    data: GameData,
+    balance: Balance,
+) -> str:
+    firm = rival_name(state, rival_id) or "a rival"
+    speaker = (
+        f"a spokesperson for {firm}"
+        if person_id is None
+        else f"{_person_name(state, person_id, data, balance)} of {firm}"
+    )
+    return f"{speaker}: \u201c{words}\u201d"
 
 
 # --- Router --------------------------------------------------------------------------------

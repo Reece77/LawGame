@@ -376,7 +376,7 @@ rivals: # rival firms (PT-M5; spec 10; ADR PT-0008). Money is cents a year unles
     w_relationship: 1.5 # times the player's relationship / 100
     noise_sd: 0.5 # logit noise on each bid
     team_max: 6
-    player_reputation_min: 0.5 # invited without a relationship when its best appeal Rep is this high (0-1; PT-M16: reputation.appeal_floor + the rest x reputation / 100)
+    player_reputation_min: 0.5 # invited without a relationship when its best appeal Rep is this high (PT-M16: partners' standing + reputation.appeal_span x reputation / 100)
     start_score: 35 # a new relationship's score after an RFP win
   boutique: # TST 15.4's startups for law: partner groups leave to found boutiques
     monthly_bp: 15 # chance a month that some large rival's partner group leaves (all rivals together, bp)
@@ -1202,10 +1202,10 @@ reputation: # PT-M16: reputation by (firm, practice, region), 0-100, public (spe
   rival_record: { strong: 0.6, share: 0.4 } # a rival's record: 0.6 in its strong practices (firms.yaml) + 0.4 x its share of the practice's market
   share_ref_place: 3 # the market's 3rd-largest practice revenue scores a share of 1
   record_months: 36 # months of the player's public outcomes in the record term
-  record_full: 30.0 # outcome points over the window for the full record (30 full-size wins or closings in three years)
+  record_full: 50.0 # outcome points over the window for the full record (30 full-size wins or closings in three years)
   outcomes: { won: 1.0, lost: -0.6, settled: 0.2, closed: 1.0, collapsed: -0.4, done: 0.2 } # points of a full-size named matter's end, by outcome
   big_cents: 100000000 # $1M expected fees: a full-size matter (smaller ones scale down)
-  pulse: 1.5 # reputation points a full outcome point moves at once (the mean then holds or pulls back)
+  pulse: 0.5 # reputation points a full outcome point moves at once (the mean then holds or pulls back)
   star_book_cents: 300000000 # $3M book a year: a star partner (spec 12.1: lateral stars)
   star_join: 2.0 # points in the star's practice when one joins
   star_leave: 2.0 # and lost when one leaves
@@ -1214,7 +1214,7 @@ reputation: # PT-M16: reputation by (firm, practice, region), 0-100, public (spe
   bands: [2.0, 1.2, 0.6, 0.0, -0.4, -0.8] # October's points by directory band 1..6 (spec 12.1)
   prestige: { pep_points: 10, offer_weight: 0.2 } # prestige = revenue-weighted reputation + 10 x PEP percentile; offer-score points at prestige 100 (campus and laterals)
   card: { full_share: 0.95, curve: 2.0, top_quantile: 0.9 } # PT-M7b's card target: full card at 95% of the market's top-decile reputation in the practice, curve 2 (replaces rates.card.full_reputation and curve)
-  appeal_floor: 0.75 # the appeal's Rep (spec 7.1) at reputation 0; 1 at 100 (the founders' own standing carries a new firm's first panels)
+  appeal_span: 0.2 # the appeal's Rep (spec 7.1) added by reputation 0 to 100, on top of the partners' own standing in the practice (best partner's familiarity, 0-1): a new firm +0.02-0.03, a top-decile firm (80+) about +0.16. PT-M16 tuning against PT-M4's exodus guard (heeded <= 1 and ignored >= 3 of 10 dissolved; main 1 and 3+): 0.05 1/3, 0.1 1/2, 0.15 2/3, 0.2 1/3, 0.25 2/4, 0.3 3/3 (a flat floor in place of the standing failed every floor tried: decision 3)
   causes_kept: 30 # the player's reputation changes kept with their causes (Practices screen)
 press: # PT-M16: the legal press (spec 12.2; TST formulas.md 29, in Partner Track's units: reputation points for brand-target points)
   max_per_quarter: 2 # press moments a quarter at most (reminders apart; TST 29.1)

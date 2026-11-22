@@ -153,7 +153,7 @@ def published_rows(rk: RankingsState, turn: int) -> list[RankingEntryRow]:
                     place=x.band,
                     firm_id=x.firm_id,
                     person_id=x.person_id,
-                    name=x.name,
+                    name="",  # people are named by the API (person_id)
                     value_cents=None,
                     count=None,
                     year=x.year,

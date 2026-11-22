@@ -31,7 +31,6 @@ from ptk.sim.data_models import Balance, GameData
 from ptk.sim.interfaces import (
     rival_managing_partner,
     rival_moves_in,
-    rival_name,
     rival_stance_nudge,
     rival_standing,
 )
@@ -74,14 +73,14 @@ def add_feud(
 
 def _speaker(
     state: GameState, rival_id: int, jab: bool, data: GameData, balance: Balance
-) -> tuple[int | None, str]:
-    """Who speaks for the rival: its managing partner, or its spokesperson for a jab when the
-    managing partner is real (ADR PT-0013)."""
-    name = rival_name(state, rival_id) or "a rival"
+) -> int | None:
+    """Who speaks for the rival: its managing partner, or its spokesperson (None) for a jab
+    when the managing partner is real (ADR PT-0013). Names are the API's to render: the state
+    holds people by id only, so `world.real_people` changes nothing here."""
     mp = rival_managing_partner(state, rival_id, data, balance)
     if mp is None or (jab and mp.real):
-        return None, f"a spokesperson for {name}"
-    return mp.person_id, f"{mp.name} of {name}"
+        return None
+    return mp.person_id
 
 
 def statement(
@@ -92,10 +91,10 @@ def statement(
     data: GameData,
     balance: Balance,
 ) -> GameState:
-    person_id, speaker = _speaker(state, rival_id, kind == "jab", data, balance)
+    person_id = _speaker(state, rival_id, kind == "jab", data, balance)
     state, sid = moments.take_id(state)
     press = moments.press_of(state)
-    text = f"{speaker}: “{words.format(player=state.player.name)}”"
+    text = words.format(player=state.player.name)
     record = Statement(sid, rival_id, person_id, state.turn, kind, text)  # type: ignore[arg-type]
     return moments.with_press(state, replace(press, statements=(*press.statements, record)))
 

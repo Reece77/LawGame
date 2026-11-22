@@ -92,7 +92,7 @@ class Statement:
     person_id: int | None
     turn: int
     kind: StatementKind
-    text: str
+    text: str  # the words; the API names the speaker (people are held by id only)
 
 
 @dataclass(frozen=True, slots=True)

@@ -66,9 +66,8 @@ class PersonBand:
 
     year: int
     practice: str
-    person_id: int
+    person_id: int  # the API names them (people are held by id only)
     firm_id: int
-    name: str
     band: int
 
 

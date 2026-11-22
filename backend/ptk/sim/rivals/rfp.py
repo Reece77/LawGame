@@ -61,7 +61,7 @@ def sector_practices(client: Client, data: GameData, n: int) -> tuple[str, ...]:
 
 def player_reputation(state: GameState, practices: tuple[str, ...], balance: Balance) -> float:
     """The player's best appeal Rep (0-1) in the practices: PT-M16's reputation through the
-    appeal's scale (`reputation.formulas.appeal_rep`, spec 7.1)."""
+    appeal's scale (`reputation.formulas.appeal_rep`: partners' standing + reputation, spec 7.1)."""
     from ptk.sim.reputation.formulas import appeal_rep
 
     pid = state.player.id

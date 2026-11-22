@@ -7673,7 +7673,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AnswerIn"
+                "$ref": "#/components/schemas/ptk__api__leadership__AnswerIn"
               }
             }
           }
@@ -9202,6 +9202,311 @@
           }
         }
       }
+    },
+    "/api/saves/{slug}/rankings": {
+      "get": {
+        "summary": "Get Rankings",
+        "operationId": "getRankings",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RankingsOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/rankings/submission": {
+      "post": {
+        "summary": "Submit",
+        "operationId": "makeSubmission",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmissionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RankingsOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/press": {
+      "get": {
+        "summary": "Get Press",
+        "operationId": "getPress",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PressOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/press/{moment_id}/answer": {
+      "post": {
+        "summary": "Answer",
+        "operationId": "answerPress",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "moment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Moment Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ptk__api__standing__AnswerIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PressOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -9300,35 +9605,6 @@
           "remaining_cents"
         ],
         "title": "AnnuityOut"
-      },
-      "AnswerIn": {
-        "properties": {
-          "answer": {
-            "type": "string",
-            "enum": [
-              "approve",
-              "modify",
-              "decline"
-            ],
-            "title": "Answer"
-          },
-          "value": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Value"
-          }
-        },
-        "type": "object",
-        "required": [
-          "answer"
-        ],
-        "title": "AnswerIn"
       },
       "AppointIn": {
         "properties": {
@@ -9608,6 +9884,52 @@
           "amount_cents"
         ],
         "title": "BalanceLineOut"
+      },
+      "BandFirmOut": {
+        "properties": {
+          "firm_id": {
+            "type": "integer",
+            "title": "Firm Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "band": {
+            "type": "integer",
+            "title": "Band"
+          },
+          "is_player": {
+            "type": "boolean",
+            "title": "Is Player"
+          }
+        },
+        "type": "object",
+        "required": [
+          "firm_id",
+          "name",
+          "band",
+          "is_player"
+        ],
+        "title": "BandFirmOut"
+      },
+      "BandHistoryOut": {
+        "properties": {
+          "year": {
+            "type": "integer",
+            "title": "Year"
+          },
+          "band": {
+            "type": "integer",
+            "title": "Band"
+          }
+        },
+        "type": "object",
+        "required": [
+          "year",
+          "band"
+        ],
+        "title": "BandHistoryOut"
       },
       "BandOut": {
         "properties": {
@@ -10003,34 +10325,6 @@
         ],
         "title": "CauseIn"
       },
-      "CauseOut": {
-        "properties": {
-          "when": {
-            "type": "string",
-            "title": "When"
-          },
-          "trait": {
-            "type": "string",
-            "title": "Trait"
-          },
-          "change": {
-            "type": "number",
-            "title": "Change"
-          },
-          "why": {
-            "type": "string",
-            "title": "Why"
-          }
-        },
-        "type": "object",
-        "required": [
-          "when",
-          "trait",
-          "change",
-          "why"
-        ],
-        "title": "CauseOut"
-      },
       "ChannelOptionOut": {
         "properties": {
           "key": {
@@ -10085,6 +10379,49 @@
           "choice"
         ],
         "title": "ChooseIn"
+      },
+      "ClaimOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "words": {
+            "type": "string",
+            "title": "Words"
+          },
+          "made_label": {
+            "type": "string",
+            "title": "Made Label"
+          },
+          "deadline_label": {
+            "type": "string",
+            "title": "Deadline Label"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "progress": {
+            "type": "string",
+            "title": "Progress"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "words",
+          "made_label",
+          "deadline_label",
+          "status",
+          "progress"
+        ],
+        "title": "ClaimOut"
       },
       "ClientOut": {
         "properties": {
@@ -11213,6 +11550,42 @@
         ],
         "title": "FamilyOut"
       },
+      "FeudOut": {
+        "properties": {
+          "rival_id": {
+            "type": "integer",
+            "title": "Rival Id"
+          },
+          "rival": {
+            "type": "string",
+            "title": "Rival"
+          },
+          "score": {
+            "type": "integer",
+            "title": "Score"
+          },
+          "rivalry": {
+            "type": "boolean",
+            "title": "Rivalry"
+          },
+          "causes": {
+            "items": {
+              "$ref": "#/components/schemas/ptk__api__standing__CauseOut"
+            },
+            "type": "array",
+            "title": "Causes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rival_id",
+          "rival",
+          "score",
+          "rivalry",
+          "causes"
+        ],
+        "title": "FeudOut"
+      },
       "FinanceOut": {
         "properties": {
           "date_label": {
@@ -11544,7 +11917,7 @@
           },
           "causes": {
             "items": {
-              "$ref": "#/components/schemas/CauseOut"
+              "$ref": "#/components/schemas/ptk__api__founder__CauseOut"
             },
             "type": "array",
             "title": "Causes"
@@ -12675,6 +13048,70 @@
         ],
         "title": "LeadershipOut"
       },
+      "LeagueOut": {
+        "properties": {
+          "practice": {
+            "type": "string",
+            "title": "Practice"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/LeagueRowOut"
+            },
+            "type": "array",
+            "title": "Rows"
+          }
+        },
+        "type": "object",
+        "required": [
+          "practice",
+          "label",
+          "rows"
+        ],
+        "title": "LeagueOut"
+      },
+      "LeagueRowOut": {
+        "properties": {
+          "place": {
+            "type": "integer",
+            "title": "Place"
+          },
+          "firm_id": {
+            "type": "integer",
+            "title": "Firm Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "deals": {
+            "type": "integer",
+            "title": "Deals"
+          },
+          "value_cents": {
+            "type": "integer",
+            "title": "Value Cents"
+          },
+          "is_player": {
+            "type": "boolean",
+            "title": "Is Player"
+          }
+        },
+        "type": "object",
+        "required": [
+          "place",
+          "firm_id",
+          "name",
+          "deals",
+          "value_cents",
+          "is_player"
+        ],
+        "title": "LeagueRowOut"
+      },
       "LegacyOut": {
         "properties": {
           "total": {
@@ -13552,6 +13989,107 @@
           "matter_margin",
           "outlook"
         ]
+      },
+      "MomentOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "person": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Person"
+          },
+          "trigger": {
+            "type": "string",
+            "title": "Trigger"
+          },
+          "about": {
+            "type": "string",
+            "title": "About"
+          },
+          "date_label": {
+            "type": "string",
+            "title": "Date Label"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "open": {
+            "type": "boolean",
+            "title": "Open"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail"
+          },
+          "practice": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Practice"
+          },
+          "rival": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rival"
+          },
+          "tone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tone"
+          },
+          "by_office": {
+            "type": "boolean",
+            "title": "By Office"
+          },
+          "backfired": {
+            "type": "boolean",
+            "title": "Backfired"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "person",
+          "trigger",
+          "about",
+          "date_label",
+          "status",
+          "open",
+          "detail",
+          "practice",
+          "rival",
+          "tone",
+          "by_office",
+          "backfired"
+        ],
+        "title": "MomentOut"
       },
       "MonthOut": {
         "properties": {
@@ -14874,6 +15412,49 @@
         ],
         "title": "PepExplainOut"
       },
+      "PersonBandOut": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "firm_id": {
+            "type": "integer",
+            "title": "Firm Id"
+          },
+          "firm": {
+            "type": "string",
+            "title": "Firm"
+          },
+          "practice": {
+            "type": "string",
+            "title": "Practice"
+          },
+          "band": {
+            "type": "integer",
+            "title": "Band"
+          },
+          "is_player": {
+            "type": "boolean",
+            "title": "Is Player"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "name",
+          "firm_id",
+          "firm",
+          "practice",
+          "band",
+          "is_player"
+        ],
+        "title": "PersonBandOut"
+      },
       "PersonIn": {
         "properties": {
           "person_id": {
@@ -15491,10 +16072,10 @@
             "title": "Endowment Cents"
           },
           "year": {
-            "$ref": "#/components/schemas/StatementOut"
+            "$ref": "#/components/schemas/ptk__api__founder__StatementOut"
           },
           "lifetime": {
-            "$ref": "#/components/schemas/StatementOut"
+            "$ref": "#/components/schemas/ptk__api__founder__StatementOut"
           },
           "recent": {
             "items": {
@@ -15596,6 +16177,39 @@
           "lapsed",
           "failed"
         ]
+      },
+      "PlacesRowOut": {
+        "properties": {
+          "place": {
+            "type": "integer",
+            "title": "Place"
+          },
+          "firm_id": {
+            "type": "integer",
+            "title": "Firm Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "score": {
+            "type": "number",
+            "title": "Score"
+          },
+          "is_player": {
+            "type": "boolean",
+            "title": "Is Player"
+          }
+        },
+        "type": "object",
+        "required": [
+          "place",
+          "firm_id",
+          "name",
+          "score",
+          "is_player"
+        ],
+        "title": "PlacesRowOut"
       },
       "PlanChannel": {
         "type": "string",
@@ -15819,6 +16433,41 @@
         ],
         "title": "PlayedOut"
       },
+      "PlayerPlaceOut": {
+        "properties": {
+          "date_label": {
+            "type": "string",
+            "title": "Date Label"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "practice": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Practice"
+          },
+          "place": {
+            "type": "integer",
+            "title": "Place"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date_label",
+          "kind",
+          "practice",
+          "place"
+        ],
+        "title": "PlayerPlaceOut"
+      },
       "PnlLineOut": {
         "properties": {
           "account": {
@@ -15887,6 +16536,52 @@
         ],
         "title": "PnlOut"
       },
+      "PracticeBandsOut": {
+        "properties": {
+          "practice": {
+            "type": "string",
+            "title": "Practice"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "firms": {
+            "items": {
+              "$ref": "#/components/schemas/BandFirmOut"
+            },
+            "type": "array",
+            "title": "Firms"
+          },
+          "player_band": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Player Band"
+          },
+          "player_history": {
+            "items": {
+              "$ref": "#/components/schemas/BandHistoryOut"
+            },
+            "type": "array",
+            "title": "Player History"
+          }
+        },
+        "type": "object",
+        "required": [
+          "practice",
+          "label",
+          "firms",
+          "player_band",
+          "player_history"
+        ],
+        "title": "PracticeBandsOut"
+      },
       "PracticeHeadcountOut": {
         "properties": {
           "practice": {
@@ -15900,13 +16595,30 @@
           "lawyers": {
             "type": "integer",
             "title": "Lawyers"
+          },
+          "reputation": {
+            "type": "integer",
+            "title": "Reputation"
+          },
+          "band": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Band"
           }
         },
         "type": "object",
         "required": [
           "practice",
           "label",
-          "lawyers"
+          "lawyers",
+          "reputation",
+          "band"
         ],
         "title": "PracticeHeadcountOut"
       },
@@ -16145,6 +16857,32 @@
           "market_index_bp": {
             "type": "integer",
             "title": "Market Index Bp"
+          },
+          "reputation": {
+            "type": "integer",
+            "title": "Reputation"
+          },
+          "reputation_top": {
+            "type": "integer",
+            "title": "Reputation Top"
+          },
+          "band": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Band"
+          },
+          "reputation_causes": {
+            "items": {
+              "$ref": "#/components/schemas/ReputationCauseOut"
+            },
+            "type": "array",
+            "title": "Reputation Causes"
           }
         },
         "type": "object",
@@ -16166,9 +16904,117 @@
           "rates",
           "card_bp",
           "card_target_bp",
-          "market_index_bp"
+          "market_index_bp",
+          "reputation",
+          "reputation_top",
+          "band",
+          "reputation_causes"
         ],
         "title": "PracticeScreenOut"
+      },
+      "PressOut": {
+        "properties": {
+          "credibility": {
+            "type": "integer",
+            "title": "Credibility"
+          },
+          "credibility_causes": {
+            "items": {
+              "$ref": "#/components/schemas/ptk__api__standing__CauseOut"
+            },
+            "type": "array",
+            "title": "Credibility Causes"
+          },
+          "moments": {
+            "items": {
+              "$ref": "#/components/schemas/MomentOut"
+            },
+            "type": "array",
+            "title": "Moments"
+          },
+          "claims": {
+            "items": {
+              "$ref": "#/components/schemas/ClaimOut"
+            },
+            "type": "array",
+            "title": "Claims"
+          },
+          "statements": {
+            "items": {
+              "$ref": "#/components/schemas/ptk__api__standing__StatementOut"
+            },
+            "type": "array",
+            "title": "Statements"
+          },
+          "feuds": {
+            "items": {
+              "$ref": "#/components/schemas/FeudOut"
+            },
+            "type": "array",
+            "title": "Feuds"
+          },
+          "tones": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tones"
+          },
+          "claim_kinds": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Claim Kinds"
+          },
+          "claims_open": {
+            "type": "integer",
+            "title": "Claims Open"
+          },
+          "claims_max": {
+            "type": "integer",
+            "title": "Claims Max"
+          },
+          "claim_months": {
+            "prefixItems": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "type": "array",
+            "maxItems": 2,
+            "minItems": 2,
+            "title": "Claim Months"
+          },
+          "energy": {
+            "type": "integer",
+            "title": "Energy"
+          },
+          "lawyers": {
+            "type": "integer",
+            "title": "Lawyers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "credibility",
+          "credibility_causes",
+          "moments",
+          "claims",
+          "statements",
+          "feuds",
+          "tones",
+          "claim_kinds",
+          "claims_open",
+          "claims_max",
+          "claim_months",
+          "energy",
+          "lawyers"
+        ],
+        "title": "PressOut"
       },
       "ProBonoCreditIn": {
         "properties": {
@@ -16302,6 +17148,122 @@
           "hi"
         ],
         "title": "RangeOut"
+      },
+      "RankingsOut": {
+        "properties": {
+          "tables_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tables Year"
+          },
+          "revenue": {
+            "items": {
+              "$ref": "#/components/schemas/TableRowOut"
+            },
+            "type": "array",
+            "title": "Revenue"
+          },
+          "pep": {
+            "items": {
+              "$ref": "#/components/schemas/TableRowOut"
+            },
+            "type": "array",
+            "title": "Pep"
+          },
+          "league_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "League Label"
+          },
+          "league": {
+            "items": {
+              "$ref": "#/components/schemas/LeagueOut"
+            },
+            "type": "array",
+            "title": "League"
+          },
+          "bands_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bands Year"
+          },
+          "bands": {
+            "items": {
+              "$ref": "#/components/schemas/PracticeBandsOut"
+            },
+            "type": "array",
+            "title": "Bands"
+          },
+          "people": {
+            "items": {
+              "$ref": "#/components/schemas/PersonBandOut"
+            },
+            "type": "array",
+            "title": "People"
+          },
+          "places_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Places Year"
+          },
+          "places": {
+            "items": {
+              "$ref": "#/components/schemas/PlacesRowOut"
+            },
+            "type": "array",
+            "title": "Places"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/PlayerPlaceOut"
+            },
+            "type": "array",
+            "title": "History"
+          },
+          "submission": {
+            "$ref": "#/components/schemas/SubmissionOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tables_year",
+          "revenue",
+          "pep",
+          "league_label",
+          "league",
+          "bands_year",
+          "bands",
+          "people",
+          "places_year",
+          "places",
+          "history",
+          "submission"
+        ],
+        "title": "RankingsOut"
       },
       "RateOut": {
         "properties": {
@@ -16474,6 +17436,30 @@
           "name"
         ],
         "title": "RenameUnitIn"
+      },
+      "ReputationCauseOut": {
+        "properties": {
+          "date_label": {
+            "type": "string",
+            "title": "Date Label"
+          },
+          "delta": {
+            "type": "number",
+            "title": "Delta"
+          },
+          "cause": {
+            "type": "string",
+            "title": "Cause"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date_label",
+          "delta",
+          "cause"
+        ],
+        "title": "ReputationCauseOut",
+        "description": "PT-M16: one change to the firm's reputation and its cause (public, spec 12.1)."
       },
       "RevolverOut": {
         "properties": {
@@ -17691,43 +18677,172 @@
         ],
         "title": "StaffingBoardOut"
       },
-      "StatementOut": {
+      "SubmissionIn": {
         "properties": {
-          "draws_cents": {
-            "type": "integer",
-            "title": "Draws Cents"
+          "matter_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Matter Ids"
           },
-          "true_up_cents": {
-            "type": "integer",
-            "title": "True Up Cents"
-          },
-          "annuity_cents": {
-            "type": "integer",
-            "title": "Annuity Cents"
-          },
-          "tax_cents": {
-            "type": "integer",
-            "title": "Tax Cents"
-          },
-          "after_tax_cents": {
-            "type": "integer",
-            "title": "After Tax Cents"
-          },
-          "gains_cents": {
-            "type": "integer",
-            "title": "Gains Cents"
+          "referee_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Referee Ids"
           }
         },
         "type": "object",
         "required": [
-          "draws_cents",
-          "true_up_cents",
-          "annuity_cents",
-          "tax_cents",
-          "after_tax_cents",
-          "gains_cents"
+          "matter_ids",
+          "referee_ids"
         ],
-        "title": "StatementOut"
+        "title": "SubmissionIn"
+      },
+      "SubmissionMatterOut": {
+        "properties": {
+          "matter_id": {
+            "type": "integer",
+            "title": "Matter Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "practice": {
+            "type": "string",
+            "title": "Practice"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "fees_cents": {
+            "type": "integer",
+            "title": "Fees Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "matter_id",
+          "name",
+          "practice",
+          "status",
+          "fees_cents"
+        ],
+        "title": "SubmissionMatterOut"
+      },
+      "SubmissionOut": {
+        "properties": {
+          "year": {
+            "type": "integer",
+            "title": "Year"
+          },
+          "window_open": {
+            "type": "boolean",
+            "title": "Window Open"
+          },
+          "made": {
+            "type": "boolean",
+            "title": "Made"
+          },
+          "strength_pct": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Strength Pct"
+          },
+          "matter_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Matter Ids"
+          },
+          "referee_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Referee Ids"
+          },
+          "max_matters": {
+            "type": "integer",
+            "title": "Max Matters"
+          },
+          "max_referees": {
+            "type": "integer",
+            "title": "Max Referees"
+          },
+          "referee_cost": {
+            "type": "number",
+            "title": "Referee Cost"
+          },
+          "energy": {
+            "type": "integer",
+            "title": "Energy"
+          },
+          "matters": {
+            "items": {
+              "$ref": "#/components/schemas/SubmissionMatterOut"
+            },
+            "type": "array",
+            "title": "Matters"
+          },
+          "referees": {
+            "items": {
+              "$ref": "#/components/schemas/SubmissionRefereeOut"
+            },
+            "type": "array",
+            "title": "Referees"
+          }
+        },
+        "type": "object",
+        "required": [
+          "year",
+          "window_open",
+          "made",
+          "strength_pct",
+          "matter_ids",
+          "referee_ids",
+          "max_matters",
+          "max_referees",
+          "referee_cost",
+          "energy",
+          "matters",
+          "referees"
+        ],
+        "title": "SubmissionOut"
+      },
+      "SubmissionRefereeOut": {
+        "properties": {
+          "client_id": {
+            "type": "integer",
+            "title": "Client Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "relationship": {
+            "type": "integer",
+            "title": "Relationship"
+          }
+        },
+        "type": "object",
+        "required": [
+          "client_id",
+          "name",
+          "relationship"
+        ],
+        "title": "SubmissionRefereeOut"
       },
       "SuccessionOut": {
         "properties": {
@@ -17892,6 +19007,44 @@
         ],
         "title": "SupervisorOut",
         "description": "A supervising partner's load (TST 13.2-13.4), shown coarsely."
+      },
+      "TableRowOut": {
+        "properties": {
+          "place": {
+            "type": "integer",
+            "title": "Place"
+          },
+          "firm_id": {
+            "type": "integer",
+            "title": "Firm Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "value_cents": {
+            "type": "integer",
+            "title": "Value Cents"
+          },
+          "lawyers": {
+            "type": "integer",
+            "title": "Lawyers"
+          },
+          "is_player": {
+            "type": "boolean",
+            "title": "Is Player"
+          }
+        },
+        "type": "object",
+        "required": [
+          "place",
+          "firm_id",
+          "name",
+          "value_cents",
+          "lawyers",
+          "is_player"
+        ],
+        "title": "TableRowOut"
       },
       "TagOut": {
         "properties": {
@@ -18354,6 +19507,219 @@
           "pep_cents"
         ],
         "title": "YearOut"
+      },
+      "ptk__api__founder__CauseOut": {
+        "properties": {
+          "when": {
+            "type": "string",
+            "title": "When"
+          },
+          "trait": {
+            "type": "string",
+            "title": "Trait"
+          },
+          "change": {
+            "type": "number",
+            "title": "Change"
+          },
+          "why": {
+            "type": "string",
+            "title": "Why"
+          }
+        },
+        "type": "object",
+        "required": [
+          "when",
+          "trait",
+          "change",
+          "why"
+        ],
+        "title": "CauseOut"
+      },
+      "ptk__api__founder__StatementOut": {
+        "properties": {
+          "draws_cents": {
+            "type": "integer",
+            "title": "Draws Cents"
+          },
+          "true_up_cents": {
+            "type": "integer",
+            "title": "True Up Cents"
+          },
+          "annuity_cents": {
+            "type": "integer",
+            "title": "Annuity Cents"
+          },
+          "tax_cents": {
+            "type": "integer",
+            "title": "Tax Cents"
+          },
+          "after_tax_cents": {
+            "type": "integer",
+            "title": "After Tax Cents"
+          },
+          "gains_cents": {
+            "type": "integer",
+            "title": "Gains Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "draws_cents",
+          "true_up_cents",
+          "annuity_cents",
+          "tax_cents",
+          "after_tax_cents",
+          "gains_cents"
+        ],
+        "title": "StatementOut"
+      },
+      "ptk__api__leadership__AnswerIn": {
+        "properties": {
+          "answer": {
+            "type": "string",
+            "enum": [
+              "approve",
+              "modify",
+              "decline"
+            ],
+            "title": "Answer"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "answer"
+        ],
+        "title": "AnswerIn"
+      },
+      "ptk__api__standing__AnswerIn": {
+        "properties": {
+          "tone": {
+            "type": "string",
+            "title": "Tone"
+          },
+          "claim": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claim"
+          },
+          "practice": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Practice"
+          },
+          "target": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target"
+          },
+          "months": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Months"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tone"
+        ],
+        "title": "AnswerIn"
+      },
+      "ptk__api__standing__CauseOut": {
+        "properties": {
+          "date_label": {
+            "type": "string",
+            "title": "Date Label"
+          },
+          "delta": {
+            "type": "number",
+            "title": "Delta"
+          },
+          "cause": {
+            "type": "string",
+            "title": "Cause"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date_label",
+          "delta",
+          "cause"
+        ],
+        "title": "CauseOut"
+      },
+      "ptk__api__standing__StatementOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "rival_id": {
+            "type": "integer",
+            "title": "Rival Id"
+          },
+          "rival": {
+            "type": "string",
+            "title": "Rival"
+          },
+          "date_label": {
+            "type": "string",
+            "title": "Date Label"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "rival_id",
+          "rival",
+          "date_label",
+          "kind",
+          "text"
+        ],
+        "title": "StatementOut"
       }
     }
   }

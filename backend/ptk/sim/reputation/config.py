@@ -81,7 +81,7 @@ class ReputationBalance(_Frozen):
     bands: tuple[float, ...]  # October's points by directory band 1..6
     prestige: PrestigeBalance
     card: CardCurve
-    appeal_floor: float = Field(ge=0, le=1)  # the appeal's Rep at reputation 0 (1 at 100)
+    appeal_span: float = Field(ge=0)  # the appeal's Rep gained from reputation 0 to 100
     causes_kept: int = Field(ge=1)  # the player's reputation changes kept with their causes
 
     @model_validator(mode="after")

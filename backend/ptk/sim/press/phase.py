@@ -66,7 +66,7 @@ def raise_moments(
             state = moments.queue_moment(
                 state,
                 "lateral",
-                {"result": move.detail},
+                {"result": f"a partner joins the firm from {name}"},
                 rival_id=move.firm_id,
                 person_id=move.person_id,
             )
@@ -90,11 +90,10 @@ def raise_moments(
     before = set(start.standing.reputation.stars)
     after = set(state.standing.reputation.stars)
     for person_id, practice in sorted(after - before):
-        person = state.person(person_id)
         state = moments.queue_moment(
             state,
             "lateral",
-            {"result": f"{person.first_name} {person.last_name} joins the firm"},
+            {"result": "a star partner joins the firm"},
             practice=practice,
             person_id=person_id,
         )

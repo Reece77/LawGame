@@ -123,15 +123,19 @@ def test_a_pulse_is_clamped_and_its_cause_kept(start: GameState, balance: Balanc
         assert b.value == pytest.approx(a.value + 2.0)
 
 
-def test_the_appeal_reads_reputation_above_a_floor(start: GameState, balance: Balance) -> None:
+def test_the_appeal_adds_reputation_to_the_partners_standing(
+    start: GameState, balance: Balance
+) -> None:
     pid = start.player.id
-    floor = balance.reputation.appeal_floor
+    standing = fx.partners_standing(start, pid, "corporate_ma")
+    assert standing > 0.5  # a founder's own practice
     low = fx.apply_pulse(start, pid, -100.0, "t", balance)
     high = fx.apply_pulse(start, pid, 100.0, "t", balance)
-    assert firm_reputation(low, pid, "corporate_ma", balance) == pytest.approx(floor)
-    assert firm_reputation(high, pid, "corporate_ma", balance) == pytest.approx(1.0)
+    assert firm_reputation(low, pid, "corporate_ma", balance) == pytest.approx(standing)
+    top = standing + balance.reputation.appeal_span
+    assert firm_reputation(high, pid, "corporate_ma", balance) == pytest.approx(top)
     mid = firm_reputation(start, pid, "corporate_ma", balance)
-    assert floor < mid < 1.0
+    assert standing < mid < top
 
 
 def test_the_card_reaches_the_top_only_near_the_top_of_the_market(

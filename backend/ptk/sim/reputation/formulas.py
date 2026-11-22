@@ -110,11 +110,34 @@ def market_quantile(
     return values[i]
 
 
+def partners_standing(state: GameState, firm_id: int, practice: str) -> float:
+    """The partners' own standing in a practice, 0-1: the best partner's familiarity,
+    (f - 1) / 19 (PT-M3a's measure). Clients follow a partner they know before they follow a
+    firm's name, so a new firm's first panels rest on it."""
+    from ptk.sim.data_models import PARTNER_LEVELS
+
+    staff = set(state.staff_ids(firm_id))
+    best = 0.0
+    for person in state.people:
+        if person.id in staff and person.level in PARTNER_LEVELS:
+            best = max(best, (person.familiarity[practice] - 1.0) / 19.0)
+    return best
+
+
 def appeal_rep(state: GameState, firm_id: int, practice: str, balance: Balance) -> float:
-    """The appeal's Rep (spec 7.1), 0-1: appeal_floor + (1 - appeal_floor) x reputation / 100.
-    The floor stands for the founders' own standing with the clients whose panels they bring."""
-    floor = balance.reputation.appeal_floor
-    return floor + (1.0 - floor) * reputation(state, firm_id, practice, balance) / MAX_REP
+    """The appeal's Rep (spec 7.1): the partners' standing in the practice plus appeal_span x
+    the firm's public reputation / 100, plus its directory band's appeal_bonus for the year.
+    Reputation adds to the partners' standing rather than replacing it, so a new firm's first
+    year is PT-M3a's (the earlier milestones' guards) and a firm that earns a name is above it
+    (PT-M16 decision 3)."""
+    from ptk.sim.rankings.effects import appeal_bonus
+
+    rep = reputation(state, firm_id, practice, balance)
+    return (
+        partners_standing(state, firm_id, practice)
+        + balance.reputation.appeal_span * rep / MAX_REP
+        + appeal_bonus(state, firm_id, practice, balance)
+    )
 
 
 def card_progress(state: GameState, firm_id: int, practice: str, balance: Balance) -> float:

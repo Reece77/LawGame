@@ -3,27 +3,27 @@
     [
       1,
       "1000_cash",
-      33932020
+      145705483
     ],
     [
       1,
       "1100_unbilled_wip",
-      189391245
+      28081346
     ],
     [
       1,
       "1110_wip_provision",
-      -94420894
+      -6465507
     ],
     [
       1,
       "1200_receivables",
-      36122
+      53967227
     ],
     [
       1,
       "1210_bad_debt_provision",
-      -362
+      -539674
     ],
     [
       1,
@@ -33,17 +33,17 @@
     [
       1,
       "2700_partner_current_accounts",
-      46329772
+      -59623331
     ],
     [
       1,
       "3000_partners_capital",
-      -80261792
+      -86082152
     ],
     [
       1,
       "3100_undistributed_profit",
-      5410131213
+      7538575109
     ],
     [
       1,
@@ -53,17 +53,17 @@
     [
       1,
       "4000_fees",
-      -6490209457
+      -8461679982
     ],
     [
       1,
       "4100_success_fees",
-      -28332228
+      -366547069
     ],
     [
       1,
       "5000_associate_salaries",
-      58066671
+      58256671
     ],
     [
       1,
@@ -73,37 +73,37 @@
     [
       1,
       "5100_staff_salaries",
-      366800000
+      440300000
     ],
     [
       1,
       "5200_benefits",
-      14516671
+      14564171
     ],
     [
       1,
       "6000_rent",
-      157200000
+      188700000
     ],
     [
       1,
       "6100_technology",
-      78600000
+      94350000
     ],
     [
       1,
       "6300_insurance",
-      41920000
+      50320000
     ],
     [
       1,
       "6700_write_offs",
-      10064800
+      4158824
     ],
     [
       1,
       "6900_general_admin",
-      278736219
+      356458884
     ],
     [
       101,
@@ -993,22 +993,22 @@
     [
       1106,
       "3200_drawings",
-      483218474878
+      343781554340
     ],
     [
       1106,
       "4000_fees",
-      -2006926343800
+      -2019782592448
     ],
     [
       1106,
       "5000_associate_salaries",
-      1501141202268
+      1652217704778
     ],
     [
       1106,
       "6900_general_admin",
-      22566666654
+      23783333330
     ],
     [
       1107,
@@ -3301,37 +3301,37 @@
   "matter_outcomes": [
     [
       "closed",
-      11
+      25
     ],
     [
       "collapsed",
-      3
+      2
     ],
     [
       "done",
-      13
+      16
     ],
     [
       "lost",
-      6
-    ],
-    [
-      "open",
       3
     ],
     [
-      "won",
+      "open",
       1
+    ],
+    [
+      "won",
+      2
     ]
   ],
-  "matters": "42e8dd0b6a60fcbe0138c3348785200785d025456371eb2368d7cb554b951323",
+  "matters": "ef51c6aebdc8dff6ec5b09742b8cbaad1f9975476a8709ee298c25353782cf04",
   "names": [
     "Jennifer King",
     "Kevin Carter",
     "Ashley Cook",
     "Whitney Brown"
   ],
-  "people": "ca4a1768c8df483a91fa877fea9a7bf9fd883837416715cda6ef20f680d44920",
-  "relationships": "72a0d5f3e4171899e2a987a03948b46c2677d63ddc155abc589e2c9566f57552",
-  "sha256": "702609983757634ae86c21d0a5a254d496056abc012746c30a089c8407ed5af6"
+  "people": "5fc40c86ff3ac3edf3c4166ef30cf301485cf725801c221c717c521ec1c23e8f",
+  "relationships": "d1181804400a4fd303cd2b6d3cb96acf621377084f9b542beea89dfbabdf0b6c",
+  "sha256": "42aa57cdff359cc394818aa4e38e9f90fa7147afeedb6f6028accc36167bbf16"
 }

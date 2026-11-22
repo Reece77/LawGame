@@ -57,6 +57,15 @@ KNOWN_MISSES: Final[tuple[KnownMiss, ...]] = (
         reason="$4.02M (PT-M7b; PT-M7: $4.07M): as T3.lawyers, to PT-M16 (Reece, 2026-11-22)",
     ),
     KnownMiss(
+        target="T1",  # do-nothing fails on at least 9 of 10 seeds
+        owner="PT-M18",
+        # score: minus the seeds where do-nothing fails; known while at least 8 of 10 fail
+        worse_than=-8.0,
+        reason="8/10 on PT-M16 (main 9/10): seed variance, rule 4 (the product manager, "
+        "2026-11-22, PR #22): seeds 11-40 main 26/30, PT-M16 28/30; all 40 main 35/40, "
+        "PT-M16 36/40",
+    ),
+    KnownMiss(
         target="T8.corporate",  # corporate-heavy firms' 2009 revenue -30% to -10% on 2008
         owner="accepted (Reece, 2026-11-22)",
         # score: the median change; known while it is at most -5% (a fall within noise of -10%)

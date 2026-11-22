@@ -24,8 +24,8 @@ from ptk.db import saves
 from ptk.sim.calendar import format_turn
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import NotFoundError
-from ptk.sim.reputation.formulas import reputation
 from ptk.sim.macro_seed import world_data
+from ptk.sim.reputation.formulas import reputation
 from ptk.sim.rivals import formulas as f
 from ptk.sim.rivals.actions import (
     ApproachFreeAgents,

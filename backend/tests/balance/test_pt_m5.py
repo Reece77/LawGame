@@ -1,9 +1,9 @@
 """PT-M5's balance checks (docs/balance-targets.md), printed (run with -s) and checked.
 
 T11: rivals hold history: each pinned rival's revenue within +-15% of its path in December
-2009 and December 2015 (pinned: a firms.yaml point that year whose revenue is sourced [S],
-the firm alive then in history), and history's top 10 by FY2015 revenue holds at least 8
-of the game's top 10, on seeds 1-10. The player's firm plays the biglaw spin-out unmanaged
+2009, 2015, 2020 and 2025 (PT-M10 added the last two; pinned: a firms.yaml point that year whose
+revenue is sourced [S], the firm alive then in history), and history's top 10 by FY2025
+revenue holds at least 8 of the game's top 10, on seeds 1-10. The player's firm plays the biglaw spin-out unmanaged
 (no strategy scripts exist before PT-M7).
 
 Conditional history (the brief): a player who hires a third of a historically collapsing
@@ -30,7 +30,8 @@ from tests.matters_support import grown_firm, top_up
 from tests.rivals_support import hire_away, play_until, rivals_month, start, turn_of
 
 SEEDS = range(1, 11)
-CHECK_YEARS = (2009, 2015)
+CHECK_YEARS = (2009, 2015, 2020, 2025)  # PT-M10: the pin runs to December 2025
+TOP_YEAR = CHECK_YEARS[-1]
 TOP = 10
 TOP_KEPT = 8  # tunable-exempt: the target
 FORWARD_SEEDS = 7  # tunable-exempt: the brief's criterion
@@ -62,7 +63,7 @@ def _pinned(data: GameData, year: int) -> dict[str, int]:
 def test_t11_rivals_hold_history(seed: int, data: GameData, balance: Balance) -> None:
     band = balance.rivals.pin.band
     state = start(data, balance, seed)
-    state, _ = play_until(state, data, balance, turn_of(state, 2016, 1), seed)
+    state, _ = play_until(state, data, balance, turn_of(state, TOP_YEAR + 1, 1), seed)
     worst, misses = 0.0, []
     for year in CHECK_YEARS:
         for key, revenue in _pinned(data, year).items():
@@ -76,10 +77,10 @@ def test_t11_rivals_hold_history(seed: int, data: GameData, balance: Balance) ->
             worst = max(worst, abs(gap))
             if abs(gap) > band:
                 misses.append(f"{key} {year}: {gap:+.0%}")
-    history = sorted(_pinned(data, 2015).items(), key=lambda kv: -kv[1])[:TOP]
+    history = sorted(_pinned(data, TOP_YEAR).items(), key=lambda kv: -kv[1])[:TOP]
     game = sorted(
         (f for f in state.rivals.firms if f.active),
-        key=lambda f: -next((h.revenue_cents for h in f.history if h.year == 2015), 0),
+        key=lambda f: -next((h.revenue_cents for h in f.history if h.year == TOP_YEAR), 0),
     )[:TOP]
     kept = len({k for k, _ in history} & {f.key for f in game})
     print(f"\nT11 seed {seed}: worst gap {worst:.1%}, top-10 kept {kept}, misses {misses}")

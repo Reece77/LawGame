@@ -45,7 +45,7 @@ def test_indices_are_one_in_2005_interpolate_and_hold(data: GameData) -> None:
     assert level(m, "ma", (2005, 1)) == 1.0
     a, b = level(m, "ma", (2006, 7)), level(m, "ma", (2007, 7))
     assert min(a, b) <= level(m, "ma", (2007, 1)) <= max(a, b)
-    assert level(m, "ma", (2030, 6)) == level(m, "ma", (2015, 7))  # after the last point
+    assert level(m, "ma", (2030, 6)) == level(m, "ma", (2025, 12))  # history held after 2025
 
 
 def test_the_crash_cuts_transactions_and_feeds_restructuring(

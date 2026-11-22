@@ -63,6 +63,9 @@ STREAM_IDS: Final = MappingProxyType(
         "founder_life": 50,  # (purpose, *key): retirement, a bar election, an annuity vote
         "family": 51,  # (head_id, index) a member; (head_id, 0, k) events; (pid, 1); (pid, 2, 0)
         "investments": 52,  # (person_id,): a player's month of investment returns
+        # PT-M10 (lane A, ids 65-69): the seeded world after history (ptk.sim.macro_seed)
+        "macro_seed": 65,  # (index_number,): an index's 2026-2034 path; (len(SERIES),) recessions
+        "scale_seed": 66,  # (0,) the seeded rate rises; (1,) the salary scale's seeded steps
         "misc": 99,  # tests only
     }
 )

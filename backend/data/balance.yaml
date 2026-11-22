@@ -168,6 +168,7 @@ energy: # the founding partner's monthly energy (TST formulas.md 6, M4c values; 
     exco_term: 4 # propose the exco_elected term for the December vote (spec 9.2)
     answer_pitch: 0 # approve or decline a pitch (the holder spends the energy to carry it out)
     hours_policy: 2 # change the firm's billable target (PT-M7b)
+    lay_off: 2 # let one associate or member of staff go (PT-M10; TST's fire)
 hiring: # searches and offers (TST formulas.md 7; spec 5.7)
   candidate_shelf_turns: 3 # months a lateral candidate stays open unless hired
   lowball_ratio: 0.85 # offers below this share of the ask are always declined
@@ -219,6 +220,7 @@ pay: # salaries, bonuses and costs per head (spec 5.4, 8.3; TST formulas.md 8)
     max_bp: 12000 # the boldest lead: 120% of the market scale
   bonus_month: 12 # year-end bonuses are paid in this calendar month (5010)
   discretionary_bonus_bp: { counsel: 1000, income_partner: 1500, paralegal: 500, trainee: 0, staff: 500, manager: 800, director: 1000, chief: 1500 } # bp of salary, off-scale levels
+  severance_months: 2 # PT-M10: months of salary paid at once to someone laid off (TST pays 1; 2009's BigLaw layoffs paid about 1-3 [A]), as well as their notice month
 morale: # morale 0-100 (TST formulas.md 9; spec 5.3)
   new_hire: 65 # a hire's morale on joining
   start: 65 # morale of a scenario's starting staff
@@ -240,6 +242,7 @@ morale: # morale 0-100 (TST formulas.md 9; spec 5.3)
   bonus_slope: 30 # December shock: clamp(bonus_slope x (bonus / market bonus - 1), min, max)
   bonus_min: -10
   bonus_max: 6
+  layoff_penalty: -3 # PT-M10: morale points to everyone remaining at the firm, per person laid off (TST's fire_penalty)
 resign: # resignation chance per month in bp (TST formulas.md 10; spec 5.3)
   base_bp: 170 # bp a month; TST M7a had 80 (10-25% a year); raised so associate attrition is about 18% a year (balance-targets T6)
   morale_floor: 50 # TST M10d's floor: below it the chance rises
@@ -939,6 +942,28 @@ macro: # PT-M7: how macro_history.yaml's indices act on the firm (ptk/sim/macro.
     writedown_bp: [500, 2000] # bp of the bill a request writes down, uniform
     collapse_month_bp: 300 # bp a month: an open deal's collapse chance per unit of its driver's shortfall below 1 (stream deal_collapse); PT-M7b tuning 2500 -> 300 (at 1250-2500 pyramid and steady died in the crash on most seeds)
     close_k: 0.3 # logit points off a deal's p_close per unit of its driver's shortfall below 1; PT-M7b tuning 2.0 -> 0.3
+  seeded: # PT-M10: the seeded world after history (ptk/sim/macro_seed.py; ADR PT-0015); streams macro_seed 65, scale_seed 66
+    start: [2026, 1] # the first seeded month: history (macro_history.yaml, salary_scale.yaml) is pinned through December 2025 (ADR PT-0002 2)
+    until: [2034, 12] # the last seeded month (the standard campaign's end)
+    fit_years: [2005, 2025] # each index's AR(1) is fitted to its July values over these years
+    mean_years: [2016, 2025] # a mean-reverting index reverts to its mean log level over these years
+    trend_series: [growth] # these revert to their fitted 2005-2025 log trend instead (long-run growth G keeps growing)
+    phi_range: [0.0, 0.9] # the fitted annual AR(1) coefficient is held in this range (a unit root would wander off)
+    noise_scale: 1.0 # multiplier on each fitted residual spread (1: history's)
+    episodes: # history's recessions, from the start of the fall to the trough; a seeded recession replays one of them
+      - { from: [2008, 7], trough: [2009, 4] } # the financial crisis
+      - { from: [2020, 2], trough: [2020, 4] } # the pandemic shock
+    recession_hazard_scale: 1.0 # multiplier on history's frequency (episodes / months fitted: 2 in 252)
+    recession_gap_months: 36 # months: the least time from one recession's start to the next's
+    rate_range: [0.0, 0.09] # a seeded January rate rise is held in this range (fraction)
+    scale: # the salary scale's seeded steps: the market leader raises when lateral heat and profits run hot
+      month: 6 # steps take effect in June (2016, 2018 and 2021's did)
+      heat_from: 1.1 # lateral heat index, the past 12 months' mean, at least this
+      rate_from: 0.04 # and the year's rate rise (the profits proxy) at least this
+      min_gap_years: 2 # years since the last step (2016 to 2018 was the shortest gap in history)
+      chance_bp: 5000 # bp: chance a hot year brings a step
+      step_years_from: 2016 # history's first-year steps from 2016 on are the step sizes drawn
+      fallback_step: 0.07 # the step when history gives none
 holiday: # PT-M7a, spec 4.2: Holiday and continue-until
   max_months: 36 # most months one holiday plays
   default_months: 6 # months the Holiday control offers

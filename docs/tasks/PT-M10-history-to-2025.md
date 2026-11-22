@@ -40,4 +40,11 @@
 
 ## Decisions made
 
+Recorded by the PT-M10 session (2026-11-22). Branch `claude/pt-m10-history-156q4l` (the session's assigned branch; the instructions' `pt-m10-history` name could not be pushed from a cloud session).
+
+1. **Sub-task 0: a layoff action.** Partner Track had no way to let anyone go (PT-M1b: "no firing (a follow-up)"), so Reece's pyramid rule needed one: `LayOff` (TST's `Fire`, ADR PT-0015 §6): an associate, counsel or member of staff (never a partner or founder) works a notice month and goes with `pay.severance_months` (2) of salary; everyone remaining loses `morale.layoff_penalty` (-3, TST's). Energy 2. No screen yet (follow-up).
+2. **Sub-task 0: the pyramid's rule** (`moves.lay_off_idle`): while three months' utilisation stays below 75%, lay off the lowest-rated associates that bring it back toward 85%, at most 10% of the associates a month (constants in `strategies.py`, as the scripts' other rules).
+3. **Sub-task 0: the heeded rocket's rule** (`moves.cfo_clear`): before every guaranteed lateral (the first included) it asks the CFO's forecast, `fx.forecast_breach` as the Finance screen shows it, and takes none until six month ends (`forecast_window` + 1) of trend show headroom now and for `forecast_months`, with no covenant broken and the revolver not called.
+4. **Sub-task 0: measures and rows.** T8 restructuring counts firms with 10+ lawyers in December 2008 (`report.T8_MIN_LAWYERS`); T8 corporate's row is "accepted" (Reece), known while the median fall is at least 5%; T2 is owned by PT-M18, T3 lawyers and T4 steady by PT-M16; T4 pyramid's and T8 restructuring's rows are removed (T4 pyramid prints FAIL, a band, not a gate, as it did above its bound in PT-M7b).
+
 ## Follow-ups

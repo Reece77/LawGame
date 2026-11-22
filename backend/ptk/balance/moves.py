@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from typing import Final
 
 from ptk.balance.game import PLAYER, Game, is_associate
-from ptk.sim.hiring.actions import Interview, MakeOffer, OpenSearch
+from ptk.sim.hiring.actions import Interview, LayOff, MakeOffer, OpenSearch
 from ptk.sim.ledger import REVOLVER
 from ptk.sim.matters.actions import Introduce, SetHoursPolicy, SetMatterHours, SetRatePolicy
 from ptk.sim.money import BP_DENOMINATOR
@@ -476,3 +476,45 @@ def push_hours(g: Game, monthly_hours: int) -> int:
         if g.act(SetMatterHours(g.founder_id, matter_id, p.id, (tenths + short) // TENTHS)):
             changed += 1
     return changed
+
+
+# --- PT-M10: Reece's script rules on PT-M7b's targets (2026-11-22) -------------------------
+
+
+def cfo_clear(g: Game) -> bool:
+    """T9's heeded rule: ask the CFO's forecast (the Finance screen's revolver card): True only
+    with six months of trend (`forecast_window` + 1 month ends) whose forecast shows headroom on
+    every covenant now and for `forecast_months`."""
+    from ptk.sim.partnership import formulas as fx
+
+    fp = g.state.partnership.of(PLAYER)
+    if fp is None:
+        return False
+    cfg = g.balance.partnership.revolver
+    if len(fp.pnl) < cfg.forecast_window + 1 or fp.called_turn is not None or fp.breach_months:
+        return False
+    departed = sum(
+        d.book_cents
+        for d in fp.departures
+        if d.equity and g.state.turn - d.turn < fx.MONTHS_PER_YEAR
+    )
+    return fx.forecast_breach(fp.pnl, departed, cfg) is None
+
+
+def lay_off_idle(g: Game, below: float, target: float, max_share: float) -> int:
+    """T4 pyramid's rule: while utilisation (three months) stays below `below`, let go the
+    associates (lowest shown rating first) that bring it back toward `target`, at most
+    `max_share` of the associates in a month. Returns the people laid off."""
+    util = utilisation(g)
+    if not g.months or util <= 0 or util >= below:
+        return 0
+    associates = sorted(
+        (p for p in g.lawyers() if is_associate(p.level)),
+        key=lambda p: (_score(g, p.id), -p.id),
+    )
+    staff = len(g.lawyers())
+    cut = min(round(staff * (1 - util / target)), int(len(associates) * max_share))
+    made = 0
+    for p in associates[: max(0, cut)]:
+        made += g.act(LayOff(g.founder_id, p.id))
+    return made

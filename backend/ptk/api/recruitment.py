@@ -43,6 +43,7 @@ from ptk.sim.hiring.rules import (
     offer_preview,
 )
 from ptk.sim.interfaces import HiringChannel
+from ptk.sim.macro_seed import world_data
 from ptk.sim.state import GameState
 
 CHANNEL_LABELS: dict[str, str] = {
@@ -271,6 +272,7 @@ def _candidate_out(
 
 
 def recruitment_view(state: GameState, data: GameData, balance: Balance) -> RecruitmentOut:
+    data = world_data(data, balance, state.save_meta.master_seed)  # PT-M10: the save's world
     firm = state.player
     founder = _founder(state)
     ym = turn_to_ym(state.turn, state.save_meta.start_ym)
@@ -388,6 +390,7 @@ def recruitment_view(state: GameState, data: GameData, balance: Balance) -> Recr
 
 
 def payroll_view(state: GameState, data: GameData, balance: Balance) -> PayrollOut:
+    data = world_data(data, balance, state.save_meta.master_seed)  # PT-M10: the save's world
     firm = state.player
     lines = monthly_cost_lines(state, firm.id, balance, data)
     staff = state.staff(firm.id)

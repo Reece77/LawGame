@@ -17,7 +17,7 @@ How the indices act (balance.yaml `macro:`):
 
 from __future__ import annotations
 
-import itertools
+import bisect
 
 from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance, ClientFailureDef, GameData, PracticeDef
@@ -32,44 +32,72 @@ def _month(ym: tuple[int, int]) -> int:
     return ym[0] * MONTHS + ym[1] - 1
 
 
-_POINTS: dict[tuple[int, str], tuple[tuple[int, float], ...]] = {}
+_POINTS: dict[tuple[int, str], tuple[MacroData, tuple[int, ...], tuple[float, ...]]] = {}
+_KEEP = 256  # tunable-exempt: memoised series (a save's seeded world adds its own)
 
 
-def _points(macro: MacroData, series: str) -> tuple[tuple[int, float], ...]:
-    """The series' (month, value) points, memoised per loaded data (data is immutable)."""
+def _points(macro: MacroData, series: str) -> tuple[tuple[int, ...], tuple[float, ...]]:
+    """The series' point months and values, memoised per loaded data (data is immutable; the
+    entry holds the data, so a reused id never reads another world's points)."""
     key = (id(macro), series)
-    pts = _POINTS.get(key)
-    if pts is None:
-        pts = tuple((_month(p.ym), p.values[series]) for p in macro.points if series in p.values)
-        _POINTS[key] = pts
-    return pts
+    hit = _POINTS.get(key)
+    if hit is None or hit[0] is not macro:
+        pts = [(_month(p.ym), p.values[series]) for p in macro.points if series in p.values]
+        hit = (macro, tuple(m for m, _ in pts), tuple(v for _, v in pts))
+        if len(_POINTS) >= _KEEP:
+            _POINTS.clear()
+        _POINTS[key] = hit
+    return hit[1], hit[2]
 
 
 def level(macro: MacroData, series: str, ym: tuple[int, int]) -> float:
     """The index `series` at month `ym`, interpolated between the points that give it."""
-    pts = _points(macro, series)
+    months, values = _points(macro, series)
     m = _month(ym)
-    if m <= pts[0][0]:
-        return pts[0][1]
-    for (m0, v0), (m1, v1) in itertools.pairwise(pts):
-        if m <= m1:
-            return v0 + (v1 - v0) * (m - m0) / (m1 - m0)
-    return pts[-1][1]
+    if m <= months[0]:
+        return values[0]
+    i = bisect.bisect_left(months, m)
+    if i >= len(months):
+        return values[-1]
+    m0, m1, v0, v1 = months[i - 1], months[i], values[i - 1], values[i]
+    return v0 + (v1 - v0) * (m - m0) / (m1 - m0)
 
 
 def at_turn(data: GameData, series: str, turn: int, start: tuple[int, int]) -> float:
     return level(data.macro, series, turn_to_ym(turn, start))
 
 
+def shock_share(macro: MacroData, what: str, practice: str, ym: tuple[int, int]) -> float:
+    """PT-M10: the share of a practice's `what` ("demand" or "hours") a dated shock takes this
+    month (0 outside every shock)."""
+    m = _month(ym)
+    lost = 0.0
+    for shock in macro.shocks:
+        start = _month(shock.from_ym)
+        if start <= m < start + shock.months:
+            table = shock.demand if what == "demand" else shock.hours
+            lost = max(lost, table.get(practice, 0.0))
+    return lost
+
+
+def docket_slowed(macro: MacroData, ym: tuple[int, int]) -> bool:
+    """PT-M10: are the courts slowed this month (a shock with `docket`)?"""
+    m = _month(ym)
+    return any(
+        s.docket and _month(s.from_ym) <= m < _month(s.from_ym) + s.months for s in macro.shocks
+    )
+
+
 def demand_factor(
     practice: PracticeDef, ym: tuple[int, int], data: GameData, balance: Balance
 ) -> float:
-    """G x (1 + beta (I - 1)), the driver term floored (spec 6)."""
+    """G x (1 + beta (I - 1)), the driver term floored (spec 6); PT-M10: less a dated shock's
+    share."""
     cfg = balance.macro
     growth = level(data.macro, "growth", ym)
     index = level(data.macro, practice.index, ym)
     driver = max(cfg.demand_floor, 1.0 + cfg.beta_scale * practice.beta * (index - 1.0))
-    return growth * driver
+    return growth * driver * (1.0 - shock_share(data.macro, "demand", practice.key, ym))
 
 
 def weighted(index: float, weight: float) -> float:

@@ -20,7 +20,7 @@
 | **boutique** | grow to 25 lawyers, leverage ≤ 2 | two practices, high rates, premium clients | conservative | pure lockstep; admit one partner every two years |
 | **steady** | grow while utilisation ≥ 80%; campus class each year | add a practice at each 30 lawyers; cross-sell | revolver ≤ 1 × monthly fees | modified lockstep; admit by business case |
 | **lateral rocket** | lateral partners whenever a book of $2M+ is available, with guarantees | follow laterals' books | revolver to its covenant limit | eat what you kill |
-| **pyramid** | leverage 5+, utilisation targets 2,100 hours (PT-M7b: an hours policy of 2,300) | volume work, fixed fees | moderate | two-tier; few equity admissions |
+| **pyramid** | leverage 5+, utilisation targets 2,100 hours (PT-M7b: an hours policy of 2,300); PT-M10: lays off associates while utilisation stays below 75% | volume work, fixed fees | moderate | two-tier; few equity admissions |
 
 All strategies staff named matters by the default rule, bill monthly, accept the first settlement offer above the expected value and never de-equitise (except pyramid).
 
@@ -47,6 +47,15 @@ Recorded in `backend/ptk/balance/known_misses.py` by Reece's decision on PT-M7 (
 
 PT-M7b (2026-11-21) removed T5 (standard and hard), T9 (the rocket and the heeded rocket) and T10 (the ratio), which now pass on seeds 1-10, and carries T2, T3 (lawyers), T4 (steady and pyramid) and T8 (corporate and restructuring) with its readings back to Reece (the brief's "Decisions made").
 
+**Reece's decisions on PT-M7b's targets (2026-11-22), applied by PT-M10 (sub-task 0):**
+
+- **T2:** the measure is unchanged; the known miss is owned by PT-M18.
+- **T3 lawyers and T4 steady:** bands unchanged; the known misses are owned by PT-M16 (reputation that gates the card).
+- **T4 pyramid:** band unchanged; the pyramid script lays off associates while its utilisation stays below a threshold (a script fix, TST's §9 rule 2). Its row is no longer a known miss (PT-M10's reading is in its brief).
+- **T8 corporate-heavy:** PT-M7b's −9.0% is **accepted as noise** against the −10% edge: its known-miss row (owner "accepted") holds while the median fall is at least 5%.
+- **T8 restructuring** is measured only on firms with at least 10 lawyers in December 2008 (Measures).
+- **T9 heeded:** the heeded rocket asks the CFO's forecast before a guaranteed lateral and takes none until six months of trend show headroom (Measures).
+
 ## Measures (PT-M7)
 
 How `ptk/balance/report.py` reads each target (`make balance`; `tools/balance_runner.py --runs` prints one line per run). Year 1 is 2005, year 5 2009, year 11 2015; a run is 132 turns of `biglaw_spinout` over the pure sim, critical events answered with their first choice, events written by `MockLLMAdapter`.
@@ -60,8 +69,8 @@ How `ptk/balance/report.py` reads each target (`make balance`; `tools/balance_ru
 | T5 | steady's share of seeds dissolved by December 2015 at each difficulty |
 | T6 | attrition: associates who left in a year / the year's average associates, for each full year 2006-2015 with two or more associates, median over years and the four active strategies; partners: steady's September 2006 class (the first class a January 2005 firm can hire) made equity partner by December 2015 (track 8: eligible from December 2014) |
 | T7 | utilisation: monthly, 2006-2015; realisation, collection and lockup: December's trailing-12-month values; medians over the five strategies' standard runs |
-| T8 | 2009's revenue over 2008's: "corporate-heavy" = M&A, PE, capital markets and banking at least half of 2008's revenue; "restructuring" = restructuring above 20% of 2009's; every standard run that qualifies (the `restructuring` variant, steady with a restructuring lateral from 2005, makes sure some do) |
-| T9 | lateral rocket's dissolutions by December 2015; the `lateral-rocket-heeded` variant: when the CFO warns (or a covenant breaks), it stops new laterals, suspends draws, calls $1M of capital and repays the revolver from spare cash |
+| T8 | 2009's revenue over 2008's: "corporate-heavy" = M&A, PE, capital markets and banking at least half of 2008's revenue; "restructuring" = restructuring above 20% of 2009's, **on firms with at least 10 lawyers in December 2008** (Reece, 2026-11-22); every standard run that qualifies (the `restructuring` variant, steady with a restructuring lateral from 2005, makes sure some do). Corporate-heavy's −9% (PT-M7b) is accepted as noise |
+| T9 | lateral rocket's dissolutions by December 2015; the `lateral-rocket-heeded` variant: when the CFO warns (or a covenant breaks), it stops new laterals, suspends draws, calls $1M of capital and repays the revolver from spare cash; and (Reece, 2026-11-22) before any guaranteed lateral it asks the CFO's forecast (the Finance screen's): none until six months of trend (`forecast_window` + 1 month ends) show headroom on every covenant now and for `forecast_months` |
 | T10 | burnout starts among associates / associate-years, pooled over each strategy's runs |
 | T11 | PT-M5's measure (`tests/balance/test_pt_m5.py`), read from the steady runs' rivals |
 | T12 | printed: the steady runs' median turn in 2015 (pure sim, on the runner's machine with its workers sharing cores); the gate is `make check-timing`'s test (PT-M5's, run alone, CLAUDE.md §9 rule 6) |

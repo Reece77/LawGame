@@ -47,6 +47,7 @@ from typing import Final
 
 from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import PARTNER_LEVELS, Balance, GameData, KindDef
+from ptk.sim.macro import shock_share
 from ptk.sim.matters import formulas as fx
 from ptk.sim.matters.models import (
     PRO_BONO_CLIENT_ID,
@@ -417,6 +418,7 @@ def month_hours(
 ) -> MonthHours:
     """Allocate the month: named matters first, then flow, then pro bono (module docstring)."""
     turn = state.turn
+    ym = turn_to_ym(turn, state.save_meta.start_ym)
     firm = state.firm(firm_id)
     index = {p: practice_index(firm, p) for p in data.practice_keys}  # PT-M7b: by practice
     earners = fee_earners(state, firm_id, data, balance)
@@ -443,6 +445,9 @@ def month_hours(
         )
         # ceil (PT-M7a): a matter a hair from done rounded to 0 and never finished
         left = math.ceil(m.hours_needed_tenths * (1.0 - completed_share(m, kind)) / f_team)
+        paused = shock_share(data.macro, "hours", m.practice, ym)  # PT-M10: a dated shock
+        if paused > 0:
+            plan = {pid: round(t * (1.0 - paused)) for pid, t in plan.items()}
         for pid, t in _scale(plan, max(left, 0)).items():
             if t > 0:
                 wanted[(pid, m.id)] = t

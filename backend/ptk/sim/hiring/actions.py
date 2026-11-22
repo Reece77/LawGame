@@ -3,8 +3,11 @@
 Ported from backend/tst/sim/actions/hiring.py @ 02fba2aa (Tech Startup Tycoon); changed:
 firms; Partner Track's channels (campus registration in January-April, campus offers only
 in August, recruiter, job post, referral) with tier filters and a target level; no equity,
-option pool, poach, exec, interest or city searches; no firing (a follow-up); scouting a
-search's candidates (TST 11.12) and the firm's pay policy are hiring actions here.
+option pool, poach, exec, interest or city searches; scouting a
+search's candidates (TST 11.12) and the firm's pay policy are hiring actions here. PT-M10 ports
+TST's `Fire` as `LayOff`: the person works a notice month (ended by phase 1, as a resignation
+is) and takes `pay.severance_months` of salary at once; everyone remaining loses
+`morale.layoff_penalty`. Partners leave through the partnership's own actions, never this one.
 
 Every action names an `actor_id`: the player's founding partner, or a PT-M2 delegate through
 the hook in `ptk.sim.interfaces`. The actor's employer is the acting firm. Energy is spent at
@@ -33,17 +36,19 @@ from ptk.sim.errors import (
     UnknownRoleError,
     UnknownSearchError,
 )
-from ptk.sim.hiring.formulas import ROLL_RANGE, energy_cost, roll_succeeds
+from ptk.sim.hiring.formulas import ROLL_RANGE, energy_cost, monthly_salary_cents, roll_succeeds
 from ptk.sim.hiring.models import CHANNELS, Candidate, Offer, PayPolicy, PolicyMode, Search
 from ptk.sim.hiring.rules import campus_offers_open, campus_registration_open
 from ptk.sim.interfaces import HiringChannel
-from ptk.sim.ledger import CASH, LedgerBalances, LedgerEntry, account_balance
+from ptk.sim.ledger import CASH, LedgerBalances, LedgerEntry, LedgerLine, account_balance
 from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.people.models import Person
 from ptk.sim.people.reveal import apply_knowledge_action
+from ptk.sim.scale import clamp_morale
 from ptk.sim.state import (
     GameState,
     with_candidates,
+    with_employment,
     with_firm,
     with_offer,
     with_person_states,
@@ -121,6 +126,15 @@ class SetPayPolicy:
     kind: Literal["set_pay_policy"] = "set_pay_policy"
 
 
+@dataclass(frozen=True, slots=True)
+class LayOff:
+    """PT-M10: let an associate, counsel or member of staff go (TST's fire)."""
+
+    actor_id: int
+    person_id: int
+    kind: Literal["lay_off"] = "lay_off"
+
+
 type HiringAction = (
     OpenSearch
     | CloseSearch
@@ -130,6 +144,7 @@ type HiringAction = (
     | MakeOffer
     | WithdrawOffer
     | SetPayPolicy
+    | LayOff
 )
 # The generator for randomness inside one action, created only if the action draws: stream
 # `actions` keyed by seq for the player, `delegate` keyed (person, n) for delegates (ADR-0015).
@@ -412,6 +427,59 @@ def set_pay_policy(state: GameState, action: SetPayPolicy, balance: Balance) -> 
     return Outcome(with_firm(state, replace(state.firm(firm), pay_policy=policy)))
 
 
+PARTNER_LEVELS = frozenset({"income_partner", "equity_partner"})
+
+
+def lay_off(state: GameState, action: LayOff, balance: Balance) -> Outcome:
+    """PT-M10 (TST's fire): a notice month, then gone; severance paid now from cash."""
+    from ptk.sim.hiring.phases import salary_account  # phases reads this module's types
+
+    firm = acting_firm(state, action.actor_id)
+    employment = state.employment_of(action.person_id)
+    if employment is None or employment.firm_id != firm or employment.status != "active":
+        raise UnknownPersonError(f"person {action.person_id} is not on the firm's active staff")
+    person = state.person(action.person_id)
+    if person.is_founder or person.id == action.actor_id:
+        raise InvalidActionError("a founding partner or the actor cannot be laid off")
+    if person.level in PARTNER_LEVELS:
+        raise InvalidActionError("partners leave through the partnership (de-equitisation)")
+    state = spend_energy(state, action.actor_id, "lay_off", balance)
+    state = with_employment(
+        state, replace(employment, status="notice", end_turn=state.turn + 1, end_reason="fired")
+    )
+    severance = monthly_salary_cents(employment.salary_cents) * balance.pay.severance_months
+    account = salary_account(person.level, balance)
+    entries: tuple[LedgerEntry, ...] = ()
+    if severance > 0 and account is not None:
+        entries = (
+            LedgerEntry(
+                turn=state.turn,
+                firm_id=firm,
+                memo=f"Severance: {_name(person)}",
+                lines=(LedgerLine(account, severance), LedgerLine(CASH, -severance)),
+            ),
+        )
+    penalty = balance.morale.layoff_penalty
+    moved = []
+    for pid in state.staff_ids(firm):
+        ps = state.person_state(pid)
+        if pid != person.id and ps.morale is not None:
+            moved.append(replace(ps, morale=clamp_morale(ps.morale + penalty)))
+    state = with_person_states(state, moved)
+    log = (
+        inbox_item(
+            state.turn,
+            firm,
+            "laid_off",
+            link_kind="person",
+            link_id=person.id,
+            name=_name(person),
+            severance_cents=severance,
+        ),
+    )
+    return Outcome(state, entries, log)
+
+
 def apply_hiring(
     state: GameState,
     action: HiringAction,
@@ -441,3 +509,5 @@ def apply_hiring(
             return withdraw_offer(state, action, balance)
         case SetPayPolicy():
             return set_pay_policy(state, action, balance)
+        case LayOff():
+            return lay_off(state, action, balance)

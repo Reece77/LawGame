@@ -25,17 +25,20 @@ from tests.hiring_helpers import start
 
 
 def test_scale_history(data: GameData) -> None:
-    """Spec 5.4: $125,000 for a first-year in 2005, $160,000 from 2007; v1 holds after 2015."""
+    """Spec 5.4: $125,000 for a first-year in 2005, $160,000 from 2007; PT-M10: history to 2025
+    ($225,000 from 2024), held in the unseeded data after it (a save's world seeds 2026 on)."""
     assert market_scale_cents(data, (2005, 6), "associate_1") == 12_500_000
     assert market_scale_cents(data, (2007, 1), "associate_1") == 16_000_000
     assert market_scale_cents(data, (2015, 12), "associate_1") == 16_000_000
-    assert market_scale_cents(data, (2030, 1), "associate_1") == 16_000_000
+    assert market_scale_cents(data, (2021, 7), "associate_1") == 20_500_000  # Davis Polk's step
+    assert market_scale_cents(data, (2030, 1), "associate_1") == 22_500_000
     assert class_index("senior_associate") == 7
     assert market_scale_cents(data, (2007, 1), "senior_associate") == market_scale_cents(
         data, (2007, 1), "associate_8"
     )
     assert data.salary_scale.market_bonuses(2008)[0] < data.salary_scale.market_bonuses(2007)[0]
-    assert data.salary_scale.market_bonuses(2012) == data.salary_scale.market_bonuses(2011)
+    # a year without a row pays the latest row's (PT-M10: 2013 repeated 2012's, research s4d)
+    assert data.salary_scale.market_bonuses(2013) == data.salary_scale.market_bonuses(2012)
 
 
 def test_policy_lags_and_leads(data: GameData) -> None:

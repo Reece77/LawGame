@@ -20,6 +20,7 @@ from ptk.db.models import (
 from ptk.db.session import make_sessionmaker, shared_engine
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import GameOverError
+from ptk.sim.macro_seed import world_data
 from ptk.sim.org.actions import ACTION_TYPES, OrgAction, OrgOutcome, apply_org_action
 from ptk.sim.org.delegates import DelegateAction
 from ptk.sim.org.models import (
@@ -185,7 +186,8 @@ def run_org_action(path: Path, action: OrgAction, balance: Balance, data: GameDa
         state = load_state(session)
         if state.ended:
             raise GameOverError("the game is over")
-        outcome = apply_org_action(state, action, balance, data)
+        world = world_data(data, balance, state.save_meta.master_seed)  # PT-M10
+        outcome = apply_org_action(state, action, balance, world)
         write_people(session, outcome.state)
         write_org(session, outcome.state)
         log_decision(session, state.turn, "player", action_payload(action))

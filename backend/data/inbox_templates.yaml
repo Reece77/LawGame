@@ -25,6 +25,9 @@ templates:
   resigned:
     title: "{name} has resigned"
     body: "{name} has handed in their notice and will leave at the start of next month."
+  laid_off: # PT-M10: the firm let someone go
+    title: "{name} has been let go"
+    body: "{name} leaves at the start of next month with {severance_cents} of severance."
   employee_left:
     title: "{name} has left"
     body: "{name} has left the firm ({reason})."

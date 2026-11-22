@@ -29,6 +29,7 @@ from ptk.sim.errors import NotFoundError
 from ptk.sim.interfaces import ApproachRequest, Suitor, partner_flight
 from ptk.sim.ledger import CASH, PARTNERS_CAPITAL
 from ptk.sim.macro import lateral_heat
+from ptk.sim.macro_seed import world_data
 from ptk.sim.partnership import actions as pa
 from ptk.sim.partnership import formulas as fx
 from ptk.sim.partnership.books import drawn_cents, headroom_cents
@@ -357,6 +358,7 @@ def partnership_view(
     balance: Balance,
     data: GameData,
 ) -> PartnershipOut:
+    data = world_data(data, balance, state.save_meta.master_seed)  # PT-M10: the save's world
     fp = _fp(state)
     firm = state.player.id
     you = state.founder_of(firm)

@@ -29,6 +29,9 @@ def main() -> int:
     parser.add_argument("--no-extra", action="store_true", help="skip T5's, T8's and T9's runs")
     parser.add_argument("--jobs", type=int, default=os.cpu_count() or 1)
     parser.add_argument("--runs", action="store_true", help="also print one line per run")
+    parser.add_argument(
+        "--long", action="store_true", help="PT-M10: also steady to December 2034 (T11 to 2025)"
+    )
     parser.add_argument("--strict", action="store_true", help="exit 1 if any band fails too")
     parser.add_argument(
         "--data", default="data", help="data folder (relative to backend/): a tuning copy"
@@ -39,7 +42,7 @@ def main() -> int:
     os.chdir(BACKEND)
     sys.path.insert(0, str(BACKEND))
     from ptk.balance.known_misses import verdict
-    from ptk.balance.report import evaluate, run_all, runs_table, table
+    from ptk.balance.report import evaluate, run_all, runs_table, shock_table, table
     from ptk.balance.strategies import STRATEGIES
 
     strategies = args.strategies or list(STRATEGIES)
@@ -54,10 +57,13 @@ def main() -> int:
         extra_runs=not args.no_extra,
         jobs=args.jobs,
         data_dir=args.data,
+        long_runs=args.long,
     )
     rows = evaluate(results)
     if args.runs:
         print(runs_table(results), end="\n\n")
+        if args.long:
+            print(shock_table(results), end="\n\n")
     print(table(rows))
     print(
         f"\n{len(results)} runs x {args.turns} turns in {time.perf_counter() - started:.0f} s "

@@ -66,6 +66,9 @@ STREAM_IDS: Final = MappingProxyType(
         # PT-M9 (lane B, ids 60-64): automation
         "auto_quality": 60,  # (area_index, firm_id, slot): an area's month: q, then its draws
         "auto_events": 61,  # (event_id,): an owner's answer to a routine event: q
+        # PT-M10 (lane A, ids 65-69): the seeded world after history (ptk.sim.macro_seed)
+        "macro_seed": 65,  # (index_number,): an index's 2026-2034 path; (len(SERIES),) recessions
+        "scale_seed": 66,  # (0,) the seeded rate rises; (1,) the salary scale's seeded steps
         "misc": 99,  # tests only
     }
 )

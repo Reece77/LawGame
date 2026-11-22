@@ -15,6 +15,7 @@ from ptk.sim.errors import UnknownDifficultyError, UnknownScenarioError
 from ptk.sim.family.setup import FamilySpec, start_family
 from ptk.sim.hiring.phases import starting_pay
 from ptk.sim.ledger import CASH, PARTNERS_CAPITAL, LedgerEntry
+from ptk.sim.macro_seed import world_data
 from ptk.sim.matters.rates import starting_card
 from ptk.sim.matters.setup import new_market
 from ptk.sim.money import BP_DENOMINATOR, pct_of
@@ -52,6 +53,7 @@ def new_game(
     real_people: bool | None = None,
     family: FamilySpec | None = None,
 ) -> NewGame:
+    data = world_data(data, balance, master_seed)  # PT-M10: the save's world
     scenario = data.scenario(scenario_id)
     if scenario is None or not scenario.available:
         raise UnknownScenarioError(f"unknown or unavailable scenario {scenario_id!r}")

@@ -28,7 +28,7 @@ check-frontend:
 # The balance runner (docs/balance-targets.md, PT-M7): five strategies x 10 seeds x 132 turns,
 # plus T5's difficulty runs and the T8/T9 variants; prints every target, exits 1 on a gate.
 balance:
-	uv run --project backend python tools/balance_runner.py --runs
+	uv run --project backend python tools/balance_runner.py --runs --long
 
 # The long balance tests (CI: nightly.yml; dispatch it on a branch for long runs).
 nightly:

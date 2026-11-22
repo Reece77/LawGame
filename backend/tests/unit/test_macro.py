@@ -45,7 +45,7 @@ def test_indices_are_one_in_2005_interpolate_and_hold(data: GameData) -> None:
     assert level(m, "ma", (2005, 1)) == 1.0
     a, b = level(m, "ma", (2006, 7)), level(m, "ma", (2007, 7))
     assert min(a, b) <= level(m, "ma", (2007, 1)) <= max(a, b)
-    assert level(m, "ma", (2030, 6)) == level(m, "ma", (2015, 7))  # after the last point
+    assert level(m, "ma", (2030, 6)) == level(m, "ma", (2025, 12))  # history held after 2025
 
 
 def test_the_crash_cuts_transactions_and_feeds_restructuring(
@@ -85,7 +85,8 @@ def test_collections_stress_and_lateral_heat(data: GameData, balance: Balance) -
 
 def test_market_rates_follow_history_then_free_play(data: GameData, balance: Balance) -> None:
     assert market_rise(2006, data, balance) == data.macro.rate_rise[2006]
-    assert market_rise(2020, data, balance) == balance.rivals.rate_inflation
+    assert market_rise(2020, data, balance) == data.macro.rate_rise[2020]  # PT-M10: to 2025
+    assert market_rise(2030, data, balance) == balance.rivals.rate_inflation  # unseeded data
     index = market_index(_turn(2010, 2), START, data, balance)
     expected = 1.0
     for year in range(2006, 2011):

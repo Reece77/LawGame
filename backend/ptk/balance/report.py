@@ -35,8 +35,18 @@ FINAL_YEAR: Final = 2015  # "year 11"
 YEAR_5: Final = 2009
 DIFFICULTY_RUNS: Final = (("steady", "easy"), ("steady", "hard"))  # T5
 VARIANT_RUNS: Final = ("lateral-rocket-heeded", "restructuring")  # T9, T8
+# PT-M10: steady played to December 2034 (360 turns): T11 at 2020 and 2025, the 2020 shock,
+# and the 30-year steady run printed for information (PT-M18 sets 30-year targets)
+LONG_RUN: Final = "steady-30y"
+LONG_TURNS: Final = 360
+T11_YEARS: Final = (2009, 2015)  # the 132-turn runs' checkpoints (top 10 at 2015)
+T11_LONG_YEARS: Final = (2009, 2015, 2020, 2025)  # the long runs' (top 10 at 2025)
+SHOCK_BAND: Final = (-0.30, -0.10)  # 2020 Q2 against Q1, a corporate-heavy firm
 CLASS_YEAR: Final = 2006  # T6: the first September class a 2005 start can hire
 TRANSACTIONAL: Final = ("corporate_ma", "private_equity", "capital_markets", "banking_finance")
+T8_MIN_LAWYERS: Final = (
+    10  # T8 restructuring: firms this large in December 2008 (Reece, 2026-11-22)
+)
 CENTS: Final = 100
 MILLION: Final = 1_000_000 * CENTS
 
@@ -142,15 +152,28 @@ def _result(
         months=tuple(game.months),
         class_size=len(klass),
         class_equity=equity,
-        rivals=rival_check(state, game.data, game.balance) if state.turn >= turns else None,
+        rivals=(
+            rival_check(
+                state, game.data, game.balance, T11_LONG_YEARS if turns >= LONG_TURNS else T11_YEARS
+            )
+            if state.turn >= turns
+            else None
+        ),
         refused=dict(game.refused),
     )
 
 
-def rival_check(state: GameState, data: GameData, balance: Balance) -> RivalCheck:
-    """T11 (PT-M5's measure): pinned rivals' FY revenue against history in 2009 and 2015,
-    and how many of history's top 10 by 2015 revenue are in the game's top 10."""
+def rival_check(
+    state: GameState,
+    data: GameData,
+    balance: Balance,
+    years: Sequence[int] = T11_YEARS,
+) -> RivalCheck:
+    """T11 (PT-M5's measure): pinned rivals' FY revenue against history at each checkpoint
+    year, and how many of history's top 10 by the last year's revenue are in the game's top 10
+    (PT-M10: 2020 and 2025 too, on the long runs)."""
     band = balance.rivals.pin.band
+    final = years[-1]
     ended = {
         e.firm: e.ym[0]
         for e in data.rivals.firms.events
@@ -169,7 +192,7 @@ def rival_check(state: GameState, data: GameData, balance: Balance) -> RivalChec
         return out
 
     worst, misses = 0.0, 0
-    for year in (2009, FINAL_YEAR):
+    for year in years:
         for key, revenue in pinned(year).items():
             firm = state.rivals.by_key(key)
             record = (
@@ -183,10 +206,10 @@ def rival_check(state: GameState, data: GameData, balance: Balance) -> RivalChec
             gap = record.revenue_cents / revenue - 1
             worst = max(worst, abs(gap))
             misses += abs(gap) > band
-    history = sorted(pinned(FINAL_YEAR).items(), key=lambda kv: -kv[1])[:10]
+    history = sorted(pinned(final).items(), key=lambda kv: -kv[1])[:10]
     game = sorted(
         (f for f in state.rivals.firms if f.active),
-        key=lambda f: -next((h.revenue_cents for h in f.history if h.year == FINAL_YEAR), 0),
+        key=lambda f: -next((h.revenue_cents for h in f.history if h.year == final), 0),
     )[:10]
     kept = len({k for k, _ in history} & {f.key for f in game})
     return RivalCheck(worst, misses, kept)
@@ -199,17 +222,21 @@ def run_all(
     extra_runs: bool = True,
     jobs: int = 1,
     data_dir: str = "data",
+    long_runs: bool = False,
 ) -> list[RunResult]:
     """Every strategy on every seed at standard difficulty, plus T5's difficulty runs and the
-    T8/T9 variants."""
-    plan = [(s, seed, "standard") for s in strategies for seed in seeds]
+    T8/T9 variants; `long_runs` (PT-M10): steady to December 2034 as well (first, the
+    longest)."""
+    plan = [(s, seed, "standard", turns) for s in strategies for seed in seeds]
     if extra_runs:
-        plan += [(s, seed, d) for s, d in DIFFICULTY_RUNS for seed in seeds]
-        plan += [(v, seed, "standard") for v in VARIANT_RUNS for seed in seeds]
+        plan += [(s, seed, d, turns) for s, d in DIFFICULTY_RUNS for seed in seeds]
+        plan += [(v, seed, "standard", turns) for v in VARIANT_RUNS for seed in seeds]
+    if long_runs:
+        plan = [(LONG_RUN, seed, "standard", LONG_TURNS) for seed in seeds] + plan
     if jobs <= 1:
-        return [play(s, seed, turns, d, data_dir) for s, seed, d in plan]
+        return [play(s, seed, n, d, data_dir) for s, seed, d, n in plan]
     with ProcessPoolExecutor(jobs) as pool:
-        futures = [pool.submit(play, s, seed, turns, d, data_dir) for s, seed, d in plan]
+        futures = [pool.submit(play, s, seed, n, d, data_dir) for s, seed, d, n in plan]
         return [f.result() for f in futures]
 
 
@@ -275,6 +302,8 @@ def evaluate(results: Sequence[RunResult]) -> list[Row]:
         *_t10(results),
         *_t11(results),
         *_t12(results),
+        *_shock(results),
+        *_thirty(results),
     ]
 
 
@@ -487,7 +516,7 @@ def _change(r: RunResult) -> float | None:
 def _t8(results: Sequence[RunResult]) -> list[Row]:
     corporate, restructuring = [], []
     for r in results:
-        if r.difficulty != "standard":
+        if r.difficulty != "standard" or r.strategy == LONG_RUN:  # the long run repeats steady
             continue
         mix = r.year_practice_revenue(2008)
         total = sum(mix.values())
@@ -499,7 +528,9 @@ def _t8(results: Sequence[RunResult]) -> list[Row]:
         if sum(mix[p] for p in TRANSACTIONAL) / total >= 0.5:
             corporate.append(change)
         mix09 = r.year_practice_revenue(2009)
-        if sum(mix09.values()) > 0 and mix09["restructuring"] / sum(mix09.values()) > 0.2:
+        dec08 = r.december(2008)
+        sized = dec08 is not None and dec08.lawyers >= T8_MIN_LAWYERS
+        if sized and sum(mix09.values()) > 0 and mix09["restructuring"] / sum(mix09.values()) > 0.2:
             restructuring.append(change)
     c, s = _med(corporate), _med(restructuring)
     return [
@@ -513,7 +544,7 @@ def _t8(results: Sequence[RunResult]) -> list[Row]:
         ),
         Row(
             "T8.restructuring",
-            f"2009 vs 2008, restructuring > 20% (n={len(restructuring)})",
+            f"2009 vs 2008, restructuring > 20%, 10+ lawyers (n={len(restructuring)})",
             _pct(s),
             "-5% to +20%",
             _in(s, -0.05, 0.20),
@@ -583,26 +614,29 @@ def _t10(results: Sequence[RunResult]) -> list[Row]:
 
 
 def _t11(results: Sequence[RunResult]) -> list[Row]:
-    checks = [
-        r.rivals
-        for r in results
-        if r.rivals is not None and r.difficulty == "standard" and r.strategy == "steady"
-    ]
-    if not checks:
-        return []
-    worst = max(c.worst_gap for c in checks)
-    misses = sum(c.misses for c in checks)
-    kept = min(c.kept for c in checks)
-    return [
-        Row(
-            "T11",
-            "rivals hold history (worst gap, misses, top-10 kept)",
-            f"{worst:.1%}, {misses}, {kept}",
-            "±15%, 0, >= 8",
-            misses == 0 and kept >= 8,
-            gate=True,
+    rows = []
+    for strategy, label in (("steady", "2009, 2015"), (LONG_RUN, "2009-2025")):
+        checks = [
+            r.rivals
+            for r in results
+            if r.rivals is not None and r.difficulty == "standard" and r.strategy == strategy
+        ]
+        if not checks:
+            continue
+        worst = max(c.worst_gap for c in checks)
+        misses = sum(c.misses for c in checks)
+        kept = min(c.kept for c in checks)
+        rows.append(
+            Row(
+                "T11" if strategy == "steady" else "T11.2025",
+                f"rivals hold history at {label} (worst gap, misses, top-10 kept)",
+                f"{worst:.1%}, {misses}, {kept}",
+                "±15%, 0, >= 8",
+                misses == 0 and kept >= 8,
+                gate=True,
+            )
         )
-    ]
+    return rows
 
 
 def _t12(results: Sequence[RunResult]) -> list[Row]:
@@ -620,6 +654,88 @@ def _t12(results: Sequence[RunResult]) -> list[Row]:
             score=t,
         )
     ]
+
+
+def quarter_revenue(r: RunResult, year: int, quarter: int) -> int:
+    months = range(3 * quarter - 2, 3 * quarter + 1)
+    return sum(m.revenue_cents for m in r.months if m.ym[0] == year and m.ym[1] in months)
+
+
+def corporate_heavy(r: RunResult, year: int) -> bool:
+    mix = r.year_practice_revenue(year)
+    total = sum(mix.values())
+    return total > 0 and sum(mix[p] for p in TRANSACTIONAL) / total >= 0.5
+
+
+def shock_reading(r: RunResult) -> tuple[float, bool] | None:
+    """PT-M10: 2020's April-June revenue against January-March, and whether Q4 2021's
+    revenue is back to Q1 2020's (None: the firm was gone by 2021)."""
+    q1, q2 = quarter_revenue(r, 2020, 1), quarter_revenue(r, 2020, 2)
+    if q1 <= 0 or r.december(2021) is None:
+        return None
+    return q2 / q1 - 1, quarter_revenue(r, 2021, 4) >= q1
+
+
+def _shock(results: Sequence[RunResult]) -> list[Row]:
+    runs = [r for r in _runs(results, LONG_RUN) if corporate_heavy(r, 2019)]
+    readings = [x for x in (shock_reading(r) for r in runs) if x is not None]
+    if not readings:
+        return []
+    change = _med(c for c, _ in readings)
+    back = sum(ok for _, ok in readings)
+    lo, hi = SHOCK_BAND
+    # recovered: the median firm's Q4 2021 is back to its Q1 2020 (a quarter's revenue is
+    # lumpy, so a firm-by-firm "all" reads deal timing; PT-M10's decision)
+    return [
+        Row(
+            "T8.2020",
+            f"2020 Q2 vs Q1, corporate-heavy firms (n={len(readings)}); back by Q4 2021",
+            f"{_pct(change)}, {back}/{len(readings)}",
+            "-30% to -10%, most back",
+            _in(change, lo, hi) and 2 * back > len(readings),
+            score=change,
+        )
+    ]
+
+
+def _thirty(results: Sequence[RunResult]) -> list[Row]:
+    runs = _runs(results, LONG_RUN)
+    if not runs:
+        return []
+    lawyers = _med((r.december(2034) or r.months[-1]).lawyers for r in runs)
+    revenue = _med(r.year_revenue(2034) for r in runs)
+    pep = _med(
+        0 if r.dissolved or r.december(2034) is None else (r.december(2034).pep_cents or 0)  # type: ignore[union-attr]
+        for r in runs
+    )
+    gone = sum(r.dissolved for r in runs)
+    return [
+        Row(
+            "30y.steady",
+            "steady at December 2034: lawyers, revenue, PEP (medians), dissolved (information)",
+            f"{lawyers}, {_m(revenue)}, {_m(pep)}, {gone}/{len(runs)}",
+            "printed (PT-M18)",
+            None,
+        )
+    ]
+
+
+def shock_table(results: Sequence[RunResult]) -> str:
+    """PT-M10: the long runs' 2020 shock and 2034 numbers, one line a seed."""
+    head = "seed  heavy  2020Q1   2020Q2   Q2/Q1   2021Q4  back  2034 lawyers  revenue      PEP"
+    lines = [head]
+    for r in sorted(_runs(results, LONG_RUN), key=lambda r: r.seed):
+        reading = shock_reading(r)
+        last = r.december(2034)
+        lines.append(
+            f"{r.seed:4d}  {'yes' if corporate_heavy(r, 2019) else 'no ':5s}"
+            f"{_m(quarter_revenue(r, 2020, 1)):>8s} {_m(quarter_revenue(r, 2020, 2)):>8s} "
+            f"{_pct(reading[0] if reading else None):>7s} {_m(quarter_revenue(r, 2021, 4)):>8s} "
+            f"{('yes' if reading and reading[1] else 'no'):>5s} "
+            f"{(last.lawyers if last else 0):12d} {_m(r.year_revenue(2034)):>8s} "
+            f"{_m(last.pep_cents if last else None):>8s} {r.game_state}"
+        )
+    return "\n".join(lines)
 
 
 def table(rows: Sequence[Row]) -> str:

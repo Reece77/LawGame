@@ -32,7 +32,7 @@ from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance, GameData, KindDef
 from ptk.sim.interfaces import seat_effect
 from ptk.sim.log import LogItem, inbox_item
-from ptk.sim.macro import driver_shortfall
+from ptk.sim.macro import docket_slowed, driver_shortfall
 from ptk.sim.matters import formulas as fx
 from ptk.sim.matters.intake import bump, with_matter, with_relationship
 from ptk.sim.matters.models import (
@@ -304,6 +304,11 @@ def matter_month(
         craft_hours=matter.craft_hours + team.craft * team.hours,
         craft_weight=matter.craft_weight + team.hours,
     )
+    # PT-M10: courts slowed by a dated shock (2020): an open case's planned duration grows
+    if matter.court is not None and docket_slowed(
+        data.macro, turn_to_ym(turn, state.save_meta.start_ym)
+    ):
+        matter = replace(matter, planned_months=matter.planned_months + 1)
     # pace and deadlines
     pace = matter.hours_needed_tenths / max(1, matter.planned_months)
     if worked < balance.progress.under_pace * pace:

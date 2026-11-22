@@ -110,3 +110,40 @@ def test_golden_seed(
         target.write_text(json.dumps(got, indent=2, sort_keys=True) + "\n")
     assert target.exists(), "no golden snapshot: run with --update-golden"
     assert json.loads(target.read_text()) == got
+
+
+def _world_fingerprint(data: GameData, balance: Balance, seed: int) -> dict[str, object]:
+    """PT-M10: a save's seeded world from January 2026 (ptk.sim.macro_seed): its indices, rate
+    rises and salary scale; history before it is asserted equal across seeds instead."""
+    from ptk.sim.macro_seed import world_data
+
+    world = world_data(data, balance, seed)
+    points = [[p.ym, sorted(p.values.items())] for p in world.macro.points if p.ym >= (2026, 1)]
+    rises = sorted((y, r) for y, r in world.macro.rate_rise.items() if y >= 2026)
+    scale = [[r.from_ym, r.salaries] for r in world.salary_scale.scale]
+    return {
+        "indices": hashlib.sha256(json.dumps(points).encode()).hexdigest(),
+        "rate_rise": rises,
+        "scale": scale,
+    }
+
+
+def test_golden_seeded_world(
+    data: GameData, balance: Balance, request: pytest.FixtureRequest
+) -> None:
+    """Every seed's world is reproducible; two seeds share history to December 2025 and diverge
+    from January 2026 (PT-M10's acceptance criterion)."""
+    from ptk.sim.macro import level
+    from ptk.sim.macro_data import SERIES
+    from ptk.sim.macro_seed import world_data
+
+    got = {str(seed): _world_fingerprint(data, balance, seed) for seed in SEEDS}
+    target = SNAPSHOTS / "seeded_world.json"
+    if request.config.getoption("--update-golden"):
+        target.write_text(json.dumps(got, indent=2, sort_keys=True) + "\n")
+    assert target.exists(), "no golden snapshot: run with --update-golden"
+    assert json.loads(json.dumps(got)) == json.loads(target.read_text())
+    a, b = (world_data(data, balance, s) for s in SEEDS[:2])
+    history = [(y, m) for y in range(2005, 2026) for m in range(1, 13)]
+    assert all(level(a.macro, s, ym) == level(b.macro, s, ym) for s in SERIES for ym in history)
+    assert any(level(a.macro, s, (2026, 1)) != level(b.macro, s, (2026, 1)) for s in SERIES)

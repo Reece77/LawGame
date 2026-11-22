@@ -8,7 +8,8 @@ Partner Track's own list (no TST misses), Reading and the verdicts kept as they 
 A known miss names its target, the milestone that owns the fix and a "worse than" bound on
 the target's score. A miss within the bound prints KNOWN MISS (<owner>) and does not fail the
 job; a miss beyond it, or a miss of any target not listed, still fails. Only Reece or the product
-manager decides a row (CLAUDE.md section 9, rule 3); the rows below are Reece's (2026-11-21).
+manager decides a row (CLAUDE.md section 9, rule 3); the rows below are Reece's (2026-11-21,
+re-owned 2026-11-22).
 """
 
 from __future__ import annotations
@@ -26,57 +27,42 @@ class KnownMiss:
 
 
 KNOWN_MISSES: Final[tuple[KnownMiss, ...]] = (
-    # Recorded by Reece's decision on PT-M7 (via the product manager, 2026-11-21), each owned by
-    # PT-M7b. PT-M7b removed the rows whose targets now pass (T5.standard, T5.hard,
-    # T9.rocket, T9.heeded, T10.ratio) and carries the rest with its readings (seeds 1-10)
-    # back to Reece: docs/tasks/PT-M7b-pressure-and-balance.md, "Decisions made".
+    # Recorded by Reece's decision on PT-M7 (via the product manager, 2026-11-21) and re-owned
+    # by Reece's decisions on PT-M7b's targets (2026-11-22, docs/tasks/PT-M10-history-to-2025.md
+    # sub-task 0): T2 moves to PT-M18; T3 lawyers and T4 steady to PT-M16 (reputation that
+    # gates the card); T8 corporate's -9% is accepted as noise. PT-M10's readings are in its
+    # brief's "Decisions made".
     KnownMiss(
         target="T2",  # no strategy has the best score on more than 6 of 10 seeds
-        owner="PT-M7b",
+        owner="PT-M18",
         # score: the most wins of one strategy; known while at most 9 of 10
         worse_than=9.0,
-        reason="steady 9, boutique 1 (PT-M7b; PT-M7: steady 9, pyramid 1): with the card, "
-        "difficulty, crisis, forecast, hours policy and December comp rounds steady still grows "
-        "with its demand and survives 9 of 10; for Reece",
+        reason="steady 9, boutique 1 (PT-M7b; PT-M7: steady 9, pyramid 1): the measure is "
+        "unchanged and the miss moves to PT-M18 (Reece, 2026-11-22)",
     ),
     KnownMiss(
         target="T3.lawyers",  # steady 100-250 lawyers in December 2015
-        owner="PT-M7b",
+        owner="PT-M16",
         # score: minus the median lawyers; known while at least 45
         worse_than=-45.0,
-        reason="50 (PT-M7b; PT-M7: 53): a lower card makes a firm poorer, not bigger (at a "
-        "65% start steady dissolved on 9 of 10 seeds in its first year); for Reece",
+        reason="50 (PT-M7b; PT-M7: 53): a lower card makes a firm poorer, not bigger; the band "
+        "is unchanged and the miss moves to PT-M16's reputation that gates the card (Reece, "
+        "2026-11-22)",
     ),
     KnownMiss(
         target="T4.steady",  # steady PEP $0.5-1.2M in 2015
-        owner="PT-M7b",
+        owner="PT-M16",
         # score: median PEP in $M; known while at most $5.0M
         worse_than=5.0,
-        reason="$4.02M (PT-M7b; PT-M7: $4.07M): as T3.lawyers; for Reece",
-    ),
-    KnownMiss(
-        target="T4.pyramid",  # pyramid PEP $0.7-1.6M in 2015
-        owner="PT-M7b",
-        worse_than=2.5,  # score: median PEP in $M
-        reason="$3.19M (PT-M7b, above its bound: the hours policy bills more and its card is "
-        "near the full card; at a 9500 card 6 of 10 pyramids dissolved in the crash, $0.00M; "
-        "PT-M7: $1.80M); for Reece",
+        reason="$4.02M (PT-M7b; PT-M7: $4.07M): as T3.lawyers, to PT-M16 (Reece, 2026-11-22)",
     ),
     KnownMiss(
         target="T8.corporate",  # corporate-heavy firms' 2009 revenue -30% to -10% on 2008
-        owner="PT-M7b",
-        # score: the median change; known while it is at most +5%
-        worse_than=0.05,
-        reason="-9.0% (PT-M7b; -11.1% at a 9500 card, which broke PT-M4's exodus guard; PT-M7: "
-        "-1.3%): a stronger crisis discount pushes realisation under T7's 84%; for Reece",
-    ),
-    KnownMiss(
-        target="T8.restructuring",  # restructuring-heavy firms' 2009 revenue -5% to +20%
-        owner="PT-M7b",
-        # score: the median change; known while at most +55%
-        worse_than=0.55,
-        reason="+31.1% on 2-3 runs (PT-M7b, restructuring beta -0.8, estate_mult 15; PT-M7: "
-        "+40.7% on 3): the qualifying firms are small ones that caught an estate; for Reece",
+        owner="accepted (Reece, 2026-11-22)",
+        # score: the median change; known while it is at most -5% (a fall within noise of -10%)
+        worse_than=-0.05,
+        reason="-9.0% (PT-M7b; -11.1% at a 9500 card): accepted as noise by Reece "
+        "(2026-11-22; docs/balance-targets.md)",
     ),
 )
 

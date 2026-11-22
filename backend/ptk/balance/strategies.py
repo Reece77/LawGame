@@ -25,6 +25,10 @@ PYRAMID_HOURS: Final = (
 )
 # PT-M7b: pyramid's hours policy, a firm-wide billable target (the brief's 2,300-2,400)
 PYRAMID_POLICY_HOURS: Final = 2300
+# PT-M10 (Reece, 2026-11-22): a pyramid lays off associates while utilisation stays low
+PYRAMID_LAYOFF_BELOW: Final = 0.75  # three months' utilisation under this: lay off
+PYRAMID_LAYOFF_TARGET: Final = 0.85  # ... enough associates to bring it back toward this
+PYRAMID_LAYOFF_MAX: Final = 0.10  # at most this share of the associates in a month
 CORPORATE: Final = "corporate_ma"
 LITIGATION: Final = "commercial_litigation"
 # The order steady adds practices in (one at each 30 lawyers): cross-sell from M&A first.
@@ -185,14 +189,18 @@ def restructuring(g: Game) -> None:
 def lateral_rocket(g: Game, heeded: bool = False) -> None:
     """Lateral partners whenever a book of $2M+ is available, with guarantees; associates in
     the laterals' practices when busy; the revolver to its covenant limit; eat what you kill.
-    `heeded` (T9): when the CFO warns, stop guarantees and repay the revolver."""
+    `heeded` (T9): when the CFO warns, stop guarantees and repay the revolver; PT-M10: before a
+    guaranteed lateral, ask the CFO's forecast and take none until it shows headroom."""
     mv.answer_election(g)
     mv.comp_system(g, "eat_what_you_kill")
     mv.set_rates(g, None)
     mv.december_votes(g, 1)
     mv.comp_round(g)  # PT-M7b (eat what you kill: no lever)
     warned = heeded and mv.heed_warning(g)
-    if not warned and mv.bank_quiet(g):
+    # PT-M10 (Reece, 2026-11-22): the heeded rocket asks the CFO's forecast before a guaranteed
+    # lateral and takes none until six months of trend show headroom
+    asked = not heeded or mv.cfo_clear(g)
+    if not warned and asked and mv.bank_quiet(g):
         for practice in [CORPORATE, LITIGATION, *STEADY_ADDS][: 2 + len(g.lawyers()) // 15]:
             if mv.lateral_partner(
                 g, practice, mv.LateralRule(min_book_cents=200_000_000, guarantee_years=3)
@@ -214,7 +222,8 @@ def lateral_rocket_heeded(g: Game) -> None:
 def pyramid(g: Game) -> None:
     """Leverage 5+, associates hired only when utilisation reaches 88% (a 2,100-hour year),
     volume work at rates below the market (market - 2 points), two-tier with few equity
-    admissions (income partners instead), a moderate revolver (two months' fees)."""
+    admissions (income partners instead), a moderate revolver (two months' fees); PT-M10:
+    associates laid off while utilisation stays below 75%."""
     mv.answer_election(g)
     mv.comp_system(g, "modified_lockstep", two_tier=True)
     mv.set_rates(g, max(0, _market_bp(g) - 200))
@@ -226,6 +235,8 @@ def pyramid(g: Game) -> None:
     _campus_split(g, held, max(3, lawyers // 6), delegated=True)
     mv.hours_policy(g, PYRAMID_POLICY_HOURS)  # PT-M7b: the staffing rule plans toward it
     mv.push_hours(g, PYRAMID_HOURS)  # a 2,100-hour year's plan for every associate
+    # PT-M10 (Reece, 2026-11-22): associates laid off while utilisation stays low
+    mv.lay_off_idle(g, PYRAMID_LAYOFF_BELOW, PYRAMID_LAYOFF_TARGET, PYRAMID_LAYOFF_MAX)
     if mv.utilisation(g) >= 0.90 and mv.bank_quiet(g, cash_months=1.0):
         _grow(g, held, max(2, lawyers // 6))
     if len(held) < 2 + lawyers // 40 and mv.bank_quiet(g):
@@ -254,6 +265,7 @@ STRATEGIES: Final[dict[str, Script]] = {
 VARIANTS: Final[dict[str, Script]] = {
     "lateral-rocket-heeded": lateral_rocket_heeded,  # T9
     "restructuring": restructuring,  # T8
+    "steady-30y": steady,  # PT-M10: steady to December 2034 (T11 at 2020 and 2025, 2020's shock)
     "steady-automated": steady_automated,  # PT-M9 (ptk/balance/automated.py)
 }
 PLAYABLE: Final[dict[str, Script]] = {**STRATEGIES, **VARIANTS}

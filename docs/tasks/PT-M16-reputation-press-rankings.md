@@ -66,7 +66,7 @@ Recorded by the PT-M16 session (2026-11-22). Readings are seeds 1-10, steady, Ja
 | 10 | 36 | 50 | $2.77M | $3.12M | 8 |
 | **Median** | **48** | **56** | **$3.92M** | **$4.06M** | **8 (7 of 10 seeds)** |
 
-T3 lawyers moves toward its band (100-250; median 48 -> 56) but stays a miss; T4 steady moves slightly away from its band ($0.5-1.2M; $3.92M -> $4.06M): earned reputation lifts the card and demand, so a firm earns more per partner. No `reputation.*` key brings either into its band. **For Reece (proposed default):** keep both known misses with these readings; T4 steady's band was set before reputation could raise a firm's card, and a $5M PEP for a 60-80 lawyer firm in 2015 is in line with the Am Law 50's profit per partner.
+T3 lawyers moves toward its band (100-250; median 48 -> 56) but stays a miss; T4 steady moves slightly away from its band ($0.5-1.2M; $3.92M -> $4.06M): earned reputation lifts the card and demand, so a firm earns more per partner. No `reputation.*` key brings either into its band. **For Reece (proposed default):** keep both known misses with these readings; T4 steady's band was set before reputation could raise a firm's card, and a $4M PEP for a 50-80 lawyer firm in 2015 is in line with the Am Law 50's profit per partner.
 
 ## Follow-ups
 

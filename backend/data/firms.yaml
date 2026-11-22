@@ -53,6 +53,38 @@ firms:
     revenue_cents: 241000000000
     lawyers: 1691
     src: rev S G15; lawyers D M1
+  - year: 2016
+    revenue_cents: 249500000000
+    src: 'rev S ATL-G17, ABA17 (history-2016-2025 s6)'
+  - year: 2017
+    revenue_cents: 258200000000
+    lawyers: 1784
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 263300000000
+    lawyers: 1694
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2020
+    revenue_cents: 266300000000
+    src: 'rev S ATL-G21 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 302200000000
+    lawyers: 1644
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2022
+    revenue_cents: 302000000000
+    src: 'rev S ATL23, ABA23 (history-2016-2025 s6)'
+  - year: 2023
+    revenue_cents: 327000000000
+    src: 'rev S LF24 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 366900000000
+    lawyers: 1774
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 407300000000
+    lawyers: 1756
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: baker_mckenzie
   name: Baker & McKenzie
   short: Baker & McKenzie
@@ -89,6 +121,31 @@ firms:
     revenue_cents: 262000000000
     lawyers: 5011
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 267000000000
+    lawyers: 4719
+    src: 'rev S ATL-G17; lawyers S ATL-G17 (history-2016-2025 s6)'
+  - year: 2020
+    revenue_cents: 290000000000
+    src: 'rev S ATL-G21 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 312700000000
+    lawyers: 4795
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2022
+    revenue_cents: 330000000000
+    src: 'rev S ATL23, ABA23 (history-2016-2025 s6)'
+  - year: 2023
+    revenue_cents: 328700000000
+    src: 'rev S LF24 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 339500000000
+    lawyers: 4595
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 364000000000
+    lawyers: 4451
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: jones_day
   name: Jones Day
   short: Jones Day
@@ -125,6 +182,33 @@ firms:
     revenue_cents: 194000000000
     lawyers: 2530
     src: rev S G15; lawyers D M1
+  - year: 2016
+    revenue_cents: 197700000000
+    lawyers: 2523
+    src: 'rev S ATL-G17; lawyers S ATL-G17 (history-2016-2025 s6)'
+  - year: 2017
+    revenue_cents: 195900000000
+    lawyers: 2513
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 207700000000
+    lawyers: 2514
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2020
+    revenue_cents: 222000000000
+    src: 'rev S ABA21 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 244600000000
+    lawyers: 2406
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 288000000000
+    lawyers: 2422
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 308100000000
+    lawyers: 2438
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: latham
   name: Latham & Watkins
   short: Latham
@@ -161,6 +245,41 @@ firms:
     revenue_cents: 265000000000
     lawyers: 2186
     src: rev S G15; lawyers D M1
+  - year: 2016
+    revenue_cents: 282300000000
+    src: 'rev S ATL-G17, ABA17 (history-2016-2025 s6)'
+  - year: 2017
+    revenue_cents: 306400000000
+    lawyers: 2436
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2018
+    revenue_cents: 338600000000
+    src: 'rev S snip YH19 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 376800000000
+    lawyers: 2720
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2020
+    revenue_cents: 433400000000
+    src: 'rev S ATL-G21 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 548900000000
+    lawyers: 3078
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2022
+    revenue_cents: 532100000000
+    src: 'rev S ATL23, ABA23 (history-2016-2025 s6)'
+  - year: 2023
+    revenue_cents: 568800000000
+    src: 'rev S LF24 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 700000000000
+    lawyers: 3584
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 830000000000
+    lawyers: 3724
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: sidley
   name: Sidley Austin Brown & Wood
   short: Sidley
@@ -196,6 +315,35 @@ firms:
     revenue_cents: 186000000000
     lawyers: 1780
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 203600000000
+    lawyers: 1873
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 233800000000
+    lawyers: 1922
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2020
+    revenue_cents: 246300000000
+    src: 'rev S ATL-G21 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 279500000000
+    lawyers: 1893
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2022
+    revenue_cents: 292200000000
+    src: 'rev D ATL23 prints "$3.922B" at rank 6, below  (history-2016-2025 s6)'
+  - year: 2023
+    revenue_cents: 310000000000
+    src: 'rev S LF24 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 344000000000
+    lawyers: 1979
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 373800000000
+    lawyers: 2045
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: white_case
   name: White & Case
   short: White & Case
@@ -231,6 +379,32 @@ firms:
     revenue_cents: 152000000000
     lawyers: 1978
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 180400000000
+    lawyers: 2039
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 218500000000
+    lawyers: 2204
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2020
+    revenue_cents: 238800000000
+    src: 'rev S ATL-G21 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 287000000000
+    lawyers: 2464
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2023
+    revenue_cents: 294900000000
+    src: 'rev S LF24 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 331700000000
+    lawyers: 2598
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 359400000000
+    lawyers: 2643
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: weil
   name: Weil, Gotshal & Manges
   short: Weil
@@ -267,6 +441,26 @@ firms:
     revenue_cents: 116000000000
     lawyers: 1173
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 139100000000
+    lawyers: 1118
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 151800000000
+    lawyers: 1126
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 185600000000
+    lawyers: 1180
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 202500000000
+    lawyers: 1228
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 207800000000
+    lawyers: 1196
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: mayer_brown
   name: Mayer, Brown, Rowe & Maw
   short: Mayer Brown
@@ -302,6 +496,26 @@ firms:
     revenue_cents: 125000000000
     lawyers: 1478
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 131300000000
+    lawyers: 1571
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 148400000000
+    lawyers: 1632
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 184000000000
+    lawyers: 1748
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 198300000000
+    lawyers: 1766
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 217100000000
+    lawyers: 1733
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: morgan_lewis
   name: Morgan, Lewis & Bockius
   short: Morgan Lewis
@@ -337,6 +551,35 @@ firms:
     revenue_cents: 184000000000
     lawyers: 1754
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 200100000000
+    lawyers: 1943
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 226500000000
+    lawyers: 2063
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2020
+    revenue_cents: 244600000000
+    src: 'rev S ATL-G21 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 257800000000
+    lawyers: 1992
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2022
+    revenue_cents: 274500000000
+    src: 'rev S ATL23 (history-2016-2025 s6)'
+  - year: 2023
+    revenue_cents: 289900000000
+    src: 'rev S LF24 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 309900000000
+    lawyers: 1960
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 336200000000
+    lawyers: 2043
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: kirkland
   name: Kirkland & Ellis
   short: Kirkland
@@ -373,6 +616,41 @@ firms:
     revenue_cents: 230000000000
     lawyers: 1641
     src: rev S G15; lawyers D M1
+  - year: 2016
+    revenue_cents: 265100000000
+    src: 'rev S ATL-G17, ABA17 (history-2016-2025 s6)'
+  - year: 2017
+    revenue_cents: 316500000000
+    lawyers: 2000
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2018
+    revenue_cents: 375700000000
+    src: 'rev S snip YH19 / L360-18 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 415500000000
+    lawyers: 2598
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2020
+    revenue_cents: 483000000000
+    src: 'rev S ABA21, ATL-G21 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 604200000000
+    lawyers: 3025
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2022
+    revenue_cents: 651400000000
+    src: 'rev S ATL23, ABA23 (history-2016-2025 s6)'
+  - year: 2023
+    revenue_cents: 720800000000
+    src: 'rev S LF24 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 880200000000
+    lawyers: 3828
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 1055600000000
+    lawyers: 4145
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: gibson_dunn
   name: Gibson, Dunn & Crutcher
   short: Gibson Dunn
@@ -408,6 +686,32 @@ firms:
     revenue_cents: 153000000000
     lawyers: 1216
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 164300000000
+    lawyers: 1275
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 200800000000
+    lawyers: 1351
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 248000000000
+    lawyers: 1538
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2022
+    revenue_cents: 273600000000
+    src: 'rev S ATL23 (history-2016-2025 s6)'
+  - year: 2023
+    revenue_cents: 307400000000
+    src: 'rev S LF24 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 355800000000
+    lawyers: 1940
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 421100000000
+    lawyers: 2063
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: sullivan_cromwell
   name: Sullivan & Cromwell
   short: Sullivan & Cromwell
@@ -444,6 +748,26 @@ firms:
     revenue_cents: 131000000000
     lawyers: 797
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 140100000000
+    lawyers: 812
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 146700000000
+    lawyers: 809
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 176500000000
+    lawyers: 797
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 205100000000
+    lawyers: 879
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 227600000000
+    lawyers: 908
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: cravath
   name: Cravath, Swaine & Moore
   short: Cravath
@@ -480,6 +804,26 @@ firms:
     revenue_cents: 66650000000
     lawyers: 472
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 70700000000
+    lawyers: 504
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 80000000000
+    lawyers: 526
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 100100000000
+    lawyers: 492
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 120000000000
+    lawyers: 532
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 129000000000
+    lawyers: 572
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: wachtell
   name: Wachtell, Lipton, Rosen & Katz
   short: Wachtell
@@ -515,6 +859,26 @@ firms:
     revenue_cents: 83150000000
     lawyers: 262
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 76300000000
+    lawyers: 243
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 88200000000
+    lawyers: 265
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 111200000000
+    lawyers: 288
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 119600000000
+    lawyers: 267
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 138500000000
+    lawyers: 272
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: davis_polk
   name: Davis Polk & Wardwell
   short: Davis Polk
@@ -551,6 +915,26 @@ firms:
     revenue_cents: 110000000000
     lawyers: 865
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 124000000000
+    lawyers: 967
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 144400000000
+    lawyers: 975
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 197000000000
+    lawyers: 1025
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 254000000000
+    lawyers: 1175
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 320000000000
+    lawyers: 1237
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: simpson_thacher
   name: Simpson Thacher & Bartlett
   short: Simpson Thacher
@@ -587,6 +971,26 @@ firms:
     revenue_cents: 127000000000
     lawyers: 960
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 137600000000
+    lawyers: 988
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 161900000000
+    lawyers: 996
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 222400000000
+    lawyers: 1163
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 289600000000
+    lawyers: 1490
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 355300000000
+    lawyers: 1761
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: paul_weiss
   name: Paul, Weiss, Rifkind, Wharton & Garrison
   short: Paul Weiss
@@ -623,6 +1027,26 @@ firms:
     revenue_cents: 110900000000
     lawyers: 956
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 130200000000
+    lawyers: 1000
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 138800000000
+    lawyers: 1020
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 185000000000
+    lawyers: 1008
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 263400000000
+    lawyers: 1250
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 326000000000
+    lawyers: 1407
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: cleary
   name: Cleary Gottlieb Steen & Hamilton
   short: Cleary
@@ -658,6 +1082,26 @@ firms:
     revenue_cents: 121000000000
     lawyers: 1302
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 121400000000
+    lawyers: 1214
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 121100000000
+    lawyers: 1210
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 141900000000
+    lawyers: 1051
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 170000000000
+    lawyers: 1078
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 195000000000
+    lawyers: 1110
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: debevoise
   name: Debevoise & Plimpton
   short: Debevoise
@@ -693,6 +1137,26 @@ firms:
     revenue_cents: 75690000000
     lawyers: 622
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 82200000000
+    lawyers: 631
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 104900000000
+    lawyers: 710
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 132900000000
+    lawyers: 788
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 162300000000
+    lawyers: 932
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 176500000000
+    lawyers: 944
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: shearman
   name: Shearman & Sterling
   short: Shearman
@@ -728,6 +1192,29 @@ firms:
     revenue_cents: 86030000000
     lawyers: 846
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 95500000000
+    lawyers: 882
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 96800000000
+    lawyers: 849
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 101200000000
+    lawyers: 727
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2023
+    revenue_cents: 83700000000
+    src: 'rev A snip BL-AOS: "dropped more than 17% from over (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 370600000000
+    lawyers: 3900
+    src: 'rev S WG24 A&O Shearman (global); lawyers S WG24 A&O Shearman (global) (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 369400000000
+    lawyers: 3000
+    src: 'rev S WG25 A&O Shearman (global); lawyers S WG25 A&O Shearman (global) (history-2016-2025 s6)'
 - key: milbank
   name: Milbank, Tweed, Hadley & McCloy
   short: Milbank
@@ -763,6 +1250,26 @@ firms:
     revenue_cents: 77110000000
     lawyers: 647
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 91700000000
+    lawyers: 690
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 106900000000
+    lawyers: 765
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 135900000000
+    lawyers: 819
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 185900000000
+    lawyers: 961
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 213700000000
+    lawyers: 1025
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: fried_frank
   name: Fried, Frank, Harris, Shriver & Jacobson
   short: Fried Frank
@@ -798,6 +1305,26 @@ firms:
     revenue_cents: 50430000000
     lawyers: 409
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 63500000000
+    lawyers: 491
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 77600000000
+    lawyers: 538
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 95100000000
+    lawyers: 581
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 113600000000
+    lawyers: 718
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 121800000000
+    lawyers: 740
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: cadwalader
   name: Cadwalader, Wickersham & Taft
   short: Cadwalader
@@ -833,6 +1360,20 @@ firms:
     revenue_cents: 46350000000
     lawyers: 451
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 40800000000
+    lawyers: 373
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 60900000000
+    lawyers: 413
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2023
+    revenue_cents: 55500000000
+    src: 'rev D FY2024 $638M / 1.15 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 63800000000
+    src: 'rev S snip BL-CWT (history-2016-2025 s6)'
 - key: willkie
   name: Willkie Farr & Gallagher
   short: Willkie
@@ -868,6 +1409,26 @@ firms:
     revenue_cents: 65800000000
     lawyers: 565
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 77200000000
+    lawyers: 644
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 86800000000
+    lawyers: 696
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 122000000000
+    lawyers: 871
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 177500000000
+    lawyers: 1183
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 205600000000
+    lawyers: 1243
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: proskauer
   name: Proskauer Rose
   short: Proskauer
@@ -903,6 +1464,26 @@ firms:
     revenue_cents: 82230000000
     lawyers: 698
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 89000000000
+    lawyers: 730
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 100500000000
+    lawyers: 744
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 116800000000
+    lawyers: 713
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 139200000000
+    lawyers: 771
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 158400000000
+    lawyers: 829
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: dewey_ballantine
   name: Dewey Ballantine
   short: Dewey Ballantine
@@ -984,6 +1565,32 @@ firms:
     revenue_cents: 139000000000
     lawyers: 1109
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 159700000000
+    lawyers: 1162
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 190400000000
+    lawyers: 1247
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 267400000000
+    lawyers: 1372
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2022
+    revenue_cents: 271800000000
+    src: 'rev S ATL23 (history-2016-2025 s6)'
+  - year: 2023
+    revenue_cents: 299300000000
+    src: 'rev S LF24 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 341700000000
+    lawyers: 1466
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 373700000000
+    lawyers: 1481
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: wilmerhale
   name: Wilmer Cutler Pickering Hale and Dorr
   short: WilmerHale
@@ -1019,6 +1626,26 @@ firms:
     revenue_cents: 114000000000
     lawyers: 897
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 113700000000
+    lawyers: 869
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 118400000000
+    lawyers: 844
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 129700000000
+    lawyers: 863
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 160200000000
+    lawyers: 993
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 161100000000
+    lawyers: 983
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: covington
   name: Covington & Burling
   short: Covington
@@ -1054,6 +1681,29 @@ firms:
     revenue_cents: 74250000000
     lawyers: 793
     src: rev S G15; lawyers S L360-15
+  - year: 2017
+    revenue_cents: 94600000000
+    lawyers: 941
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2018
+    revenue_cents: 111700000000
+    src: 'rev D L360-18: FY2017 945.5 [WG17] x 1.181 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 118700000000
+    lawyers: 1112
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 150100000000
+    lawyers: 1217
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 174700000000
+    lawyers: 1263
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 205700000000
+    lawyers: 1311
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: hogan_hartson
   name: Hogan & Hartson
   short: Hogan & Hartson
@@ -1089,6 +1739,33 @@ firms:
     revenue_cents: 182000000000
     lawyers: 2541
     src: rev S G15 Hogan Lovells; lawyers D M1
+  - year: 2016
+    revenue_cents: 192500000000
+    lawyers: 2609
+    src: 'rev S lawyers [S] ATL-G17p2; lawyers S lawyers [S] ATL-G17p2 (history-2016-2025 s6)'
+  - year: 2017
+    revenue_cents: 203600000000
+    lawyers: 2685
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 224600000000
+    lawyers: 2642
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2020
+    revenue_cents: 230000000000
+    src: 'rev S ABA21 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 260600000000
+    lawyers: 2532
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 296400000000
+    lawyers: 2703
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 328500000000
+    lawyers: 2714
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: greenberg_traurig
   name: Greenberg Traurig
   short: Greenberg Traurig
@@ -1124,6 +1801,26 @@ firms:
     revenue_cents: 132100000000
     lawyers: 1811
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 147700000000
+    lawyers: 1944
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 164200000000
+    lawyers: 2070
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 200400000000
+    lawyers: 2209
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 261900000000
+    lawyers: 2643
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 292800000000
+    lawyers: 2810
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: dla_piper
   name: DLA Piper Rudnick Gray Cary (US)
   short: DLA Piper
@@ -1187,6 +1884,26 @@ firms:
     revenue_cents: 104000000000
     lawyers: 671
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 123000000000
+    lawyers: 770
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 125200000000
+    lawyers: 827
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 165500000000
+    lawyers: 900
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 245700000000
+    lawyers: 1236
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 276700000000
+    lawyers: 1128
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: williams_connolly
   name: Williams & Connolly
   short: Williams & Connolly
@@ -1217,6 +1934,20 @@ firms:
     revenue_cents: 40300000000
     lawyers: 302
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 42500000000
+    lawyers: 331
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2022
+    revenue_cents: 52500000000
+    src: 'rev S snip STAT-WC (history-2016-2025 s6)'
+  - year: 2023
+    revenue_cents: 57000000000
+    src: 'rev S snip STAT-WC (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 70200000000
+    lawyers: 422
+    src: 'rev S snip BLB-WC; lawyers S BLB-WC (history-2016-2025 s6)'
 - key: boies_schiller
   name: Boies Schiller & Flexner
   short: Boies Schiller
@@ -1251,6 +1982,29 @@ firms:
     revenue_cents: 38000000000
     lawyers: 310
     src: rev S snip N11; lawyers A
+  - year: 2017
+    revenue_cents: 41000000000
+    lawyers: 320
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 40500000000
+    src: 'rev S ABA-BSF21 / LAW-BSF21 (history-2016-2025 s6)'
+  - year: 2020
+    revenue_cents: 25000000000
+    src: 'rev S ABA-BSF21 / LAW-BSF21 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 23000000000
+    src: 'rev D FY2022 $220M / (history-2016-2025 s6)'
+  - year: 2022
+    revenue_cents: 22000000000
+    lawyers: 150
+    src: 'rev S LAW-BSF23; lawyers S LAW-BSF23 (history-2016-2025 s6)'
+  - year: 2023
+    revenue_cents: 24600000000
+    src: 'rev S ABA-BSF25 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 38700000000
+    src: 'rev S ABA-BSF25 (history-2016-2025 s6)'
 - key: wilson_sonsini
   name: Wilson Sonsini Goodrich & Rosati
   short: Wilson Sonsini
@@ -1286,6 +2040,26 @@ firms:
     revenue_cents: 73500000000
     lawyers: 700
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 79700000000
+    lawyers: 746
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 96100000000
+    lawyers: 842
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 133600000000
+    lawyers: 963
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 143200000000
+    lawyers: 1028
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 164700000000
+    lawyers: 1056
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: cooley
   name: Cooley Godward
   short: Cooley
@@ -1321,6 +2095,26 @@ firms:
     revenue_cents: 91200000000
     lawyers: 811
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 107200000000
+    lawyers: 897
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 132900000000
+    lawyers: 1009
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 198700000000
+    lawyers: 1267
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 215200000000
+    lawyers: 1318
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 237400000000
+    lawyers: 1304
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: heller_ehrman
   name: Heller Ehrman
   short: Heller Ehrman
@@ -1440,6 +2234,26 @@ firms:
     revenue_cents: 112000000000
     lawyers: 1672
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 111900000000
+    lawyers: 1550
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 124700000000
+    lawyers: 1602
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 143600000000
+    lawyers: 1573
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 150500000000
+    lawyers: 1536
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 158800000000
+    lawyers: 1427
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: kl_gates
   name: Kirkpatrick & Lockhart Nicholson Graham
   short: K&L
@@ -1475,6 +2289,26 @@ firms:
     revenue_cents: 106000000000
     lawyers: 1877
     src: rev S G15; lawyers D M1
+  - year: 2017
+    revenue_cents: 99000000000
+    lawyers: 1793
+    src: 'rev S WG17; lawyers S WG17 (history-2016-2025 s6)'
+  - year: 2019
+    revenue_cents: 102700000000
+    lawyers: 1691
+    src: 'rev S WG19; lawyers S WG19 (history-2016-2025 s6)'
+  - year: 2021
+    revenue_cents: 117900000000
+    lawyers: 1698
+    src: 'rev S WG21; lawyers S WG21 (history-2016-2025 s6)'
+  - year: 2024
+    revenue_cents: 132800000000
+    lawyers: 1732
+    src: 'rev S WG24; lawyers S WG24 (history-2016-2025 s6)'
+  - year: 2025
+    revenue_cents: 137000000000
+    lawyers: 1696
+    src: 'rev S WG25; lawyers S WG25 (history-2016-2025 s6)'
 - key: dewey_leboeuf
   name: Dewey & LeBoeuf
   short: Dewey & LeBoeuf
@@ -1609,3 +2443,41 @@ events:
   other: morgan_lewis
   share: 0.75
   src: 'S W-BM: 227 of about 300 partners join Morgan Lewis, Nov 2014'
+# PT-M10: 2016-2025 (docs/research/history-2016-2025.md s7)
+- key: baker_mckenzie_rename
+  ym:
+  - 2017
+  - 1
+  kind: rename
+  firm: baker_mckenzie
+  name: Baker McKenzie
+  short: Baker McKenzie
+  src: 'S ABA Journal 23 Jan 2017 (announced 19 Dec 2016); month A'
+- key: boies_schiller_rename
+  ym:
+  - 2017
+  - 1
+  kind: rename
+  firm: boies_schiller
+  name: Boies Schiller Flexner
+  short: Boies Schiller
+  src: 'S ABA Journal 23 Jan 2017; month A'
+- key: milbank_rename
+  ym:
+  - 2019
+  - 2
+  kind: rename
+  firm: milbank
+  name: Milbank
+  short: Milbank
+  src: 'S snip law.com 21 Feb 2019 (effective 19 Feb 2019)'
+- key: ao_shearman
+  ym:
+  - 2024
+  - 5
+  kind: outside_merger
+  firm: shearman
+  name: A&O Shearman
+  short: A&O Shearman
+  lawyers_added: 3100
+  src: 'S snip A&O Shearman release: effective 1 May 2024; lawyers added D (about 3,900 combined less Shearman''s about 800)'

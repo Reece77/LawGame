@@ -8,22 +8,22 @@
     [
       1,
       "1100_unbilled_wip",
-      24515589
+      24540399
     ],
     [
       1,
       "1110_wip_provision",
-      -2202627
+      -2204878
     ],
     [
       1,
       "1200_receivables",
-      47690858
+      47705440
     ],
     [
       1,
       "1210_bad_debt_provision",
-      -490070
+      -490220
     ],
     [
       1,
@@ -33,22 +33,22 @@
     [
       1,
       "2300_revolver",
-      -24250414
+      -24192382
     ],
     [
       1,
       "2700_partner_current_accounts",
-      128674096
+      128703386
     ],
     [
       1,
       "3000_partners_capital",
-      -83681368
+      -83728488
     ],
     [
       1,
       "3100_undistributed_profit",
-      5916458431
+      5919313832
     ],
     [
       1,
@@ -58,12 +58,12 @@
     [
       1,
       "4000_fees",
-      -7198632178
+      -7201519264
     ],
     [
       1,
       "4100_success_fees",
-      -216660814
+      -216735736
     ],
     [
       1,
@@ -103,17 +103,17 @@
     [
       1,
       "6700_write_offs",
-      982253
+      982403
     ],
     [
       1,
       "6800_interest",
-      3290147
+      3288294
     ],
     [
       1,
       "6900_general_admin",
-      335612982
+      335644099
     ],
     [
       101,
@@ -3339,14 +3339,14 @@
       2
     ]
   ],
-  "matters": "4f81f439981df1d062f548a3cd1370638475ceafedd051b82db7aa9cf2ad5294",
+  "matters": "11c0757f5503f362ad8f28597d7431cf18dc7244c41c6a7d19eb5425f6201a3a",
   "names": [
     "James Jackson",
     "Michael Garcia",
     "Megan Brown",
     "Hannah Allen"
   ],
-  "people": "b737531e052a55576ad4706bff8aeab07217956f4fa8d4f991c733940c0a394f",
-  "relationships": "b50ce05314f201322f87fcae599fddb135baa902029733585a6b9b5d74d550b3",
-  "sha256": "063f030feefb3cf30948150557c0cf6ea133384ef8f1baaae0a04896c88b75ab"
+  "people": "2b63e70d52acc086dd85420d72876cbcfb78d4881bc131f1fa1007e25a32ed67",
+  "relationships": "ff9775e3d8dace9bd5abf800b9c15225d36590bd058d64906e0dbdd98e237dab",
+  "sha256": "80224c6aabedd7441f534fbb654eaae0c81770a8f4e36151f73a21007f94a0e0"
 }

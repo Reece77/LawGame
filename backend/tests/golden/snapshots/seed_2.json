@@ -3,27 +3,27 @@
     [
       1,
       "1000_cash",
-      234035305
+      234178441
     ],
     [
       1,
       "1100_unbilled_wip",
-      28101324
+      28106990
     ],
     [
       1,
       "1110_wip_provision",
-      -1905033
+      -1905417
     ],
     [
       1,
       "1200_receivables",
-      52297213
+      52307177
     ],
     [
       1,
       "1210_bad_debt_provision",
-      -522973
+      -523072
     ],
     [
       1,
@@ -33,17 +33,17 @@
     [
       1,
       "2700_partner_current_accounts",
-      -84938020
+      -84975400
     ],
     [
       1,
       "3000_partners_capital",
-      -149097285
+      -149203041
     ],
     [
       1,
       "3100_undistributed_profit",
-      7759869943
+      7763616885
     ],
     [
       1,
@@ -53,12 +53,12 @@
     [
       1,
       "4000_fees",
-      -9340461286
+      -9344205575
     ],
     [
       1,
       "4100_success_fees",
-      -197302640
+      -197375502
     ],
     [
       1,
@@ -98,12 +98,12 @@
     [
       1,
       "6700_write_offs",
-      5240578
+      5242286
     ],
     [
       1,
       "6900_general_admin",
-      414145194
+      414198548
     ],
     [
       101,
@@ -3314,14 +3314,14 @@
       6
     ]
   ],
-  "matters": "8bb37561cecfcd1a19e67ee17a44b953dbf5c117c44740af7a76c57b002ffce9",
+  "matters": "d07b4369fa9fb5a0a4ef5c9236b9647559c975f173648ac44a2f663cb046ad15",
   "names": [
     "Sarah Williams",
     "Kevin Stewart",
     "Luis Allen",
     "Logan Robinson"
   ],
-  "people": "0bfe1803d8adad29231b8cac8376faed82e7eaaa2bc555e8ecd33c176af0c3fc",
-  "relationships": "e22c3a10031317c303146f2501e23fe5f5b8f7824a2e3c3900d21264af5e674d",
-  "sha256": "c153105d81245432d2f1a28fe72ac2a29f7d462b59520a17856c7b20f0f63b8d"
+  "people": "4c21363d118dd2d6432428d521fb751d31ebbff76bf7dbbb836b85ff7e9929b6",
+  "relationships": "d2df6b9125abe51bf01abc78d9d1ebc043bd00d66068e50ae821e93f88fbd9b1",
+  "sha256": "181d8ab103165f8457e878a81a2f41fc0fa879227d9fa1868858b93fb1103c8a"
 }

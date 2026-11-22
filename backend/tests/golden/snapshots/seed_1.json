@@ -3,27 +3,27 @@
     [
       1,
       "1000_cash",
-      145705483
+      145841887
     ],
     [
       1,
       "1100_unbilled_wip",
-      28081346
+      28095510
     ],
     [
       1,
       "1110_wip_provision",
-      -6465507
+      -6468769
     ],
     [
       1,
       "1200_receivables",
-      53967227
+      52663804
     ],
     [
       1,
       "1210_bad_debt_provision",
-      -539674
+      -526637
     ],
     [
       1,
@@ -33,17 +33,17 @@
     [
       1,
       "2700_partner_current_accounts",
-      -59623331
+      -58292879
     ],
     [
       1,
       "3000_partners_capital",
-      -86082152
+      -87549008
     ],
     [
       1,
       "3100_undistributed_profit",
-      7538575109
+      7554397542
     ],
     [
       1,
@@ -53,12 +53,12 @@
     [
       1,
       "4000_fees",
-      -8461679982
+      -8475547430
     ],
     [
       1,
       "4100_success_fees",
-      -366547069
+      -366693899
     ],
     [
       1,
@@ -98,12 +98,12 @@
     [
       1,
       "6700_write_offs",
-      4158824
+      4146791
     ],
     [
       1,
       "6900_general_admin",
-      356458884
+      355942246
     ],
     [
       101,
@@ -3324,14 +3324,14 @@
       2
     ]
   ],
-  "matters": "ef51c6aebdc8dff6ec5b09742b8cbaad1f9975476a8709ee298c25353782cf04",
+  "matters": "c690882194680e210d83aeb611576a9b514616525e7404eb172ecbe444b400c6",
   "names": [
     "Jennifer King",
     "Kevin Carter",
     "Ashley Cook",
     "Whitney Brown"
   ],
-  "people": "5fc40c86ff3ac3edf3c4166ef30cf301485cf725801c221c717c521ec1c23e8f",
-  "relationships": "d1181804400a4fd303cd2b6d3cb96acf621377084f9b542beea89dfbabdf0b6c",
-  "sha256": "42aa57cdff359cc394818aa4e38e9f90fa7147afeedb6f6028accc36167bbf16"
+  "people": "6f0d413593fcc0db65f35d93be965915810b7db696a7ad10f402ac0fe48477dc",
+  "relationships": "b00575aa8675b82b60959098edfdc7293142c39befe178b955abac6ba4485498",
+  "sha256": "38aef026183449842b39a3e08616e92433ef017d635f2077846f4b04fcdc5f25"
 }

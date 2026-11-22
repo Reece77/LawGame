@@ -46,5 +46,16 @@ Recorded by the PT-M10 session (2026-11-22). Branch `claude/pt-m10-history-156q4
 2. **Sub-task 0: the pyramid's rule** (`moves.lay_off_idle`): while three months' utilisation stays below 75%, lay off the lowest-rated associates that bring it back toward 85%, at most 10% of the associates a month (constants in `strategies.py`, as the scripts' other rules).
 3. **Sub-task 0: the heeded rocket's rule** (`moves.cfo_clear`): before every guaranteed lateral (the first included) it asks the CFO's forecast, `fx.forecast_breach` as the Finance screen shows it, and takes none until six month ends (`forecast_window` + 1) of trend show headroom now and for `forecast_months`, with no covenant broken and the revolver not called.
 4. **Sub-task 0: measures and rows.** T8 restructuring counts firms with 10+ lawyers in December 2008 (`report.T8_MIN_LAWYERS`); T8 corporate's row is "accepted" (Reece), known while the median fall is at least 5%; T2 is owned by PT-M18, T3 lawyers and T4 steady by PT-M16; T4 pyramid's and T8 restructuring's rows are removed (T4 pyramid prints FAIL, a band, not a gate, as it did above its bound in PT-M7b).
+5. **Sub-task 0 readings** (standard, 132 turns; `main` = PT-M7b's merge head in a separate worktree):
+
+   | Reading | `main` | PT-M10 rules | Band |
+   | --- | --- | --- | --- |
+   | T4 pyramid PEP 2015, seeds 1-10 (median) | $3.19M (3/10 dissolved, PT-M7b's run) | $3.95M (1/10 dissolved) | $0.7-1.6M |
+   | T4 pyramid PEP 2015, seeds 11-40 | $0.90M (11/30 dissolved; the zeros carry the median) | $2.06M (5/30 dissolved) | $0.7-1.6M |
+   | T9 heeded dissolves, seeds 1-10 | 1/10 | 1/10 | <= 1/10 |
+   | T9 heeded dissolves, seeds 11-40 | 7/30 (PT-M7b decision 10) | 3/30 | |
+   | T8 corporate / restructuring (10+ lawyers), seeds 1-10 | -9.0% / +31.1% (n=2-3) | -11.6% / +9.2% (n=5) | -30 to -10% / -5 to +20% |
+
+   **For Reece:** the layoff rule does what it should (the pyramid survives the crash: 5 of 30 dissolved against 11), and so its PEP rises: a pyramid that sheds idle associates keeps its margin. T4 pyramid misses above its band on both seed sets; `main`'s 11-40 median sits in the band only because a third of the firms are dissolved at $0. No key in PT-M10's lane lowers a surviving firm's PEP (the crisis keys bite in 2009, not 2015). Proposed default: widen T4 pyramid to $1.0-4.0M (PT-M7b's proposal was $1.0-3.5M), or own it in PT-M16 with T4 steady (the card).
 
 ## Follow-ups

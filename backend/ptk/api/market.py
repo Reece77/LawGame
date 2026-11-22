@@ -24,6 +24,7 @@ from ptk.db import saves
 from ptk.sim.calendar import format_turn
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import NotFoundError
+from ptk.sim.reputation.formulas import reputation
 from ptk.sim.rivals import formulas as f
 from ptk.sim.rivals.actions import (
     ApproachFreeAgents,
@@ -90,6 +91,8 @@ class PracticeHeadcountOut(BaseModel):
     practice: str
     label: str
     lawyers: int
+    reputation: int  # PT-M16: its public reputation 0-100 in the practice (spec 12.1)
+    band: int | None  # the latest October's directory band (None: not ranked)
 
 
 class NewsOut(BaseModel):
@@ -343,6 +346,8 @@ def rival_view(state: GameState, firm_id: int, data: GameData, balance: Balance)
                 practice=p.practice,
                 label=data.practice(p.practice).label,
                 lawyers=f.rounded_headcount(p.lawyers),
+                reputation=round(reputation(state, firm.id, p.practice, balance)),
+                band=state.standing.rankings.band(firm.id, p.practice),
             )
             for p in firm.pools
             if p.lawyers >= 0.5  # tunable-exempt: shown when someone works there

@@ -22,6 +22,7 @@ from ptk.sim.org.models import EMPTY_ORG, OrgState
 from ptk.sim.org.seat_models import EMPTY_LEADERSHIP, LeadershipState
 from ptk.sim.partnership.models import EMPTY_PARTNERSHIP, PartnershipState
 from ptk.sim.people.models import Employment, Person, RevealState
+from ptk.sim.reputation.models import EMPTY_STANDING, StandingState
 from ptk.sim.rivals.models import EMPTY_RIVALS, RIVAL_PERSON_BASE, RivalsState
 
 # ADR PT-0007 section 4: a game ends when the campaign completes or the firm dissolves.
@@ -84,6 +85,7 @@ class GameState:
     leadership: LeadershipState = EMPTY_LEADERSHIP  # seats, authority, pitches (PT-M8)
     founder_life: FounderLifeState = EMPTY_FOUNDER_LIFE  # persona, personal book (PT-M17)
     family: FamilyState = EMPTY_FAMILY  # the player's own family (PT-M17)
+    standing: StandingState = EMPTY_STANDING  # reputation, press and rankings (PT-M16)
 
     @property
     def ended(self) -> bool:

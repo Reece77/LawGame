@@ -133,7 +133,7 @@ def grown_firm(
     target = lawyers * per_lawyer_cents
     demand = base_monthly_demand(data)
     shares = wallets(state.market.clients, data, balance)
-    reps = {p: firm_reputation(state, firm, p) for p in data.practice_keys}
+    reps = {p: firm_reputation(state, firm, p, balance) for p in data.practice_keys}
     have = {r.client_id for r in state.market.relationships}
     partners = [p for p in state.people if p.level in ("income_partner", "equity_partner")]
     total = 0.0

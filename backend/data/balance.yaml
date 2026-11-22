@@ -151,6 +151,8 @@ energy: # the founding partner's monthly energy (TST formulas.md 6, M4c values; 
     lobby: 3 # a lobbying conversation with one partner (one a month each)
     promise: 0 # promise a partner lockstep points
     withdraw_vote: 0 # withdraw an open vote
+    press_answer: 2 # PT-M16: answer a press moment (spec 12.2)
+    submission: 6 # PT-M16: the March directory submission (spec 12.3)
     draws: 2 # suspend or restore partners' draws
     comp_round: 1 # set one partner's gate or adjustment in the December comp round
     sponsor: 1 # name an associate's sponsor
@@ -179,7 +181,6 @@ hiring: # searches and offers (TST formulas.md 7; spec 5.7)
     k: 3.0 # logistic steepness
     threshold: 0.1 # score at which acceptance is 50%
   pitch_per_recruiting: 0.03 # score per recruiting point above 10 of whoever offers (TST 7 M2)
-  prestige_term: 0.0 # score; the firm's prestige (0 until PT-M5 and PT-M16 supply it)
   ask: # a candidate's salary expectation (shown exactly)
     noise_sd: 0.04 # relative sd of the ask around their market pay
     round_to_cents: 100000 # asks are whole $1,000s
@@ -375,7 +376,7 @@ rivals: # rival firms (PT-M5; spec 10; ADR PT-0008). Money is cents a year unles
     w_relationship: 1.5 # times the player's relationship / 100
     noise_sd: 0.5 # logit noise on each bid
     team_max: 6
-    player_reputation_min: 0.5 # invited without a relationship when its best partner's familiarity is this high (0-1)
+    player_reputation_min: 0.5 # invited without a relationship when its best appeal Rep is this high (0-1; PT-M16: reputation.appeal_floor + the rest x reputation / 100)
     start_score: 35 # a new relationship's score after an RFP win
   boutique: # TST 15.4's startups for law: partner groups leave to found boutiques
     monthly_bp: 15 # chance a month that some large rival's partner group leaves (all rivals together, bp)
@@ -915,8 +916,6 @@ rates: # PT-M7a: the firm's yearly rate rise over the practices' 2005 cards; the
   month: 1 # calendar month the rise takes effect (January)
   card: # PT-M7b: a new firm's card by practice, a share of the top 2005 card (practices.yaml), times the rate index
     start_bp: 9850 # bp: a new firm starts every practice at this share of the top card; PT-M7b tuning 6500 -> 9850 (T5: at 6500 steady dissolved on 9 of 10 seeds in its first year, 8500: 4, 9000: 3, 9500: 1; PT-M4's exodus guard: 3 of 10 heeded firms dissolved at 9500, 2 at 9750, 1 at 9850)
-    full_reputation: 0.95 # reputation 0-1 (matters.market.firm_reputation) at which the target share is 100%
-    curve: 2.0 # exponent: target = start + (100% - start) x min(1, reputation / full_reputation)^curve
     step_bp: 50 # bp: the most a practice's share moves toward its target each January (a reputation is earned over years); PT-M7b tuning 250 -> 50
 macro: # PT-M7: how macro_history.yaml's indices act on the firm (ptk/sim/macro.py; spec 6, 14)
   beta_scale: 1.3 # multiplier on every practice's demand beta (T8's tuning key); PT-M7 tuning 1.0 -> 1.3 (T1, T8)
@@ -1190,3 +1189,115 @@ succession: # PT-M17: spec 2.5, TST 45.5; ADR PT-0007 3
   adviser_oppose: 2 # confidence points when a vote the senior partner opposed passes
   adviser_memory: 20 # opinions kept
   risky_votes: [capital_call, terms] # votes a bold senior partner backs
+reputation: # PT-M16: reputation by (firm, practice, region), 0-100, public (spec 12.1; ptk/sim/reputation/formulas.py)
+  start_founders: 15 # points: a new firm's reputation in its founding partners' practices (the brief)
+  start_other: 5 # points: and in every other practice
+  speed: 0.03 # share of the gap to the long-run mean closed a month (a gap halves in about two years)
+  mean: # the long-run mean, points: floor + size x s + record x r + pep x q (each term 0-1)
+    floor: 5
+    size: 15 # lawyers in the practice, ln(1 + L) / ln(1 + size_full_lawyers)
+    record: 65 # the player's public outcomes; a rival's franchise (rival_record)
+    pep: 15 # profit-per-partner percentile among firms with a PEP
+    size_full_lawyers: 300 # lawyers in a practice for the full size term
+  rival_record: { strong: 0.6, share: 0.4 } # a rival's record: 0.6 in its strong practices (firms.yaml) + 0.4 x its share of the practice's market
+  share_ref_place: 3 # the market's 3rd-largest practice revenue scores a share of 1
+  record_months: 36 # months of the player's public outcomes in the record term
+  record_full: 30.0 # outcome points over the window for the full record (30 full-size wins or closings in three years)
+  outcomes: { won: 1.0, lost: -0.6, settled: 0.2, closed: 1.0, collapsed: -0.4, done: 0.2 } # points of a full-size named matter's end, by outcome
+  big_cents: 100000000 # $1M expected fees: a full-size matter (smaller ones scale down)
+  pulse: 1.5 # reputation points a full outcome point moves at once (the mean then holds or pulls back)
+  star_book_cents: 300000000 # $3M book a year: a star partner (spec 12.1: lateral stars)
+  star_join: 2.0 # points in the star's practice when one joins
+  star_leave: 2.0 # and lost when one leaves
+  rival_departure: 0.3 # points a rival loses in each practice per key partner who leaves it
+  league: { top3: 1.0, top10: 0.4 } # points for a quarter's league-table place (top three; four to ten)
+  bands: [2.0, 1.2, 0.6, 0.0, -0.4, -0.8] # October's points by directory band 1..6 (spec 12.1)
+  prestige: { pep_points: 10, offer_weight: 0.2 } # prestige = revenue-weighted reputation + 10 x PEP percentile; offer-score points at prestige 100 (campus and laterals)
+  card: { full_share: 0.95, curve: 2.0, top_quantile: 0.9 } # PT-M7b's card target: full card at 95% of the market's top-decile reputation in the practice, curve 2 (replaces rates.card.full_reputation and curve)
+  appeal_floor: 0.75 # the appeal's Rep (spec 7.1) at reputation 0; 1 at 100 (the founders' own standing carries a new firm's first panels)
+  causes_kept: 30 # the player's reputation changes kept with their causes (Practices screen)
+press: # PT-M16: the legal press (spec 12.2; TST formulas.md 29, in Partner Track's units: reputation points for brand-target points)
+  max_per_quarter: 2 # press moments a quarter at most (reminders apart; TST 29.1)
+  bold_rep: 3.0 # reputation points for a bold answer (the moment's practice, or every practice), x audience x credibility factor
+  measured_rep: 1.0 # and for a measured one
+  deflect_cred: -2.0 # credibility points for "no comment", x audience
+  bold_backfire: 6.0 # credibility lost when results contradict a bold answer, x audience
+  backfire_months: 6 # months a bold answer can backfire
+  backfire_drop: 3.0 # reputation points below the answer's that contradict it
+  audience: { small: 0.5, mid: 1.0, large: 1.5, mid_stage: 2, large_stage: 4 } # a by the firm's stage (spec 3): TST's 0.5 / 1.0 / 1.5
+  layoff_share: 0.1 # fired / staff in one month for a layoffs moment (TST: 10%)
+  big_cents: 100000000 # $1M expected fees: a named case big enough for a verdict moment
+  cred_start: 50 # credibility every firm starts at and drifts toward (0-100)
+  cred_drift: 1.0 # points a month toward cred_start
+  cred_hiring: 0.05 # offer-score points at credibility 100 (TST's hiring appeal)
+  cred_hiring_cap: 0.05
+  cred_history: 5 # changes kept with their causes (TST: the last five)
+  statement_chance: 0.5 # a rival managing partner speaks at their firm's own move
+  jab_base: 0.1 # chance that statement is a jab at the player
+  jab_feud: 0.5 # + this x feud / 100
+  reminder_months: [1, 3] # a broken claim's reminder comes this many months later
+  memory_months: 24 # answered moments and statements kept
+  energy_answer: 2 # mirrors energy.cost.press_answer (shown on the Press screen)
+  claims: # public claims (spec 12.2; TST 29.2's promises)
+    max_open: 3
+    months: [3, 36] # a headcount or band claim is due 3-36 months out
+    fixed_months: 12 # no layoffs and matching the scale run 12 months
+    kept_rep: 4.0 # reputation points, every practice, x a x (1 + ambition) x credibility factor (TST kept_brand)
+    kept_cred: 5.0 # credibility, x a
+    kept_morale: 2.0 # morale points for no layoffs kept
+    broken_rep: 8.0 # reputation points lost, x a (TST broken_brand)
+    broken_cred: 10.0 # credibility lost, x a
+    broken_morale: 5.0 # morale points lost for no layoffs broken
+    broken_trust: 10.0 # partners' confidence in the managing partner (TST: trust in the founder -10)
+    headcount_span: 1.0 # doubling the lawyers scores a headcount claim's full target ambition
+    band_span: 3 # three bands of climb score a band claim's full target ambition
+    fixed_ambition: 0.2
+  feud: # rival managing partners (TST 29.4)
+    bold_mention: 10.0
+    poach: 15.0 # each key partner hired from them
+    approach: 5.0 # they approached one of the player's people
+    decay: 2.0 # points a month
+    rivalry: 50.0
+    rivalry_stance: 1.0 # the rival's stance toward the player at rivalry (PT-M5's label)
+    causes_kept: 8
+rankings: # PT-M16: tables, league tables, directory bands, the associates' survey (spec 12.3)
+  tables:
+    month: 4 # April: the spring tables for the prior fiscal year (Am Law publishes in late April)
+    revenue_places: 200 # the Am Law 100 and 200 analogue
+    pep_places: 100
+    min_revenue_cents: 6000000000 # $60M: a firm enters the tables once its revenue is this large (about the Am Law 200's last place in 2005)
+  league:
+    kinds: [deal, restructuring] # matter kinds the tables count (practices.yaml)
+    value_per_fee: 400.0 # a deal's transaction value per dollar of the firm's fees [A]
+    rival_deal_share: 0.6 # share of a rival's practice fees from deals [A]
+    places: 10 # places published (the player's row is always shown)
+  directory:
+    month: 10 # October's bands
+    thresholds: [72, 60, 50, 40, 30, 20] # score (reputation + the player's key matters and submission) for band 1..6; below 20 not ranked (2005: every dossier strength scores 76+, so history's leaders are band 1)
+    submission_months: [3, 4] # the March-April submission window
+    max_matters: 5
+    max_referees: 5
+    referee_cost: 2.0 # relationship points each referee spends
+    energy: 6 # mirrors energy.cost.submission (shown on the Rankings screen)
+    submission_points: 6.0 # score points for the strongest submission (strength 1)
+    no_submission: 4.0 # score points lost with no submission
+    matter_full_cents: 100000000 # $1M fees: a showcased matter's full weight
+    key_matters: 4.0 # score points for the last year's key matters at a third of the full record
+    appeal_bonus: [0.08, 0.05, 0.03, 0.01, 0.0, 0.0] # the appeal's Rep added by band 1..6 for the year (spec 7.1)
+    recruit_bonus: [0.06, 0.04, 0.02, 0.01, 0.0, 0.0] # offer-score points by band in the candidate's practice
+    standing_band: { elite: 1, leading: 2, strong: 3 } # a real notable's individual band (notables.yaml standing)
+    people_min_matters: 3 # public matters led in three years to be named
+    people_offset: 1 # a named partner's band: the firm's band + 1, one better per extra matter led
+  places:
+    month: 7 # July: Best places to work, before August's campus offers
+    min_associates: 10 # firms with fewer associates are not surveyed
+    places: 20 # places published (the player's always shown)
+    weights: { morale: 0.4, hours: 0.25, pay: 0.2, training: 0.15 }
+    hours_best: 1800 # billable hours a year a lawyer scoring the full hours term
+    hours_worst: 2600 # and scoring nothing
+    training_full: 3.0 # partners per ten associates for the full training term
+    rival_base: { elite_lockstep: 72, global_verein: 60, performance_machine: 58, litigation_boutique: 66, tech_coast: 70, regional_champion: 64, volume_mid_market: 50, big_four_legal: 55 } # a rival's survey score 0-100 by personality [A]
+    rival_utilisation: 0.5 # survey points a rival loses per point of utilisation above 85%
+    top: 10 # a place this high or better earns the campus bonus for a year
+    campus_bonus: 0.05 # offer-score points on campus offers
+  news_top: 5 # names from each list's top in its inbox item

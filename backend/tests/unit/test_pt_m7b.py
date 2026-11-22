@@ -73,11 +73,11 @@ def test_a_new_firm_starts_every_practice_at_the_start_share(
 
 
 def test_the_target_rises_with_reputation_to_the_full_card(balance: Balance) -> None:
-    cfg = balance.rates.card
-    start_bp = cfg.start_bp
+    """PT-M16: the target reads card progress (0-1, reputation against the market's top)."""
+    start_bp = balance.rates.card.start_bp
     assert card_target_bp(0.0, start_bp, balance) == start_bp
-    assert card_target_bp(cfg.full_reputation, start_bp, balance) == BP_DENOMINATOR
     assert card_target_bp(1.0, start_bp, balance) == BP_DENOMINATOR
+    assert card_target_bp(2.0, start_bp, balance) == BP_DENOMINATOR
     values = [card_target_bp(r / 20, start_bp, balance) for r in range(21)]
     assert values == sorted(values)
 
@@ -89,13 +89,15 @@ def test_january_moves_the_card_at_most_a_step(data: GameData, balance: Balance)
     start_bp = balance.rates.card.start_bp
     for bp in moved.values():
         assert start_bp - step <= bp <= start_bp + step
-    # the founders' practices (high familiarity) rise a full step
-    assert moved["corporate_ma"] == start_bp + step
+    # PT-M16: a new firm's reputation is far below the market's top, so its card moves only a
+    # little toward a target still below the full card
+    assert start_bp <= moved["corporate_ma"] < BP_DENOMINATOR
     # January's rise moves it; other months do not
     state, _ = play(state, data, balance, 12)  # through December 2005
     assert dict(state.player.rate_card)["corporate_ma"] == start_bp
     state, _ = play(state, data, balance, 1)  # January 2006
-    assert dict(state.player.rate_card)["corporate_ma"] == start_bp + step
+    moved_bp = dict(state.player.rate_card)["corporate_ma"]
+    assert start_bp - step <= moved_bp <= start_bp + step and moved_bp < BP_DENOMINATOR
 
 
 def test_hours_are_valued_on_the_practice_card(data: GameData, balance: Balance) -> None:

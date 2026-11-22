@@ -591,3 +591,33 @@ class PersonalLineRow(Base):
     entry_id: Mapped[int] = mapped_column(ForeignKey("personal_entry.id"), index=True)
     account: Mapped[str] = mapped_column(String(40))  # 9xxx personal accounts only
     amount_cents: Mapped[int] = mapped_column(BigInteger)
+
+
+# --- PT-M16: reputation, the press and the rankings (schema v14) ----------------------------
+# One JSON document (ptk.sim.reputation.models.StandingState) and the rankings' history: every
+# published list's places, appended when it publishes and never rewritten.
+
+
+class StandingRow(Base):
+    __tablename__ = "standing"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)  # always 1
+    data_json: Mapped[str] = mapped_column(Text)
+
+
+class RankingEntryRow(Base):
+    __tablename__ = "ranking_entry"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    turn: Mapped[int] = mapped_column(Integer, index=True)  # the month it published
+    kind: Mapped[str] = mapped_column(
+        String(20), index=True
+    )  # revenue pep league places bands people
+    practice: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    place: Mapped[int] = mapped_column(Integer)  # a place, or a band for bands and people
+    firm_id: Mapped[int] = mapped_column(Integer, index=True)
+    person_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    name: Mapped[str] = mapped_column(Text)
+    value_cents: Mapped[int | None] = mapped_column(
+        BigInteger, nullable=True
+    )  # revenue, PEP, deal value; score x 100
+    count: Mapped[int | None] = mapped_column(Integer, nullable=True)  # lawyers, deals
+    year: Mapped[int | None] = mapped_column(Integer, nullable=True)  # the fiscal or ranking year

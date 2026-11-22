@@ -21,6 +21,7 @@ from ptk.db.org_io import write_delegate_actions, write_org
 from ptk.db.partnership_io import write_partnership
 from ptk.db.rivals_io import write_panels, write_rival_moves, write_rivals
 from ptk.db.session import make_sessionmaker, shared_engine
+from ptk.db.standing_io import write_standing
 from ptk.db.state_io import (
     META_ID,
     insert_new,
@@ -200,6 +201,7 @@ def run_action(path: Path, action: Action, balance: Balance, data: GameData) -> 
         write_org(session, outcome.state)  # PT-M8: a group leader's seat is the unit's leader
         write_leadership(session, outcome.state.leadership)  # PT-M8
         write_founder_life(session, outcome.state.founder_life, outcome.state.family)  # PT-M17
+        write_standing(session, outcome.state.standing)  # PT-M16: the press, the submission
         session.add(
             DecisionLogRow(
                 turn=state.turn,

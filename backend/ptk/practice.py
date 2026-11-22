@@ -282,7 +282,7 @@ def _panels(
     demand = base_monthly_demand(data)
     keys = data.practice_keys
     have = {r.client_id for r in state.market.relationships if r.firm_id == firm}
-    reps = {p: firm_reputation(state, firm, p) for p in keys}
+    reps = {p: firm_reputation(state, firm, p, balance) for p in keys}
     appeals = dict(state.rivals.appeals) or None
 
     def expected(rel: Relationship) -> float:

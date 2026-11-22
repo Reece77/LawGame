@@ -235,7 +235,7 @@ def intake(
     shares: Wallets = wallets(market.clients, data, balance, turn, state.save_meta.start_ym)
     key = key_clients(market, firm_id, balance)
     keys = data.practice_keys
-    reps = {p: firm_reputation(state, firm_id, p) for p in keys}
+    reps = {p: firm_reputation(state, firm_id, p, balance) for p in keys}
     appeals = dict(state.rivals.appeals) or None  # PT-M5: rival firms' live appeal
     flow_fees: dict[tuple[int, str], float] = {}
     logs: list[LogItem] = []

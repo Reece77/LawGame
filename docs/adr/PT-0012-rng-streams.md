@@ -52,6 +52,8 @@
 | `founder_life` | 50 | `(purpose, *key)`: `(1, person_id)` a retiring partner's departure (PT-M4's `depart` draws with it); `(2, person_id)` a bar election | The founder's life (one call site, `ptk.sim.founder.streams.life_stream`; lane C's range 50-59) | PT-M17 |
 | `family` | 51 | `(head_id, index)` a member's making (index from 1); `(head_id, 0, k)` a month's life event of kind k (0 a partner met, 1 a child born); `(person_id, 1)` a child's month of development; `(head_id, 2, 0)` the January health step-back | The player's family and the health trigger of succession (one call site, `ptk.sim.family.people.family_stream`) | PT-M17 |
 | `investments` | 52 | `(person_id,)` | A player's month of investment and family-office returns (one call site, `ptk.sim.founder.personal.investment_stream`) | PT-M17 |
+| `press` | 70 | `(firm_id,)` | The month's claim checks: a broken public claim's reminder wait (one generator a month, drawn per broken claim in id order; lane C's range 70-79) | PT-M16 |
+| `press_rival` | 71 | `(*rival_key, n)` | A real rival's managing partner at their firm's move (a lateral hire, a team lift, a new office, a merger): whether they speak, then whether it is a jab at the player; n counts the firm's spoken moves that month | PT-M16 |
 
 ## Consequences
 

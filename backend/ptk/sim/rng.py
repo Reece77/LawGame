@@ -63,6 +63,8 @@ STREAM_IDS: Final = MappingProxyType(
         "founder_life": 50,  # (purpose, *key): retirement, a bar election, an annuity vote
         "family": 51,  # (head_id, index) a member; (head_id, 0, k) events; (pid, 1); (pid, 2, 0)
         "investments": 52,  # (person_id,): a player's month of investment returns
+        "press": 70,  # (firm_id,): a broken claim's reminder wait (PT-M16, lane C's 70-79)
+        "press_rival": 71,  # (*rival_key, n): a rival MP's statement at a move, a jab (PT-M16)
         "misc": 99,  # tests only
     }
 )

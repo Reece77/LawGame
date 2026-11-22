@@ -172,7 +172,7 @@ def apply_choice(
                 )
             )
         elif t == "reputation_delta" and kind == "firm":
-            state = interfaces.reputation_change(state, fid, value)
+            state = interfaces.reputation_change(state, fid, value, balance)
         elif t == "confidence_delta" and kind == "partnership":
             state = interfaces.confidence_change(state, fid, value)
         elif t in ("hours_pct", "merits_shift", "wip_writedown") and kind == "matter" and ids:

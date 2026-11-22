@@ -59,10 +59,13 @@ def sector_practices(client: Client, data: GameData, n: int) -> tuple[str, ...]:
     return tuple(sorted(ranked[:n], key=data.practice_keys.index))
 
 
-def player_reputation(state: GameState, practices: tuple[str, ...]) -> float:
-    from ptk.sim.matters.market import firm_reputation
+def player_reputation(state: GameState, practices: tuple[str, ...], balance: Balance) -> float:
+    """The player's best appeal Rep (0-1) in the practices: PT-M16's reputation through the
+    appeal's scale (`reputation.formulas.appeal_rep`, spec 7.1)."""
+    from ptk.sim.reputation.formulas import appeal_rep
 
-    return max((firm_reputation(state, state.player.id, p) for p in practices), default=0.0)
+    pid = state.player.id
+    return max((appeal_rep(state, pid, p, balance) for p in practices), default=0.0)
 
 
 def _bidders(
@@ -126,7 +129,9 @@ def open_rfps(
             cents = round(rb.matter_min_cents * (1 + 2 * float(gen.random())))
             bidders = ()
         incumbent = rel is not None and bool(set(rel.practices) & set(practices))
-        invited = incumbent or player_reputation(state, practices) >= rb.player_reputation_min
+        invited = (
+            incumbent or player_reputation(state, practices, balance) >= rb.player_reputation_min
+        )
         incumbents = tuple(sorted(client.panel)) + ((PLAYER_PANEL_KEY,) if incumbent else ())
         rfp = Rfp(
             id=rivals.next_rfp_id,
@@ -227,7 +232,7 @@ def player_score(state: GameState, rfp: Rfp, data: GameData, balance: Balance) -
 
     w = appeal_weights(client, balance)
     score = rb.w_relationship * (rel.score / 100.0 if rel else 0.0)
-    score += w.reputation * player_reputation(state, rfp.practices)
+    score += w.reputation * player_reputation(state, rfp.practices, balance)
     if rfp.pitch is not None:
         quality = pitch_quality(state, rfp.pitch.team, rfp.practices)
         # PT-M8 (spec 9.1): the CMO's pitch craft

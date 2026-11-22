@@ -14,8 +14,10 @@ with the market, negative for one above it.
 PT-M7b: a new firm's **card by practice**. The firm starts each practice at `rates.card.start_bp`
 of the top card (practices.yaml's 2005 cards; times the difficulty's `card_mult_bp`) and each
 January moves at most `step_bp` toward its target, which rises with its reputation in the
-practice (`matters.market.firm_reputation`, the stand-in until PT-M16): start + (1 - start) x
-min(1, rep / full_reputation)^curve. A practice's effective index is the firm's rate index times
+practice (PT-M16: `reputation.formulas.card_progress`, the firm's reputation over
+`reputation.card.full_share` of the market's top-decile reputation in the practice):
+start + (1 - start) x progress^curve, so only a firm near the top of the market's reputation
+bills at the top card. A practice's effective index is the firm's rate index times
 its share: every hour's standard value, blended rates and new matters' expected fees use it, and
 the price term reads it against the market's index. Rival firms keep their own rates.
 """
@@ -85,11 +87,11 @@ def starting_card(difficulty: str, data: GameData, balance: Balance) -> tuple[tu
     return tuple((key, start) for key in sorted(data.practice_keys))
 
 
-def card_target_bp(reputation: float, start_bp: int, balance: Balance) -> int:
-    """The share a practice's reputation earns: start + (1 - start) x min(1, rep / full)^curve."""
-    cfg = balance.rates.card
-    progress = float(min(1.0, max(0.0, reputation / cfg.full_reputation)) ** cfg.curve)
-    return min(BP_DENOMINATOR, round(start_bp + (BP_DENOMINATOR - start_bp) * progress))
+def card_target_bp(progress: float, start_bp: int, balance: Balance) -> int:
+    """The share a practice's reputation earns: start + (1 - start) x progress^curve, where
+    progress (0-1) is `reputation.formulas.card_progress` (PT-M16)."""
+    curved = float(min(1.0, max(0.0, progress)) ** balance.reputation.card.curve)
+    return min(BP_DENOMINATOR, round(start_bp + (BP_DENOMINATOR - start_bp) * curved))
 
 
 def card_moved(
@@ -97,7 +99,7 @@ def card_moved(
 ) -> tuple[tuple[str, int], ...]:
     """January's move of each practice's share toward its reputation's target, at most
     `step_bp` either way."""
-    from ptk.sim.matters.market import firm_reputation
+    from ptk.sim.reputation.formulas import card_progress
 
     if not firm.rate_card:
         return firm.rate_card
@@ -105,7 +107,7 @@ def card_moved(
     step = balance.rates.card.step_bp
     out = []
     for key, bp in firm.rate_card:
-        target = card_target_bp(firm_reputation(state, firm.id, key), start, balance)
+        target = card_target_bp(card_progress(state, firm.id, key, balance), start, balance)
         out.append((key, bp + max(-step, min(step, target - bp))))
     return tuple(out)
 

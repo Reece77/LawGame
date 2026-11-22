@@ -569,8 +569,11 @@ def month_hours(
     pro_bono: dict[int, int] = {}
     keys = data.practice_keys
     cap_t = credit * fx.TENTHS
+    by_person: dict[int, list[HoursRecord]] = {}  # PT-M10 (T12): one pass, record order kept
+    for r in records:
+        by_person.setdefault(r.person_id, []).append(r)
     for e in earners:
-        mine = [r for r in records if r.person_id == e.id]
+        mine = by_person.get(e.id, [])
         by_practice = {p: sum(r.tenths for r in mine if r.practice == p) for p in keys}
         pb = sum(r.tenths for r in mine if r.client_id == PRO_BONO_CLIENT_ID)
         before = ytd_before(state, e.id, balance)

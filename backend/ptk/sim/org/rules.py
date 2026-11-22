@@ -60,7 +60,25 @@ class OrgView:
         return self.units[unit_id].leader_id
 
 
+_VIEWS: dict[int, tuple[tuple[object, object, object], OrgView]] = {}
+_VIEWS_KEEP = 16  # tunable-exempt: memoised firms' views (a cache, not a rule)
+
+
 def org_view(state: GameState, firm_id: int) -> OrgView:
+    """The firm's org view, memoised on the identity of the immutable inputs it reads (the
+    employments, the org and the people: PT-M10, T12, since every person's morale reads it)."""
+    inputs = (state.employments, state.org, state.people)
+    hit = _VIEWS.get(firm_id)
+    if hit is not None and all(a is b for a, b in zip(hit[0], inputs, strict=True)):
+        return hit[1]
+    view = _build_org_view(state, firm_id)
+    if len(_VIEWS) >= _VIEWS_KEEP:
+        _VIEWS.clear()
+    _VIEWS[firm_id] = (inputs, view)
+    return view
+
+
+def _build_org_view(state: GameState, firm_id: int) -> OrgView:
     staff = state.staff_ids(firm_id)
     founder_id = state.founder_of(firm_id)
     units = {u.id: u for u in state.org.firm_units(firm_id)}

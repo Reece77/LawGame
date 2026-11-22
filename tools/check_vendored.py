@@ -18,8 +18,10 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
 TABLE = REPO / "VENDORED.md"
-ROW = re.compile(r"^\| `(?P<local>[^`]+)` \| `(?P<upstream>[^`]+)` \| (?P<mark>AS IS|ported) \|"
-                 r" (?P<sha>[0-9a-f]{64}|—) \|$")
+ROW = re.compile(
+    r"^\| `(?P<local>[^`]+)` \| `(?P<upstream>[^`]+)` \| (?P<mark>AS IS|ported) \|"
+    r" (?P<sha>[0-9a-f]{64}|—) \|$"
+)
 RENAMES = (
     (re.compile(r"\btst\."), "ptk."),
     (re.compile(r"from tst "), "from ptk "),

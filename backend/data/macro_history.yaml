@@ -1,6 +1,6 @@
-# The macro and legal indices, 2005-2015 (PT-M7; spec 6 demand, spec 14). Each index is 1.0 at
-# the 2005 average. Points are dated months; a month between two points is interpolated, a
-# month after the last holds it (seeded cycles to 2034 are PT-M10's). Mid-year points carry
+# The macro and legal indices, 2005-2025 (PT-M7, PT-M10; spec 6 demand, spec 14). Each index is 1.0 at the
+# 2005 average. Points are dated months; a month between two points is interpolated, a
+# month after the last holds it (December 2025; ptk/sim/macro_seed.py seeds 2026-2034). Mid-year points carry
 # each year's annual figure; the October 2008 and April 2009 points carry the crash's timing
 # (Lehman, 15 September 2008; the trough in the spring of 2009).
 #
@@ -41,6 +41,41 @@ points:
   - { ym: [2014, 7], values: { growth: 1.08, ma: 1.15, pe: 1.32, issuance: 1.12, lending: 1.06, credit: 0.95, cycle: 1.03, enforcement: 1.15, ip: 1.50, real_estate: 1.05, lateral_heat: 1.05, collections: 1.03 } }
   - { ym: [2015, 7], values: { growth: 1.09, ma: 1.38, pe: 1.37, issuance: 0.95, lending: 0.96, credit: 0.73, cycle: 1.04, enforcement: 1.18, ip: 1.60, real_estate: 1.17, lateral_heat: 1.10, collections: 1.03 } }
 
+# PT-M10: 2016-2025 (docs/research/history-2016-2025.md s2-s3: July points [D] by v1's rules,
+# cycle, collections, growth and lateral heat [A]; the 2020 and 2022-2023 monthly points [A],
+# shaped from the quarterly facts). December 2025 pins history; ptk/sim/macro_seed.py seeds 2026-2034.
+  - { ym: [2016, 7], values: { growth: 1.09, ma: 1.19, pe: 1.25, issuance: 0.80, lending: 0.95, credit: 0.64, cycle: 1.04, enforcement: 1.43, ip: 1.41, real_estate: 1.11, lateral_heat: 1.10, collections: 1.04 }, note: "oil and commodity default wave" }
+  - { ym: [2017, 7], values: { growth: 1.10, ma: 1.11, pe: 1.40, issuance: 0.94, lending: 1.17, credit: 0.79, cycle: 1.05, enforcement: 1.26, ip: 1.33, real_estate: 1.08, lateral_heat: 1.10, collections: 1.05 } }
+  - { ym: [2018, 7], values: { growth: 1.10, ma: 1.20, pe: 1.48, issuance: 0.98, lending: 0.99, credit: 0.88, cycle: 1.07, enforcement: 1.33, ip: 1.26, real_estate: 1.19, lateral_heat: 1.15, collections: 1.06 } }
+  - { ym: [2019, 7], values: { growth: 1.11, ma: 1.22, pe: 1.52, issuance: 0.94, lending: 0.92, credit: 0.75, cycle: 1.07, enforcement: 1.40, ip: 1.24, real_estate: 1.20, lateral_heat: 1.15, collections: 1.07 } }
+  - { ym: [2020, 2], values: { growth: 1.11, ma: 1.20, pe: 1.50, issuance: 0.95, lending: 0.90, credit: 0.75, cycle: 1.07, enforcement: 1.38, ip: 1.30, real_estate: 1.18, lateral_heat: 1.10, collections: 1.07 }, note: "before the pandemic" }
+  - { ym: [2020, 4], values: { growth: 1.11, ma: 0.60, pe: 0.95, issuance: 0.95, lending: 0.60, credit: 0.62, cycle: 0.85, enforcement: 1.25, ip: 1.30, real_estate: 0.55, lateral_heat: 0.55, collections: 1.12 }, note: "the pandemic trough: Q2 demand -5.9%, US M&A -85%" }
+  - { ym: [2020, 5], values: { growth: 1.11, ma: 0.62, pe: 0.95, issuance: 1.00, lending: 0.62, credit: 0.58, cycle: 0.87, enforcement: 1.25, ip: 1.32, real_estate: 0.55, lateral_heat: 0.58, collections: 1.12 } }
+  - { ym: [2020, 7], values: { growth: 1.11, ma: 0.85, pe: 1.25, issuance: 1.30, lending: 0.80, credit: 0.55, cycle: 0.93, enforcement: 1.26, ip: 1.34, real_estate: 0.75, lateral_heat: 0.70, collections: 1.08 }, note: "the SPAC wave starts; courts partly reopen" }
+  - { ym: [2020, 10], values: { growth: 1.11, ma: 1.20, pe: 1.50, issuance: 1.45, lending: 0.95, credit: 0.52, cycle: 0.97, enforcement: 1.26, ip: 1.34, real_estate: 0.95, lateral_heat: 0.95, collections: 1.03 }, note: "record H2 M&A" }
+  - { ym: [2021, 7], values: { growth: 1.12, ma: 1.46, pe: 2.06, issuance: 1.64, lending: 1.29, credit: 1.00, cycle: 1.05, enforcement: 1.07, ip: 1.31, real_estate: 1.42, lateral_heat: 1.45, collections: 1.00 }, note: "the 2021 boom: Q2 demand +7.3%, attrition 26%" }
+  - { ym: [2022, 1], values: { growth: 1.12, ma: 1.40, pe: 1.95, issuance: 1.40, lending: 1.20, credit: 1.00, cycle: 1.06, enforcement: 1.12, ip: 1.30, real_estate: 1.45, lateral_heat: 1.40, collections: 1.00 }, note: "the peak; the first hike 16 Mar 2022" }
+  - { ym: [2022, 7], values: { growth: 1.12, ma: 1.12, pe: 1.78, issuance: 0.71, lending: 0.95, credit: 0.80, cycle: 1.06, enforcement: 1.18, ip: 1.30, real_estate: 1.38, lateral_heat: 1.25, collections: 1.05 }, note: "IPOs frozen; H2 M&A -35% on H1" }
+  - { ym: [2022, 10], values: { growth: 1.12, ma: 1.00, pe: 1.60, issuance: 0.65, lending: 0.80, credit: 0.75, cycle: 1.05, enforcement: 1.18, ip: 1.25, real_estate: 1.10, lateral_heat: 1.10, collections: 1.08 }, note: "75bp hikes" }
+  - { ym: [2023, 3], values: { growth: 1.13, ma: 1.02, pe: 1.52, issuance: 0.70, lending: 0.75, credit: 0.68, cycle: 1.04, enforcement: 1.15, ip: 1.20, real_estate: 0.95, lateral_heat: 0.95, collections: 1.10 }, note: "SVB and Signature; the loan drought" }
+  - { ym: [2023, 7], values: { growth: 1.13, ma: 1.08, pe: 1.56, issuance: 0.74, lending: 0.79, credit: 0.61, cycle: 1.06, enforcement: 1.14, ip: 1.17, real_estate: 0.97, lateral_heat: 0.95, collections: 1.10 }, note: "the last hike; Chapter 11s +72% in the year" }
+  - { ym: [2023, 10], values: { growth: 1.13, ma: 1.08, pe: 1.56, issuance: 0.76, lending: 0.82, credit: 0.61, cycle: 1.06, enforcement: 1.14, ip: 1.17, real_estate: 0.95, lateral_heat: 0.98, collections: 1.10 } }
+  - { ym: [2024, 7], values: { growth: 1.14, ma: 1.10, pe: 1.68, issuance: 0.90, lending: 1.07, credit: 0.61, cycle: 1.06, enforcement: 1.07, ip: 1.30, real_estate: 1.00, lateral_heat: 1.10, collections: 1.07 }, note: "the recovery: demand +2.6%" }
+  - { ym: [2025, 7], values: { growth: 1.15, ma: 1.37, pe: 1.96, issuance: 1.06, lending: 1.12, credit: 0.67, cycle: 1.05, enforcement: 0.81, ip: 1.42, real_estate: 1.08, lateral_heat: 1.15, collections: 1.06 }, note: "megadeals; the FCPA pause; SEC actions a 20-year low" }
+  - { ym: [2025, 12], values: { growth: 1.15, ma: 1.37, pe: 1.96, issuance: 1.06, lending: 1.12, credit: 0.67, cycle: 1.05, enforcement: 0.81, ip: 1.42, real_estate: 1.08, lateral_heat: 1.15, collections: 1.06 }, note: "history pinned (ADR PT-0002 2): 2025's values; seeded from January 2026" }
 # The market's January rate rise (dossier s2: worked-rate growth, Peer Monitor and Citi) [S/A].
-# After 2015, rivals.rate_inflation (balance.yaml).
-rate_rise: { 2006: 0.065, 2007: 0.065, 2008: 0.06, 2009: 0.025, 2010: 0.03, 2011: 0.04, 2012: 0.034, 2013: 0.033, 2014: 0.033, 2015: 0.03 }
+rate_rise: { 2006: 0.065, 2007: 0.065, 2008: 0.06, 2009: 0.025, 2010: 0.03, 2011: 0.04, 2012: 0.034, 2013: 0.033, 2014: 0.033, 2015: 0.03, 2016: 0.029, 2017: 0.03, 2018: 0.033, 2019: 0.038, 2020: 0.045, 2021: 0.039, 2022: 0.047, 2023: 0.06, 2024: 0.065, 2025: 0.073 }
+# PT-M10: 2019 and 2021-2025 [S] Thomson Reuters worked-rate growth; 2016-2018 and 2020 [A] (history-2016-2025 s2 row 8).
+# After 2025 the rises are seeded (balance.yaml macro.seeded).
+
+# PT-M10: dated shocks the indices cannot carry (ptk/sim/macro.py shock_share; ADR PT-0015 5).
+# The pandemic: courts closed and deals paused in April-May 2020 (history-2016-2025 s2's
+# narrative: jury trials suspended from mid-March, US M&A -85% in Q2, industry demand -5.9% in
+# Q2 [S]); the shares are [A], tuned to the brief's 10-30% fall of a corporate-heavy firm.
+shocks:
+  - from: [2020, 4]
+    months: 2
+    demand: { commercial_litigation: 0.35, white_collar: 0.25, employment: 0.15, ip: 0.20 }
+    hours: { commercial_litigation: 0.15, white_collar: 0.10, ip: 0.10, employment: 0.05 } # PT-M10 tuning: courts' hearings adjourned; deals' hours not paused (the ma and pe indices' April-May 2020 trough carries the deal drop): with deals at 0.30 T8.2020 read -41.1%, at 0.15 -35.8% (seeds 1-10)
+    docket: true
+    src: "history-2016-2025 s2 (the pandemic's shape): lockdowns from mid-March 2020, courts' trials suspended, deals paused; shares [A]"

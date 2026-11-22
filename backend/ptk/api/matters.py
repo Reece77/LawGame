@@ -23,6 +23,7 @@ from ptk.db import saves
 from ptk.sim.calendar import format_turn, turn_to_ym
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import NotFoundError
+from ptk.sim.macro_seed import world_data
 from ptk.sim.matters.actions import (
     AssessCase,
     AssignToMatter,
@@ -215,6 +216,7 @@ def _name(state: GameState, person_id: int | None) -> RefOut | None:
 
 
 def practices_view(state: GameState, data: GameData, balance: Balance) -> list[PracticeMarketOut]:
+    data = world_data(data, balance, state.save_meta.master_seed)  # PT-M10: the save's world
     firm = state.player.id
     base = base_monthly_demand(data)
     demand = state.market.demand_cents or base
@@ -291,6 +293,7 @@ def _client_row(
 
 
 def clients_view(state: GameState, data: GameData, balance: Balance) -> list[ClientRowOut]:
+    data = world_data(data, balance, state.save_meta.master_seed)  # PT-M10: the save's world
     firm = state.player.id
     key = key_clients(state.market, firm, balance)
     return [
@@ -305,6 +308,7 @@ def _affinity(value: float) -> Literal["high", "medium", "low"]:
 
 
 def client_view(state: GameState, client_id: int, data: GameData, balance: Balance) -> ClientOut:
+    data = world_data(data, balance, state.save_meta.master_seed)  # PT-M10: the save's world
     firm = state.player.id
     rel = state.market.relationship(client_id, firm)
     if rel is None:
@@ -436,6 +440,7 @@ def matters_view(state: GameState, data: GameData, status: str = "open") -> list
 
 
 def matter_view(state: GameState, matter_id: int, data: GameData, balance: Balance) -> MatterOut:
+    data = world_data(data, balance, state.save_meta.master_seed)  # PT-M10: the save's world
     m = state.market.matter(matter_id)
     if m is None or m.firm_id != state.player.id:
         raise NotFoundError(f"no matter {matter_id}")
@@ -566,6 +571,7 @@ class HoursPolicyIn(BaseModel):
 
 
 def policies_view(state: GameState, data: GameData, balance: Balance) -> FirmPoliciesOut:
+    data = world_data(data, balance, state.save_meta.master_seed)  # PT-M10: the save's world
     firm = state.player
     year = turn_to_ym(state.turn, state.save_meta.start_ym)[0]
     return FirmPoliciesOut(

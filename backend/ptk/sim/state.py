@@ -31,6 +31,10 @@ from ptk.sim.rivals.models import EMPTY_RIVALS, RIVAL_PERSON_BASE, RivalsState
 type GameOutcome = Literal["active", "campaign_complete", "dissolved", "election_lost"]
 
 
+_STAFF: dict[int, tuple[object, tuple[int, ...]]] = {}  # firm -> (employments, ids)
+_STAFF_KEEP = 256  # tunable-exempt: memoised firms (a cache, not a rule)
+
+
 @dataclass(frozen=True, slots=True)
 class SaveMeta:
     name: str
@@ -100,12 +104,20 @@ class GameState:
         raise KeyError(f"no person {person_id}")
 
     def staff_ids(self, firm_id: int) -> tuple[int, ...]:
-        """Ids of the people on a firm's books (active or notice), ascending."""
-        return tuple(
+        """Ids of the people on a firm's books (active or notice), ascending (memoised on the
+        employments tuple's identity, which is immutable: PT-M10, T12)."""
+        hit = _STAFF.get(firm_id)
+        if hit is not None and hit[0] is self.employments:
+            return hit[1]
+        ids = tuple(
             sorted(
                 e.person_id for e in self.employments if e.firm_id == firm_id and e.counts_as_staff
             )
         )
+        if len(_STAFF) >= _STAFF_KEEP:
+            _STAFF.clear()
+        _STAFF[firm_id] = (self.employments, ids)
+        return ids
 
     def founder_of(self, firm_id: int) -> int | None:
         """The firm's own founding partner played by the player (the org root's leader)."""

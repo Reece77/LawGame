@@ -423,6 +423,7 @@ ENERGY_ACTIONS: Final = (
     "hours_policy",  # PT-M7b: the firm's billable target
     "press_answer",  # PT-M16: answer a press moment
     "submission",  # PT-M16: the March directory submission
+    "lay_off",  # PT-M10: let an associate or a member of staff go (TST's fire)
 )
 LATERAL_CHANNELS: Final = ("referral", "job_post", "recruiter")
 
@@ -549,6 +550,7 @@ class PayBalance(_Strict):
     policy: PayPolicyLimits
     bonus_month: int = Field(ge=1, le=12)
     discretionary_bonus_bp: dict[str, int]
+    severance_months: int = Field(ge=0)  # PT-M10: a layoff's months of salary
 
     @model_validator(mode="after")
     def _overheads(self) -> PayBalance:
@@ -585,6 +587,7 @@ class MoraleBalance(_Strict):
     bonus_slope: float
     bonus_min: float
     bonus_max: float
+    layoff_penalty: float = Field(le=0)  # PT-M10: morale points to everyone remaining, per layoff
 
 
 class ResignBalance(_Strict):
@@ -1745,6 +1748,9 @@ class GameData(_Strict):
         self._check_references()
         if bad := sorted({p.index for p in self.practices} - set(MACRO_SERIES)):
             raise ValueError(f"practices: unknown macro index {bad}")
+        for shock in self.macro.shocks:  # PT-M10
+            if bad := sorted((set(shock.demand) | set(shock.hours)) - set(self.practice_keys)):
+                raise ValueError(f"macro shock {shock.from_ym}: unknown practices {bad}")
         self.rivals.check(set(self.practice_keys), {c.key for c in self.courts.courts})
         traits = set(self.skill_keys) | {t.key for t in self.personality}
         for seat in self.seats.seats:  # PT-M8: seat weights name skills or personality traits

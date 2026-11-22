@@ -30,6 +30,7 @@ from ptk.sim.errors import SimError
 from ptk.sim.hiring.pay import EQUITY_PARTNER
 from ptk.sim.ledger import CASH, LedgerEntry, apply_entries
 from ptk.sim.log import LogItem
+from ptk.sim.macro_seed import world_data
 from ptk.sim.org.actions import OrgAction, apply_org_action
 from ptk.sim.partnership.kpis import explain
 from ptk.sim.rng import RngFactory
@@ -264,6 +265,7 @@ def start_game(
         data=data,
         balance=balance,
     )
-    game = Game(data, balance, made.state, dict(apply_entries({}, made.ledger_entries)))
+    world = world_data(data, balance, seed)  # PT-M10: the save's seeded world after 2025
+    game = Game(world, balance, made.state, dict(apply_entries({}, made.ledger_entries)))
     game._associates = frozenset(p.id for p in game.lawyers() if is_associate(p.level))
     return game

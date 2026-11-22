@@ -38,6 +38,7 @@ from ptk.sim.hiring.actions import (
     CloseSearch,
     HiringAction,
     Interview,
+    LayOff,
     MakeOffer,
     OpenSearch,
     Outcome,
@@ -48,6 +49,7 @@ from ptk.sim.hiring.actions import (
     apply_hiring,
 )
 from ptk.sim.ledger import LedgerBalances
+from ptk.sim.macro_seed import world_data
 from ptk.sim.matters.actions import MATTER_ACTION_TYPES, MatterAction, apply_matter_action
 from ptk.sim.org.pitches import AnswerPitch, answer_pitch
 from ptk.sim.org.seats import SEAT_ACTION_TYPES, SeatAction, apply_seat_action
@@ -84,6 +86,7 @@ ACTION_TYPES: dict[str, type[Any]] = {
     "make_offer": MakeOffer,
     "withdraw_offer": WithdrawOffer,
     "set_pay_policy": SetPayPolicy,
+    "lay_off": LayOff,  # PT-M10
     **MATTER_ACTION_TYPES,  # PT-M3a
     **EVENT_ACTION_TYPES,  # PT-M6
     **BILLING_ACTION_TYPES,  # PT-M3b
@@ -111,6 +114,7 @@ def apply_action(
     forbids it."""
     if state.ended:
         raise GameOverError("the game is over")
+    data = world_data(data, balance, state.save_meta.master_seed)  # PT-M10: the save's world
     draws = lambda: rng.stream(state.turn, "actions", seq)  # noqa: E731
     if type(action) in AUTOMATION_ACTION_TYPES.values():  # PT-M9
         auto = apply_automation_action(

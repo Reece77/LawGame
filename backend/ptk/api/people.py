@@ -21,6 +21,7 @@ from ptk.db import saves
 from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import NotFoundError
+from ptk.sim.macro_seed import world_data
 from ptk.sim.people.formulas import current_ability, potential_phrase
 from ptk.sim.people.models import PA_KEY, Person, RevealState, fam_key
 from ptk.sim.people.reveal import revealed_range
@@ -186,6 +187,7 @@ def _visible(state: GameState) -> list[tuple[Person, RevealState, bool]]:
 
 def people_rows(state: GameState, data: GameData, balance: Balance) -> list[PersonRowOut]:
     """People on a firm's books (candidates are on the Recruitment screen, PT-M1b)."""
+    data = world_data(data, balance, state.save_meta.master_seed)  # PT-M10: the save's world
     employed = {e.person_id for e in state.employments if e.counts_as_staff}
     return [
         PersonRowOut.model_validate(_row_fields(p, rv, state, data, balance, own))

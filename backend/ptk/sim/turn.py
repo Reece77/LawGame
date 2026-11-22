@@ -30,6 +30,7 @@ from ptk.sim.hiring import phases as hiring
 from ptk.sim.interfaces import DelegateHiringHook, delegate_hiring
 from ptk.sim.ledger import CASH, AccountCode, LedgerBalances, LedgerEntry, apply_entries
 from ptk.sim.log import LogItem
+from ptk.sim.macro_seed import world_data
 from ptk.sim.matters import phase as matters
 from ptk.sim.money import Cents
 from ptk.sim.org.delegates import DelegateAction, available_hook, run_delegates
@@ -330,6 +331,7 @@ def advance_turn(
         raise GameOverError(f"the game is over ({state.save_meta.game_state.replace('_', ' ')})")
     if not answer_critical:
         effects.check_continue(state)
+    data = world_data(data, balance, state.save_meta.master_seed)  # PT-M10: the save's world
     ctx = TurnContext(
         state=state,
         decisions=decisions,

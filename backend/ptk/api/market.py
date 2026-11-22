@@ -25,6 +25,7 @@ from ptk.sim.calendar import format_turn
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import NotFoundError
 from ptk.sim.reputation.formulas import reputation
+from ptk.sim.macro_seed import world_data
 from ptk.sim.rivals import formulas as f
 from ptk.sim.rivals.actions import (
     ApproachFreeAgents,
@@ -260,6 +261,7 @@ def _rfp(state: GameState, r: Any, data: GameData) -> RfpOut:
 
 
 def market_view(state: GameState, data: GameData, balance: Balance) -> MarketOut:
+    data = world_data(data, balance, state.save_meta.master_seed)  # PT-M10: the save's world
     from ptk.sim.rivals.poaching import answer_odds
 
     panels = _panels(state)
@@ -302,6 +304,7 @@ def market_view(state: GameState, data: GameData, balance: Balance) -> MarketOut
 
 
 def rival_view(state: GameState, firm_id: int, data: GameData, balance: Balance) -> RivalOut:
+    data = world_data(data, balance, state.save_meta.master_seed)  # PT-M10: the save's world
     firm = state.rivals.firm(firm_id)
     if firm is None:
         raise NotFoundError(f"no rival firm {firm_id}")

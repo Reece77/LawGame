@@ -47,6 +47,7 @@ from typing import Final
 
 from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import PARTNER_LEVELS, Balance, GameData, KindDef
+from ptk.sim.macro import shock_share
 from ptk.sim.matters import formulas as fx
 from ptk.sim.matters.models import (
     PRO_BONO_CLIENT_ID,
@@ -417,6 +418,7 @@ def month_hours(
 ) -> MonthHours:
     """Allocate the month: named matters first, then flow, then pro bono (module docstring)."""
     turn = state.turn
+    ym = turn_to_ym(turn, state.save_meta.start_ym)
     firm = state.firm(firm_id)
     index = {p: practice_index(firm, p) for p in data.practice_keys}  # PT-M7b: by practice
     earners = fee_earners(state, firm_id, data, balance)
@@ -443,6 +445,9 @@ def month_hours(
         )
         # ceil (PT-M7a): a matter a hair from done rounded to 0 and never finished
         left = math.ceil(m.hours_needed_tenths * (1.0 - completed_share(m, kind)) / f_team)
+        paused = shock_share(data.macro, "hours", m.practice, ym)  # PT-M10: a dated shock
+        if paused > 0:
+            plan = {pid: round(t * (1.0 - paused)) for pid, t in plan.items()}
         for pid, t in _scale(plan, max(left, 0)).items():
             if t > 0:
                 wanted[(pid, m.id)] = t
@@ -564,8 +569,11 @@ def month_hours(
     pro_bono: dict[int, int] = {}
     keys = data.practice_keys
     cap_t = credit * fx.TENTHS
+    by_person: dict[int, list[HoursRecord]] = {}  # PT-M10 (T12): one pass, record order kept
+    for r in records:
+        by_person.setdefault(r.person_id, []).append(r)
     for e in earners:
-        mine = [r for r in records if r.person_id == e.id]
+        mine = by_person.get(e.id, [])
         by_practice = {p: sum(r.tenths for r in mine if r.practice == p) for p in keys}
         pb = sum(r.tenths for r in mine if r.client_id == PRO_BONO_CLIENT_ID)
         before = ytd_before(state, e.id, balance)

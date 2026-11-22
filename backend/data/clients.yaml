@@ -149,7 +149,7 @@ real_clients:
   - { name: MBNA, sector: banking, revenue_bn: 12 }
   - { name: Deutsche Bank, sector: banking, revenue_bn: 30, country: de }
   - { name: UBS, sector: banking, revenue_bn: 35, country: ch }
-  - { name: Credit Suisse, sector: banking, revenue_bn: 30, country: ch }
+  - { name: Credit Suisse, sector: banking, revenue_bn: 30, country: ch, fails: { ym: [2023, 3], kind: rescue, src: "history-2016-2025 s5: UBS rescue announced 19 Mar 2023, completed 12 Jun 2023 [S]" } }
   - { name: BNP Paribas, sector: banking, revenue_bn: 30, country: fr }
   - { name: HSBC, sector: banking, revenue_bn: 60, country: uk }
   - { name: Barclays, sector: banking, revenue_bn: 40, country: uk }
@@ -272,7 +272,7 @@ real_clients:
   - { name: "Procter & Gamble", sector: consumer_retail, revenue_bn: 57 }
   - { name: Costco Wholesale, sector: consumer_retail, revenue_bn: 52 }
   - { name: Target, sector: consumer_retail, revenue_bn: 52 }
-  - { name: Sears Holdings, sector: consumer_retail, revenue_bn: 49 }
+  - { name: Sears Holdings, sector: consumer_retail, revenue_bn: 49, fails: { ym: [2018, 10], kind: bankruptcy, src: "history-2016-2025 s5: Chapter 11, 15 Oct 2018; 363 sale to ESL closed 11 Feb 2019 [S]" } }
   - { name: Altria Group, sector: consumer_retail, revenue_bn: 70 }
   - { name: Albertsons, sector: consumer_retail, revenue_bn: 40 }
   - { name: Safeway, sector: consumer_retail, revenue_bn: 38 }
@@ -283,7 +283,7 @@ real_clients:
   - { name: Coca-Cola, sector: consumer_retail, revenue_bn: 23 }
   - { name: Best Buy, sector: consumer_retail, revenue_bn: 30 }
   - { name: CVS, sector: consumer_retail, revenue_bn: 37 }
-  - { name: Rite Aid, sector: consumer_retail, revenue_bn: 17 }
+  - { name: Rite Aid, sector: consumer_retail, revenue_bn: 17, fails: { ym: [2023, 10], kind: bankruptcy, src: "history-2016-2025 s5: Chapter 11, 15 Oct 2023 (again 5 May 2025, liquidated Oct 2025: the estate months cover both) [S]" } }
   - { name: Supervalu, sector: consumer_retail, revenue_bn: 19.5 }
   - { name: Tyson Foods, sector: consumer_retail, revenue_bn: 26 }
   - { name: Archer Daniels Midland, sector: consumer_retail, revenue_bn: 36 }
@@ -295,7 +295,7 @@ real_clients:
   - { name: Anheuser-Busch, sector: consumer_retail, revenue_bn: 15 }
   - { name: Coca-Cola Enterprises, sector: consumer_retail, revenue_bn: 18.7 }
   - { name: Federated Department Stores, sector: consumer_retail, revenue_bn: 22.4 }
-  - { name: J.C. Penney, sector: consumer_retail, revenue_bn: 18.8 }
+  - { name: J.C. Penney, sector: consumer_retail, revenue_bn: 18.8, fails: { ym: [2020, 5], kind: bankruptcy, src: "history-2016-2025 s5: Chapter 11, 15 May 2020; sale to Simon and Brookfield approved 10 Nov 2020 [S]" } }
   - { name: "Kohl's", sector: consumer_retail, revenue_bn: 13.4 }
   - { name: Gap, sector: consumer_retail, revenue_bn: 16 }
   - { name: TJX Companies, sector: consumer_retail, revenue_bn: 16 }
@@ -308,7 +308,7 @@ real_clients:
   - { name: Sysco, sector: consumer_retail, revenue_bn: 30.3 }
   - { name: Office Depot, sector: consumer_retail, revenue_bn: 14.3 }
   - { name: Limited Brands, sector: consumer_retail, revenue_bn: 9.7 }
-  - { name: Toys R Us, sector: consumer_retail, revenue_bn: 11 }
+  - { name: Toys R Us, sector: consumer_retail, revenue_bn: 11, fails: { ym: [2017, 9], kind: bankruptcy, src: "history-2016-2025 s5: Chapter 11, 18 Sep 2017; US liquidation approved 15 Mar 2018 [S]" } }
   - { name: Unilever, sector: consumer_retail, revenue_bn: 50, country: uk }
   - { name: Tesco, sector: consumer_retail, revenue_bn: 68, country: uk }
   - { name: Diageo, sector: consumer_retail, revenue_bn: 15, country: uk }

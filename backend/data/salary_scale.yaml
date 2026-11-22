@@ -1,29 +1,38 @@
-# The associate salary scale and year-end bonuses (spec 5.4; PT-M1b). Money is integer cents
-# a year, nominal USD, at top New York firms (the market a firm matches, lags or leads).
-#
-# History (dossier): first-year salary $125,000 in 2005 and $160,000 from 2007 are the spec's
-# figures; the 2006 row and the class steps of every row are approximate (a design default
-# to be checked against the salary dossier when it lands, see the brief's follow-ups). v1
-# carries history to 2015; the last row holds until PT-M7's seeded macro moves it.
+# The associate salary scale and year-end bonuses (spec 5.4; PT-M1b; PT-M10 to 2025). Money is
+# integer cents a year, nominal USD, at top New York firms (the market a firm matches, lags or
+# leads). History to December 2025 (docs/research/history-2016-2025.md s4, which corrects
+# PT-M1b's 2006 row and 2008-2015 bonuses); from 2026 the scale's steps are seeded
+# (ptk/sim/macro_seed.py, balance.yaml macro.seeded.scale; ADR PT-0015).
 #
 # scale: one row per market change, effective from `from` [year, month]; `salaries` by class
 # year 1-8 (associate_1..associate_8; senior_associate is paid as class 8).
 scale:
-  - { from: [2005, 1], salaries: [12500000, 13500000, 15000000, 17000000, 19000000, 20500000, 21500000, 22000000] }
-  - { from: [2006, 1], salaries: [14500000, 15500000, 17000000, 19000000, 21000000, 22500000, 23500000, 24500000] }
-  - { from: [2007, 1], salaries: [16000000, 17000000, 18500000, 21000000, 23000000, 25000000, 26500000, 28000000] }
-# bonuses: the market's year-end bonus paid in December of `year`, by class year 1-8
-# (approximate; 2008-2010 show the crisis cut). A year without a row pays the latest row's.
+  - { from: [2005, 1], salaries: [12500000, 13500000, 15000000, 17000000, 19000000, 20500000, 21500000, 22000000] } # the 2005 scale [S first-year; class steps A]
+  - { from: [2006, 2], salaries: [14500000, 15500000, 17000000, 19000000, 21000000, 22500000, 23500000, 24000000] } # Sullivan & Cromwell +$20k across the board, 6 Feb 2006 [S]; steps [D]
+  - { from: [2007, 1], salaries: [16000000, 17000000, 18500000, 21000000, 23000000, 25000000, 26500000, 28000000] } # Simpson Thacher, 22 Jan 2007, retroactive to 1 Jan [S]
+  - { from: [2016, 7], salaries: [18000000, 19000000, 21000000, 23500000, 26000000, 28000000, 30000000, 31500000] } # Cravath, 6 Jun 2016, from 1 Jul [S]
+  - { from: [2018, 7], salaries: [19000000, 20000000, 22000000, 25500000, 28000000, 30500000, 32500000, 34000000] } # Cravath topping Milbank, 11 Jun 2018, from 1 Jul [S]
+  - { from: [2021, 7], salaries: [20500000, 21500000, 24000000, 27500000, 30500000, 33000000, 35000000, 36500000] } # Davis Polk, 11 Jun 2021 (Cravath matched), from 1 Jul [S]; the incoming class $202,500 to January
+  - { from: [2022, 1], salaries: [21500000, 22500000, 25000000, 29500000, 34500000, 37000000, 40000000, 41500000] } # Cravath, 28 Feb 2022, retroactive to 1 Jan [S] (Milbank 20 Jan, Davis Polk 22 Feb)
+  - { from: [2024, 1], salaries: [22500000, 23500000, 26000000, 31000000, 36500000, 39000000, 42000000, 43500000] } # Milbank 7 Nov / Cravath 28 Nov 2023, revised 5-6 Dec, from 1 Jan 2024 [S]; no change in 2024-2025 [S]
+# bonuses: the market's year-end bonus paid in December of `year`, by class year 1-8, special
+# bonuses paid that year included. A year without a row pays the latest row's.
 bonuses:
-  - { year: 2005, amounts: [1500000, 2000000, 2500000, 3000000, 3500000, 3500000, 3500000, 3500000] }
-  - { year: 2006, amounts: [3500000, 4000000, 4500000, 5000000, 5500000, 6000000, 6500000, 7000000] }
-  - { year: 2007, amounts: [4500000, 5000000, 6000000, 7500000, 8500000, 9000000, 9500000, 10000000] }
-  - { year: 2008, amounts: [750000, 1000000, 1250000, 1500000, 1750000, 2000000, 2250000, 2500000] }
-  - { year: 2009, amounts: [750000, 1000000, 1500000, 2000000, 2500000, 3000000, 3000000, 3000000] }
-  - { year: 2010, amounts: [1250000, 1500000, 2000000, 2500000, 3000000, 3500000, 4000000, 4500000] }
-  - { year: 2011, amounts: [1500000, 2000000, 2500000, 3000000, 3500000, 4000000, 4500000, 5000000] }
-  - { year: 2013, amounts: [1500000, 2000000, 2500000, 3250000, 4000000, 4750000, 5500000, 6000000] }
-  - { year: 2015, amounts: [2500000, 3000000, 4000000, 6000000, 7500000, 8500000, 9500000, 10000000] }
+  - { year: 2005, amounts: [1500000, 2000000, 2500000, 3000000, 3500000, 3500000, 3500000, 3500000] } # [A] (not researched; PT-M1b's)
+  - { year: 2006, amounts: [3500000, 4000000, 4500000, 5000000, 5500000, 6000000, 6500000, 7000000] } # [A] (not researched; PT-M1b's)
+  - { year: 2007, amounts: [4500000, 5000000, 6000000, 7500000, 8500000, 9000000, 9500000, 10000000] } # [A] (not researched; PT-M1b's)
+  - { year: 2008, amounts: [1750000, 2000000, 2250000, 2500000, 2750000, 3000000, 3000000, 3000000] } # Cravath's cut [S] k1-k7, k8 [A]
+  - { year: 2009, amounts: [0, 750000, 1000000, 1500000, 2000000, 2500000, 3000000, 3000000] } # Cravath [S]; no first-year class (deferred starts)
+  - { year: 2010, amounts: [0, 750000, 1000000, 1500000, 2000000, 2500000, 3000000, 3500000] } # Cravath, 22 Nov 2010 [S]
+  - { year: 2011, amounts: [0, 750000, 1000000, 1500000, 2000000, 2500000, 3000000, 3750000] } # Cravath, 28 Nov 2011 [S]
+  - { year: 2012, amounts: [1000000, 1000000, 1400000, 2000000, 2700000, 3400000, 4000000, 5000000] } # Cravath, 26 Nov 2012; 2013 the same [S]
+  - { year: 2014, amounts: [1500000, 1500000, 2500000, 5000000, 6500000, 8000000, 9000000, 10000000] } # Davis Polk, 25 Nov 2014: the market through 2017 [S]
+  - { year: 2018, amounts: [2000000, 2250000, 3500000, 6500000, 8500000, 10500000, 11500000, 12500000] } # year-end in line with 2017 [D] + Cravath's June special 5-25 [S]
+  - { year: 2019, amounts: [1500000, 1500000, 2500000, 5000000, 6500000, 8000000, 9000000, 10000000] } # Milbank, Cravath 11 Nov 2019 [S]
+  - { year: 2020, amounts: [2250000, 2250000, 3500000, 7000000, 9250000, 11250000, 12700000, 14000000] } # Cravath year-end + December special 7.5-40 [S]
+  - { year: 2021, amounts: [2700000, 4400000, 6350000, 10400000, 13250000, 15800000, 18350000, 20200000] } # Cravath year-end 15-115 + Davis Polk special 0-23 [S] + spring/fall special 12-64 [S endpoints, classes between A]
+  - { year: 2022, amounts: [1500000, 2000000, 3000000, 5750000, 7500000, 9000000, 10500000, 11500000] } # Cravath, 29 Nov 2022 (k8 Baker McKenzie / Boies Schiller) [S]; 2023 the same [S]
+  - { year: 2024, amounts: [2100000, 2600000, 4000000, 7250000, 9500000, 11500000, 13000000, 14000000] } # Milbank 11 Nov 2024 year-end 15-115 [S] + summer special 6-25 [D]; 2025 the same [D/S]
 # bands: salaries a year at a New York firm for people off the scale, by level (TST's role
 # bands by city, spec 5.4); a city's pay is band x pay.city_bp. Counsel and income partners
 # also take a discretionary bonus (pay.discretionary_bonus_bp).

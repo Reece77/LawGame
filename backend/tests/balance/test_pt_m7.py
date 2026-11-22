@@ -11,7 +11,7 @@ from __future__ import annotations
 import pytest
 
 from ptk.balance.known_misses import verdict
-from ptk.balance.report import evaluate, play, run_all, runs_table, table
+from ptk.balance.report import evaluate, play, run_all, runs_table, shock_table, table
 from ptk.balance.strategies import PLAYABLE, STRATEGIES
 
 
@@ -37,9 +37,9 @@ def test_do_nothing_does_nothing() -> None:
 
 @pytest.mark.nightly
 def test_balance_targets(capsys: pytest.CaptureFixture[str]) -> None:
-    results = run_all(strategies=tuple(STRATEGIES), jobs=4)
+    results = run_all(strategies=tuple(STRATEGIES), jobs=4, long_runs=True)  # PT-M10: to 2034
     rows = evaluate(results)
     with capsys.disabled():
-        print("\n" + runs_table(results) + "\n\n" + table(rows))
+        print("\n" + runs_table(results) + "\n\n" + shock_table(results) + "\n\n" + table(rows))
     failed = [r.target for r in rows if r.gate and verdict(r) == "fail"]
     assert not failed, f"pass/fail targets failed: {failed}"

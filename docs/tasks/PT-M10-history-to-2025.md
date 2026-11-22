@@ -66,7 +66,7 @@ Recorded by the PT-M10 session (2026-11-22). Branch `claude/pt-m10-history-156q4
 12. **Sub-task 6: the rivals' pin.** Only [S], [S·snip] and [D] points enter `firms.yaml`, never the dossier's interpolations; Baker McKenzie's FY2016 and FY2018-2019 are left out (its June year-end and the Global series' one-year lead, dossier s6 note 3); DLA Piper keeps its US basis to 2009; A&O Shearman (May 2024) is an outside merger with Shearman's path stepping to the global firm. Hogan Lovells Cadwalader (July 2026) is after the pin and not scripted (rivals play freely from 2026). `rivals.market_growth` 2016-2025 takes the researched Am Law 100 growth. PT-M5's dated-history test now plays past the last event (2024).
 13. **Sub-task 7: T12** is timed at December 2025 (`make check-timing`, alone): **138 ms** (PT-M7b's 2015 reading: 159 ms; the bisected index lookup keeps 2025's 36 points cheap). The runner's printed T12 (641 ms on CI, workers sharing cores) is not the gate.
 
-**Sub-task 7 readings** (`make balance --long` on CI, nightly run 8 on `8f1e4c1`; seeds 1-10, 132 turns, plus steady to December 2034; T8.2020 from the tuned shock, seeds 1-10 to December 2021):
+**Sub-task 7 readings** (`make balance --long` on CI: nightly run 8 on `8f1e4c1`, and run 11 on the merge head `be0cb32` after PT-M9 with the same readings except the 30-year print; seeds 1-10, 132 turns, plus steady to December 2034; T8.2020 from the tuned shock, seeds 1-10 to December 2021):
 
 | Target | Band | PT-M7b | PT-M10 | |
 | --- | --- | --- | --- | --- |
@@ -85,7 +85,7 @@ Recorded by the PT-M10 session (2026-11-22). Branch `claude/pt-m10-history-156q4
 | T11 at 2009-2025 (steady to 2034) | 0 misses, >= 8 kept | | **0, 8 (worst 7.5%)** | pass |
 | T8.2020 shock (corporate-heavy, Q2/Q1 2020) | -30% to -10%, back by Q4 2021 | | **-23.3%, 7 of 9 back** | pass |
 | T12 at December 2025 | <= 250 ms | 159 ms (2015) | **138 ms** | pass |
-| 30-year steady, December 2034 (information) | PT-M18 | | 38.5 lawyers, $102.7M, PEP $7.20M, 1/10 dissolved | printed |
+| 30-year steady, December 2034 (information) | PT-M18 | | 70.5 lawyers, $233.3M, PEP $10.10M, 1/10 dissolved (run 11; run 8 before the shock's tuning: 38.5, $102.7M, $7.20M) | printed |
 
 PT-M5's T11 test (`make check`, unmanaged player): seeds 1-10 at 2009, 2015, 2020 and 2025, worst gaps 5.1-7.2%, top 10 kept 8-10, no misses.
 

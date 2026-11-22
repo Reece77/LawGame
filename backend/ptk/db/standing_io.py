@@ -1,4 +1,4 @@
-"""Load and write reputation, the press and the rankings (schema v14, PT-M16).
+"""Load and write reputation, the press and the rankings (schema v15, PT-M16).
 
 One `standing` row holds the `StandingState` as JSON (current state, rewritten when it
 changes). Every list the rankings publish is also appended to `ranking_entry` (one row a

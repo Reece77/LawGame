@@ -1,11 +1,11 @@
-"""Schema v14 (PT-M16): reputation, the press and the rankings.
+"""Schema v15 (PT-M16; re-chained after PT-M9's 0014_automation): reputation, the press and the rankings.
 
 One `standing` row holding reputation, the press and the rankings' latest editions as JSON, and
 `ranking_entry`, the rankings' history (each published list's places and bands, appended).
 A save from before PT-M16 has no row: its first month seeds reputation (spec 12.1).
 
-Revision ID: 0014_standing
-Revises: 0013_leadership
+Revision ID: 0015_standing
+Revises: 0014_automation
 Create Date: 2026-11-22
 """
 
@@ -14,8 +14,8 @@ from __future__ import annotations
 import sqlalchemy as sa
 from alembic import op
 
-revision = "0014_standing"
-down_revision = "0013_leadership"
+revision = "0015_standing"
+down_revision = "0014_automation"
 branch_labels = None
 depends_on = None
 

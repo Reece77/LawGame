@@ -11,6 +11,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass, field, replace
 from typing import Literal
 
+from ptk.sim.automation.models import EMPTY_AUTOMATION, AutomationState
 from ptk.sim.billing.models import EMPTY_BILLING, BillingState
 from ptk.sim.calendar import YearMonth
 from ptk.sim.events.models import EMPTY_EVENTS, EventsState
@@ -86,6 +87,7 @@ class GameState:
     founder_life: FounderLifeState = EMPTY_FOUNDER_LIFE  # persona, personal book (PT-M17)
     family: FamilyState = EMPTY_FAMILY  # the player's own family (PT-M17)
     standing: StandingState = EMPTY_STANDING  # reputation, press and rankings (PT-M16)
+    automation: AutomationState = EMPTY_AUTOMATION  # areas, owners, proposals (PT-M9)
 
     @property
     def ended(self) -> bool:

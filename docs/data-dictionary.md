@@ -278,7 +278,7 @@ Ledger accounts first posted in PT-M17: 2600 (retired-partner annuities: booked 
 
 A practice group leader's seat is the unit's leader (`org_unit.leader_id`, PT-M2): it is not copied into `leadership`, so PT-M2's existing leaders are the holders. The managing partner's seat is the partnership's MP. `decision_log` gains `source` `seat` rows (a `SeatDecision` as JSON), recomputed on replay. `llm_text.kind` gains `seat_report` (`ref_id`: the holder). `inbox_item` gains templates `seat_appointed`, `seat_vacated`, `pitch`, `pitch_answered`, `pitch_lapsed`, `pitch_scored`, `partners_meeting`, `exco_term` and `exco_elected`, and link kinds `org` and `pitch`.
 
-## Schema v14 (`0014_standing`, PT-M16)
+## Schema v15 (`0015_standing`, PT-M16)
 
 | Table | Column | Type | Meaning |
 | --- | --- | --- | --- |
@@ -297,3 +297,12 @@ A practice group leader's seat is the unit's leader (`org_unit.leader_id`, PT-M2
 | | `year` | int, null | The fiscal year (tables) or the ranking's year (places, bands, individuals) |
 
 `ranking_entry` is appended when a list publishes (the turn's write) and never rewritten; the live state keeps only each list's latest edition. A save from before PT-M16 has no `standing` row: its first month seeds reputation. `decision_log` gains actions `answer_press` and `make_submission`. `inbox_item` gains templates `tables_published`, `league_tables`, `places_published`, `directory_bands`, `submission_made`, `press_moment`, `claim_made`, `claim_kept` and `claim_broken`, and link kinds `rankings` and `press`.
+## Schema v14 (`0014_automation`, PT-M9)
+
+| Table | Column | Type | Meaning |
+| --- | --- | --- | --- |
+| `automation` | `id` | int, pk | Always 1 |
+| | `data_json` | text | `ptk.sim.automation.models.AutomationState` as JSON: `owners` (firm, area key from `balance.yaml` `automation.areas`, slot: a practice group's unit id for staffing else 0, the owner's person id, per-decision `limit_cents`, `monthly_cents`, priority, since turn, `answer_events`, guardrails as `[key, value]` pairs), `decisions` (the last `automation.keep_decision_turns` months of what owners did: firm, turn, seq, area, slot, person, kind (decision, mistake, proposal, over_budget, stretched, event, note; the API shows a mistake as a decision), action kind, text, commitment in cents, link kind and id, proposal id), `proposals` (id, firm, area, slot, owner, made and expiry turns, the action as JSON, title, why, the owner's recommendation, commitment, status pending/approved/declined/expired/failed, resolved turn) and `next_proposal_id` |
+| `inbox_item` | `in_digest` | bool, default false | The item came from an automated area: the inbox's default view leaves it out and the month's digest lists it (TST 40.4) |
+
+`decision_log` gains `source` `area` rows (an `AreaDecision` as JSON), recomputed on replay (ADR-0015). `inbox_item` gains templates `area_given`, `area_returned`, `auto_proposal`, `auto_proposal_expired`, `auto_proposal_answered` and `automation_digest`, and link kind `automation` (a proposal's id, or for a digest the month's turn).

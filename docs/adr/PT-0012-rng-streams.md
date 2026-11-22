@@ -54,6 +54,8 @@
 | `investments` | 52 | `(person_id,)` | A player's month of investment and family-office returns (one call site, `ptk.sim.founder.personal.investment_stream`) | PT-M17 |
 | `press` | 70 | `(firm_id,)` | The month's claim checks: a broken public claim's reminder wait (one generator a month, drawn per broken claim in id order; lane C's range 70-79) | PT-M16 |
 | `press_rival` | 71 | `(*rival_key, n)` | A real rival's managing partner at their firm's move (a lateral hire, a team lift, a new office, a merger): whether they speak, then whether it is a jab at the player; n counts the firm's spoken moves that month | PT-M16 |
+| `auto_quality` | 60 | `(area_index, firm_id, slot)` | An automated area's month (spec 9.4): the first uniform decides whether the owner takes the default rule's answer (q from the true seat score, less overload); a mistake's noise and the actions' own draws follow on the same generator. area_index: the area's position in `automation.areas`; slot: 0, or a practice group's unit id (lane B's range 60-64) | PT-M9 |
+| `auto_events` | 61 | `(event_id,)` | An area owner's answer to a routine event (TST 40.5): the best displayed choice with probability q, else the second best | PT-M9 |
 
 ## Consequences
 

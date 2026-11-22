@@ -6,6 +6,7 @@ from typing import Final, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from ptk.sim.automation.config import AutomationBalance
 from ptk.sim.events.data import (
     ColleaguesBalance,
     EventsBalance,
@@ -1253,6 +1254,7 @@ class Balance(_Strict):
     reputation: ReputationBalance  # PT-M16
     press: PressBalance  # PT-M16
     rankings: RankingsBalance  # PT-M16
+    automation: AutomationBalance  # PT-M9 (ptk.sim.automation.config)
 
 
 # --- People seed data (PT-M1a) ------------------------------------------------------------

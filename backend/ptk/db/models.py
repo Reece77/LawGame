@@ -6,7 +6,7 @@ tables (save_meta, firm) are updated in place.
 
 from __future__ import annotations
 
-from sqlalchemy import BigInteger, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import BigInteger, Boolean, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -218,6 +218,9 @@ class InboxItemRow(Base):
     link_kind: Mapped[str | None] = mapped_column(String(20), nullable=True)
     link_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
     read: Mapped[bool]
+    # PT-M9 (schema v14): from an automated area; the inbox's default view leaves it out and
+    # the month's digest links to it (TST 40.4)
+    in_digest: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
 
 
 # --- Org (schema v4, PT-M2). Current state, rewritten each turn and after each org action. ---
@@ -593,7 +596,7 @@ class PersonalLineRow(Base):
     amount_cents: Mapped[int] = mapped_column(BigInteger)
 
 
-# --- PT-M16: reputation, the press and the rankings (schema v14) ----------------------------
+# --- PT-M16: reputation, the press and the rankings (schema v15) ----------------------------
 # One JSON document (ptk.sim.reputation.models.StandingState) and the rankings' history: every
 # published list's places, appended when it publishes and never rewritten.
 
@@ -621,3 +624,14 @@ class RankingEntryRow(Base):
     )  # revenue, PEP, deal value; score x 100
     count: Mapped[int | None] = mapped_column(Integer, nullable=True)  # lawyers, deals
     year: Mapped[int | None] = mapped_column(Integer, nullable=True)  # the fiscal or ranking year
+
+
+# --- PT-M9: automation (schema v14) -----------------------------------------------------------
+# One JSON document (ptk.sim.automation.models.AutomationState): areas' owners, their recent
+# decisions and the proposals waiting for (or answered by) the player.
+
+
+class AutomationRow(Base):
+    __tablename__ = "automation"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)  # always 1
+    data_json: Mapped[str] = mapped_column(Text)

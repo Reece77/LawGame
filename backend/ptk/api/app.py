@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 
 from ptk import loader
 from ptk.api import recruitment
+from ptk.api.automation import make_automation_router
 from ptk.api.events import blocking_event_id, make_events_router
 from ptk.api.finance import make_finance_router
 from ptk.api.founder import make_founder_router
@@ -338,6 +339,7 @@ def create_app() -> FastAPI:
     app.include_router(make_partnership_router(errors))
     app.include_router(make_history_router(errors))  # PT-M7
     app.include_router(make_leadership_router(errors))  # PT-M8
+    app.include_router(make_automation_router(errors))  # PT-M9
     app.include_router(make_founder_router(errors))  # PT-M17
     app.include_router(make_standing_router(errors))  # PT-M16
     return app

@@ -14,6 +14,7 @@ from collections.abc import Callable
 from typing import Final
 
 from ptk.balance import moves as mv
+from ptk.balance.automated import steady_automated
 from ptk.balance.game import Game, is_associate
 from ptk.sim.data_models import Balance
 
@@ -253,5 +254,6 @@ STRATEGIES: Final[dict[str, Script]] = {
 VARIANTS: Final[dict[str, Script]] = {
     "lateral-rocket-heeded": lateral_rocket_heeded,  # T9
     "restructuring": restructuring,  # T8
+    "steady-automated": steady_automated,  # PT-M9 (ptk/balance/automated.py)
 }
 PLAYABLE: Final[dict[str, Script]] = {**STRATEGIES, **VARIANTS}

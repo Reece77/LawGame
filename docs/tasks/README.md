@@ -36,3 +36,13 @@ Each brief is a self-contained prompt for a coding agent, in Tech Startup Tycoon
 | [PT-M17-founder-life-and-succession.md](PT-M17-founder-life-and-succession.md) | The founding partner's life, family and succession | PT-M7 |
 
 RNG ids by lane: PT-M7b 42-44, PT-M8 45-49, PT-M17 50-59.
+
+## v2, second wave (2026-11-22)
+
+| Brief | Milestone | Depends on |
+| --- | --- | --- |
+| [PT-M10-history-to-2025.md](PT-M10-history-to-2025.md) | History to 2025, seeded to 2034; Reece's decisions on PT-M7b's targets | PT-M7b |
+| [PT-M9-automation.md](PT-M9-automation.md) | Automation everywhere | PT-M8 |
+| [PT-M16-reputation-press-rankings.md](PT-M16-reputation-press-rankings.md) | Reputation, press and rankings | PT-M7b |
+
+RNG ids by lane: PT-M9 60-64, PT-M10 65-69, PT-M16 70-79.

@@ -554,7 +554,18 @@ class PartnershipRow(Base):
     data_json: Mapped[str] = mapped_column(Text)  # FirmPartnership (or the counters)
 
 
-# --- PT-M17: the founder's life, family and personal books (schema v11) -----------------------
+# --- PT-M8: seats, authority, pitches (schema v13) ------------------------------------------
+# One JSON document (ptk.sim.org.seat_models.LeadershipState). A practice group leader's seat
+# is the unit's leader (org_unit.leader_id), so PT-M2's leaders are the holders already.
+
+
+class LeadershipRow(Base):
+    __tablename__ = "leadership"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)  # always 1
+    data_json: Mapped[str] = mapped_column(Text)
+
+
+# --- PT-M17: the founder's life, family and personal books (schema v13) -----------------------
 # The founder-life and family states are JSON documents (one row each); the players' personal
 # books are their own double entry (like the client-money book), never mixed with a firm's.
 

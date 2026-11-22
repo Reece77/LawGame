@@ -76,6 +76,7 @@ from ptk.sim.interfaces import (
     founder_resign_mult,
     has_sponsor,
     manager_morale_term,
+    seat_effect,
 )
 from ptk.sim.ledger import (
     BENEFITS,
@@ -381,7 +382,7 @@ def monthly_cost_lines(
         ),
         CostLine("Staff salaries", STAFF_SALARIES, by_account.get(STAFF_SALARIES, 0)),
         CostLine("Benefits", BENEFITS, benefits),
-        CostLine("Rent", RENT, rent_cents(heads, firm.home_city, balance.pay)),
+        CostLine("Rent", RENT, _office_rent(state, firm_id, heads, balance, data)),
         *overhead_lines(lawyers, firm.home_city, balance),
         CostLine("Job posts", RECRUITING, balance.hiring.job_post_cost_cents * job_posts),
         CostLine("Summer programme", RECRUITING, summer),
@@ -855,6 +856,23 @@ def lateral_batches(
     return state, tuple(logs)
 
 
+def _office_rent(
+    state: GameState, firm_id: int, heads: int, balance: Balance, data: GameData
+) -> Cents:
+    """Rent per head; PT-M8 (spec 9.1): the COO's office costs x (1 - coo_office x e)."""
+    rent = rent_cents(heads, state.firm(firm_id).home_city, balance.pay)
+    e = seat_effect(state, firm_id, "coo", balance, data)
+    return rent if e == 0 else round(rent * (1.0 - balance.seats.effects.coo_office * e))
+
+
+def _lifted(person: Person, keys: tuple[str, ...], points: float) -> Person:
+    """A campus candidate's role skills moved by `points` (the CHRO, PT-M8), clamped 1-20."""
+    from ptk.sim.scale import clamp_attr
+
+    changes = {k: clamp_attr(person.skills[k] + points) for k in keys}
+    return replace(person, skills=person.skills.updated(changes))
+
+
 def campus_pools(
     state: GameState, rng: RngFactory, balance: Balance, data: GameData
 ) -> tuple[GameState, tuple[LogItem, ...]]:
@@ -874,6 +892,10 @@ def campus_pools(
         role = data.role(search.role)
         city = state.firm(search.firm_id).home_city
         people: list[tuple[Person, Cents]] = []
+        # PT-M8 (spec 9.1): the CHRO's campus programme draws a stronger (or weaker) class
+        lift = balance.seats.effects.chro_campus_points * seat_effect(
+            state, search.firm_id, "chro", balance, data
+        )
         for index, tier in enumerate(data.school_tiers):
             if tier not in tiers or (search.school_tiers and tier.key not in search.school_tiers):
                 continue
@@ -891,6 +913,8 @@ def campus_pools(
                     jurisdiction=jurisdiction,
                     school_tier=tier.key,
                 )
+                if lift:
+                    person = _lifted(person, role.primary, lift)
                 people.append(
                     (person, ask_cents(gen, person, state, search.firm_id, balance, data))
                 )

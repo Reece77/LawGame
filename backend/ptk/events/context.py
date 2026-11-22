@@ -269,6 +269,9 @@ def build_prompt(
 
 
 ASKS = {
+    "seat_report": "Write this seat holder's quarterly report to the managing partner (at most "
+    "150 words), in the first person and in the voice given: what I did, what I'm pitching, "
+    "what worries me, the numbers. Use only these facts; keep every number as given.",
     "headlines": "Write two or three one-line legal-press headlines about this month in the "
     "New York legal market, one per line, no numbering. Use only these facts.",
     "matter_brief": "Write a short internal briefing (at most 120 words) for the partners on "

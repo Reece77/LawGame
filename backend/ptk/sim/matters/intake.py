@@ -22,6 +22,7 @@ import numpy as np
 
 from ptk.sim import dmath
 from ptk.sim.data_models import Balance, GameData, MatterKindDef, PracticeDef
+from ptk.sim.interfaces import practice_leader_effect
 from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.matters import formulas as fx
 from ptk.sim.matters.conflicts import ConflictIndex, adverse_to, affected_client, conflict_index
@@ -239,6 +240,11 @@ def intake(
     flow_fees: dict[tuple[int, str], float] = {}
     logs: list[LogItem] = []
     named_min = balance.matters.named_min_cents
+    # PT-M8 (spec 9.1): a practice group leader keeps the group's diary full
+    k_pgl = balance.seats.effects.pgl_flow
+    diary = {
+        p: 1.0 + k_pgl * practice_leader_effect(state, firm_id, p, balance, data) for p in keys
+    }
     # PT-M7a: the firm's card against the market's; PT-M7b: each practice's card
     prices = {p: price_term(state, firm_id, data, balance, p) for p in keys}
     for rel in [r for r in market.relationships if r.firm_id == firm_id]:
@@ -288,6 +294,7 @@ def intake(
                     index = conflict_index(state.market, firm_id, turn, balance)
                     state, items = open_checked(state, matter, index, data, balance, key)
                     logs.extend(items)
+            flow *= diary[p]
             flow_fees[(client.id, p)] = flow_fees.get((client.id, p), 0.0) + flow
         if instructed:
             current = state.market.relationship(client.id, firm_id)

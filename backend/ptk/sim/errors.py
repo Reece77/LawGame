@@ -268,6 +268,29 @@ class UnknownApproachError(NotFoundError):
     code = "unknown_approach"
 
 
+# --- PT-M8: seats, authority and pitches ----------------------------------------------------
+
+
+class SeatRuleError(SimError):
+    """A seat rule forbids the action (stage, eligibility, one seat each, guardrails)."""
+
+    code = "seat_rule"
+
+
+class UnknownSeatError(NotFoundError):
+    code = "unknown_seat"
+
+
+class UnknownPitchError(NotFoundError):
+    code = "unknown_pitch"
+
+
+class OneOffError(SimError):
+    """Spec 9.4's one-offs are always the player's proposals, never within authority."""
+
+    code = "one_off"
+
+
 # --- PT-M17: the founder's life, family and succession ---------------------------------------
 
 

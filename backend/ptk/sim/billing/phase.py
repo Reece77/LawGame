@@ -61,6 +61,7 @@ from ptk.sim.interfaces import (
     fee_earner_capacity_tenths,
     month_hours,
     relationship_score,
+    seat_effect,
 )
 from ptk.sim.ledger import (
     BAD_DEBT_PROVISION,
@@ -116,6 +117,16 @@ class _Run:
         self.stress = collections_stress(state.turn, state.save_meta.start_ym, data, balance)
         # PT-M7b: the crisis's discounts and write-down requests (spec 14)
         self.crisis = crisis_stress(state.turn, state.save_meta.start_ym, data, balance)
+        # PT-M8 (spec 9.1): the CFO's collections and the pricing director's realisation
+        fx8 = balance.seats.effects
+        self.pay_factor = 1.0 - fx8.cfo_collection * seat_effect(
+            state, firm_id, "cfo", balance, data
+        )
+        self.discount_cut_bp = round(
+            BP_DENOMINATOR
+            * fx8.pricing_realisation
+            * seat_effect(state, firm_id, "pricing_director", balance, data)
+        )
         self.ym = turn_to_ym(state.turn, state.save_meta.start_ym)
         self.factors: dict[int, float] = {}
         self.eng: dict[int, Engagement] = {
@@ -175,7 +186,8 @@ class _Run:
     def discount_bp(self, client_id: int) -> int:
         """The client's discount plus the crisis's (PT-M7b), never above the whole fee."""
         base = fx.client_discount_bp(self.client(client_id), self.cfg)
-        return min(BP_DENOMINATOR, base + self.crisis_bp(client_id))
+        total = base + self.crisis_bp(client_id) - self.discount_cut_bp  # PT-M8: pricing
+        return max(0, min(BP_DENOMINATOR, total))
 
     def crisis_writedown(self, client_id: int, key: tuple[int, int], fee: int) -> int:
         """PT-M7b: a client under the crisis may ask for a bill to be written down (stream
@@ -412,7 +424,9 @@ class _Run:
             model=model,
             kind=kind,
             issued_turn=self.turn,
-            due_turn=fx.due_turn(self.turn, fx.days_to_pay(client, u[4], cfg, self.stress), cfg),
+            due_turn=fx.due_turn(
+                self.turn, fx.days_to_pay(client, u[4], cfg, self.stress) * self.pay_factor, cfg
+            ),
             standard_cents=standard,
             billed_cents=fee,
             padding_cents=padding,

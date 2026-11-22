@@ -36,7 +36,7 @@ TEXTS = 12  # tunable-exempt: texts listed
 type SeverityOut = Literal["minor", "major", "critical"]
 type EventStatusOut = Literal["pending", "open", "answered", "auto"]
 type TextKindOut = Literal[
-    "headlines", "matter_brief", "pitch_letter", "partner_memo", "year_end_letter"
+    "headlines", "matter_brief", "pitch_letter", "partner_memo", "year_end_letter", "seat_report"
 ]
 
 

@@ -15,6 +15,7 @@ from ptk.sim.events.data import (
 from ptk.sim.founder.config import FamilyBalance, FounderLifeBalance, SuccessionBalance
 from ptk.sim.macro_data import SERIES as MACRO_SERIES
 from ptk.sim.macro_data import MacroBalance, MacroData
+from ptk.sim.org.seat_data import AuthorityBalance, PitchesBalance, SeatDef, SeatsBalance, SeatsData
 from ptk.sim.rivals.data import RivalsBalance, RivalsData, WorldBalance
 
 type AccountType = Literal["asset", "liability", "equity", "income", "expense"]
@@ -410,6 +411,11 @@ ENERGY_ACTIONS: Final = (
     "case_assessment",  # early case assessment on a case (spec 7.6)
     "pro_bono_policy",  # the firm's pro bono credit policy (spec 7.8)
     "rate_policy",  # the firm's yearly rate rise
+    # PT-M8
+    "appoint_seat",  # appoint, replace or vacate a seat holder (spec 9.1)
+    "seat_authority",  # give or take a seat's authority, or set its guardrails (TST 24.1)
+    "exco_term",  # propose the agreement's exco_elected term for the December vote (spec 9.2)
+    "answer_pitch",  # approve or decline a seat holder's pitch (TST 27.1)
     "hours_policy",  # PT-M7b: the firm's billable target
 )
 LATERAL_CHANNELS: Final = ("referral", "job_post", "recruiter")
@@ -1235,6 +1241,9 @@ class Balance(_Strict):
     rates: RatesBalance  # PT-M7a
     macro: MacroBalance  # PT-M7: the macro and legal indices
     holiday: HolidayBalance  # PT-M7a
+    seats: SeatsBalance  # PT-M8 (ptk.sim.org.seat_data)
+    authority: AuthorityBalance  # PT-M8
+    pitches: PitchesBalance  # PT-M8
     founder_life: FounderLifeBalance  # PT-M17
     family: FamilyBalance  # PT-M17
     succession: SuccessionBalance  # PT-M17
@@ -1698,6 +1707,7 @@ class GameData(_Strict):
     rivals: RivalsData  # PT-M5: firms.yaml, notables.yaml, judges.yaml
     event_templates: tuple[EventTemplate, ...] = ()  # PT-M6: events/*.yaml (TST 16.4)
     macro: MacroData  # PT-M7: macro_history.yaml
+    seats: SeatsData  # PT-M8: seats.yaml
 
     @model_validator(mode="after")
     def _unique(self) -> GameData:
@@ -1728,6 +1738,10 @@ class GameData(_Strict):
         if bad := sorted({p.index for p in self.practices} - set(MACRO_SERIES)):
             raise ValueError(f"practices: unknown macro index {bad}")
         self.rivals.check(set(self.practice_keys), {c.key for c in self.courts.courts})
+        traits = set(self.skill_keys) | {t.key for t in self.personality}
+        for seat in self.seats.seats:  # PT-M8: seat weights name skills or personality traits
+            if bad := sorted(set(seat.weights) - traits):
+                raise ValueError(f"seat {seat.key!r}: unknown skills {bad}")
         if problems := template_problems(self.event_templates):
             raise ValueError("event templates: " + "; ".join(problems))
         return self
@@ -1841,6 +1855,13 @@ class GameData(_Strict):
     @property
     def practice_keys(self) -> tuple[str, ...]:
         return tuple(p.key for p in self.practices)
+
+    def seat(self, key: str) -> SeatDef:
+        """A seats.yaml seat (PT-M8)."""
+        for seat in self.seats.seats:
+            if seat.key == key:
+                return seat
+        raise KeyError(f"unknown seat {key!r}")
 
     def practice(self, key: str) -> PracticeDef:
         for p in self.practices:

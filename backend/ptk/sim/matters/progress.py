@@ -30,6 +30,7 @@ from typing import Final
 
 from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance, GameData, KindDef
+from ptk.sim.interfaces import seat_effect
 from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.macro import driver_shortfall
 from ptk.sim.matters import formulas as fx
@@ -495,13 +496,17 @@ def settle(
 
 
 def surface_hidden_conflicts(
-    state: GameState, rng: RngFactory, balance: Balance
+    state: GameState, rng: RngFactory, balance: Balance, data: GameData
 ) -> tuple[MarketState, list[LogItem]]:
     market = state.market
     logs: list[LogItem] = []
     for m in [x for x in market.matters if x.is_open and x.hidden_conflict]:
         u = float(rng.stream(state.turn, "conflict", m.id).random())
-        if u >= balance.conflicts.hidden_surface_bp / 10000:
+        # PT-M8 (spec 9.1): the firm's general counsel catches conflicts before they surface
+        gc = 1.0 - balance.seats.effects.gc_conflicts * seat_effect(
+            state, m.firm_id, "general_counsel", balance, data
+        )
+        if u >= gc * balance.conflicts.hidden_surface_bp / 10000:
             continue
         closed = replace(
             m, status="closed", outcome="disqualified", closed_turn=state.turn, settlement=None
@@ -628,7 +633,7 @@ def work_month(
         )
         state = replace(state, market=market)
         logs.extend(items)
-    market, items = surface_hidden_conflicts(state, rng, balance)
+    market, items = surface_hidden_conflicts(state, rng, balance, data)
     state = replace(state, market=market)
     logs.extend(items)
     market = credit_origination(

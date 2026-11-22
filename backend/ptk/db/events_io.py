@@ -53,6 +53,20 @@ COUNTERS_ID: Final = 1
 EVENT_KINDS: Final = {"critical": "critical_event"}  # inbox template by severity; else "event"
 TEASER_WORDS: Final = 30  # tunable-exempt: inbox preview length
 TEXT_INBOX: Final = "llm_text"  # the inbox template of a written read-only text
+# What a written text's inbox item links to (PT-M8: a seat report opens its holder's page).
+TEXT_LINKS: Final[dict[str, Any]] = {"matter_brief": "matter", "seat_report": "person"}
+
+
+def text_title(state: Any, kind: str, turn: int, ref_id: int | None, data: GameData) -> str:
+    """A written text's inbox title; a seat report names its seat and holder (PT-M8)."""
+    if kind == "seat_report" and ref_id is not None:
+        from ptk.loader import balance as load_balance
+        from ptk.sim.org.reports import report_facts
+
+        return report_facts(state, turn, state.player.id, ref_id, data, load_balance())[0]
+    return TEXT_TITLES.get(kind, kind)
+
+
 NOT_IN_INBOX: Final = ("headlines",)  # shown on the Overview, not as inbox items
 
 
@@ -324,10 +338,10 @@ def write_pending(
                         turn=text.turn,
                         firm_id=text.firm_id,
                         template=TEXT_INBOX,
-                        title=TEXT_TITLES.get(text.kind, text.kind),
+                        title=text_title(state, text.kind, text.turn, text.ref_id, data),
                         body=text.text,
-                        link_kind="matter" if text.kind == "matter_brief" else None,
-                        link_id=text.ref_id if text.kind == "matter_brief" else None,
+                        link_kind=TEXT_LINKS.get(text.kind),
+                        link_id=text.ref_id if text.kind in TEXT_LINKS else None,
                         read=False,
                     )
                 )

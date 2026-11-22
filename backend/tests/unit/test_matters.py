@@ -256,7 +256,7 @@ def test_skipped_checks_hide_a_conflict_that_can_surface(data: GameData, balance
     sure = balance.model_copy(
         update={"conflicts": balance.conflicts.model_copy(update={"hidden_surface_bp": 10000})}
     )
-    market, logs = surface_hidden_conflicts(state, RngFactory(1), sure)
+    market, logs = surface_hidden_conflicts(state, RngFactory(1), sure, data)
     gone = market.matter(matter.id)
     assert gone is not None and gone.outcome == "disqualified"
     assert [i.kind for i in logs] == ["matter_disqualified"]

@@ -45,6 +45,8 @@
 | `rival_fate` | 39 | `(*rival_key,)` | A rival's collapse hazard roll (drawn only when the hazard is above zero), then its people's scatter | PT-M5 |
 | `rival_poach` | 40 | `(*rival_key, 0, made_turn)` | The answer to a rival's approach to one of the player's people (TST 15.6's key; PT-M4's flight keeps `poach`) | PT-M5 |
 | `pro_bono` | 41 | `(firm_id,)` | A month's named pro bono matter: arrival, kind, hours, months, merits, opposing counsel, forum (spec 7.8) | PT-M7a |
+| `seat_act` | 45 | `(seat_index, firm_id, slot)` | A seat holder's month under authority: the first uniform decides whether they take the right rule (TST 24.2); the actions' own draws follow on the same generator. seat_index: the seat's position in seats.yaml; slot: 0, or a practice group's unit id | PT-M8 |
+| `pitch` | 46 | `(firm_id, person_id)` | A holder's quarterly pitch: whether (by true ambition), then which candidate (by true seat score and the committee's effect) (TST 27.1) | PT-M8 |
 | `crisis` | 42 | `(kind, id)` | A bill's crisis write-down request: whether the client asks, then its size; kind 0 a matter's bill (id: the matter), kind 1 + the practice's index a client's flow bill (id: the client) (spec 14) | PT-M7b |
 | `deal_collapse` | 43 | `(matter_id,)` | A deal's monthly chance to collapse in progress while its practice's driver index is below 1 (spec 14) | PT-M7b |
 | `founder_life` | 50 | `(purpose, *key)`: `(1, person_id)` a retiring partner's departure (PT-M4's `depart` draws with it); `(2, person_id)` a bar election | The founder's life (one call site, `ptk.sim.founder.streams.life_stream`; lane C's range 50-59) | PT-M17 |

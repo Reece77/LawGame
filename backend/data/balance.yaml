@@ -163,6 +163,10 @@ energy: # the founding partner's monthly energy (TST formulas.md 6, M4c values; 
     case_assessment: 6 # early case assessment on a case (PT-M7a, spec 7.6); the lead also spends assessment.lead_hours
     pro_bono_policy: 2 # change the firm's pro bono credit policy (PT-M7a, spec 7.8)
     rate_policy: 2 # change the firm's yearly rate rise (PT-M7a)
+    appoint_seat: 5 # appoint, replace or vacate a seat holder (PT-M8, spec 9.1)
+    seat_authority: 2 # give or take a seat's authority, or set its guardrails (TST 24.1)
+    exco_term: 4 # propose the exco_elected term for the December vote (spec 9.2)
+    answer_pitch: 0 # approve or decline a pitch (the holder spends the energy to carry it out)
     hours_policy: 2 # change the firm's billable target (PT-M7b)
 hiring: # searches and offers (TST formulas.md 7; spec 5.7)
   candidate_shelf_turns: 3 # months a lateral candidate stays open unless hired
@@ -938,6 +942,74 @@ macro: # PT-M7: how macro_history.yaml's indices act on the firm (ptk/sim/macro.
 holiday: # PT-M7a, spec 4.2: Holiday and continue-until
   max_months: 36 # most months one holiday plays
   default_months: 6 # months the Holiday control offers
+seats: # PT-M8: seats (spec 9.1-9.2; TST formulas.md 18.3); seat definitions in seats.yaml
+  vacant_effect: -0.5 # e of a seat left vacant from its stage (spec 9.1)
+  score_mid: 10 # e = clamp((s - score_mid) / score_span, effect_range): attribute points
+  score_span: 8 # attribute points of seat score per unit of e
+  effect_range: [-0.5, 1.0] # e's clamp
+  bs_min_level: manager # a business-services holder must be at this level or above (else a partner)
+  fit_bands: [9, 12, 15] # displayed seat score (attribute points) from which the fit band is fair, good, strong (below: weak)
+  appoint_confidence_per_ambition: 0.5 # confidence points a partner holder gains per ambition point above 10 when appointed, and loses when removed (once)
+  candidates_shown: 5 # eligible candidates the Leadership panel lists for a vacant seat, best displayed fit first
+  exco: # the executive committee (spec 9.2; ADR PT-0007)
+    min_members: 3 # members it needs from its stage; each missing one counts as a vacant seat in its e
+    max_by_stage: { 3: 3, 4: 6, 5: 9 } # most members by firm stage
+    appointed_below_lawyers: 100 # with no term voted, the MP appoints it below this many lawyers; elected at the December vote from it
+    term_pass_confidence: 50 # 0-100: a proposed exco_elected term passes at the December vote if the equity partners' mean confidence in the MP is at least this
+    warn_confidence: 45 # 0-100: the quarterly partners' meeting warns below this mean exco confidence
+    uneasy_confidence: 60 # 0-100: below this the meeting is "uneasy" (above: "behind you")
+  effects: # coefficients on e (each seat's effect, spec 9.1)
+    mp_confidence: 0.5 # confidence points a month for every equity partner, x the MP's e
+    exco_quality: 0.1 # added to every pitch's decision quality, x the committee's e
+    pgl_flow: 0.12 # the group's practice's flow work x (1 + this x e): the leader keeps the diary full
+    pgl_morale: 4.0 # morale target points for the group's associates, x e
+    gc_conflicts: 0.4 # an unseen conflict's monthly surfacing chance x (1 - this x e)
+    cmo_pitch_points: 0.5 # attribute points added to an RFP pitch's quality, x e; PT-M8 tuning 2.0 -> 0.5 (steady 2015 at 2.0: 31.5 lawyers, $41.2M; at 0.5: 49, $64.0M, as with the effect off; probe seeds 1-8)
+    chro_morale: 2.0 # morale target points for every associate, x e
+    chro_campus_points: 1.0 # attribute points added to a campus candidate's role skills, x e
+    cfo_collection: 0.05 # clients' days to pay x (1 - this x e): the CFO's collections (spec 9.1's +5% e)
+    pricing_realisation: 0.03 # share of the fee off every client discount, x e (spec 9.1's realisation +3% e)
+    coo_office: 0.05 # rent per head x (1 - this x e): the COO's office costs (spec 9.1)
+authority: # PT-M8: seat holders with authority act in phase 2 (TST formulas.md 24)
+  energy_per_month: 40 # energy points a holder with authority has a month for its seat's actions
+  quality: { base: 0.55, per_score: 0.03, min: 0.6, max: 0.98 } # P(the right rule) = clamp(base + per_score x s), s the true seat score (TST 24.2)
+  keep_decision_turns: 12 # months of seat decisions kept for the panel and the reports
+  hire_step: 2 # people a PGL's hiring plan asks for at once (one fewer on a mistake)
+  plan_ratio_bp: 10000 # a seat's hiring plans offer this share of the candidate's ask
+pitches: # PT-M8: big moves seat holders pitch each quarter (TST formulas.md 27.1)
+  base: 0.45 # P(pitch this quarter) = clamp(base + per_ambition x (ambition - 10), chance_clamp), true ambition
+  per_ambition: 0.02
+  chance_clamp: [0.05, 0.9]
+  record_months: 24 # months after approval a pitch is scored hit or miss against its central case
+  spread_base: 0.25 # low and high cases = central x (1 -+ spread); spread = base + per_point x (15 - displayed score), clamped
+  spread_per_point: 0.03
+  spread_clamp: [0.1, 0.6]
+  decline_morale: 2 # morale points the holder loses when a pitch is declined (once)
+  decline_morale_high_ego: 4 # the same at ego >= high_ego
+  high_ego: 15
+  hit_morale: 3 # morale points when an approved pitch is scored a hit (once)
+  miss_morale: -2 # and a miss
+  hit_confidence: 2 # a partner holder's confidence points on a hit (once)
+  miss_confidence: -2 # and a miss
+  new_group_min_lawyers: 4 # lawyers in a practice without a group before a PGL pitches one
+  panel_clients: 3 # clients a CMO's panel push names
+  panel_bump: 5 # relationship points each named client gains when a panel push is approved
+  fit_out_morale_pct: 3 # percent on every person's morale target (an event modifier) after a fit-out
+  fit_out_months: 24 # months the fit-out's morale lasts
+  cost_saving_bp: 500 # bp of a month's rent and admin a cost programme saves, each month
+  cost_months: 12 # months a cost programme runs
+  cost_morale_pct: -2 # percent on morale targets while it runs
+  busy_bp: 7500 # last month's utilisation (bp) from which a group (or the firm) is busy enough for a lateral, a class or a rate move
+  rate_step_bp: 200 # bp above the market's rise a pricing director's rate move asks
+  campus_step: 2 # first-years a group a CHRO's class-size pitch adds
+  kinds: # central: the central case's scale (unit by kind); cost_cents: the up-front cost
+    lateral_partner: { central: 1.0, cost_cents: 0 } # x the practice's median lateral book a year (the recruiter's fee comes on hire)
+    new_group: { central: 1.25, cost_cents: 0 } # x the practice's lawyers now: lawyers in the group at 24 months
+    campus_size: { central: 1.0, cost_cents: 0 } # x the extra first-years: arrivals against the plan
+    rate_move: { central: 1.0, cost_cents: 0 } # x the rate step: fees an hour up at least this share of the step
+    panel_push: { central: 1.0, cost_cents: 2500000 } # x the named clients' fees in the 24 months before; $25,000 of marketing
+    fit_out: { central: 1.0, cost_cents: 50000000 } # x morale held at least: staff morale at 24 months vs at approval (points); $500,000 of fit-out
+    cost_programme: { central: 1.0, cost_cents: 0 } # x the promised saving
 founder_life: # PT-M17: the founding partner's life (spec 2.3, 8.4; TST formulas.md 32; ADR PT-0003 4-5)
   energy: # energy each founder action spends (TST 32.3's 5 for a foundation)
     foundation: 5 # create the foundation

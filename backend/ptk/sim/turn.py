@@ -31,6 +31,8 @@ from ptk.sim.money import Cents
 from ptk.sim.org.delegates import DelegateAction, available_hook, run_delegates
 from ptk.sim.org.phase import clear_nudges
 from ptk.sim.org.rules import growth_multipliers
+from ptk.sim.org.seat_models import SeatDecision
+from ptk.sim.org.seat_phase import phase_twelve, phase_two
 from ptk.sim.partnership import phase as partnership
 from ptk.sim.people.models import WorkMonth
 from ptk.sim.people.phase import people_month
@@ -52,6 +54,7 @@ class TurnResult:
     text_requests: tuple[TextRequest, ...] = ()  # PT-M6: read-only texts to write
     client_book: tuple[ClientBookEntry, ...] = ()  # client-money entries (PT-M3b)
     rival_moves: tuple[RivalMove, ...] = ()  # rival decisions, recomputed on replay (PT-M5)
+    seat_decisions: tuple[SeatDecision, ...] = ()  # PT-M8: recomputed on replay (ADR-0015)
     personal_book: tuple[PersonalEntry, ...] = ()  # the players' personal books (PT-M17)
 
 
@@ -78,6 +81,7 @@ class TurnContext:
     text_requests: tuple[TextRequest, ...] = ()
     client_book: tuple[ClientBookEntry, ...] = ()  # PT-M3b: the client-money book's entries
     rival_moves: tuple[RivalMove, ...] = ()  # PT-M5
+    seat_decisions: tuple[SeatDecision, ...] = ()  # PT-M8
     personal_book: tuple[PersonalEntry, ...] = ()  # PT-M17: the personal books' entries
 
     def take(self, done: rival_phase.Phase) -> TurnContext:
@@ -122,8 +126,12 @@ def apply_player_decisions(ctx: TurnContext) -> TurnContext:
 
 
 def delegate_and_rival_decisions(ctx: TurnContext) -> TurnContext:
-    """2. Delegates run their hiring plans (ADR-0015, PT-M2); automated areas (v2) and rival
+    """2. Seat holders with authority act and pitch, the MP's seat moves confidence (PT-M8);
+    delegates run their hiring plans (ADR-0015, PT-M2); automated areas (v2) and rival
     firms (PT-M5) decide."""
+    seats = phase_two(ctx.state, ctx.rng, ctx.balance, ctx.data, ctx.balances)
+    ctx = replace(ctx, state=seats.state, seat_decisions=ctx.seat_decisions + seats.decisions)
+    ctx = ctx.post(*seats.entries).log(*seats.log)
     state, entries, logs, taken = run_delegates(
         ctx.state, ctx.rng, ctx.balance, ctx.data, ctx.balances, ctx.hiring_hook
     )
@@ -243,13 +251,15 @@ def event_director_requests(ctx: TurnContext) -> TurnContext:
         state, ctx.start or ctx.state, ctx.rng, ctx.balance, ctx.data, cash
     )
     texts = director.text_requests(state, ctx.balance)
+    seats = phase_twelve(state, ctx.balance, ctx.data)  # PT-M8: committee, meeting, reports
+    state, texts = seats.state, texts + seats.texts
     ctx = replace(
         ctx,
         state=state,
         event_requests=ctx.event_requests + requests,
         text_requests=ctx.text_requests + texts,
     )
-    return ctx.log(*batches, *pools)
+    return ctx.log(*batches, *pools, *seats.log)
 
 
 PHASES: tuple[tuple[str, Phase], ...] = (
@@ -332,5 +342,6 @@ def advance_turn(
         text_requests=ctx.text_requests,
         client_book=ctx.client_book,
         rival_moves=ctx.rival_moves,
+        seat_decisions=ctx.seat_decisions,
         personal_book=ctx.personal_book,
     )

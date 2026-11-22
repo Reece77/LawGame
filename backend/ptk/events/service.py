@@ -192,6 +192,16 @@ def fallback_text(
     state: GameState, kind: str, turn: int, ref_id: int | None, kpis: Kpis, data: GameData
 ) -> tuple[str, list[str]]:
     """(template text, facts) for a read-only text (16.8)."""
+    if kind == "seat_report" and ref_id is not None:  # PT-M8 (TST 27.2)
+        from ptk.loader import balance as load_balance
+        from ptk.sim.org.reports import report_text
+
+        if state.employer_of(ref_id) is None:
+            return "", []
+        _title, text, report = report_text(
+            state, turn, state.player.id, ref_id, data, load_balance()
+        )
+        return text, report
     firm = state.player
     fid = firm.id
     date = format_turn(turn, state.save_meta.start_ym)

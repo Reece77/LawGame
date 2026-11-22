@@ -289,3 +289,22 @@ templates:
   family_joined_firm:
     title: "{name} joins the firm"
     body: "{name} starts as a first-year associate. The partners will watch how fast they rise."
+  # PT-M9: automation (spec 9.4; TST 40)
+  area_given:
+    title: "{name} now runs {area}"
+    body: "{name} runs {area} from this month, within {limit_cents} a decision. Their decisions appear in your monthly digest; one-offs and anything at or above the limit come to you."
+  area_returned:
+    title: "{area} is back with you"
+    body: "{name} can no longer run {area} (they left or lost their seat). You run it again until you give it to someone."
+  auto_proposal:
+    title: "{name} proposes: {what}"
+    body: "{recommendation} It comes to you because {why} ({area}; commits {commitment_cents}). Approve or decline on the Automation screen."
+  auto_proposal_expired:
+    title: "Proposal expired: {what}"
+    body: "{name}'s proposal was not answered in time and lapses as declined."
+  auto_proposal_answered:
+    title: "Proposal {outcome}: {what}"
+    body: "{name}'s proposal: {outcome}."
+  automation_digest:
+    title: "Your month: {month}"
+    body: "{summary}"

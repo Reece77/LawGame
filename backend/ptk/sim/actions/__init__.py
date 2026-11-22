@@ -3,8 +3,8 @@
 
 Ported from backend/tst/sim/actions/__init__.py @ 02fba2aa (Tech Startup Tycoon) as a
 pattern; changed: hiring actions (PT-M1b), client and matter actions (PT-M3a), billing actions
-(PT-M3b), the answer to an event (PT-M6), rival-firm actions (PT-M5) and the founder's life
-(PT-M17); later milestones
+(PT-M3b), the answer to an event (PT-M6), rival-firm actions (PT-M5), the founder's life
+(PT-M17) and automation (PT-M9); later milestones
 add theirs here.
 
 `apply_action` is pure: it takes the state and returns the new state, any ledger entries and
@@ -18,6 +18,11 @@ from __future__ import annotations
 from dataclasses import asdict
 from typing import Any
 
+from ptk.sim.automation.actions import (
+    AUTOMATION_ACTION_TYPES,
+    AutomationAction,
+    apply_automation_action,
+)
 from ptk.sim.billing.actions import (
     BILLING_ACTION_TYPES,
     BillingAction,
@@ -65,6 +70,7 @@ type Action = (
     | SeatAction
     | AnswerPitch
     | FounderAction
+    | AutomationAction
 )
 
 ACTION_TYPES: dict[str, type[Any]] = {
@@ -85,6 +91,7 @@ ACTION_TYPES: dict[str, type[Any]] = {
     **SEAT_ACTION_TYPES,  # PT-M8
     "answer_pitch": AnswerPitch,  # PT-M8
     **FOUNDER_ACTION_TYPES,  # PT-M17
+    **AUTOMATION_ACTION_TYPES,  # PT-M9
 }
 
 
@@ -104,6 +111,17 @@ def apply_action(
         raise GameOverError("the game is over")
     data = world_data(data, balance, state.save_meta.master_seed)  # PT-M10: the save's world
     draws = lambda: rng.stream(state.turn, "actions", seq)  # noqa: E731
+    if type(action) in AUTOMATION_ACTION_TYPES.values():  # PT-M9
+        auto = apply_automation_action(
+            state,
+            action,  # type: ignore[arg-type]
+            seq=seq,
+            rng=rng,
+            b=balance,
+            data=data,
+            ledger_balances=ledger_balances,
+        )
+        return Outcome(auto.state, auto.entries, auto.log)
     if isinstance(action, ChooseEvent):
         return apply_event_action(state, action, balance, data)
     if isinstance(action, AnswerPitch):  # PT-M8

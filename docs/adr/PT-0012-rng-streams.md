@@ -54,6 +54,8 @@
 | `macro_seed` | 65 | `(index_number,)` an index's path (its position in `macro_data.SERIES`); `(len(SERIES),)` the recession regime | The seeded indices from January 2026 to December 2034, drawn once at turn 0 (ADR PT-0015) | PT-M10 |
 | `scale_seed` | 66 | `(0,)` the rate rises; `(1,)` the salary scale's steps | The seeded January rate rises and the associate salary scale's steps from 2026 (ADR PT-0015) | PT-M10 |
 | `investments` | 52 | `(person_id,)` | A player's month of investment and family-office returns (one call site, `ptk.sim.founder.personal.investment_stream`) | PT-M17 |
+| `auto_quality` | 60 | `(area_index, firm_id, slot)` | An automated area's month (spec 9.4): the first uniform decides whether the owner takes the default rule's answer (q from the true seat score, less overload); a mistake's noise and the actions' own draws follow on the same generator. area_index: the area's position in `automation.areas`; slot: 0, or a practice group's unit id (lane B's range 60-64) | PT-M9 |
+| `auto_events` | 61 | `(event_id,)` | An area owner's answer to a routine event (TST 40.5): the best displayed choice with probability q, else the second best | PT-M9 |
 
 ## Consequences
 

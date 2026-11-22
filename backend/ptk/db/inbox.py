@@ -57,6 +57,7 @@ class InboxMessage:
     link_kind: str | None
     link_id: int | None
     read: bool
+    in_digest: bool = False  # PT-M9: from an automated area (the digest links to it)
 
 
 def render(item: LogItem, templates: Mapping[str, InboxTemplate]) -> tuple[str, str]:
@@ -92,6 +93,7 @@ def inbox_rows(
                 link_kind=item.link_kind,
                 link_id=item.link_id,
                 read=False,
+                in_digest=item.in_digest,  # PT-M9
             )
         )
     return rows
@@ -115,6 +117,7 @@ def list_inbox(session: Session, firm_id: int, *, limit: int = 200) -> list[Inbo
             link_kind=r.link_kind,
             link_id=r.link_id,
             read=r.read,
+            in_digest=r.in_digest,
         )
         for r in session.scalars(stmt)
     ]

@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router';
+import { AutomationScreen } from './screens/AutomationScreen';
 import { ClientScreen } from './screens/ClientScreen';
 import { ClientsScreen } from './screens/ClientsScreen';
 import { FamilyScreen } from './screens/FamilyScreen';
@@ -38,6 +39,7 @@ export default function App() {
           <Route path="recruitment" element={<RecruitmentScreen />} />
           <Route path="inbox" element={<InboxScreen />} />
           <Route path="org" element={<OrgScreen />} />
+          <Route path="automation" element={<AutomationScreen />} />
           <Route path="matters" element={<MattersScreen />} />
           <Route path="matters/:matterId" element={<MatterScreen />} />
           <Route path="clients" element={<ClientsScreen />} />

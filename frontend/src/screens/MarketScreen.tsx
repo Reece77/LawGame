@@ -1,3 +1,4 @@
+import { RunBy } from '../components/RunBy';
 import {
   Alert,
   Badge,
@@ -130,6 +131,7 @@ export function MarketScreen() {
   return (
     <Stack gap="lg">
       <Title order={2}>Market</Title>
+      <RunBy slug={slug} areas={['bd']} />
       {m && <Approaches slug={slug} approaches={m.approaches} />}
       {m && <Rfps slug={slug} rfps={m.rfps} claims={m.claims} />}
       <div>

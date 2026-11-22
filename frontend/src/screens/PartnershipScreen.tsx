@@ -1,3 +1,4 @@
+import { RunBy } from '../components/RunBy';
 import {
   Alert,
   Badge,
@@ -671,6 +672,7 @@ export function PartnershipScreen() {
   return (
     <Stack>
       <Title order={2}>Partnership</Title>
+      <RunBy slug={slug} areas={['laterals', 'development']} />
       {act.error && <Alert color="red">{act.error.message}</Alert>}
       {!p ? (
         <Text c="dimmed">Loading…</Text>

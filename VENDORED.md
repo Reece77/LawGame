@@ -115,6 +115,19 @@ Files copied or ported from Tech Startup Tycoon (`Reece77/Tech_Executive_Tycoon`
 | `backend/ptk/sim/family/estate.py` | `backend/tst/sim/family/estate.py` | ported | — |
 | `backend/ptk/sim/family/adviser.py` | `backend/tst/sim/family/adviser.py` | ported | — |
 | `backend/ptk/sim/family/succession.py` | `backend/tst/sim/family/succession.py` | ported | — |
+| `backend/ptk/sim/automation/config.py` | `backend/tst/sim/automation/config.py` | ported | — |
+| `backend/ptk/sim/automation/models.py` | `backend/tst/sim/automation/models.py` | ported | — |
+| `backend/ptk/sim/automation/owners.py` | `backend/tst/sim/automation/owners.py` | ported | — |
+| `backend/ptk/sim/automation/limits.py` | `backend/tst/sim/automation/limits.py` | ported | — |
+| `backend/ptk/sim/automation/run.py` | `backend/tst/sim/automation/run.py` | ported | — |
+| `backend/ptk/sim/automation/rules.py` | `backend/tst/sim/automation/rules.py` | ported | — |
+| `backend/ptk/sim/automation/events.py` | `backend/tst/sim/automation/events.py` | ported | — |
+| `backend/ptk/sim/automation/digest.py` | `backend/tst/sim/automation/digest.py` | ported | — |
+| `backend/ptk/sim/automation/actions.py` | `backend/tst/sim/automation/actions.py` | ported | — |
+| `frontend/src/screens/AutomationScreen.tsx` | `frontend/src/screens/AutomationScreen.tsx` | ported | — |
+| `frontend/src/components/RunBy.tsx` | `frontend/src/components/RunBy.tsx` | ported | — |
+| `frontend/src/components/OwnerRecord.tsx` | `frontend/src/components/OwnerRecord.tsx` | ported | — |
+| `frontend/src/lib/automation.ts` | `frontend/src/hooks/automation.ts` | ported | — |
 
 Changes in ported files:
 
@@ -216,3 +229,16 @@ PT-M17 (the founder's life, family and succession, lane C) ported `tst/sim/found
 - `backend/ptk/sim/actions/__init__.py` (PT-M17): the founder's and family's actions.
 - `backend/ptk/sim/ledger.py` (PT-M17): accounts 2600 and 6950 posted by the engine.
 - `backend/ptk/sim/rng.py` (PT-M17): streams `founder_life` 50, `family` 51, `investments` 52.
+
+PT-M9 (automation everywhere, lane B) ported `tst/sim/automation/` (not `chain.py`, TST's M27b supply-chain areas, which Partner Track has no counterpart for) and the Automation screen from upstream commit **`80a380792db2a4a63b01cfe880f48b62614ebeec`** (2026-11-22, TST at M43), not the commit above: each file's header names it and what changed. TST's `plan.py` (Automate everything), `scope.py` (subsidiaries) and `kpis.py` were read, not copied: Partner Track has no subsidiaries, Automate everything is a follow-up, and the areas' KPIs are folded into `digest.py`.
+- `backend/ptk/sim/automation/config.py`: spec 9.4's thirteen areas in `balance.yaml` with an owner seat each; spec 9.4's one-offs by the action kinds that carry them; the managing partner's own partnership actions carried out in the MP's name.
+- `backend/ptk/sim/automation/models.py`: an owner row's slot (a practice group for staffing) and its monthly limit; automation's own proposals; one `AutomationState`.
+- `backend/ptk/sim/automation/owners.py`: the seat's holder owns the area (a vacant seat cannot be automated); a group's leader its staffing; any partner pro bono; no leads, CEOs or subsidiaries.
+- `backend/ptk/sim/automation/limits.py`: Partner Track's commitments (plans, write-downs, lateral offers, the pro bono credit) and one-offs.
+- `backend/ptk/sim/automation/run.py`: one quality draw an area a month from stream `auto_quality` (60) keyed (area index, firm, slot); overload lowers q; per-decision and monthly limits; proposals in automation's own records.
+- `backend/ptk/sim/automation/rules.py`: Partner Track's area rules; seat areas run PT-M8's authority rules through `interfaces.run_seat_rule`.
+- `backend/ptk/sim/automation/events.py`: Partner Track's event categories and effects; stream `auto_events` (61) keyed (event id,).
+- `backend/ptk/sim/automation/digest.py` (with `kpis.py`): one inbox item at month end, Partner Track's KPIs, a templated opening.
+- `backend/ptk/sim/automation/actions.py`: give, take over, settings and answer a proposal, as the managing partner.
+- `frontend/src/screens/AutomationScreen.tsx`, `components/RunBy.tsx`, `components/OwnerRecord.tsx`, `lib/automation.ts` (TST's `hooks/automation.ts`): one firm, Partner Track's endpoints, Take over and Hand back, proposals and the digest on the screen.
+

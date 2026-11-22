@@ -1,3 +1,4 @@
+import { RunBy } from '../components/RunBy';
 import {
   Alert,
   Badge,
@@ -47,6 +48,7 @@ export function RecruitmentScreen() {
     <Stack>
       <Group justify="space-between">
         <Title order={2}>Recruitment</Title>
+        <RunBy slug={slug} areas={['hiring']} />
         <Badge size="lg" variant="light" data-testid="energy">
           Energy {r.energy} / {r.energy_per_month}
         </Badge>

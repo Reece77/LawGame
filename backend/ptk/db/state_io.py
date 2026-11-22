@@ -9,6 +9,7 @@ from dataclasses import replace
 from sqlalchemy import func, insert, select
 from sqlalchemy.orm import Session
 
+from ptk.db.automation_io import load_automation, write_automation
 from ptk.db.billing_io import load_billing, write_billing, write_client_book
 from ptk.db.events_io import load_events, write_events
 from ptk.db.founder_io import load_founder_life, write_founder_life, write_personal_book
@@ -109,6 +110,7 @@ def insert_new(session: Session, state: GameState, entries: tuple[LedgerEntry, .
     insert_rivals(session, state.rivals)  # PT-M5
     write_partnership(session, state.partnership)
     write_leadership(session, state.leadership)  # PT-M8
+    write_automation(session, state.automation)  # PT-M9
     write_events(session, state.events)
     write_entries(session, entries)
     write_founder_life(session, state.founder_life, state.family)  # PT-M17
@@ -181,6 +183,7 @@ def load_state(session: Session) -> GameState:
         market=load_market(session, row.current_turn),
         partnership=load_partnership(session),
         leadership=load_leadership(session),  # PT-M8
+        automation=load_automation(session),  # PT-M9
         events=load_events(session),
         searches=tuple(
             _search(r) for r in session.scalars(select(SearchRow).order_by(SearchRow.id))
@@ -544,6 +547,7 @@ def write_turn(
     write_panels(session, new_state.market)
     write_partnership(session, new_state.partnership)
     write_leadership(session, new_state.leadership)  # PT-M8
+    write_automation(session, new_state.automation)  # PT-M9
     write_founder_life(session, new_state.founder_life, new_state.family)  # PT-M17
 
 

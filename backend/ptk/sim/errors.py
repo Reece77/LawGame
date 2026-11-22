@@ -291,6 +291,23 @@ class OneOffError(SimError):
     code = "one_off"
 
 
+# --- PT-M9: automation ------------------------------------------------------------------------
+
+
+class AutomationError(SimError):
+    """An automation rule forbids the action (who may own an area, a limit, a proposal)."""
+
+    code = "automation"
+
+
+class UnknownAreaError(NotFoundError):
+    code = "unknown_area"
+
+
+class UnknownProposalError(NotFoundError):
+    code = "unknown_proposal"
+
+
 # --- PT-M17: the founder's life, family and succession ---------------------------------------
 
 

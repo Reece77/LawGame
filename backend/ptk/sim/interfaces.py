@@ -1130,3 +1130,54 @@ def terms_threshold_bp(state: GameState, firm_id: int, balance: Balance) -> int:
     """The agreement's threshold for a change to its terms."""
     fp = state.partnership.of(firm_id)
     return balance.partnership.agreement.terms_bp if fp is None else fp.agreement.terms_bp
+
+
+# --- PT-M9 (automation, lane B): an area runs a seat's default rule ---------------------------
+#
+# An automated area whose seat has an authority rule (PT-M8: the practice group leader's
+# plans, the general counsel's waivers, the CFO's write-downs, the CMO's RFP pitches, the
+# CHRO's campus targets, the pricing director's January rise) runs that rule as it is, with
+# every action passed to the area's own `act` (which checks one-offs and money limits, then
+# applies the action or files a proposal). Nothing in `ptk.sim.org.authority` changes.
+
+type SeatAct = Callable[[GameState, object, str, bool], tuple[bool, GameState]]
+
+
+def run_seat_rule(
+    state: GameState,
+    firm_id: int,
+    seat_key: str,
+    slot: int,
+    person_id: int,
+    guardrails: tuple[tuple[str, int], ...],
+    right: bool,
+    gen: np.random.Generator,
+    balance: Balance,
+    data: GameData,
+    act: SeatAct,
+) -> GameState:
+    """Run PT-M8's rule for `seat_key` once with `right` (the area's quality draw) and the
+    area's guardrails; `act(state, action, text, mistake) -> (taken, new_state)` is called for
+    each action the rule would take. Returns the state after the rule."""
+    from dataclasses import dataclass as _dc
+
+    from ptk.sim.org.authority import RULES, _Holder
+    from ptk.sim.org.seat_models import SeatAuthority
+
+    rule = RULES.get(seat_key)
+    if rule is None:
+        return state
+
+    @_dc
+    class _AreaHolder(_Holder):
+        def act(self, action: object, text: str, mistake: bool = False) -> bool:
+            taken, self.state = act(self.state, action, text, mistake)
+            return taken
+
+    auth = SeatAuthority(firm_id, seat_key, slot, True, guardrails)
+    h = _AreaHolder(
+        state, firm_id, data.seat(seat_key), slot, person_id, auth, right, gen, balance, data,
+        [], [], [],
+    )  # fmt: skip
+    rule(h)
+    return h.state

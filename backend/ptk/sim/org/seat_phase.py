@@ -6,7 +6,7 @@ calls these two functions only, so the seats touch the pipeline in two places.""
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from ptk.sim import interfaces
 from ptk.sim.data_models import Balance, GameData
@@ -38,7 +38,10 @@ def phase_two(
     balance: Balance,
     data: GameData,
     balances: Mapping[tuple[int, AccountCode], Cents],
+    automated: frozenset[tuple[str, int]] = frozenset(),
 ) -> SeatsMonth:
+    """`automated` (PT-M9): (seat, slot) whose monthly rule an automated area runs this month;
+    their authority is set aside for the seats' own step only (pitches are unchanged)."""
     if state.ended or not state.firms:
         return SeatsMonth(state)
     firm = state.player.id
@@ -47,9 +50,22 @@ def phase_two(
         state = interfaces.confidence_change(
             state, firm, balance.seats.effects.mp_confidence * e_mp
         )
-    run = seats_act(state, rng, balance, data, balances)
-    state, entries, logs = pitches_month(run.state, rng, balance, data, balances)
+    run = seats_act(_set_aside(state, automated), rng, balance, data, balances)
+    state = replace(run.state, leadership=replace(
+        run.state.leadership, authorities=state.leadership.authorities
+    )) if automated else run.state  # fmt: skip
+    state, entries, logs = pitches_month(state, rng, balance, data, balances)
     return SeatsMonth(state, run.entries + entries, run.log + logs, run.decisions)
+
+
+def _set_aside(state: GameState, automated: frozenset[tuple[str, int]]) -> GameState:
+    if not automated:
+        return state
+    ls = state.leadership
+    auths = tuple(
+        replace(a, enabled=False) if (a.seat, a.slot) in automated else a for a in ls.authorities
+    )
+    return replace(state, leadership=replace(ls, authorities=auths))
 
 
 def phase_twelve(state: GameState, balance: Balance, data: GameData) -> SeatsMonth:

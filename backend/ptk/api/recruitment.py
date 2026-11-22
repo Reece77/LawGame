@@ -196,6 +196,7 @@ class InboxItemOut(BaseModel):
     link_kind: str | None
     link_id: int | None
     read: bool
+    in_digest: bool = False  # PT-M9: from an automated area (listed in the month's digest)
 
 
 class CostLineOut(BaseModel):
@@ -531,7 +532,9 @@ def make_router(errors: dict[int | str, dict[str, Any]]) -> APIRouter:
         responses=errors,
         operation_id="listInbox",
     )
-    def list_inbox(slug: str) -> list[InboxItemOut]:
+    def list_inbox(slug: str, everything: bool = False) -> list[InboxItemOut]:
+        """PT-M9: items from automated areas are left out unless `everything` (the month's
+        digest links to them, TST formulas.md 40.4)."""
         path = _path(slug)
         state = saves.read_state(path)[0]
         with make_sessionmaker(shared_engine(path))() as session:
@@ -547,8 +550,10 @@ def make_router(errors: dict[int | str, dict[str, Any]]) -> APIRouter:
                 link_kind=i.link_kind,
                 link_id=i.link_id,
                 read=i.read,
+                in_digest=i.in_digest,
             )
             for i in items
+            if everything or not i.in_digest
         ]
 
     @router.post(

@@ -52,6 +52,8 @@
 | `founder_life` | 50 | `(purpose, *key)`: `(1, person_id)` a retiring partner's departure (PT-M4's `depart` draws with it); `(2, person_id)` a bar election | The founder's life (one call site, `ptk.sim.founder.streams.life_stream`; lane C's range 50-59) | PT-M17 |
 | `family` | 51 | `(head_id, index)` a member's making (index from 1); `(head_id, 0, k)` a month's life event of kind k (0 a partner met, 1 a child born); `(person_id, 1)` a child's month of development; `(head_id, 2, 0)` the January health step-back | The player's family and the health trigger of succession (one call site, `ptk.sim.family.people.family_stream`) | PT-M17 |
 | `investments` | 52 | `(person_id,)` | A player's month of investment and family-office returns (one call site, `ptk.sim.founder.personal.investment_stream`) | PT-M17 |
+| `auto_quality` | 60 | `(area_index, firm_id, slot)` | An automated area's month (spec 9.4): the first uniform decides whether the owner takes the default rule's answer (q from the true seat score, less overload); a mistake's noise and the actions' own draws follow on the same generator. area_index: the area's position in `automation.areas`; slot: 0, or a practice group's unit id (lane B's range 60-64) | PT-M9 |
+| `auto_events` | 61 | `(event_id,)` | An area owner's answer to a routine event (TST 40.5): the best displayed choice with probability q, else the second best | PT-M9 |
 
 ## Consequences
 

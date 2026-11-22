@@ -75,6 +75,12 @@ def _capacity(state: GameState, people: tuple[int, ...], data: GameData, b: Bala
 
 
 @pytest.mark.nightly
+@pytest.mark.xfail(
+    strict=True,
+    reason="PT-M18: seed variance (the product manager's decision on PR #22, 2026-11-22). "
+    "The utilisation gap reads 2.83 on seeds 1-10 on PT-M16 (needs 3.0); on seeds 11-40 "
+    "main 2.61, PT-M16 2.58 (morale 7.29 and 7.31): below 3.0 on both, within 0.5 of main",
+)
 def test_a_strong_group_leader_lifts_morale_and_utilisation(
     data: GameData, balance: Balance
 ) -> None:

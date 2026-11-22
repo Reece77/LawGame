@@ -37,6 +37,8 @@ from collections import OrderedDict
 from collections.abc import Sequence
 from dataclasses import dataclass
 
+import numpy as np
+
 from ptk.sim import dmath
 from ptk.sim.data_models import Balance, BonusRow, GameData, SalaryScale, ScaleRow
 from ptk.sim.macro_data import SERIES, MacroData, MacroPoint, SeededBalance
@@ -48,6 +50,16 @@ STREAM_TURN = 0  # tunable-exempt: the seeded world is drawn once per save, at t
 RATE_KEY = 0  # scale_seed key: the rate rises
 SCALE_KEY = 1  # scale_seed key: the salary scale's steps
 CACHE = 32  # tunable-exempt: saves' worlds kept in memory
+
+
+def _macro_stream(rng: RngFactory, key: int) -> np.random.Generator:
+    """Stream macro_seed (65), drawn once at turn 0: key an index's number, or the regime."""
+    return rng.stream(STREAM_TURN, "macro_seed", key)
+
+
+def _scale_stream(rng: RngFactory, key: int) -> np.random.Generator:
+    """Stream scale_seed (66), drawn once at turn 0: key 0 the rate rises, 1 the scale."""
+    return rng.stream(STREAM_TURN, "scale_seed", key)
 
 
 def _m(ym: tuple[int, int]) -> int:
@@ -135,7 +147,7 @@ def recessions(rng: RngFactory, cfg: SeededBalance) -> tuple[Recession, ...]:
     apart (stream macro_seed, key (len(SERIES),))."""
     fitted = _m((cfg.fit_years[1], MONTHS)) - _m((cfg.fit_years[0], 1)) + 1
     hazard = len(cfg.episodes) / fitted * cfg.recession_hazard_scale
-    gen = rng.stream(STREAM_TURN, "macro_seed", len(SERIES))
+    gen = _macro_stream(rng, len(SERIES))
     out: list[Recession] = []
     last = -(10**6)
     for m in range(_m(cfg.start), _m(cfg.until) + 1):
@@ -165,7 +177,7 @@ def seeded_points(macro: MacroData, cfg: SeededBalance, rng: RngFactory) -> tupl
     paths: dict[str, list[float]] = {}
     for i, series in enumerate(SERIES):
         fit = fit_series(macro, series, cfg)
-        gen = rng.stream(STREAM_TURN, "macro_seed", i)
+        gen = _macro_stream(rng, i)
         level0 = dmath.log(_level(macro, series, end))
         dev = level0 - fit.mean
         out = []
@@ -201,7 +213,7 @@ def seeded_rate_rises(
     phi = min(max(phi, cfg.phi_range[0]), cfg.phi_range[1])
     rec = [v for v, r in zip(hist.values(), in_rec, strict=True) if r]
     rec_mean = sum(rec) / len(rec) if rec else mean
-    gen = rng.stream(STREAM_TURN, "scale_seed", RATE_KEY)
+    gen = _scale_stream(rng, RATE_KEY)
     dev = hist[years[-1]] - mean
     out: dict[int, float] = {}
     for year in range(cfg.start[0], cfg.until[0] + 1):
@@ -233,7 +245,7 @@ def seeded_scale(
     """The salary scale's seeded steps and bonuses (stream scale_seed, key (1,))."""
     sc = cfg.scale
     steps = _steps(scale, cfg) or (sc.fallback_step,)
-    gen = rng.stream(STREAM_TURN, "scale_seed", SCALE_KEY)
+    gen = _scale_stream(rng, SCALE_KEY)
     rows = list(scale.scale)
     bonuses = list(scale.bonuses)
     last_year = rows[-1].from_ym[0]

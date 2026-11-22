@@ -3,6 +3,8 @@ action (sub-task 0's pyramid rule)."""
 
 from __future__ import annotations
 
+import itertools
+
 import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
@@ -84,7 +86,7 @@ def test_the_salary_scale_never_falls_and_steps_only_when_hot(
         assert [r.from_ym for r in rows[: len(data.salary_scale.scale)]] == [
             r.from_ym for r in data.salary_scale.scale
         ]
-        for a, b in zip(rows, rows[1:], strict=False):
+        for a, b in itertools.pairwise(rows):
             assert b.salaries[0] >= a.salaries[0]
         for row in rows[len(data.salary_scale.scale) :]:
             stepped += 1

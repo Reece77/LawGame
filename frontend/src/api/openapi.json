@@ -1336,6 +1336,7 @@
     "/api/saves/{slug}/inbox": {
       "get": {
         "summary": "List Inbox",
+        "description": "PT-M9: items from automated areas are left out unless `everything` (the month's\ndigest links to them, TST formulas.md 40.4).",
         "operationId": "listInbox",
         "parameters": [
           {
@@ -1345,6 +1346,16 @@
             "schema": {
               "type": "string",
               "title": "Slug"
+            }
+          },
+          {
+            "name": "everything",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Everything"
             }
           }
         ],
@@ -7673,7 +7684,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AnswerIn"
+                "$ref": "#/components/schemas/ptk__api__leadership__AnswerIn"
               }
             }
           }
@@ -7685,6 +7696,566 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/LeadershipOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/automation": {
+      "get": {
+        "summary": "Get Automation",
+        "operationId": "getAutomation",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutomationOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/automation/give": {
+      "post": {
+        "summary": "Give",
+        "operationId": "giveArea",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GiveIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutomationOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/automation/take-over": {
+      "post": {
+        "summary": "Take Over",
+        "operationId": "takeOverArea",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TakeOverIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutomationOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/automation/settings": {
+      "post": {
+        "summary": "Settings",
+        "operationId": "setAreaSettings",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SettingsIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutomationOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/automation/proposals/{proposal_id}/answer": {
+      "post": {
+        "summary": "Answer",
+        "operationId": "answerProposal",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "proposal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Proposal Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ptk__api__automation__AnswerIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutomationOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/automation/digest/{turn}": {
+      "get": {
+        "summary": "Get Digest",
+        "operationId": "getDigest",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "turn",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Turn"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DigestOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/automation/run-by/{area}": {
+      "get": {
+        "summary": "Get Run By",
+        "operationId": "getRunBy",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "area",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Area"
+            }
+          },
+          {
+            "name": "slot",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Slot"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunByOut"
                 }
               }
             }
@@ -9301,35 +9872,6 @@
         ],
         "title": "AnnuityOut"
       },
-      "AnswerIn": {
-        "properties": {
-          "answer": {
-            "type": "string",
-            "enum": [
-              "approve",
-              "modify",
-              "decline"
-            ],
-            "title": "Answer"
-          },
-          "value": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Value"
-          }
-        },
-        "type": "object",
-        "required": [
-          "answer"
-        ],
-        "title": "AnswerIn"
-      },
       "AppointIn": {
         "properties": {
           "seat": {
@@ -9454,6 +9996,260 @@
         "type": "object",
         "title": "ApproachRivalIn"
       },
+      "AreaLineOut": {
+        "properties": {
+          "turn": {
+            "type": "integer",
+            "title": "Turn"
+          },
+          "date_label": {
+            "type": "string",
+            "title": "Date Label"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "commitment_cents": {
+            "type": "integer",
+            "title": "Commitment Cents"
+          },
+          "link_kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link Kind"
+          },
+          "link_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link Id"
+          },
+          "proposal_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proposal Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "turn",
+          "date_label",
+          "kind",
+          "text",
+          "commitment_cents",
+          "link_kind",
+          "link_id",
+          "proposal_id"
+        ],
+        "title": "AreaLineOut"
+      },
+      "AreaPersonOut": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "fit": {
+            "$ref": "#/components/schemas/FitBand"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "name",
+          "level",
+          "fit"
+        ],
+        "title": "AreaPersonOut"
+      },
+      "AreaRowOut": {
+        "properties": {
+          "area": {
+            "type": "string",
+            "title": "Area"
+          },
+          "slot": {
+            "type": "integer",
+            "title": "Slot"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "does": {
+            "type": "string",
+            "title": "Does"
+          },
+          "seat": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seat"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "owner": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AreaPersonOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "eligible": {
+            "items": {
+              "$ref": "#/components/schemas/AreaPersonOut"
+            },
+            "type": "array",
+            "title": "Eligible"
+          },
+          "limit_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limit Cents"
+          },
+          "monthly_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Monthly Cents"
+          },
+          "default_limit_cents": {
+            "type": "integer",
+            "title": "Default Limit Cents"
+          },
+          "priority": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Priority"
+          },
+          "answer_events": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answer Events"
+          },
+          "energy": {
+            "type": "integer",
+            "title": "Energy"
+          },
+          "guardrails": {
+            "items": {
+              "$ref": "#/components/schemas/GuardrailValueOut"
+            },
+            "type": "array",
+            "title": "Guardrails"
+          },
+          "last_month": {
+            "items": {
+              "$ref": "#/components/schemas/AreaLineOut"
+            },
+            "type": "array",
+            "title": "Last Month"
+          },
+          "kpis": {
+            "items": {
+              "$ref": "#/components/schemas/KpiOut"
+            },
+            "type": "array",
+            "title": "Kpis"
+          }
+        },
+        "type": "object",
+        "required": [
+          "area",
+          "slot",
+          "label",
+          "does",
+          "seat",
+          "status",
+          "reason",
+          "owner",
+          "eligible",
+          "limit_cents",
+          "monthly_cents",
+          "default_limit_cents",
+          "priority",
+          "answer_events",
+          "energy",
+          "guardrails",
+          "last_month",
+          "kpis"
+        ],
+        "title": "AreaRowOut"
+      },
       "AssignIn": {
         "properties": {
           "person_id": {
@@ -9552,6 +10348,43 @@
           "enabled"
         ],
         "title": "AuthorityIn"
+      },
+      "AutomationOut": {
+        "properties": {
+          "month_label": {
+            "type": "string",
+            "title": "Month Label"
+          },
+          "areas": {
+            "items": {
+              "$ref": "#/components/schemas/AreaRowOut"
+            },
+            "type": "array",
+            "title": "Areas"
+          },
+          "proposals": {
+            "items": {
+              "$ref": "#/components/schemas/ProposalOut"
+            },
+            "type": "array",
+            "title": "Proposals"
+          },
+          "owners": {
+            "items": {
+              "$ref": "#/components/schemas/OwnerRecordOut"
+            },
+            "type": "array",
+            "title": "Owners"
+          }
+        },
+        "type": "object",
+        "required": [
+          "month_label",
+          "areas",
+          "proposals",
+          "owners"
+        ],
+        "title": "AutomationOut"
       },
       "BackgroundOut": {
         "properties": {
@@ -10611,6 +11444,93 @@
           "name"
         ],
         "title": "DifficultyOut"
+      },
+      "DigestAreaOut": {
+        "properties": {
+          "area": {
+            "type": "string",
+            "title": "Area"
+          },
+          "slot": {
+            "type": "integer",
+            "title": "Slot"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "owner": {
+            "type": "string",
+            "title": "Owner"
+          },
+          "committed_cents": {
+            "type": "integer",
+            "title": "Committed Cents"
+          },
+          "monthly_cents": {
+            "type": "integer",
+            "title": "Monthly Cents"
+          },
+          "near_limit": {
+            "type": "integer",
+            "title": "Near Limit"
+          },
+          "proposals_waiting": {
+            "type": "integer",
+            "title": "Proposals Waiting"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/AreaLineOut"
+            },
+            "type": "array",
+            "title": "Lines"
+          }
+        },
+        "type": "object",
+        "required": [
+          "area",
+          "slot",
+          "label",
+          "owner",
+          "committed_cents",
+          "monthly_cents",
+          "near_limit",
+          "proposals_waiting",
+          "note",
+          "lines"
+        ],
+        "title": "DigestAreaOut"
+      },
+      "DigestOut": {
+        "properties": {
+          "turn": {
+            "type": "integer",
+            "title": "Turn"
+          },
+          "month_label": {
+            "type": "string",
+            "title": "Month Label"
+          },
+          "areas": {
+            "items": {
+              "$ref": "#/components/schemas/DigestAreaOut"
+            },
+            "type": "array",
+            "title": "Areas"
+          }
+        },
+        "type": "object",
+        "required": [
+          "turn",
+          "month_label",
+          "areas"
+        ],
+        "title": "DigestOut"
       },
       "DisputeIn": {
         "properties": {
@@ -11834,6 +12754,51 @@
         ],
         "title": "GiftIn"
       },
+      "GiveIn": {
+        "properties": {
+          "area": {
+            "type": "string",
+            "title": "Area"
+          },
+          "slot": {
+            "type": "integer",
+            "title": "Slot",
+            "default": 0
+          },
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "limit_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limit Cents"
+          },
+          "monthly_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Monthly Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "area",
+          "person_id"
+        ],
+        "title": "GiveIn"
+      },
       "GuardrailIn": {
         "properties": {
           "key": {
@@ -11851,6 +12816,44 @@
           "value"
         ],
         "title": "GuardrailIn"
+      },
+      "GuardrailValueOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "value": {
+            "type": "integer",
+            "title": "Value"
+          },
+          "default": {
+            "type": "integer",
+            "title": "Default"
+          },
+          "min": {
+            "type": "integer",
+            "title": "Min"
+          },
+          "max": {
+            "type": "integer",
+            "title": "Max"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "value",
+          "default",
+          "min",
+          "max"
+        ],
+        "title": "GuardrailValueOut"
       },
       "GuidanceItemOut": {
         "properties": {
@@ -12212,6 +13215,11 @@
           "read": {
             "type": "boolean",
             "title": "Read"
+          },
+          "in_digest": {
+            "type": "boolean",
+            "title": "In Digest",
+            "default": false
           }
         },
         "type": "object",
@@ -12349,6 +13357,24 @@
           "met"
         ],
         "title": "KeyPersonOut"
+      },
+      "KpiOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "value": {
+            "type": "integer",
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "value"
+        ],
+        "title": "KpiOut"
       },
       "KpisOut": {
         "properties": {
@@ -14197,6 +15223,67 @@
           "campus_target"
         ],
         "title": "OrgUnitOut"
+      },
+      "OwnerRecordOut": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "areas": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Areas"
+          },
+          "workload": {
+            "type": "integer",
+            "title": "Workload"
+          },
+          "capacity": {
+            "type": "integer",
+            "title": "Capacity"
+          },
+          "decisions": {
+            "type": "integer",
+            "title": "Decisions"
+          },
+          "proposals": {
+            "type": "integer",
+            "title": "Proposals"
+          },
+          "approved": {
+            "type": "integer",
+            "title": "Approved"
+          },
+          "declined": {
+            "type": "integer",
+            "title": "Declined"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "name",
+          "areas",
+          "workload",
+          "capacity",
+          "decisions",
+          "proposals",
+          "approved",
+          "declined",
+          "note"
+        ],
+        "title": "OwnerRecordOut"
       },
       "PanelStatusOut": {
         "type": "string",
@@ -16201,6 +17288,74 @@
         ],
         "title": "PromiseIn"
       },
+      "ProposalOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "area": {
+            "type": "string",
+            "title": "Area"
+          },
+          "area_label": {
+            "type": "string",
+            "title": "Area Label"
+          },
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "made_label": {
+            "type": "string",
+            "title": "Made Label"
+          },
+          "expires_label": {
+            "type": "string",
+            "title": "Expires Label"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "why": {
+            "type": "string",
+            "title": "Why"
+          },
+          "recommendation": {
+            "type": "string",
+            "title": "Recommendation"
+          },
+          "commitment_cents": {
+            "type": "integer",
+            "title": "Commitment Cents"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "area",
+          "area_label",
+          "person_id",
+          "name",
+          "made_label",
+          "expires_label",
+          "title",
+          "why",
+          "recommendation",
+          "commitment_cents",
+          "status"
+        ],
+        "title": "ProposalOut"
+      },
       "ProposeIn": {
         "properties": {
           "person_id": {
@@ -16997,6 +18152,45 @@
         ],
         "title": "RoleOut"
       },
+      "RunByOut": {
+        "properties": {
+          "area": {
+            "type": "string",
+            "title": "Area"
+          },
+          "slot": {
+            "type": "integer",
+            "title": "Slot"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "owner": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AreaPersonOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "can_automate": {
+            "type": "boolean",
+            "title": "Can Automate"
+          }
+        },
+        "type": "object",
+        "required": [
+          "area",
+          "slot",
+          "label",
+          "owner",
+          "can_automate"
+        ],
+        "title": "RunByOut"
+      },
       "SaveOut": {
         "properties": {
           "slug": {
@@ -17520,6 +18714,82 @@
         ],
         "title": "SeatSlotOut"
       },
+      "SettingsIn": {
+        "properties": {
+          "area": {
+            "type": "string",
+            "title": "Area"
+          },
+          "slot": {
+            "type": "integer",
+            "title": "Slot",
+            "default": 0
+          },
+          "limit_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limit Cents"
+          },
+          "monthly_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Monthly Cents"
+          },
+          "priority": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Priority"
+          },
+          "answer_events": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answer Events"
+          },
+          "guardrails": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/GuardrailIn"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Guardrails"
+          }
+        },
+        "type": "object",
+        "required": [
+          "area"
+        ],
+        "title": "SettingsIn"
+      },
       "SettlementIn": {
         "properties": {
           "accept": {
@@ -17915,6 +19185,24 @@
           "text"
         ],
         "title": "TagOut"
+      },
+      "TakeOverIn": {
+        "properties": {
+          "area": {
+            "type": "string",
+            "title": "Area"
+          },
+          "slot": {
+            "type": "integer",
+            "title": "Slot",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "area"
+        ],
+        "title": "TakeOverIn"
       },
       "TeamMemberOut": {
         "properties": {
@@ -18354,6 +19642,48 @@
           "pep_cents"
         ],
         "title": "YearOut"
+      },
+      "ptk__api__automation__AnswerIn": {
+        "properties": {
+          "approve": {
+            "type": "boolean",
+            "title": "Approve"
+          }
+        },
+        "type": "object",
+        "required": [
+          "approve"
+        ],
+        "title": "AnswerIn"
+      },
+      "ptk__api__leadership__AnswerIn": {
+        "properties": {
+          "answer": {
+            "type": "string",
+            "enum": [
+              "approve",
+              "modify",
+              "decline"
+            ],
+            "title": "Answer"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "answer"
+        ],
+        "title": "AnswerIn"
       }
     }
   }

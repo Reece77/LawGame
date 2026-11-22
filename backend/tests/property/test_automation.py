@@ -61,6 +61,8 @@ def test_no_applied_decision_is_a_one_off(firm, data: GameData) -> None:  # type
     state, b = firm
     _, results, _ = run(state, data, b, 3)
     kinds = {d.action for r in results for d in r.area_decisions if d.kind in ACTED}
-    one_off_kinds = {"propose_partner", "deequitise", "capital_call", "propose_terms"}
+    # (a partnership admission is a propose_partner on the equity or income track: the unit
+    # test enumerating spec 9.4's one-offs covers it; a second look is within the area)
+    one_off_kinds = {"deequitise", "capital_call", "propose_terms", "exco_term", "counter"}
     assert not kinds & one_off_kinds
     assert kinds <= set(ACTION_TYPES) | set(ORG_TYPES)

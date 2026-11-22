@@ -1,3 +1,4 @@
+import { StaffingRunBy } from '../components/RunBy';
 import {
   Alert,
   Badge,
@@ -69,6 +70,7 @@ export function OrgScreen() {
   return (
     <Stack gap="md">
       <Title order={2}>Org</Title>
+      <StaffingRunBy slug={slug} />
       {action.error && (
         <Alert color="red" data-testid="org-error" withCloseButton onClose={() => action.reset()}>
           {action.error.message}

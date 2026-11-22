@@ -1,3 +1,4 @@
+import { RunBy } from '../components/RunBy';
 import {
   Button,
   Card,
@@ -342,6 +343,7 @@ export function FinanceScreen() {
   return (
     <Stack>
       <Title order={2}>Finance</Title>
+      <RunBy slug={slug} areas={['billing', 'pricing', 'pro_bono']} />
       <Kpis f={f} />
       <Statements f={f} />
       <SimpleGrid cols={{ base: 1, md: 3 }}>

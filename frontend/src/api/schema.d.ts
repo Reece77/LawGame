@@ -322,7 +322,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Inbox */
+        /**
+         * List Inbox
+         * @description PT-M9: items from automated areas are left out unless `everything` (the month's
+         *     digest links to them, TST formulas.md 40.4).
+         */
         get: operations["listInbox"];
         put?: never;
         post?: never;
@@ -1651,6 +1655,125 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/saves/{slug}/automation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Automation */
+        get: operations["getAutomation"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/automation/give": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Give */
+        post: operations["giveArea"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/automation/take-over": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Take Over */
+        post: operations["takeOverArea"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/automation/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Settings */
+        post: operations["setAreaSettings"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/automation/proposals/{proposal_id}/answer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Answer */
+        post: operations["answerProposal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/automation/digest/{turn}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Digest */
+        get: operations["getDigest"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/automation/run-by/{area}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Run By */
+        get: operations["getRunBy"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/saves/{slug}/founder": {
         parameters: {
             query?: never;
@@ -2015,16 +2138,6 @@ export interface components {
             /** Remaining Cents */
             remaining_cents: number;
         };
-        /** AnswerIn */
-        AnswerIn: {
-            /**
-             * Answer
-             * @enum {string}
-             */
-            answer: "approve" | "modify" | "decline";
-            /** Value */
-            value?: number | null;
-        };
         /** AppointIn */
         AppointIn: {
             /** Seat */
@@ -2073,6 +2186,73 @@ export interface components {
             /** Practice */
             practice?: string | null;
         };
+        /** AreaLineOut */
+        AreaLineOut: {
+            /** Turn */
+            turn: number;
+            /** Date Label */
+            date_label: string;
+            /** Kind */
+            kind: string;
+            /** Text */
+            text: string;
+            /** Commitment Cents */
+            commitment_cents: number;
+            /** Link Kind */
+            link_kind: string | null;
+            /** Link Id */
+            link_id: number | null;
+            /** Proposal Id */
+            proposal_id: number | null;
+        };
+        /** AreaPersonOut */
+        AreaPersonOut: {
+            /** Person Id */
+            person_id: number;
+            /** Name */
+            name: string;
+            /** Level */
+            level: string;
+            fit: components["schemas"]["FitBand"];
+        };
+        /** AreaRowOut */
+        AreaRowOut: {
+            /** Area */
+            area: string;
+            /** Slot */
+            slot: number;
+            /** Label */
+            label: string;
+            /** Does */
+            does: string;
+            /** Seat */
+            seat: string | null;
+            /** Status */
+            status: string;
+            /** Reason */
+            reason: string | null;
+            owner: components["schemas"]["AreaPersonOut"] | null;
+            /** Eligible */
+            eligible: components["schemas"]["AreaPersonOut"][];
+            /** Limit Cents */
+            limit_cents: number | null;
+            /** Monthly Cents */
+            monthly_cents: number | null;
+            /** Default Limit Cents */
+            default_limit_cents: number;
+            /** Priority */
+            priority: number | null;
+            /** Answer Events */
+            answer_events: boolean | null;
+            /** Energy */
+            energy: number;
+            /** Guardrails */
+            guardrails: components["schemas"]["GuardrailValueOut"][];
+            /** Last Month */
+            last_month: components["schemas"]["AreaLineOut"][];
+            /** Kpis */
+            kpis: components["schemas"]["KpiOut"][];
+        };
         /** AssignIn */
         AssignIn: {
             /** Person Id */
@@ -2111,6 +2291,17 @@ export interface components {
              * @default []
              */
             guardrails?: components["schemas"]["GuardrailIn"][];
+        };
+        /** AutomationOut */
+        AutomationOut: {
+            /** Month Label */
+            month_label: string;
+            /** Areas */
+            areas: components["schemas"]["AreaRowOut"][];
+            /** Proposals */
+            proposals: components["schemas"]["ProposalOut"][];
+            /** Owners */
+            owners: components["schemas"]["OwnerRecordOut"][];
         };
         /** BackgroundOut */
         BackgroundOut: {
@@ -2507,6 +2698,38 @@ export interface components {
             id: string;
             /** Name */
             name: string;
+        };
+        /** DigestAreaOut */
+        DigestAreaOut: {
+            /** Area */
+            area: string;
+            /** Slot */
+            slot: number;
+            /** Label */
+            label: string;
+            /** Owner */
+            owner: string;
+            /** Committed Cents */
+            committed_cents: number;
+            /** Monthly Cents */
+            monthly_cents: number;
+            /** Near Limit */
+            near_limit: number;
+            /** Proposals Waiting */
+            proposals_waiting: number;
+            /** Note */
+            note: string;
+            /** Lines */
+            lines: components["schemas"]["AreaLineOut"][];
+        };
+        /** DigestOut */
+        DigestOut: {
+            /** Turn */
+            turn: number;
+            /** Month Label */
+            month_label: string;
+            /** Areas */
+            areas: components["schemas"]["DigestAreaOut"][];
         };
         /** DisputeIn */
         DisputeIn: {
@@ -2908,12 +3131,43 @@ export interface components {
             /** Amount Cents */
             amount_cents: number;
         };
+        /** GiveIn */
+        GiveIn: {
+            /** Area */
+            area: string;
+            /**
+             * Slot
+             * @default 0
+             */
+            slot?: number;
+            /** Person Id */
+            person_id: number;
+            /** Limit Cents */
+            limit_cents?: number | null;
+            /** Monthly Cents */
+            monthly_cents?: number | null;
+        };
         /** GuardrailIn */
         GuardrailIn: {
             /** Key */
             key: string;
             /** Value */
             value: number;
+        };
+        /** GuardrailValueOut */
+        GuardrailValueOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Value */
+            value: number;
+            /** Default */
+            default: number;
+            /** Min */
+            min: number;
+            /** Max */
+            max: number;
         };
         /** GuidanceItemOut */
         GuidanceItemOut: {
@@ -3029,6 +3283,11 @@ export interface components {
             link_id: number | null;
             /** Read */
             read: boolean;
+            /**
+             * In Digest
+             * @default false
+             */
+            in_digest?: boolean;
         };
         /** InfluenceOut */
         InfluenceOut: {
@@ -3072,6 +3331,13 @@ export interface components {
             real: boolean;
             /** Met */
             met: boolean;
+        };
+        /** KpiOut */
+        KpiOut: {
+            /** Key */
+            key: string;
+            /** Value */
+            value: number;
         };
         /** KpisOut */
         KpisOut: {
@@ -3681,6 +3947,29 @@ export interface components {
             members: components["schemas"]["OrgMemberOut"][];
             /** Campus Target */
             campus_target: number | null;
+        };
+        /** OwnerRecordOut */
+        OwnerRecordOut: {
+            /** Person Id */
+            person_id: number;
+            /** Name */
+            name: string;
+            /** Areas */
+            areas: string[];
+            /** Workload */
+            workload: number;
+            /** Capacity */
+            capacity: number;
+            /** Decisions */
+            decisions: number;
+            /** Proposals */
+            proposals: number;
+            /** Approved */
+            approved: number;
+            /** Declined */
+            declined: number;
+            /** Note */
+            note: string;
         };
         /** @enum {string} */
         PanelStatusOut: "key" | "active" | "dormant";
@@ -4314,6 +4603,33 @@ export interface components {
             /** Points */
             points: number;
         };
+        /** ProposalOut */
+        ProposalOut: {
+            /** Id */
+            id: number;
+            /** Area */
+            area: string;
+            /** Area Label */
+            area_label: string;
+            /** Person Id */
+            person_id: number;
+            /** Name */
+            name: string;
+            /** Made Label */
+            made_label: string;
+            /** Expires Label */
+            expires_label: string;
+            /** Title */
+            title: string;
+            /** Why */
+            why: string;
+            /** Recommendation */
+            recommendation: string;
+            /** Commitment Cents */
+            commitment_cents: number;
+            /** Status */
+            status: string;
+        };
         /** ProposeIn */
         ProposeIn: {
             /** Person Id */
@@ -4588,6 +4904,18 @@ export interface components {
             /** Practice */
             practice: string | null;
         };
+        /** RunByOut */
+        RunByOut: {
+            /** Area */
+            area: string;
+            /** Slot */
+            slot: number;
+            /** Label */
+            label: string;
+            owner: components["schemas"]["AreaPersonOut"] | null;
+            /** Can Automate */
+            can_automate: boolean;
+        };
         /** SaveOut */
         SaveOut: {
             /** Slug */
@@ -4773,6 +5101,26 @@ export interface components {
             /** Decisions */
             decisions: components["schemas"]["SeatDecisionOut"][];
         };
+        /** SettingsIn */
+        SettingsIn: {
+            /** Area */
+            area: string;
+            /**
+             * Slot
+             * @default 0
+             */
+            slot?: number;
+            /** Limit Cents */
+            limit_cents?: number | null;
+            /** Monthly Cents */
+            monthly_cents?: number | null;
+            /** Priority */
+            priority?: number | null;
+            /** Answer Events */
+            answer_events?: boolean | null;
+            /** Guardrails */
+            guardrails?: components["schemas"]["GuardrailIn"][] | null;
+        };
         /** SettlementIn */
         SettlementIn: {
             /** Accept */
@@ -4917,6 +5265,16 @@ export interface components {
             label: string;
             /** Text */
             text: string;
+        };
+        /** TakeOverIn */
+        TakeOverIn: {
+            /** Area */
+            area: string;
+            /**
+             * Slot
+             * @default 0
+             */
+            slot?: number;
         };
         /** TeamMemberOut */
         TeamMemberOut: {
@@ -5066,6 +5424,21 @@ export interface components {
             equity_partners: number;
             /** Pep Cents */
             pep_cents: number;
+        };
+        /** AnswerIn */
+        ptk__api__automation__AnswerIn: {
+            /** Approve */
+            approve: boolean;
+        };
+        /** AnswerIn */
+        ptk__api__leadership__AnswerIn: {
+            /**
+             * Answer
+             * @enum {string}
+             */
+            answer: "approve" | "modify" | "decline";
+            /** Value */
+            value?: number | null;
         };
     };
     responses: never;
@@ -6131,7 +6504,9 @@ export interface operations {
     };
     listInbox: {
         parameters: {
-            query?: never;
+            query?: {
+                everything?: boolean;
+            };
             header?: never;
             path: {
                 slug: string;
@@ -10947,7 +11322,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["AnswerIn"];
+                "application/json": components["schemas"]["ptk__api__leadership__AnswerIn"];
             };
         };
         responses: {
@@ -10958,6 +11333,433 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LeadershipOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getAutomation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AutomationOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    giveArea: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GiveIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AutomationOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    takeOverArea: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TakeOverIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AutomationOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    setAreaSettings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SettingsIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AutomationOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    answerProposal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                proposal_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ptk__api__automation__AnswerIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AutomationOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getDigest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                turn: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DigestOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getRunBy: {
+        parameters: {
+            query?: {
+                slot?: number;
+            };
+            header?: never;
+            path: {
+                slug: string;
+                area: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RunByOut"];
                 };
             };
             /** @description Bad Request */

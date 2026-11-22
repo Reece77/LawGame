@@ -1211,6 +1211,7 @@ automation: # PT-M9: automation everywhere (spec 9.4; TST formulas.md 40)
   take_back_months: 6 # "soon": within this many months
   high_ego: 15 # ego at or above which an owner minds
   proposal_month: 11 # the development area proposes partnership candidates in this month, for December's vote
+  pro_bono_month: 1 # the pro bono area reviews the credit policy once a year, in this month
   # Each area (spec 9.4's table; the order is the area index, stream auto_quality's key):
   # label; rule; who (seat: the seat's holder owns it; partner: any partner but the MP);
   # seat (seats.yaml); seat_rule (the area runs the seat's PT-M8 authority rule with the

@@ -1,3 +1,4 @@
+import { RunBy } from '../components/RunBy';
 import { Group, SegmentedControl, Text, Title } from '@mantine/core';
 import { createColumnHelper, useTable } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
@@ -129,6 +130,7 @@ export function MattersScreen() {
     <>
       <Group justify="space-between" mb="md">
         <Title order={2}>Matters</Title>
+        <RunBy slug={slug} areas={['intake', 'risk']} />
         <SegmentedControl
           value={status}
           onChange={(v) => setStatus(v as MatterStatusFilter)}

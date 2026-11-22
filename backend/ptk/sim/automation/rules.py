@@ -33,8 +33,9 @@ rest act through the player's own action functions. Rules read only what the fir
   100 lawyers (0, the default: off until a support-coverage system exists).
 - Knowledge and AI (CKO): unavailable until PT-M14.
 - Risk and claims (general counsel): conflicts only until PT-M15: keeps the conflict checks on.
-- Pro bono (a partner): the credit policy stepped toward `target_hours` pro bono hours a lawyer
-  a year when the firm is more than `tolerance_pct` away.
+- Pro bono (a partner): once a year (`automation.pro_bono_month`), after the firm's first year
+  (its moving average starts at zero), the credit policy stepped toward `target_hours` pro bono
+  hours a lawyer a year when the firm is more than `tolerance_pct` away.
 - Routine events: answered in phase 1 (`ptk.sim.automation.events`); nothing here.
 
 A mistake is the seat rule's own (one fewer, the second best, a month late) or a noisy step
@@ -53,6 +54,7 @@ from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import PARTNER_LEVELS
 from ptk.sim.ledger import CASH, REVOLVER
 from ptk.sim.org.seats import managing_partner
+from ptk.sim.partnership.models import FirmPartnership
 from ptk.sim.state import GameState
 
 BP: Final = 10_000  # tunable-exempt: basis points
@@ -60,6 +62,7 @@ K_CENTS: Final = 100_000  # tunable-exempt: cents in $1,000 (guardrails in $k)
 TENTHS: Final = 10  # tunable-exempt: hours are tenths
 MONTHS: Final = 12  # tunable-exempt: calendar
 ASSOCIATE: Final = "associate_"
+DECEMBER: Final = 12  # tunable-exempt: calendar
 
 
 def _seat_rule(run: AutoRun) -> None:
@@ -311,7 +314,10 @@ def development(run: AutoRun) -> None:
         ):
             load[sponsor] += 1
             done += 1
-    if turn_to_ym(state.turn, state.save_meta.start_ym)[1] != b.automation.proposal_month:
+    month = turn_to_ym(state.turn, state.save_meta.start_ym)[1]
+    if month == DECEMBER and run.right:
+        _second_looks(run, fp, mp, lawyers)
+    if month != b.automation.proposal_month:
         return
     per = run.rail("lawyers_per_equity")
     equity = sum(1 for p in lawyers if state.person(p).level == "equity_partner")
@@ -331,6 +337,30 @@ def development(run: AutoRun) -> None:
                 f"{admit} admission(s) this year. I recommend we put them to the vote."
             ),
         )
+
+
+def _second_looks(run: AutoRun, fp: FirmPartnership, mp: int, lawyers: list[int]) -> None:
+    """December: candidates in their first eligible year who are not proposed get a second
+    look next year rather than up or out (not an admission, so within the area)."""
+    from ptk.sim.partnership.actions import ProposePartner
+    from ptk.sim.partnership.careers import class_year, eligible, tracks_for
+
+    state, b = run.state, run.balance
+    for pid in sorted(lawyers):
+        fp_now = state.partnership.of(run.firm_id) or fp
+        if not eligible(state, fp_now, pid, b) or fp_now.candidacy(pid) is not None:
+            continue
+        year = class_year(state.person(pid).level)
+        if year is None or year > fp_now.agreement.track_years:
+            continue
+        if "not_this_year" not in tracks_for(state, fp_now, pid):
+            continue
+        run.attempt(
+            ProposePartner(mp, pid, "not_this_year"),
+            f"gave {_full(state, pid)} a second look next year",
+            link=("person", pid),
+        )
+        state = run.state
 
 
 def _full(state: GameState, pid: int) -> str:
@@ -457,6 +487,9 @@ def pro_bono(run: AutoRun) -> None:
 
     firm = run.state.player
     b = run.balance
+    ym = turn_to_ym(run.state.turn, run.state.save_meta.start_ym)
+    if ym[1] != b.automation.pro_bono_month or run.state.turn - firm.founded_turn < MONTHS:
+        return  # once a year, and only on a year of the moving average
     hours = firm.pro_bono_avg_tenths * MONTHS / TENTHS  # a lawyer's pro bono hours a year
     target = run.rail("target_hours")
     tol = target * run.rail("tolerance_pct") / 100

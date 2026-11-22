@@ -102,6 +102,8 @@ def is_one_off(state: GameState, action: object, b: Balance) -> bool:
     kind = str(getattr(action, "kind", ""))
     if kind in ONE_OFF_KINDS:
         return True
+    if kind == "propose_partner":  # partnership admissions (a second look is not one)
+        return str(_f(action, "track")) in ("equity", "income")
     if kind == "lateral_offer":  # every hire with a guarantee
         return int(getattr(action, "guarantee_years", 0)) > 0
     if kind == "counter":  # a counter-offer's guarantee

@@ -95,6 +95,7 @@ class AutomationBalance(_Strict):
     take_back_months: int = Field(ge=0)
     high_ego: float
     proposal_month: int = Field(ge=1, le=12)  # the development area's admissions proposals
+    pro_bono_month: int = Field(ge=1, le=12)  # the pro bono area reviews the policy
     areas: dict[str, AreaDef]
 
     @model_validator(mode="after")
@@ -144,7 +145,6 @@ SPEC_ONE_OFFS: Final[dict[str, tuple[str, ...] | None]] = {
 # Action kinds that are one-offs whatever their terms.
 ONE_OFF_KINDS: Final = frozenset(
     {
-        "propose_partner",
         "deequitise",
         "capital_call",
         "propose_terms",
@@ -158,5 +158,15 @@ ONE_OFF_KINDS: Final = frozenset(
 # Partnership actions only the managing partner may take: an owner carries them out in the
 # MP's name, and the MP's energy is left as it was (TST 40.13's founder actions).
 MP_ACTIONS: Final = frozenset(
-    {"lateral_search", "diligence", "lateral_offer", "comp_round", "set_sponsor", "introduce"}
+    {
+        "lateral_search",
+        "diligence",
+        "lateral_offer",
+        "comp_round",
+        "set_sponsor",
+        "introduce",
+        "propose_partner",
+        "repay_revolver",
+        "set_pay_policy",
+    }
 )

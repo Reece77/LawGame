@@ -34,6 +34,7 @@ from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import GameOverError, InvalidActionError
 from ptk.sim.events.actions import EVENT_ACTION_TYPES, ChooseEvent, apply_event_action
 from ptk.sim.founder.actions import FOUNDER_ACTION_TYPES, FounderAction, apply_founder_action
+from ptk.sim.geo.actions import GEO_ACTION_TYPES, GeoAction, apply_geo_action
 from ptk.sim.hiring.actions import (
     CloseSearch,
     HiringAction,
@@ -77,6 +78,7 @@ type Action = (
     | StandingAction
     | AutomationAction
     | TechAction
+    | GeoAction
 )
 
 ACTION_TYPES: dict[str, type[Any]] = {
@@ -100,6 +102,7 @@ ACTION_TYPES: dict[str, type[Any]] = {
     **STANDING_ACTION_TYPES,  # PT-M16
     **AUTOMATION_ACTION_TYPES,  # PT-M9
     **TECH_ACTION_TYPES,  # PT-M14
+    **GEO_ACTION_TYPES,  # PT-M11
 }
 
 
@@ -132,6 +135,15 @@ def apply_action(
         return Outcome(auto.state, auto.entries, auto.log)
     if type(action) in TECH_ACTION_TYPES.values():  # PT-M14
         return apply_tech_action(state, action, draws, rng, data, balance)  # type: ignore[arg-type]
+    if type(action) in GEO_ACTION_TYPES.values():  # PT-M11: offices, admissions, trainees
+        return apply_geo_action(
+            state,
+            action,  # type: ignore[arg-type]
+            rng,
+            balance,
+            data,
+            ledger_balances,
+        )
     if isinstance(action, ChooseEvent):
         return apply_event_action(state, action, balance, data)
     if isinstance(action, AnswerPitch):  # PT-M8

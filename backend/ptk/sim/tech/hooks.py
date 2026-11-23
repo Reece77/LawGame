@@ -91,11 +91,13 @@ def billing_view(
     if all(v == 0.0 for v in cuts.values()):
         cuts = {}
     priced: dict[str, float] = {}
+    accept: dict[str, float] = {}
     for p in products:
+        accept[p.kind_key] = ef.acceptance(p.price_bp, balance)
         kind = data.market.kinds[_kind_of(p.practice, p.kind_key, data)]
         market_cost = ef.mix_efficiency(market_eff, mfx.kind_tasks(kind))
         priced[p.kind_key] = market_cost * p.price_bp / 10000  # tunable-exempt: bp
-    view = TechBillingView(cuts=cuts, efficiency=firm_eff, products=priced)
+    view = TechBillingView(cuts=cuts, efficiency=firm_eff, products=priced, accept=accept)
     return _remember(_BILLING, key, deps, view)
 
 

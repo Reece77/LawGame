@@ -40,7 +40,9 @@ T12_MS = 250  # tunable-exempt: the target
 T12_LAWYERS = 150  # tunable-exempt: steady's size by 2015 (T3's band is 100-250)
 T12_TIMED = 12
 T12_YEAR = 2025  # PT-M10: the history pin's last year (PT-M5: 2015)
-T12_CAPITAL = 5_000_000_000  # tunable-exempt: $50M of partners' capital for the test firm
+# PT-M11: $50M ran out in month 11 (main's in month 12, one turn spare): the unmanaged firm
+# burns cash, and T12 times turns, not survival
+T12_CAPITAL = 15_000_000_000  # tunable-exempt: $150M of partners' capital for the test firm
 
 
 def _pinned(data: GameData, year: int) -> dict[str, int]:
@@ -61,7 +63,10 @@ def _pinned(data: GameData, year: int) -> dict[str, int]:
     return out
 
 
-@pytest.mark.parametrize("seed", SEEDS)
+# PT-M11 (check's runtime): seed 1 runs in check as a smoke test; the rest nightly
+@pytest.mark.parametrize(
+    "seed", [pytest.param(s, marks=pytest.mark.nightly) if s != 1 else s for s in SEEDS]
+)
 def test_t11_rivals_hold_history(seed: int, data: GameData, balance: Balance) -> None:
     band = balance.rivals.pin.band
     state = start(data, balance, seed)
@@ -90,6 +95,7 @@ def test_t11_rivals_hold_history(seed: int, data: GameData, balance: Balance) ->
     assert kept >= TOP_KEPT
 
 
+@pytest.mark.nightly  # PT-M11: over 60 s; check's runtime (product manager, 2026-11-23)
 def test_hiring_away_a_third_brings_a_collapse_forward(data: GameData, balance: Balance) -> None:
     forward = 0
     turns = []

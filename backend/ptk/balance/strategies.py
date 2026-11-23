@@ -269,5 +269,6 @@ VARIANTS: Final[dict[str, Script]] = {
     "steady-30y": steady,  # PT-M10: steady to December 2034 (T11 at 2020 and 2025, 2020's shock)
     "steady-automated": steady_automated,  # PT-M9 (ptk/balance/automated.py)
     **TECH_VARIANTS,  # PT-M14: ai-hourly, ai-fixed, never (ptk/balance/tech.py)
+    **__import__("ptk.balance.offices").balance.offices.OFFICE_VARIANTS,  # PT-M11 (offices.py)
 }
 PLAYABLE: Final[dict[str, Script]] = {**STRATEGIES, **VARIANTS}

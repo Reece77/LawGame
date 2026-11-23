@@ -1,6 +1,6 @@
 # Root tasks. Recipes avoid shell-specific syntax so they run under sh and cmd.exe.
 
-.PHONY: check check-fast check-backend check-timing check-api check-frontend check-vendored dev gen-api golden e2e balance nightly
+.PHONY: check check-fast check-backend check-lint check-shard check-timing check-api check-frontend check-vendored dev gen-api golden e2e balance nightly
 
 check: check-vendored check-backend check-timing check-api check-frontend
 
@@ -9,6 +9,15 @@ check-vendored:
 
 check-backend:
 	cd backend && uv run ruff check . && uv run ruff format --check . && uv run mypy && uv run pytest -q -n auto -m "not timing and not nightly"
+
+# PT-M11: CI's `check` runs the lint half and the tests (in SHARDS shards) as parallel jobs.
+check-lint:
+	cd backend && uv run ruff check . && uv run ruff format --check . && uv run mypy
+
+SHARDS = 3
+SHARD = 0
+check-shard:
+	python3 tools/test_shard.py $(SHARDS) $(SHARD) --run
 
 # Turn-time budgets run alone, after the parallel suite (TST's check-timing; PT-M5 T12).
 check-timing:

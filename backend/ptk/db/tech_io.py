@@ -1,4 +1,4 @@
-"""Load and write technology (schema v16, PT-M14): one row holding the `TechState` as JSON (the
+"""Load and write technology (schema v17, PT-M14): one row holding the `TechState` as JSON (the
 firm's adoption by era, its training programme and products; rewritten when it changes). The
 codec is automation's (`ptk.db.automation_io`), over `ptk.sim.tech.models`' type hints.
 """

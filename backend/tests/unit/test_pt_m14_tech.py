@@ -282,3 +282,13 @@ def test_ai_lowers_learning_and_training_restores_at_least_half(
     ).learning(mine)
     assert without < 1.0
     assert (with_training - without) >= 0.5 * (1.0 - without)
+
+
+def test_product_take_up_falls_from_100_to_150_pct(balance: Balance) -> None:
+    """Reece's decision on criterion 3 (2026-11-23): every client takes a product at or below
+    the market's cost, none at 150%, linearly between."""
+    assert ef.acceptance(6000, balance) == 1.0
+    assert ef.acceptance(10000, balance) == 1.0
+    assert ef.acceptance(11000, balance) == pytest.approx(0.8)
+    assert ef.acceptance(12500, balance) == pytest.approx(0.5)
+    assert ef.acceptance(15000, balance) == 0.0

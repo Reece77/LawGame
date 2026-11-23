@@ -270,6 +270,11 @@ function productColumns(slug: string, retire: ReturnType<typeof useRetireProduct
       sortFn: 'basic',
       cell: (c) => <span className="tst-num">{c.getValue()}%</span>,
     }),
+    productHelper.accessor('take_up_pct', {
+      header: 'Clients taking it',
+      sortFn: 'basic',
+      cell: (c) => <span className="tst-num">{c.getValue()}%</span>,
+    }),
     productHelper.accessor('matters', { header: 'Matters', sortFn: 'basic' }),
     productHelper.accessor('billed_cents', {
       header: 'Billed (standard)',

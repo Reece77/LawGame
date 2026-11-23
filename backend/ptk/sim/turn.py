@@ -26,6 +26,7 @@ from ptk.sim.events import modifiers as event_modifiers
 from ptk.sim.events.models import EventRequest, TextRequest
 from ptk.sim.founder import phase as founder_life
 from ptk.sim.founder.models import PersonalEntry
+from ptk.sim.geo import phase as geo
 from ptk.sim.hiring import phases as hiring
 from ptk.sim.interfaces import DelegateHiringHook, delegate_hiring
 from ptk.sim.ledger import CASH, AccountCode, LedgerBalances, LedgerEntry, apply_entries
@@ -136,6 +137,8 @@ def apply_player_decisions(ctx: TurnContext) -> TurnContext:
     state, voted, votes = partnership.votes_and_offers(state, ctx.rng, ctx.balance, ctx.data)
     ctx = replace(ctx, state=state).post(*entries, *voted)
     ctx = ctx.log(*left, *resolved, *started, *votes)
+    state, trained, joined = geo.phase_one(ctx.state, ctx.rng, ctx.balance, ctx.data)  # PT-M11
+    ctx = replace(ctx, state=state).post(*trained).log(*joined)
     return ctx.take(rival_phase.answer_approaches(ctx.state, ctx.rng, ctx.data, ctx.balance))
 
 
@@ -170,9 +173,12 @@ def intake_and_staffing(ctx: TurnContext) -> TurnContext:
     given a month of work as a test input keeps it (`advance_turn`'s `work`)."""
     ctx = ctx.take(rival_phase.rfps_before_intake(ctx.state, ctx.rng, ctx.data, ctx.balance))
     ctx = ctx.take(rival_phase.after_intake(ctx.state, ctx.rng, ctx.data, ctx.balance))
-    month = matters.intake_and_staffing(ctx.state, ctx.rng, ctx.data, ctx.balance)
+    state = geo.before_intake(ctx.state, ctx.rng, ctx.balance, ctx.data)  # PT-M11: cities
+    month = matters.intake_and_staffing(state, ctx.rng, ctx.data, ctx.balance)
     work = {**month.work, **ctx.work_override}
-    return replace(ctx, state=month.state, work=work, unserved=month.unserved).log(*month.log)
+    state, phv, phv_log = geo.after_staffing(month.state, ctx.data)  # PT-M11: pro hac vice
+    ctx = replace(ctx, state=state, work=work, unserved=month.unserved).post(*phv)
+    return ctx.log(*month.log, *phv_log)
 
 
 def work_and_billing(ctx: TurnContext) -> TurnContext:
@@ -188,7 +194,8 @@ def payroll_and_operating_costs(ctx: TurnContext) -> TurnContext:
     """6. Salaries, benefits, rent per head, recruiting; December bonuses (PT-M1b); insurance
     and technology arrive later."""
     entries, logs = hiring.payroll(ctx.state, ctx.balance, ctx.data)
-    return ctx.post(*entries).log(*logs)
+    state, leases, _ = geo.phase_six(ctx.state, ctx.balance, ctx.data)  # PT-M11: offices
+    return replace(ctx, state=state).post(*entries, *leases).log(*logs)
 
 
 def financing(ctx: TurnContext) -> TurnContext:
@@ -220,6 +227,8 @@ def people_updates(ctx: TurnContext) -> TurnContext:
     )
     ctx = replace(ctx, state=clear_nudges(state)).post(*flight)
     ctx = ctx.log(*departures, *tags, *moves)
+    state, _, geo_logs = geo.phase_eight(ctx.state, ctx.rng, ctx.balance, ctx.data)  # PT-M11
+    ctx = replace(ctx, state=state).log(*geo_logs)
     return ctx.take(rival_phase.people(ctx.state, ctx.rng, ctx.data, ctx.balance))  # PT-M5
 
 

@@ -86,6 +86,17 @@ def mix_efficiency(eff: Mapping[str, float], tasks: Mapping[str, float]) -> floa
     return sum(w * eff.get(t, 1.0) for t, w in tasks.items()) / total
 
 
+def acceptance(price_bp: int, balance: Balance) -> float:
+    """Reece's decision on criterion 3 (2026-11-23): the share of clients who take a product,
+    1 at or below `products.accept_full_bp` of the market's cost, falling linearly to 0 at
+    `products.accept_none_bp`; the rest stay on the terms they would have had."""
+    cfg = balance.tech.products
+    if price_bp <= cfg.accept_full_bp:
+        return 1.0
+    span = cfg.accept_none_bp - cfg.accept_full_bp
+    return max(0.0, 1.0 - (price_bp - cfg.accept_full_bp) / span)
+
+
 def pressure_on(state: GameState, balance: Balance) -> bool:
     start = balance.tech.clients.pressure_from
     return ym_of(state) >= (start[0], start[1])

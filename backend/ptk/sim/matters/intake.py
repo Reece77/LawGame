@@ -15,6 +15,7 @@ flow is suspended and its new matters would be conflicts: ADR PT-0009).
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, replace
 from typing import Final
 
@@ -34,6 +35,9 @@ from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
 
 GOVERNMENT_PRACTICES: Final = frozenset({"white_collar"})
+LONDON_COURT: Final = "ew_commercial"  # PT-M11: courts.yaml
+OMP: Final = "office_managing_partner"  # PT-M11: seats.yaml
+LONDON_ARBITRATION: Final = "lcia"
 CASE_KINDS: Final = frozenset({"case", "investigation"})
 
 
@@ -95,6 +99,7 @@ def new_matter(
     data: GameData,
     balance: Balance,
     rate_index: float = 1.0,
+    region: str = "us",
 ) -> Matter:
     """A named matter's intake draws, in a fixed order: months, critical, adverse, merits,
     opposing counsel, stakes, forum."""
@@ -109,6 +114,9 @@ def new_matter(
     )
     stakes_mult = float(gen.uniform(out.stakes_mult.lo, out.stakes_mult.hi))
     court = _forum(gen, kind)
+    if court is not None and region == "uk":  # PT-M11: a London case's forum is London's
+        arbitration = data.courts.court(court).kind == "arbitration"
+        court = LONDON_ARBITRATION if arbitration else LONDON_COURT
     is_adverse_client = adverse_roll < practice.conflict_bp / 10000
     if is_adverse_client:
         adverse_name, adverse_id = adverse.name, adverse.id
@@ -247,17 +255,21 @@ def intake(
     }
     # PT-M7a: the firm's card against the market's; PT-M7b: each practice's card
     prices = {p: price_term(state, firm_id, data, balance, p) for p in keys}
+    local = local_terms(state, firm_id, data, balance)  # PT-M11: each city's market
     for rel in [r for r in market.relationships if r.firm_id == firm_id]:
         client = state.market.client(rel.client_id)
         if adverse_to(state.market, firm_id, client.id):
             continue
+        market_demand, reach, rate_f, region = (
+            local(client.city) if client.city else (demand, 0.0, 1.0, "us")
+        )
         gen = rng.stream(turn, "intake", client.id)
         threshold = balance.matters.key_named_min_cents if client.id in key else named_min
         instructed = False
         for p in rel.practices:
             practice = data.practice(p)
-            fees = shares.wallet(client.id, keys.index(p), demand) * player_share(
-                client, rel, p, reps[p], False, data, balance, appeals, prices[p]
+            fees = shares.wallet(client.id, keys.index(p), market_demand) * player_share(
+                client, rel, p, reps[p], False, data, balance, appeals, prices[p], reach
             )
             if fees <= 0:
                 continue
@@ -288,8 +300,10 @@ def intake(
                         turn,
                         data,
                         balance,
-                        # PT-M7a: fees on the firm's card; PT-M7b: the practice's card
-                        practice_index(state.firm(firm_id), p),
+                        # PT-M7a: fees on the firm's card; PT-M7b: the practice's card;
+                        # PT-M11: the city's card
+                        practice_index(state.firm(firm_id), p) * rate_f,
+                        region,
                     )
                     index = conflict_index(state.market, firm_id, turn, balance)
                     state, items = open_checked(state, matter, index, data, balance, key)
@@ -310,6 +324,40 @@ def intake(
         for (cid, p), f in flow_fees.items()
     }
     return IntakeResult(state=state, flow_tenths=flow_tenths, flow_fees=flow_fees, log=tuple(logs))
+
+
+type LocalTerms = tuple[tuple[int, ...], float, float, str]
+
+
+def local_terms(
+    state: GameState, firm_id: int, data: GameData, balance: Balance
+) -> Callable[[str], LocalTerms]:
+    """PT-M11: a city's (demand, reach penalty, rate factor, region) for its clients' work."""
+    from ptk.sim.geo.cities import office_in
+    from ptk.sim.geo.formulas import rate_factor
+    from ptk.sim.org.seats import effect as seat_effect
+
+    zeros = tuple(0 for _ in data.practices)
+    cache: dict[str, LocalTerms] = {}
+
+    def terms(city: str) -> LocalTerms:
+        if city not in cache:
+            cdef = data.geo.city(city)
+            office = office_in(state, firm_id, city)
+            if office is None:
+                reach = balance.geo.reach_penalty
+            else:  # spec 9.1: the office managing partner's local business development
+                e = seat_effect(state, firm_id, OMP, balance, data, office.id)
+                reach = -balance.geo.omp_appeal * e
+            cache[city] = (
+                state.geo.city_demand(city) or zeros,
+                reach,
+                rate_factor(cdef),
+                cdef.region,
+            )
+        return cache[city]
+
+    return terms
 
 
 def expire_conflicted(

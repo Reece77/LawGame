@@ -399,3 +399,73 @@ real_clients:
   - { name: 3i Group, sector: private_equity, revenue_bn: 3, country: uk }
   # PT-M7 (appended: ids follow this order). Chrysler Group of DaimlerChrysler, 2005 revenue EUR 50.1bn [S], about $62bn [A] (dossier s1)
   - { name: Chrysler, sector: autos_transport, revenue_bn: 62, fails: { ym: [2009, 4], kind: bankruptcy, src: "dossier s1: Chapter 11 and 363 sale to Fiat, 30 Apr 2009 [A]" } }
+
+# PT-M11: London's real clients (spec 7.1: FTSE 100 names and London's private equity houses, personal
+# use), made when a firm first opens a London office; their panels are UK rivals (ptk/sim/geo/markets.py).
+# revenue_bn: 2005 group revenue in USD billions [A], as real_clients' (from memory of FTSE 100 annual
+# reports, not verified); a name also in real_clients is that company's London instructions, shown with
+# the city. Append-only (ids follow this order).
+uk_clients:
+  - { name: "HSBC", sector: banking, revenue_bn: 60, country: uk }
+  - { name: "Barclays", sector: banking, revenue_bn: 40, country: uk }
+  - { name: "Royal Bank of Scotland", sector: banking, revenue_bn: 45, country: uk }
+  - { name: "Lloyds TSB", sector: banking, revenue_bn: 25, country: uk }
+  - { name: "HBOS", sector: banking, revenue_bn: 30, country: uk }
+  - { name: "Standard Chartered", sector: banking, revenue_bn: 9, country: uk }
+  - { name: "Man Group", sector: banking, revenue_bn: 3, country: uk }
+  - { name: "ICAP", sector: banking, revenue_bn: 2, country: uk }
+  - { name: "Schroders", sector: banking, revenue_bn: 2, country: uk }
+  - { name: "Aviva", sector: insurance, revenue_bn: 60, country: uk }
+  - { name: "Prudential plc", sector: insurance, revenue_bn: 30, country: uk }
+  - { name: "Legal & General", sector: insurance, revenue_bn: 20, country: uk }
+  - { name: "Old Mutual", sector: insurance, revenue_bn: 15, country: uk }
+  - { name: "BP", sector: energy, revenue_bn: 250, country: uk }
+  - { name: "Royal Dutch Shell", sector: energy, revenue_bn: 307, country: uk }
+  - { name: "BG Group", sector: energy, revenue_bn: 9, country: uk }
+  - { name: "Centrica", sector: energy, revenue_bn: 23, country: uk }
+  - { name: "National Grid", sector: energy, revenue_bn: 15, country: uk }
+  - { name: "Scottish Power", sector: energy, revenue_bn: 10, country: uk }
+  - { name: "Scottish and Southern Energy", sector: energy, revenue_bn: 9, country: uk }
+  - { name: "United Utilities", sector: energy, revenue_bn: 4, country: uk }
+  - { name: "GlaxoSmithKline", sector: pharma_health, revenue_bn: 37, country: uk }
+  - { name: "AstraZeneca", sector: pharma_health, revenue_bn: 24, country: uk }
+  - { name: "Smith & Nephew", sector: pharma_health, revenue_bn: 3, country: uk }
+  - { name: "Rio Tinto", sector: industrials, revenue_bn: 19, country: uk }
+  - { name: "BHP Billiton", sector: industrials, revenue_bn: 32, country: uk }
+  - { name: "Anglo American", sector: industrials, revenue_bn: 30, country: uk }
+  - { name: "Xstrata", sector: industrials, revenue_bn: 8, country: uk }
+  - { name: "BAE Systems", sector: industrials, revenue_bn: 22, country: uk }
+  - { name: "Rolls-Royce", sector: industrials, revenue_bn: 11, country: uk }
+  - { name: "GKN", sector: industrials, revenue_bn: 7, country: uk }
+  - { name: "Smiths Group", sector: industrials, revenue_bn: 6, country: uk }
+  - { name: "Unilever", sector: consumer_retail, revenue_bn: 50, country: uk }
+  - { name: "Tesco", sector: consumer_retail, revenue_bn: 68, country: uk }
+  - { name: "J Sainsbury", sector: consumer_retail, revenue_bn: 30, country: uk }
+  - { name: "Diageo", sector: consumer_retail, revenue_bn: 15, country: uk }
+  - { name: "British American Tobacco", sector: consumer_retail, revenue_bn: 18, country: uk }
+  - { name: "Imperial Tobacco", sector: consumer_retail, revenue_bn: 10, country: uk }
+  - { name: "SABMiller", sector: consumer_retail, revenue_bn: 15, country: uk }
+  - { name: "Reckitt Benckiser", sector: consumer_retail, revenue_bn: 8, country: uk }
+  - { name: "Cadbury Schweppes", sector: consumer_retail, revenue_bn: 12, country: uk }
+  - { name: "Marks & Spencer", sector: consumer_retail, revenue_bn: 14, country: uk }
+  - { name: "Kingfisher", sector: consumer_retail, revenue_bn: 15, country: uk }
+  - { name: "Compass Group", sector: consumer_retail, revenue_bn: 20, country: uk }
+  - { name: "Vodafone", sector: telecom_media, revenue_bn: 50, country: uk }
+  - { name: "BT Group", sector: telecom_media, revenue_bn: 34, country: uk }
+  - { name: "British Sky Broadcasting", sector: telecom_media, revenue_bn: 7, country: uk }
+  - { name: "ITV", sector: telecom_media, revenue_bn: 4, country: uk }
+  - { name: "WPP Group", sector: telecom_media, revenue_bn: 10, country: uk }
+  - { name: "Reed Elsevier", sector: telecom_media, revenue_bn: 9, country: uk }
+  - { name: "Pearson", sector: telecom_media, revenue_bn: 7, country: uk }
+  - { name: "British Airways", sector: autos_transport, revenue_bn: 14, country: uk }
+  - { name: "BAA", sector: autos_transport, revenue_bn: 4, country: uk }
+  - { name: "Land Securities", sector: real_estate, revenue_bn: 1.5, country: uk }
+  - { name: "British Land", sector: real_estate, revenue_bn: 1, country: uk }
+  - { name: "Hammerson", sector: real_estate, revenue_bn: 0.6, country: uk }
+  - { name: "Permira", sector: private_equity, revenue_bn: 4, country: uk }
+  - { name: "Apax Partners", sector: private_equity, revenue_bn: 4, country: uk }
+  - { name: "CVC Capital Partners", sector: private_equity, revenue_bn: 4, country: uk }
+  - { name: "3i Group", sector: private_equity, revenue_bn: 3, country: uk }
+  - { name: "Terra Firma", sector: private_equity, revenue_bn: 2, country: uk }
+  - { name: "Cinven", sector: private_equity, revenue_bn: 2, country: uk }
+  - { name: "BC Partners", sector: private_equity, revenue_bn: 2, country: uk }

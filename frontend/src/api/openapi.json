@@ -10541,10 +10541,539 @@
           }
         }
       }
+    },
+    "/api/saves/{slug}/offices": {
+      "get": {
+        "summary": "Get Offices",
+        "operationId": "getOffices",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfficesOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Open Office",
+        "operationId": "openOffice",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OpenOfficeIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfficesOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/offices/{office_id}/close": {
+      "post": {
+        "summary": "Close Office",
+        "operationId": "closeOffice",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "office_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Office Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfficesOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/offices/{office_id}/training-contracts": {
+      "post": {
+        "summary": "Contracts",
+        "operationId": "offerTrainingContracts",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "office_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Office Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContractsIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfficesOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/offices/admissions": {
+      "post": {
+        "summary": "Admission",
+        "operationId": "seekAdmission",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdmissionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfficesOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/offices/move": {
+      "post": {
+        "summary": "Move",
+        "operationId": "moveLawyer",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MoveIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfficesOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AdmissionIn": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "jurisdiction": {
+            "type": "string",
+            "title": "Jurisdiction"
+          },
+          "route": {
+            "type": "string",
+            "enum": [
+              "exam",
+              "motion",
+              "register"
+            ],
+            "title": "Route",
+            "default": "exam"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "jurisdiction"
+        ],
+        "title": "AdmissionIn"
+      },
+      "AdmissionOut": {
+        "properties": {
+          "jurisdiction": {
+            "type": "string",
+            "title": "Jurisdiction"
+          },
+          "how": {
+            "type": "string",
+            "title": "How"
+          },
+          "since": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Since"
+          }
+        },
+        "type": "object",
+        "required": [
+          "jurisdiction",
+          "how",
+          "since"
+        ],
+        "title": "AdmissionOut",
+        "description": "PT-M11 (spec 11.1): a bar admission, or one in progress."
+      },
       "AgeBucketOut": {
         "properties": {
           "label": {
@@ -11705,6 +12234,95 @@
         ],
         "title": "ChooseIn"
       },
+      "CityOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "region": {
+            "type": "string",
+            "title": "Region"
+          },
+          "jurisdiction": {
+            "type": "string",
+            "title": "Jurisdiction"
+          },
+          "jurisdiction_label": {
+            "type": "string",
+            "title": "Jurisdiction Label"
+          },
+          "demand_pct": {
+            "type": "integer",
+            "title": "Demand Pct"
+          },
+          "rate_pct": {
+            "type": "integer",
+            "title": "Rate Pct"
+          },
+          "pay_pct": {
+            "type": "integer",
+            "title": "Pay Pct"
+          },
+          "rent_per_seat_cents": {
+            "type": "integer",
+            "title": "Rent Per Seat Cents"
+          },
+          "rivals": {
+            "items": {
+              "$ref": "#/components/schemas/CityRivalOut"
+            },
+            "type": "array",
+            "title": "Rivals"
+          },
+          "has_office": {
+            "type": "boolean",
+            "title": "Has Office"
+          },
+          "is_home": {
+            "type": "boolean",
+            "title": "Is Home"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "region",
+          "jurisdiction",
+          "jurisdiction_label",
+          "demand_pct",
+          "rate_pct",
+          "pay_pct",
+          "rent_per_seat_cents",
+          "rivals",
+          "has_office",
+          "is_home"
+        ],
+        "title": "CityOut"
+      },
+      "CityRivalOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "name"
+        ],
+        "title": "CityRivalOut"
+      },
       "ClaimOut": {
         "properties": {
           "id": {
@@ -12065,6 +12683,52 @@
           "enabled"
         ],
         "title": "ConflictChecksOut"
+      },
+      "ContractOut": {
+        "properties": {
+          "office_id": {
+            "type": "integer",
+            "title": "Office Id"
+          },
+          "offered": {
+            "type": "string",
+            "title": "Offered"
+          },
+          "starts": {
+            "type": "string",
+            "title": "Starts"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "filled": {
+            "type": "boolean",
+            "title": "Filled"
+          }
+        },
+        "type": "object",
+        "required": [
+          "office_id",
+          "offered",
+          "starts",
+          "count",
+          "filled"
+        ],
+        "title": "ContractOut"
+      },
+      "ContractsIn": {
+        "properties": {
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "count"
+        ],
+        "title": "ContractsIn"
       },
       "CostLineOut": {
         "properties": {
@@ -12878,6 +13542,39 @@
           "auto"
         ]
       },
+      "ExamOut": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "jurisdiction": {
+            "type": "string",
+            "title": "Jurisdiction"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "result": {
+            "type": "string",
+            "title": "Result"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "name",
+          "jurisdiction",
+          "kind",
+          "result"
+        ],
+        "title": "ExamOut"
+      },
       "ExcoTermIn": {
         "properties": {
           "elected": {
@@ -13179,7 +13876,7 @@
           },
           "statements": {
             "items": {
-              "$ref": "#/components/schemas/PnlOut"
+              "$ref": "#/components/schemas/ptk__api__finance__PnlOut"
             },
             "type": "array",
             "title": "Statements"
@@ -14702,6 +15399,42 @@
         ],
         "title": "LateralOut"
       },
+      "LawyerOut": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "office_id": {
+            "type": "integer",
+            "title": "Office Id"
+          },
+          "admissions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Admissions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "name",
+          "level",
+          "office_id",
+          "admissions"
+        ],
+        "title": "LawyerOut"
+      },
       "LeadIn": {
         "properties": {
           "person_id": {
@@ -15888,6 +16621,24 @@
         ],
         "title": "MonthOut"
       },
+      "MoveIn": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "office_id": {
+            "type": "integer",
+            "title": "Office Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "office_id"
+        ],
+        "title": "MoveIn"
+      },
       "MoveUnitIn": {
         "properties": {
           "parent_id": {
@@ -16155,6 +16906,205 @@
         ],
         "title": "OfficeIn"
       },
+      "OfficeOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "city": {
+            "type": "string",
+            "title": "City"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "how": {
+            "type": "string",
+            "title": "How"
+          },
+          "opened": {
+            "type": "string",
+            "title": "Opened"
+          },
+          "seats": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seats"
+          },
+          "lawyers": {
+            "type": "integer",
+            "title": "Lawyers"
+          },
+          "staff": {
+            "type": "integer",
+            "title": "Staff"
+          },
+          "rent_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rent Cents"
+          },
+          "lease_months_left": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lease Months Left"
+          },
+          "lease_liability_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lease Liability Cents"
+          },
+          "managing_partner": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Managing Partner"
+          },
+          "clients": {
+            "type": "integer",
+            "title": "Clients"
+          },
+          "pnl": {
+            "$ref": "#/components/schemas/ptk__api__offices__PnlOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "city",
+          "label",
+          "how",
+          "opened",
+          "seats",
+          "lawyers",
+          "staff",
+          "rent_cents",
+          "lease_months_left",
+          "lease_liability_cents",
+          "managing_partner",
+          "clients",
+          "pnl"
+        ],
+        "title": "OfficeOut"
+      },
+      "OfficesOut": {
+        "properties": {
+          "cities": {
+            "items": {
+              "$ref": "#/components/schemas/CityOut"
+            },
+            "type": "array",
+            "title": "Cities"
+          },
+          "offices": {
+            "items": {
+              "$ref": "#/components/schemas/OfficeOut"
+            },
+            "type": "array",
+            "title": "Offices"
+          },
+          "rules": {
+            "items": {
+              "$ref": "#/components/schemas/RulesOut"
+            },
+            "type": "array",
+            "title": "Rules"
+          },
+          "contracts": {
+            "items": {
+              "$ref": "#/components/schemas/ContractOut"
+            },
+            "type": "array",
+            "title": "Contracts"
+          },
+          "trainees": {
+            "items": {
+              "$ref": "#/components/schemas/TraineeOut"
+            },
+            "type": "array",
+            "title": "Trainees"
+          },
+          "exams": {
+            "items": {
+              "$ref": "#/components/schemas/ExamOut"
+            },
+            "type": "array",
+            "title": "Exams"
+          },
+          "lawyers": {
+            "items": {
+              "$ref": "#/components/schemas/LawyerOut"
+            },
+            "type": "array",
+            "title": "Lawyers"
+          },
+          "seat_sizes": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Seat Sizes"
+          },
+          "lease_months": {
+            "type": "integer",
+            "title": "Lease Months"
+          },
+          "fit_out_per_seat_cents": {
+            "type": "integer",
+            "title": "Fit Out Per Seat Cents"
+          },
+          "lease_liabilities_cents": {
+            "type": "integer",
+            "title": "Lease Liabilities Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cities",
+          "offices",
+          "rules",
+          "contracts",
+          "trainees",
+          "exams",
+          "lawyers",
+          "seat_sizes",
+          "lease_months",
+          "fit_out_per_seat_cents",
+          "lease_liabilities_cents"
+        ],
+        "title": "OfficesOut"
+      },
       "OnIn": {
         "properties": {
           "on": {
@@ -16167,6 +17117,77 @@
           "on"
         ],
         "title": "OnIn"
+      },
+      "OpenOfficeIn": {
+        "properties": {
+          "city": {
+            "type": "string",
+            "title": "City"
+          },
+          "seats": {
+            "type": "integer",
+            "title": "Seats"
+          },
+          "how": {
+            "type": "string",
+            "enum": [
+              "organic",
+              "lateral_group",
+              "team_lift"
+            ],
+            "title": "How"
+          },
+          "practice": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Practice"
+          },
+          "partner_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Partner Id"
+          },
+          "rival_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rival Key"
+          },
+          "partners": {
+            "type": "integer",
+            "title": "Partners",
+            "default": 1
+          },
+          "associates": {
+            "type": "integer",
+            "title": "Associates",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "city",
+          "seats",
+          "how"
+        ],
+        "title": "OpenOfficeIn"
       },
       "OpenSearchIn": {
         "properties": {
@@ -16194,6 +17215,17 @@
             },
             "type": "array",
             "title": "School Tiers"
+          },
+          "city": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "City"
           }
         },
         "type": "object",
@@ -17532,6 +18564,25 @@
             "type": "array",
             "title": "Bar Admissions"
           },
+          "admissions": {
+            "items": {
+              "$ref": "#/components/schemas/AdmissionOut"
+            },
+            "type": "array",
+            "title": "Admissions",
+            "default": []
+          },
+          "office": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Office"
+          },
           "background": {
             "anyOf": [
               {
@@ -18309,51 +19360,6 @@
         ],
         "title": "PnlLineOut"
       },
-      "PnlOut": {
-        "properties": {
-          "label": {
-            "type": "string",
-            "title": "Label"
-          },
-          "basis": {
-            "type": "string",
-            "enum": [
-              "accrual",
-              "cash"
-            ],
-            "title": "Basis"
-          },
-          "revenue_cents": {
-            "type": "integer",
-            "title": "Revenue Cents"
-          },
-          "costs_cents": {
-            "type": "integer",
-            "title": "Costs Cents"
-          },
-          "profit_cents": {
-            "type": "integer",
-            "title": "Profit Cents"
-          },
-          "lines": {
-            "items": {
-              "$ref": "#/components/schemas/PnlLineOut"
-            },
-            "type": "array",
-            "title": "Lines"
-          }
-        },
-        "type": "object",
-        "required": [
-          "label",
-          "basis",
-          "revenue_cents",
-          "costs_cents",
-          "profit_cents",
-          "lines"
-        ],
-        "title": "PnlOut"
-      },
       "PracticeBandsOut": {
         "properties": {
           "practice": {
@@ -18906,6 +19912,10 @@
             "type": "integer",
             "title": "Price Pct Of Standard"
           },
+          "take_up_pct": {
+            "type": "integer",
+            "title": "Take Up Pct"
+          },
           "launched_label": {
             "type": "string",
             "title": "Launched Label"
@@ -18935,6 +19945,7 @@
           "label",
           "price_bp",
           "price_pct_of_standard",
+          "take_up_pct",
           "launched_label",
           "active",
           "matters",
@@ -19977,6 +20988,87 @@
           "era"
         ],
         "title": "RolloutIn"
+      },
+      "RulesOut": {
+        "properties": {
+          "jurisdiction": {
+            "type": "string",
+            "title": "Jurisdiction"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "regulator": {
+            "type": "string",
+            "title": "Regulator"
+          },
+          "insurance_min_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Insurance Min Cents"
+          },
+          "insurance_llp_min_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Insurance Llp Min Cents"
+          },
+          "client_money": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Money"
+          },
+          "llp": {
+            "type": "boolean",
+            "title": "Llp"
+          },
+          "foreign_lawyers": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Foreign Lawyers"
+          },
+          "ownership": {
+            "type": "string",
+            "title": "Ownership"
+          }
+        },
+        "type": "object",
+        "required": [
+          "jurisdiction",
+          "label",
+          "regulator",
+          "insurance_min_cents",
+          "insurance_llp_min_cents",
+          "client_money",
+          "llp",
+          "foreign_lawyers",
+          "ownership"
+        ],
+        "title": "RulesOut"
       },
       "RunByOut": {
         "properties": {
@@ -21522,6 +22614,47 @@
         ],
         "title": "TimelineItemOut"
       },
+      "TraineeOut": {
+        "properties": {
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "office_id": {
+            "type": "integer",
+            "title": "Office Id"
+          },
+          "seat": {
+            "type": "string",
+            "title": "Seat"
+          },
+          "seats": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Seats"
+          },
+          "qualifies": {
+            "type": "string",
+            "title": "Qualifies"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "name",
+          "office_id",
+          "seat",
+          "seats",
+          "qualifies"
+        ],
+        "title": "TraineeOut"
+      },
       "TrainingIn": {
         "properties": {
           "hours": {
@@ -21836,6 +22969,51 @@
         ],
         "title": "AnswerIn"
       },
+      "ptk__api__finance__PnlOut": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "basis": {
+            "type": "string",
+            "enum": [
+              "accrual",
+              "cash"
+            ],
+            "title": "Basis"
+          },
+          "revenue_cents": {
+            "type": "integer",
+            "title": "Revenue Cents"
+          },
+          "costs_cents": {
+            "type": "integer",
+            "title": "Costs Cents"
+          },
+          "profit_cents": {
+            "type": "integer",
+            "title": "Profit Cents"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/PnlLineOut"
+            },
+            "type": "array",
+            "title": "Lines"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "basis",
+          "revenue_cents",
+          "costs_cents",
+          "profit_cents",
+          "lines"
+        ],
+        "title": "PnlOut"
+      },
       "ptk__api__founder__CauseOut": {
         "properties": {
           "when": {
@@ -21930,6 +23108,44 @@
           "answer"
         ],
         "title": "AnswerIn"
+      },
+      "ptk__api__offices__PnlOut": {
+        "properties": {
+          "month_fees_cents": {
+            "type": "integer",
+            "title": "Month Fees Cents"
+          },
+          "month_costs_cents": {
+            "type": "integer",
+            "title": "Month Costs Cents"
+          },
+          "month_profit_cents": {
+            "type": "integer",
+            "title": "Month Profit Cents"
+          },
+          "year_fees_cents": {
+            "type": "integer",
+            "title": "Year Fees Cents"
+          },
+          "year_costs_cents": {
+            "type": "integer",
+            "title": "Year Costs Cents"
+          },
+          "year_profit_cents": {
+            "type": "integer",
+            "title": "Year Profit Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "month_fees_cents",
+          "month_costs_cents",
+          "month_profit_cents",
+          "year_fees_cents",
+          "year_costs_cents",
+          "year_profit_cents"
+        ],
+        "title": "PnlOut"
       },
       "ptk__api__standing__AnswerIn": {
         "properties": {

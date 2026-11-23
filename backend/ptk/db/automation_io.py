@@ -55,6 +55,37 @@ def from_dict[T](cls: type[T], data: dict[str, Any]) -> T:
     return cls(**{k: _decode(hints[k], v) for k, v in data.items() if k in hints})
 
 
+def decode_with[T](cls: type[T], data: dict[str, Any], namespace: dict[str, Any]) -> T:
+    """PT-M11: `from_dict` for another module's dataclasses (their type hints resolved in
+    `namespace`), so a JSON row of any state section decodes the same way."""
+    hints = typing.get_type_hints(cls, namespace)
+    out: dict[str, Any] = {}
+    for k, v in data.items():
+        if k not in hints:
+            continue
+        out[k] = _decode_ns(hints[k], v, namespace)
+    return cls(**out)
+
+
+def _decode_ns(tp: Any, value: Any, namespace: dict[str, Any]) -> Any:
+    if value is None:
+        return None
+    origin = typing.get_origin(tp)
+    if origin is typing.Union or origin is types.UnionType:
+        opts = [a for a in typing.get_args(tp) if a is not type(None)]
+        return _decode_ns(opts[0], value, namespace) if len(opts) == 1 else value
+    if isinstance(tp, typing.TypeAliasType):
+        return _decode_ns(tp.__value__, value, namespace)
+    if origin is tuple:
+        args = typing.get_args(tp)
+        if len(args) == 2 and args[1] is Ellipsis:
+            return tuple(_decode_ns(args[0], v, namespace) for v in value)
+        return tuple(_decode_ns(a, v, namespace) for a, v in zip(args, value, strict=True))
+    if dataclasses.is_dataclass(tp) and isinstance(tp, type):
+        return decode_with(tp, value, namespace)
+    return value
+
+
 def load_automation(session: Session) -> AutomationState:
     row = session.scalar(select(AutomationRow).where(AutomationRow.id == ROW_ID))
     if row is None:

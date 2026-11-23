@@ -60,6 +60,11 @@
 | `auto_events` | 61 | `(event_id,)` | An area owner's answer to a routine event (TST 40.5): the best displayed choice with probability q, else the second best | PT-M9 |
 | `tech_seed` | 110 | `(era_index, 0)` an era's strength target; `(era_index, 1)` the market's adoption target | A legal-tech era's path after December 2025: a target U(lo, hi) at its `by` month, drawn once at turn 0 (`ptk.sim.tech.eras`; lane C's range 110-119) | PT-M14 |
 | `tech_vote` | 111 | `(era_index,)` | A firm-wide rollout vote on an era's tools (at most one an era a month): each equity partner's support noise, in partner id order | PT-M14 |
+| `city_clients` | 100 | `(city_index, n)` | A city's clients, made when a firm first opens an office there (London's real clients first, then `cities.yaml` `clients` generated ones: sector, revenue, name, panel, traits, general counsel; one call site, `ptk.sim.geo.markets.make_city_clients`; lane B's range 100-109) | PT-M11 |
+| `bar_exam` | 101 | `(exam_id,)` | A bar exam's pass draw (`ptk.sim.geo.admissions.exams_month`) | PT-M11 |
+| `office_team` | 102 | `(office_id, n)` | An opened office's n-th lifted or lateral person (their making, book, portability and clients' follow draws); n = 0 an organic start's introductions (one call site, `ptk.sim.geo.actions.team_stream`) | PT-M11 |
+| `city_demand` | 103 | `(city_index, practice_index)` | An office city's monthly demand noise (`ptk.sim.geo.markets.city_demand`) | PT-M11 |
+| `trainees` | 104 | `(contract_id, n)` | A training contract's n-th trainee: their seats, then their making (`ptk.sim.geo.uk.trainees_join`) | PT-M11 |
 
 ## Consequences
 

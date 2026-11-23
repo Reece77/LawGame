@@ -101,6 +101,7 @@ class ProductOut(BaseModel):
     label: str
     price_bp: int
     price_pct_of_standard: int  # price as a share of the matter's fees at standard hours
+    take_up_pct: int  # share of clients who take it at this price (the rest keep their terms)
     launched_label: str
     active: bool
     matters: int
@@ -289,6 +290,7 @@ def tech_out(state: GameState, data: GameData, balance: Balance) -> TechOut:
                 label=labels[prod.kind_key],
                 price_bp=prod.price_bp,
                 price_pct_of_standard=round(kind.market_cost_pct * prod.price_bp / BP),
+                take_up_pct=_pct(ef.acceptance(prod.price_bp, balance)),
                 launched_label=format_turn(prod.launched_turn, start),
                 active=prod.active,
                 matters=len(engs),

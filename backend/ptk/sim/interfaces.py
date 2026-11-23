@@ -1188,11 +1188,14 @@ def rival_standing(state: GameState, data: GameData) -> tuple[RivalStandingView,
 
 
 def _rival_standing(state: GameState, data: GameData) -> tuple[RivalStandingView, ...]:
+    from ptk.sim.geo.cities import rival_region
     from ptk.sim.rivals.market import strong_practices
 
     turn = state.turn
     out = []
     for f in state.rivals.active:
+        if rival_region(data, f.hq) != "us":  # PT-M11: the US tables, reputation and press
+            continue
         out.append(
             RivalStandingView(
                 firm_id=f.id,
@@ -1427,6 +1430,7 @@ class TechBillingView:
     cuts: Mapping[str, float]  # task -> realisation cut on hourly bills (0-1)
     efficiency: Mapping[str, float]  # task -> the firm's efficiency (weights a bill's hours)
     products: Mapping[str, float]  # matter kind key -> fixed price / standard expected fees
+    accept: Mapping[str, float] = field(default_factory=dict)  # kind key -> clients' take-up 0-1
 
     def cut_bp(self, tasks: Mapping[str, float]) -> int:
         """The cut on an hourly bill for a task mix, in bp: each task's cut weighted by the

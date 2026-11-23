@@ -26,7 +26,7 @@ from ptk.sim.matters.market import monthly_demand
 from ptk.sim.matters.pro_bono import named_intake, record_month
 from ptk.sim.matters.progress import work_month
 from ptk.sim.matters.rates import yearly_rise
-from ptk.sim.matters.staffing import month_hours, staff_matter
+from ptk.sim.matters.staffing import fee_earners, month_hours, staff_matter
 from ptk.sim.people.models import WorkMonth
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
@@ -60,11 +60,17 @@ def prune_teams(state: GameState, firm_id: int, data: GameData, balance: Balance
 def replan(state: GameState, firm_id: int, data: GameData, balance: Balance) -> GameState:
     """Matters the player has not staffed are re-planned by the default rule, by id (the
     practice leader's month: free capacity goes to matters that need it)."""
+    # PT-M11 (T12): the fee earners once; re-planning changes teams, not people, so they change
+    # only when an early case assessment's lead moves (its hours are that lead's this month)
+    earners = fee_earners(state, firm_id, data, balance)
     for m in state.market.open_matters(firm_id):
         if m.auto_staff:
-            staffed = staff_matter(state, m, data, balance)
+            staffed = staff_matter(state, m, data, balance, earners)
             if staffed != m:
                 state = replace(state, market=with_matter(state.market, staffed))
+                a = m.assessment
+                if a is not None and a.turn == state.turn and staffed.lead_id != m.lead_id:
+                    earners = fee_earners(state, firm_id, data, balance)
     return state
 
 

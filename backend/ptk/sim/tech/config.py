@@ -183,6 +183,14 @@ class ProductsBalance(_Strict):
     stage: int = Field(ge=0, le=5)
     price_bp: Band
     max_products: int = Field(ge=1)
+    accept_full_bp: int = Field(gt=0)
+    accept_none_bp: int = Field(gt=0)
+
+    @model_validator(mode="after")
+    def _check(self) -> ProductsBalance:
+        if self.accept_full_bp >= self.accept_none_bp:
+            raise ValueError("tech.products: accept_full_bp < accept_none_bp")
+        return self
 
 
 class TechBalance(_Strict):

@@ -37,7 +37,7 @@ from ptk.sim.tech.actions import (
 FROM_YEAR: Final = 2016  # the scripts adopt from this year (contract analysis, TAR's courts)
 TRAINING_HOURS: Final = 40  # the programme, hours a lawyer a year (tech.training.full_hours)
 EXPOSED_SHARE: Final = 0.5  # a kind whose exposed tasks are at least this share gets a product
-PRICE_BP: Final = 10_000  # products at the market's expected cost
+PRICE_BP: Final = 11_000  # products at 110% of the market's expected cost (Reece, 2026-11-23)
 REVIEW_MATTERS: Final = 3  # closed matters before a product's P&L is judged
 GROW_TO: Final = 110  # lawyers the scripts hire toward from FROM_YEAR (stage 3 opens at 101)
 GROW_MONTHLY: Final = 2  # lateral associates a month while below GROW_TO

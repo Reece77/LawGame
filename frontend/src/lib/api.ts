@@ -1203,3 +1203,68 @@ export function useAnswerPress(slug: string) {
     },
   });
 }
+
+// --- PT-M11: offices, admissions and the UK path ----------------------------------------------
+
+export type Offices = Schemas['OfficesOut'];
+export type OfficeRow = Schemas['OfficeOut'];
+export type CityRow = Schemas['CityOut'];
+export type OfficeLawyer = Schemas['LawyerOut'];
+export type OpenOfficeBody = Schemas['OpenOfficeIn'];
+export type AdmissionBody = Schemas['AdmissionIn'];
+
+export const useOffices = (slug: string) =>
+  useQuery({
+    queryKey: ['offices', slug],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/saves/{slug}/offices', { params: { path: { slug } } })),
+  });
+
+function useOfficesWrite<B>(slug: string, send: (body: B) => Promise<Offices>) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: send,
+    onSuccess: (data) => {
+      client.setQueryData(['offices', slug], data);
+      for (const key of ['game', 'inbox', 'people', 'clients', 'finance', 'person']) {
+        void client.invalidateQueries({ queryKey: [key, slug] });
+      }
+    },
+  });
+}
+
+export const useOpenOffice = (slug: string) =>
+  useOfficesWrite(slug, async (body: OpenOfficeBody) =>
+    unwrap(await api.POST('/api/saves/{slug}/offices', { params: { path: { slug } }, body })),
+  );
+
+export const useCloseOffice = (slug: string) =>
+  useOfficesWrite(slug, async (officeId: number) =>
+    unwrap(
+      await api.POST('/api/saves/{slug}/offices/{office_id}/close', {
+        params: { path: { slug, office_id: officeId } },
+      }),
+    ),
+  );
+
+export const useOfferContracts = (slug: string) =>
+  useOfficesWrite(slug, async ({ officeId, count }: { officeId: number; count: number }) =>
+    unwrap(
+      await api.POST('/api/saves/{slug}/offices/{office_id}/training-contracts', {
+        params: { path: { slug, office_id: officeId } },
+        body: { count },
+      }),
+    ),
+  );
+
+export const useSeekAdmission = (slug: string) =>
+  useOfficesWrite(slug, async (body: AdmissionBody) =>
+    unwrap(
+      await api.POST('/api/saves/{slug}/offices/admissions', { params: { path: { slug } }, body }),
+    ),
+  );
+
+export const useMoveLawyer = (slug: string) =>
+  useOfficesWrite(slug, async (body: { person_id: number; office_id: number }) =>
+    unwrap(await api.POST('/api/saves/{slug}/offices/move', { params: { path: { slug } }, body })),
+  );

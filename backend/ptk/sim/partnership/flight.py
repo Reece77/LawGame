@@ -604,15 +604,32 @@ def clients_follow(state: GameState) -> tuple[GameState, tuple[LogItem, ...]]:
 
 
 def _suitor_for(
-    gen: np.random.Generator, practice: str, data: GameData, state: GameState
+    gen: np.random.Generator,
+    practice: str,
+    data: GameData,
+    state: GameState,
+    person_id: int | None = None,
 ) -> Suitor:
     """PT-M5: a live rival firm with a New York office and lawyers in the practice, by its
-    lawyers there (one draw, as before); the static panel firms without rivals."""
-    rivals = [
-        f
-        for f in state.rivals.active
-        if f.ny_office and f.kind != "boutique" and f.pool(practice).lawyers >= 1.0
-    ]
+    lawyers there (one draw, as before); the static panel firms without rivals. PT-M11: for a
+    partner working in another region (London), that region's firms."""
+    region = _region_of(state, person_id, data)
+    if region is None:
+        rivals = [
+            f
+            for f in state.rivals.active
+            if f.ny_office and f.kind != "boutique" and f.pool(practice).lawyers >= 1.0
+        ]
+    else:
+        from ptk.sim.geo.cities import rival_region
+
+        rivals = [
+            f
+            for f in state.rivals.active
+            if rival_region(data, f.hq) == region
+            and f.kind != "boutique"
+            and f.pool(practice).lawyers >= 1.0
+        ]
     if rivals:
         w = np.array([f.pool(practice).lawyers for f in rivals])
         j = int(gen.choice(len(rivals), p=w / w.sum()))
@@ -621,6 +638,16 @@ def _suitor_for(
     weights = np.array([2.0 if practice in f.strong else 1.0 for f in firms])
     i = int(gen.choice(len(firms), p=weights / weights.sum()))
     return Suitor(firms[i].key, firms[i].name)
+
+
+def _region_of(state: GameState, person_id: int | None, data: GameData) -> str | None:
+    """PT-M11: the region of someone working outside the US; None for the US (v1's rule)."""
+    if person_id is None or not state.geo.offices:
+        return None
+    from ptk.sim.geo.cities import person_region
+
+    region = person_region(state, state.player.id, state.person(person_id), data)
+    return None if region == "us" else region
 
 
 def flight_month(
@@ -676,7 +703,7 @@ def flight_month(
             if busy or roll >= chance:
                 continue
             person = state.person(p.person_id)
-            suitor = _suitor_for(gen, home_practice(person, data), data, state)
+            suitor = _suitor_for(gen, home_practice(person, data), data, state, person.id)
             lo, hi = cfg.offer_mult
             market = FLIGHT_HOOK.market_value_cents(state, p.person_id, balance, data)
             offer = round(market * float(gen.uniform(lo, hi)))

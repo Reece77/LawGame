@@ -50,9 +50,29 @@ def market_pay_cents(
     nothing for equity partners."""
     if level == EQUITY_PARTNER:
         return 0
+    london = london_pay_cents(data, level, ym, city)  # PT-M11: the London scale
+    if london is not None:
+        return london
     if on_scale(level):
         return market_scale_cents(data, ym, level)
     return band_cents(data, balance, level, city)
+
+
+def london_pay_cents(data: GameData, level: str, ym: YearMonth, city: str) -> Cents | None:
+    """PT-M11 (spec 5.2, 5.4): in a UK city, trainees' salaries and associates' pay as a share
+    of the New York scale (bar_rules.yaml london_scale); None elsewhere or for other levels."""
+    if not data.geo.london_scale or not data.geo.has_city(city):
+        return None
+    if data.geo.city(city).region != "uk":
+        return None
+    row = data.geo.london_row(ym)
+    if row is None:
+        return None
+    if level == "trainee":
+        return row.trainee_cents[0]
+    if on_scale(level):
+        return pct_of(market_scale_cents(data, ym, level), row.associate_bp)
+    return None
 
 
 def policy_pay_cents(market_cents: Cents, policy: PayPolicy) -> Cents:

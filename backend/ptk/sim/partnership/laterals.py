@@ -328,7 +328,11 @@ def arrive_partner(
         )
     level = EQUITY if arrival.equity else INCOME
     salary = 0 if arrival.equity else arrival.comp_cents
-    state = with_people(state, [replace(person, level=level, city=state.firm(firm_id).home_city)])
+    # PT-M11: a partner joining an office in their own city stays there
+    from ptk.sim.geo.cities import office_in
+
+    city = person.city if office_in(state, firm_id, person.city) else state.firm(firm_id).home_city
+    state = with_people(state, [replace(person, level=level, city=city)])
     state = with_employment(
         state,
         Employment(

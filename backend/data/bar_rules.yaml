@@ -1,0 +1,124 @@
+# Bar rules by jurisdiction (PT-M11; spec 11.1; ADR PT-0010 1). Sources and tags:
+# docs/research/london-and-us-cities.md s6 (England and Wales) and s8 (US admission). S sourced,
+# D derived, A assumed. Money is integer cents (2005 dollars; GBP converted at the year's rate).
+#
+#   admission: how a lawyer from elsewhere is admitted. exam: sat in exam_months, result after
+#     results_months, pass_bp an experienced lawyer's chance (stream bar_exam, id 101), a cost
+#     to 6200 and study hours (non-billable) each month until the sitting. motion: admission
+#     without an exam after motion_years in practice, admitted in one of motion_from.
+#   pro_hac_vice_cents: a lead's one-off fee for one case in the jurisdiction's courts (6600);
+#     none where it is not offered (England and Wales: rights of audience are a solicitor's).
+#   foreign_lead: a registered foreign lawyer (ew_rfl) may lead non-contentious matters there.
+#   insurance: compulsory professional indemnity insurance (England and Wales; a cost to 6300).
+#   ownership: dated rules on who may own a firm (ADR PT-0010; ABS entities are v3).
+jurisdictions:
+  - key: us_ny
+    label: New York
+    country: us
+    regulator: Appellate Division (attorney grievance committees)
+    admission: { exam: true, exam_months: [2, 7], results_months: 4, exam_cost_cents: 400000, study_hours: 30, pass_bp: 7500, motion_years: 5, motion_from: [us_dc, us_il, us_ma, us_tx], motion_cost_cents: 100000, motion_months: 6 }
+    pro_hac_vice_cents: 40000
+    ownership: [{ from_ym: [2005, 1], rule: lawyers_only }]
+    src: "[A] dossier s8"
+  - key: us_dc
+    label: District of Columbia
+    country: us
+    regulator: D.C. Court of Appeals Committee on Admissions; Board on Professional Responsibility
+    admission: { exam: true, exam_months: [2, 7], results_months: 4, exam_cost_cents: 300000, study_hours: 30, pass_bp: 7500, motion_years: 5, motion_from: [us_ny, us_il, us_ma, us_ca, us_tx, us_de], motion_cost_cents: 80000, motion_months: 4 }
+    pro_hac_vice_cents: 30000
+    ownership: [{ from_ym: [2005, 1], rule: limited_non_lawyer, src: "D.C. Rule 5.4(b), since 1991 (ADR PT-0010 2)" }]
+    src: "[A] dossier s8"
+  - key: us_il
+    label: Illinois
+    country: us
+    regulator: Attorney Registration and Disciplinary Commission
+    admission: { exam: true, exam_months: [2, 7], results_months: 3, exam_cost_cents: 300000, study_hours: 30, pass_bp: 8000, motion_years: 5, motion_from: [us_ny, us_dc, us_ma, us_tx], motion_cost_cents: 120000, motion_months: 5 }
+    pro_hac_vice_cents: 50000
+    ownership: [{ from_ym: [2005, 1], rule: lawyers_only }]
+    src: "[A] dossier s8"
+  - key: us_ma
+    label: Massachusetts
+    country: us
+    regulator: Board of Bar Overseers
+    admission: { exam: true, exam_months: [2, 7], results_months: 3, exam_cost_cents: 300000, study_hours: 30, pass_bp: 8000, motion_years: 5, motion_from: [us_ny, us_dc, us_il, us_tx, us_ca], motion_cost_cents: 90000, motion_months: 5 }
+    pro_hac_vice_cents: 50000
+    ownership: [{ from_ym: [2005, 1], rule: lawyers_only }]
+    src: "[A] dossier s8"
+  - key: us_ca
+    label: California
+    country: us
+    regulator: State Bar of California
+    admission: { exam: true, exam_months: [2, 7], results_months: 4, exam_cost_cents: 350000, study_hours: 30, pass_bp: 6000 }
+    pro_hac_vice_cents: 100000
+    ownership: [{ from_ym: [2005, 1], rule: lawyers_only }]
+    src: "[A] dossier s8: no admission on motion; the attorneys' exam"
+  - key: us_tx
+    label: Texas
+    country: us
+    regulator: State Bar of Texas; Board of Law Examiners
+    admission: { exam: true, exam_months: [2, 7], results_months: 3, exam_cost_cents: 300000, study_hours: 30, pass_bp: 8000, motion_years: 5, motion_from: [us_ny, us_dc, us_il, us_ma, us_ca], motion_cost_cents: 150000, motion_months: 6 }
+    pro_hac_vice_cents: 60000
+    ownership: [{ from_ym: [2005, 1], rule: lawyers_only }]
+    src: "[A] dossier s8"
+  - key: us_de
+    label: Delaware
+    country: us
+    regulator: Board of Bar Examiners of the Supreme Court of Delaware
+    admission: { exam: true, exam_months: [7], results_months: 3, exam_cost_cents: 400000, study_hours: 40, pass_bp: 6500 }
+    pro_hac_vice_cents: 250000
+    ownership: [{ from_ym: [2005, 1], rule: lawyers_only }]
+    src: "[A] dossier s8: no admission on motion; pro hac vice with Delaware counsel (its cost folded in)"
+  - key: ew
+    label: England and Wales
+    country: gb
+    regulator: Solicitors Regulation Authority
+    regulator_from: [2007, 1]
+    admission: { exam: true, exam_months: [3, 10], results_months: 3, exam_cost_cents: 900000, study_hours: 30, pass_bp: 7000 }
+    foreign_lawyers: "A registered foreign lawyer may practise foreign law and be a partner of a solicitors' firm; reserved activities (rights of audience, conduct of litigation) need a solicitor."
+    foreign_lead: true
+    insurance: { compulsory: true, min_cover_cents: 364000000, llp_min_cover_cents: 546000000, premium_per_lawyer_cents: 1100000, min_premium_cents: 3600000, src: "[A] dossier s6: SRA minimum terms GBP 2m per claim, GBP 3m for LLPs and companies; premium about 1.5% of fees: $11,000 a lawyer a year, at least GBP 20,000 [A]" }
+    client_money: "Solicitors' Accounts Rules 1998, then the SRA Accounts Rules (2011, 2019)"
+    llp: true
+    ownership:
+      - { from_ym: [2005, 1], rule: lawyers_only }
+      - { from_ym: [2009, 3], rule: limited_non_lawyer, src: "legal disciplinary practices (Legal Services Act 2007), up to 25% non-lawyer managers [A] dossier s6" }
+      - { from_ym: [2011, 10], rule: abs, src: "the first ABS licences (6 October 2011) [A] dossier s6" }
+    src: "[A] dossier s6: qualifying as a solicitor by the QLTT (to 2010), QLTS (2010-2021) or SQE (from 2021)"
+  - key: ew_rfl
+    label: Registered foreign lawyer (England and Wales)
+    country: gb
+    regulator: Solicitors Regulation Authority
+    admission: { exam: false, exam_months: [1], results_months: 2 }
+    src: "[A] dossier s6: registration, not admission; it lets a US lawyer be a partner in London and lead non-contentious work"
+
+# Where each court sits (courts.yaml keys); arbitration needs no admission.
+courts:
+  sdny: us_ny
+  edny: us_ny
+  ny_commercial: us_ny
+  ddel: us_de
+  del_chancery: us_de
+  ndcal: us_ca
+  edtex: us_tx
+  wdtex: us_tx
+  aaa: null
+  icc: null
+  ew_commercial: ew
+  lcia: null
+
+# The London trainee and associate scale (spec 5.2, 5.4; dossier s3): Magic Circle trainees'
+# salaries a year (first, second year) in 2005-dollar cents at the year's GBP/USD, and London
+# associates' pay as bp of the New York scale's class year (NQ = class 1). Rows change each May
+# with the firms' announcements; after 2025 the last row holds against New York's seeded scale.
+london_scale:
+  - { from_ym: [2005, 1], trainee_cents: [5640000, 6370000], associate_bp: 8000, src: "[A] GBP 31,000 / 35,000; NQ GBP 55,000 at 1.82" }
+  - { from_ym: [2006, 5], trainee_cents: [6070000, 6800000], associate_bp: 7400, src: "[A] GBP 33,000 / 37,000; NQ GBP 59,000 at 1.84" }
+  - { from_ym: [2007, 5], trainee_cents: [7400000, 8400000], associate_bp: 8100, src: "[A] GBP 37,000 / 42,000; NQ GBP 65,000 at 2.00" }
+  - { from_ym: [2009, 5], trainee_cents: [5970000, 6750000], associate_bp: 5800, src: "[A] GBP 38,000 / 43,000; NQ GBP 59,000 at 1.57" }
+  - { from_ym: [2011, 5], trainee_cents: [6240000, 6880000], associate_bp: 6300, src: "[A] GBP 39,000 / 43,000; NQ GBP 63,000 at 1.60" }
+  - { from_ym: [2014, 5], trainee_cents: [6930000, 7590000], associate_bp: 6900, src: "[A] GBP 42,000 / 46,000; NQ GBP 67,000 at 1.65" }
+  - { from_ym: [2016, 5], trainee_cents: [5980000, 6660000], associate_bp: 6400, src: "[A] GBP 44,000 / 49,000; NQ GBP 85,000 at 1.36" }
+  - { from_ym: [2019, 5], trainee_cents: [5890000, 6530000], associate_bp: 6700, src: "[A] GBP 46,000 / 51,000; NQ GBP 100,000 at 1.28" }
+  - { from_ym: [2021, 5], trainee_cents: [6490000, 7180000], associate_bp: 7300, src: "[A] GBP 47,000 / 52,000; NQ GBP 107,500 at 1.38" }
+  - { from_ym: [2022, 5], trainee_cents: [6200000, 6820000], associate_bp: 7200, src: "[A] GBP 50,000 / 55,000; NQ GBP 125,000 at 1.24" }
+  - { from_ym: [2024, 5], trainee_cents: [7170000, 7810000], associate_bp: 8500, src: "[A] GBP 56,000 / 61,000; NQ GBP 150,000 at 1.28" }

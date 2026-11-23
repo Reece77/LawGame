@@ -45,9 +45,18 @@ def strong_practices(firm: RivalFirm, data: GameData) -> frozenset[str]:
 
 
 def appeal_table(rivals: RivalsState, data: GameData, balance: Balance) -> RivalsState:
+    from ptk.sim.geo.cities import rival_region
+
     rb = balance.rivals
     active = rivals.active
-    mean_rate = sum(f.rate_index for f in active) / len(active) if active else 1.0
+    # PT-M11: a firm's price against its own region's firms (v1: every firm is a US firm)
+    region = {f.id: rival_region(data, f.hq) for f in active}
+    sums: dict[str, list[float]] = {}
+    for f in active:
+        acc = sums.setdefault(region[f.id], [0.0, 0.0])
+        acc[0] += f.rate_index
+        acc[1] += 1.0
+    means = {r: (v[0] / v[1] if v[1] else 1.0) for r, v in sums.items()}
     partners: dict[int, int] = {}
     for m in rivals.members:
         if m.kind == "partner":
@@ -55,7 +64,7 @@ def appeal_table(rivals: RivalsState, data: GameData, balance: Balance) -> Rival
     out = []
     for f in active:
         base = base_appeal(f, data, balance)
-        price = rb.appeal_price_weight * (1.0 - f.rate_index / mean_rate)
+        price = rb.appeal_price_weight * (1.0 - f.rate_index / means[region[f.id]])
         capacity = -rb.appeal_capacity_weight * max(0.0, f.utilisation - FULL_CAPACITY)
         people = 0.0
         if f.key_target > 0:

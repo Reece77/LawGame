@@ -33,6 +33,7 @@ def _new(save_dir: Path, data: GameData, slug: str = "t", seed: int = 7) -> Path
     return saves.open_save(save_dir, slug)
 
 
+@pytest.mark.nightly  # PT-M11: over 60 s; check's runtime (product manager, 2026-11-23)
 def test_full_campaign_ends_in_december_2034(
     save_dir: Path, data: GameData, balance: Balance
 ) -> None:

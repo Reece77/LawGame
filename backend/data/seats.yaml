@@ -8,7 +8,7 @@
 #   business_services (a business-services person at `bs_min_level` or above, or a partner),
 #   or player (the managing partner: the player, never appointed here).
 # - slots: one; per_group (one per active practice group: PT-M2's unit leader is the holder);
-#   per_office (offices beyond the home city, PT-M11: none yet, so no instances);
+#   per_office (PT-M11: from a second office, one per office, the home office's slot 0);
 #   committee (the executive committee: seats.exco sizes it).
 # - weights: the seat score s = sum of weight x the holder's TRUE skill (or personality trait:
 #   integrity), 1-20 points. The weights add up to 1.
@@ -54,11 +54,11 @@ seats:
   - key: office_managing_partner
     label: Office managing partner
     short: OMP
-    stage: 3
+    stage: 0 # PT-M11: in play from a second office (its slots), whatever the stage
     who: partner
     slots: per_office
     weights: { leadership: 0.3, client_care: 0.2, operations: 0.2, communication: 0.3 }
-    effect: "Office morale and local business (from a second office, PT-M11)."
+    effect: "Local business: the office's clients' appeal (from a second office, PT-M11)."
     authority: { does: "", guardrails: [] }
     pitches: []
   - key: general_counsel

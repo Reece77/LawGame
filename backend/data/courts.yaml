@@ -18,6 +18,9 @@ courts:
   - { key: ny_commercial, label: N.Y. Commercial Division, kind: state, pace: 1.0, trial_bp: 1200, judges: 5 }
   - { key: aaa, label: AAA arbitration, kind: arbitration, pace: 0.9, trial_bp: 4000, judges: 6 }
   - { key: icc, label: ICC arbitration, kind: arbitration, pace: 1.1, trial_bp: 4000, judges: 6 }
+  # PT-M11: London's forums (a London office's cases; docs/research/london-and-us-cities.md) [A]
+  - { key: ew_commercial, label: Commercial Court (London), kind: state, pace: 1.1, trial_bp: 2000, judges: 5 }
+  - { key: lcia, label: LCIA arbitration, kind: arbitration, pace: 1.0, trial_bp: 4000, judges: 5 }
 
 # Judges' procedural traits (1-20), in draw order (append-only).
 judge_traits:

@@ -17,6 +17,7 @@ from ptk.sim.calendar import YearMonth
 from ptk.sim.events.models import EMPTY_EVENTS, EventsState
 from ptk.sim.family.models import EMPTY_FAMILY, FamilyState
 from ptk.sim.founder.models import EMPTY_FOUNDER_LIFE, FounderLifeState
+from ptk.sim.geo.models import EMPTY_GEO, GeoState
 from ptk.sim.hiring.models import Candidate, Offer, PayPolicy, PersonState, Search
 from ptk.sim.matters.models import EMPTY_MARKET, MarketState
 from ptk.sim.org.models import EMPTY_ORG, OrgState
@@ -92,6 +93,7 @@ class GameState:
     family: FamilyState = EMPTY_FAMILY  # the player's own family (PT-M17)
     standing: StandingState = EMPTY_STANDING  # reputation, press and rankings (PT-M16)
     automation: AutomationState = EMPTY_AUTOMATION  # areas, owners, proposals (PT-M9)
+    geo: GeoState = EMPTY_GEO  # offices, admissions, the UK path (PT-M11)
 
     @property
     def ended(self) -> bool:

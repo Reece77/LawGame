@@ -26,7 +26,8 @@ class Books:
     def __init__(self, turn: int, firm_id: int) -> None:
         self.turn = turn
         self.firm_id = firm_id
-        self._groups: dict[str, dict[tuple[AccountCode, str | None], int]] = {}
+        # (account, practice, office) -> amount; office None is the home office (PT-M11)
+        self._groups: dict[str, dict[tuple[AccountCode, str | None, int | None], int]] = {}
 
     def move(
         self,
@@ -35,26 +36,30 @@ class Books:
         credit: AccountCode,
         amount: int,
         practice: str | None = None,
+        office: int | None = None,
     ) -> None:
-        """Debit one account and credit another by `amount` (a negative amount reverses)."""
+        """Debit one account and credit another by `amount` (a negative amount reverses).
+        `office` (PT-M11): the ledger's office dimension; None for the home office."""
         if amount == 0:
             return
         group = self._groups.setdefault(memo, {})
-        group[(debit, practice)] = group.get((debit, practice), 0) + amount
-        group[(credit, practice)] = group.get((credit, practice), 0) - amount
+        group[(debit, practice, office)] = group.get((debit, practice, office), 0) + amount
+        group[(credit, practice, office)] = group.get((credit, practice, office), 0) - amount
 
     def total(self, *accounts: AccountCode) -> int:
         """The month's net movement on the accounts so far (debits positive)."""
         return sum(
-            v for group in self._groups.values() for (a, _), v in group.items() if a in accounts
+            v for group in self._groups.values() for (a, _, _), v in group.items() if a in accounts
         )
 
     def entries(self) -> tuple[LedgerEntry, ...]:
         out = []
         for memo, group in self._groups.items():
             lines = tuple(
-                LedgerLine(account=a, amount=v, practice=p)
-                for (a, p), v in sorted(group.items(), key=lambda kv: (kv[0][0], kv[0][1] or ""))
+                LedgerLine(account=a, amount=v, practice=p, office_id=o)
+                for (a, p, o), v in sorted(
+                    group.items(), key=lambda kv: (kv[0][0], kv[0][1] or "", kv[0][2] or 0)
+                )
                 if v != 0
             )
             if len(lines) >= 2:

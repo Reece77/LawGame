@@ -81,24 +81,42 @@ def player_targets(state: GameState, data: GameData) -> list[tuple[int, str]]:
     return [(pid, practice) for _, _, pid, practice in ranked]
 
 
-def targets(state: GameState, firm: RivalFirm, pool: list[tuple[int, str]]) -> list[int]:
+def targets(
+    state: GameState,
+    firm: RivalFirm,
+    pool: list[tuple[int, str]],
+    data: GameData | None = None,
+) -> list[int]:
     """Of the pool, those in a practice the rival staffs, without an approach pending."""
     pending = {a.person_id for a in state.rivals.approaches if a.status == "pending"}
     fp = state.partnership.of(state.player.id)
     if fp is not None:
         pending |= {a.person_id for a in fp.approaches if a.status in ("open", "countered")}
     staffed = {p.practice for p in firm.pools if p.lawyers >= 1.0}
-    return [pid for pid, practice in pool if practice in staffed and pid not in pending]
+    out = [pid for pid, practice in pool if practice in staffed and pid not in pending]
+    if data is not None and data.geo.cities:  # PT-M11: a rival approaches its own region's
+        from ptk.sim.geo.cities import person_region, rival_region
+
+        region = rival_region(data, firm.hq)
+        player = state.player.id
+        out = [
+            pid for pid in out if person_region(state, player, state.person(pid), data) == region
+        ]
+    return out
 
 
 def has_target(
-    state: GameState, firm: RivalFirm, pool: list[tuple[int, str]], balance: Balance
+    state: GameState,
+    firm: RivalFirm,
+    pool: list[tuple[int, str]],
+    balance: Balance,
+    data: GameData | None = None,
 ) -> bool:
     if not pool:
         return False
     if approaches_last_year(state.rivals, state.turn) >= balance.rivals.poach.max_per_year:
         return False
-    return bool(targets(state, firm, pool))
+    return bool(targets(state, firm, pool, data))
 
 
 def pay_of(state: GameState, person_id: int, data: GameData, balance: Balance) -> int:
@@ -119,7 +137,7 @@ def make_approach(
 ) -> tuple[GameState, str, int | None]:
     """Draws: the target (one uniform), the premium (one uniform). Answered next month."""
     pb = balance.rivals.poach
-    choices = targets(state, firm, pool)[:3]
+    choices = targets(state, firm, pool, data)[:3]
     u, prem_u = float(gen.random()), float(gen.random())
     if not choices:
         return state, "", None

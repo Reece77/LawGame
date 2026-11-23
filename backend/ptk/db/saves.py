@@ -15,6 +15,7 @@ from ptk.db.automation_io import write_area_decisions, write_automation
 from ptk.db.billing_io import write_billing
 from ptk.db.events_io import add_text_requests, write_events, write_pending
 from ptk.db.founder_io import write_founder_life
+from ptk.db.geo_io import write_geo
 from ptk.db.leadership_io import write_leadership, write_seat_decisions
 from ptk.db.market_io import write_market
 from ptk.db.models import DecisionLogRow, FirmRow, SaveMetaRow, TurnSnapshotRow
@@ -203,6 +204,7 @@ def run_action(path: Path, action: Action, balance: Balance, data: GameData) -> 
         write_org(session, outcome.state)  # PT-M8: a group leader's seat is the unit's leader
         write_leadership(session, outcome.state.leadership)  # PT-M8
         write_automation(session, outcome.state.automation)  # PT-M9
+        write_geo(session, outcome.state.geo)  # PT-M11
         write_founder_life(session, outcome.state.founder_life, outcome.state.family)  # PT-M17
         write_standing(session, outcome.state.standing)  # PT-M16: the press, the submission
         session.add(

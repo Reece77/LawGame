@@ -69,9 +69,26 @@ def player_reputation(state: GameState, practices: tuple[str, ...], balance: Bal
 
 
 def _bidders(
-    state: GameState, client: Client, n_lo: int, n_hi: int, gen: np.random.Generator
+    state: GameState,
+    client: Client,
+    n_lo: int,
+    n_hi: int,
+    gen: np.random.Generator,
+    data: GameData | None = None,
 ) -> tuple[str, ...]:
-    pool = [f for f in state.rivals.active if f.ny_office and f.key not in client.panel]
+    if (
+        client.city and data is not None
+    ):  # PT-M11: a local client's bidders are firms of its city's region
+        from ptk.sim.geo.cities import region_of_city, rival_region
+
+        region = region_of_city(data, client.city)
+        pool = [
+            f
+            for f in state.rivals.active
+            if rival_region(data, f.hq) == region and f.key not in client.panel
+        ]
+    else:
+        pool = [f for f in state.rivals.active if f.ny_office and f.key not in client.panel]
     pool.sort(key=lambda f: f.id)
     n = int(gen.integers(n_lo, n_hi + 1))
     chosen: list[str] = []
@@ -113,7 +130,7 @@ def open_rfps(
         if review:
             practices = sector_practices(client, data, PANEL_PRACTICES)
             kind, seats, cents = "panel", max(1, len(client.panel)), 0
-            bidders = _bidders(state, client, int(rb.bidders.lo), int(rb.bidders.hi), gen)
+            bidders = _bidders(state, client, int(rb.bidders.lo), int(rb.bidders.hi), gen, data)
         else:
             mix = data.clients.sector(client.sector).mix
             keys = [p for p in data.practice_keys if mix.get(p, 0.0) > 0]

@@ -15,7 +15,10 @@ test('see the rivals, open a rival, approach its people, read the news', async (
   await page.getByRole('link', { name: 'Market', exact: true }).click();
   const skadden = page.getByTestId('rival-link').filter({ hasText: 'Skadden' });
   await expect(skadden).toBeVisible();
-  await expect(page.getByTestId('rival-row').first()).toContainText('$1.6B');
+  // PT-M11: Clifford Chance (FY2004/05, $1.7B) now heads the table; Skadden keeps its 2005 size
+  await expect(page.getByTestId('rival-row').filter({ hasText: 'Skadden' }).first()).toContainText(
+    '$1.6B',
+  );
 
   await skadden.click();
   await expect(page.getByTestId('rival-name')).toContainText('Skadden');

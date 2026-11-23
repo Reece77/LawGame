@@ -9,6 +9,7 @@ import pytest
 
 from ptk.sim import interfaces
 from ptk.sim.data_models import Balance, GameData
+from ptk.sim.geo.cities import rival_region
 from ptk.sim.matters.market import firm_reputation
 from ptk.sim.matters.rates import card_target_bp, start_card_bp
 from ptk.sim.money import BP_DENOMINATOR
@@ -31,6 +32,11 @@ def _rival(state: GameState, key: str) -> int:
     return firm.id
 
 
+def _us(state: GameState, data: GameData) -> list:  # type: ignore[type-arg]
+    """PT-M11: the active rivals in the US tables and reputation (UK rivals are London's)."""
+    return [f for f in state.rivals.active if rival_region(data, f.hq) == "us"]
+
+
 def test_a_new_firm_starts_low_and_rivals_at_their_standing(
     start: GameState, data: GameData, balance: Balance
 ) -> None:
@@ -41,9 +47,10 @@ def test_a_new_firm_starts_low_and_rivals_at_their_standing(
     for p in data.practice_keys:
         want = rb.start_founders if p in founders else rb.start_other
         assert fx.reputation(start, pid, p, balance) == want
-    # every active rival is seeded in every practice, at its long-run mean
+    # every active US rival is seeded in every practice, at its long-run mean (PT-M11: UK rivals
+    # compete in London, outside the US tables and reputation)
     seeded = {e.firm_id for e in start.standing.reputation.entries}
-    assert {f.id for f in start.rivals.active} <= seeded
+    assert {f.id for f in _us(start, data)} <= seeded
     for e in start.standing.reputation.entries:
         if e.firm_id != pid:
             assert e.value == pytest.approx(e.mean)
@@ -68,7 +75,9 @@ def test_the_2005_bands_put_historys_leaders_in_band_1(
     pairs = [
         (_rival(start, f.key), p)
         for f in data.rivals.firms.firms
-        if start.rivals.by_key(f.key) is not None and start.rivals.by_key(f.key).active  # type: ignore[union-attr]
+        if start.rivals.by_key(f.key) is not None
+        and start.rivals.by_key(f.key).active  # type: ignore[union-attr]
+        and rival_region(data, f.hq) == "us"  # PT-M11: the US directory
         for p in f.strong
     ]
     agreement = sum(1 for pair in pairs if band.get(pair) == 1) / len(pairs)
@@ -169,5 +178,5 @@ def test_a_year_of_play_keeps_reputation_in_range_and_seeded(
     state, _ = play(game(data, balance), data, balance, 12)
     entries = state.standing.reputation.entries
     assert entries and all(0.0 <= e.value <= 100.0 for e in entries)
-    active = {f.id for f in state.rivals.active} | {state.player.id}
+    active = {f.id for f in _us(state, data)} | {state.player.id}
     assert {e.firm_id for e in entries} == active

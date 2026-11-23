@@ -57,8 +57,10 @@ def _attrs(raw: list[list[Any]]) -> tuple[tuple[str, float], ...]:
 
 
 def _client_data(c: Client) -> str:
+    city = {"city": c.city} if c.city else {}  # PT-M11: absent for the home market
     return json.dumps(
         {
+            **city,
             "country": c.country,
             "revenue_bn": c.revenue_bn,
             "size_class": c.size_class,
@@ -97,6 +99,7 @@ def _client(cid: int, name: str, sector: str, real: bool, data_json: str) -> Cli
             personality=Personality(_attrs(gc["personality"])),
         ),
         panel=tuple(d["panel"]),
+        city=d.get("city", ""),  # PT-M11
     )
 
 
@@ -237,8 +240,30 @@ def _matter(row: MatterRow) -> Matter:
     )
 
 
+def write_new_clients(session: Session, market: MarketState) -> None:
+    """PT-M11: clients made after game creation (a city's local clients, made when a firm
+    first opens an office there) join the written-once client table."""
+    stored = session.scalar(select(func.max(ClientRow.id))) or 0
+    new = [c for c in market.clients if c.id > stored]
+    if new:
+        session.execute(
+            insert(ClientRow),
+            [
+                {
+                    "id": c.id,
+                    "name": c.name,
+                    "sector": c.sector,
+                    "real": c.real,
+                    "data_json": _client_data(c),
+                }
+                for c in new
+            ],
+        )
+
+
 def write_market(session: Session, market: MarketState, *, append_hours: bool = True) -> None:
     """Rewrite the current-state tables; append the month's hours to the log."""
+    write_new_clients(session, market)  # PT-M11
     for table in (RelationshipRow, MatterRow, AppearanceRow, OriginationRow, MarketDemandRow):
         session.execute(delete(table))
     if market.relationships:

@@ -53,6 +53,12 @@ PROFESSIONAL_FEES: Final = "6600_professional_fees"
 # PT-M17: retired partners' annuities (spec 8.4) and bar politics (TST 32.5's lobbying).
 ANNUITIES: Final = "2600_retired_partner_annuities"
 LOBBYING: Final = "6950_lobbying"
+# PT-M11: offices (spec 8.8): fit-out, leases, right-of-use assets, amortisation, insurance.
+PPE: Final = "1500_ppe"
+RIGHT_OF_USE: Final = "1510_right_of_use"
+LEASES: Final = "2500_leases"
+DEPRECIATION: Final = "6050_depreciation"
+INSURANCE: Final = "6300_insurance"
 # The client-money book's accounts (never in a firm entry).
 CLIENT_BANK: Final = "C1000_client_bank"
 OWED_TO_CLIENTS: Final = "C2000_owed_to_clients"
@@ -83,6 +89,11 @@ ENGINE_ACCOUNTS: Final = (
     PROFESSIONAL_FEES,
     ANNUITIES,
     LOBBYING,
+    PPE,
+    RIGHT_OF_USE,
+    LEASES,
+    DEPRECIATION,
+    INSURANCE,
 )
 
 

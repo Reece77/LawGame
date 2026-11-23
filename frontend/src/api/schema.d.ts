@@ -2165,10 +2165,121 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/saves/{slug}/offices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Offices */
+        get: operations["getOffices"];
+        put?: never;
+        /** Open Office */
+        post: operations["openOffice"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/offices/{office_id}/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Close Office */
+        post: operations["closeOffice"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/offices/{office_id}/training-contracts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Contracts */
+        post: operations["offerTrainingContracts"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/offices/admissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Admission */
+        post: operations["seekAdmission"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/offices/move": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Move */
+        post: operations["moveLawyer"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AdmissionIn */
+        AdmissionIn: {
+            /** Person Id */
+            person_id: number;
+            /** Jurisdiction */
+            jurisdiction: string;
+            /**
+             * Route
+             * @default exam
+             * @enum {string}
+             */
+            route?: "exam" | "motion" | "register";
+        };
+        /**
+         * AdmissionOut
+         * @description PT-M11 (spec 11.1): a bar admission, or one in progress.
+         */
+        AdmissionOut: {
+            /** Jurisdiction */
+            jurisdiction: string;
+            /** How */
+            how: string;
+            /** Since */
+            since: string | null;
+        };
         /** AgeBucketOut */
         AgeBucketOut: {
             /** Label */
@@ -2569,6 +2680,40 @@ export interface components {
             /** Choice */
             choice: string;
         };
+        /** CityOut */
+        CityOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Region */
+            region: string;
+            /** Jurisdiction */
+            jurisdiction: string;
+            /** Jurisdiction Label */
+            jurisdiction_label: string;
+            /** Demand Pct */
+            demand_pct: number;
+            /** Rate Pct */
+            rate_pct: number;
+            /** Pay Pct */
+            pay_pct: number;
+            /** Rent Per Seat Cents */
+            rent_per_seat_cents: number;
+            /** Rivals */
+            rivals: components["schemas"]["CityRivalOut"][];
+            /** Has Office */
+            has_office: boolean;
+            /** Is Home */
+            is_home: boolean;
+        };
+        /** CityRivalOut */
+        CityRivalOut: {
+            /** Key */
+            key: string;
+            /** Name */
+            name: string;
+        };
         /** ClaimOut */
         ClaimOut: {
             /** Id */
@@ -2679,6 +2824,24 @@ export interface components {
         ConflictChecksOut: {
             /** Enabled */
             enabled: boolean;
+        };
+        /** ContractOut */
+        ContractOut: {
+            /** Office Id */
+            office_id: number;
+            /** Offered */
+            offered: string;
+            /** Starts */
+            starts: string;
+            /** Count */
+            count: number;
+            /** Filled */
+            filled: boolean;
+        };
+        /** ContractsIn */
+        ContractsIn: {
+            /** Count */
+            count: number;
         };
         /** CostLineOut */
         CostLineOut: {
@@ -2945,6 +3108,19 @@ export interface components {
         };
         /** @enum {string} */
         EventStatusOut: "pending" | "open" | "answered" | "auto";
+        /** ExamOut */
+        ExamOut: {
+            /** Person Id */
+            person_id: number;
+            /** Name */
+            name: string;
+            /** Jurisdiction */
+            jurisdiction: string;
+            /** Kind */
+            kind: string;
+            /** Result */
+            result: string;
+        };
         /** ExcoTermIn */
         ExcoTermIn: {
             /** Elected */
@@ -3036,7 +3212,7 @@ export interface components {
             /** Months */
             months: components["schemas"]["MonthOut"][];
             /** Statements */
-            statements: components["schemas"]["PnlOut"][];
+            statements: components["schemas"]["ptk__api__finance__PnlOut"][];
             /** Balance Sheet */
             balance_sheet: components["schemas"]["BalanceLineOut"][];
             /** Wip Ageing */
@@ -3532,6 +3708,19 @@ export interface components {
             /** Expires Label */
             expires_label: string;
         };
+        /** LawyerOut */
+        LawyerOut: {
+            /** Person Id */
+            person_id: number;
+            /** Name */
+            name: string;
+            /** Level */
+            level: string;
+            /** Office Id */
+            office_id: number;
+            /** Admissions */
+            admissions: string[];
+        };
         /** LeadIn */
         LeadIn: {
             /** Person Id */
@@ -3902,6 +4091,13 @@ export interface components {
             /** Lockup Days */
             lockup_days: number | null;
         };
+        /** MoveIn */
+        MoveIn: {
+            /** Person Id */
+            person_id: number;
+            /** Office Id */
+            office_id: number;
+        };
         /** MoveUnitIn */
         MoveUnitIn: {
             /** Parent Id */
@@ -4005,10 +4201,93 @@ export interface components {
              */
             amount_cents?: number;
         };
+        /** OfficeOut */
+        OfficeOut: {
+            /** Id */
+            id: number;
+            /** City */
+            city: string;
+            /** Label */
+            label: string;
+            /** How */
+            how: string;
+            /** Opened */
+            opened: string;
+            /** Seats */
+            seats: number | null;
+            /** Lawyers */
+            lawyers: number;
+            /** Staff */
+            staff: number;
+            /** Rent Cents */
+            rent_cents: number | null;
+            /** Lease Months Left */
+            lease_months_left: number | null;
+            /** Lease Liability Cents */
+            lease_liability_cents: number | null;
+            /** Managing Partner */
+            managing_partner: string | null;
+            /** Clients */
+            clients: number;
+            pnl: components["schemas"]["ptk__api__offices__PnlOut"];
+        };
+        /** OfficesOut */
+        OfficesOut: {
+            /** Cities */
+            cities: components["schemas"]["CityOut"][];
+            /** Offices */
+            offices: components["schemas"]["OfficeOut"][];
+            /** Rules */
+            rules: components["schemas"]["RulesOut"][];
+            /** Contracts */
+            contracts: components["schemas"]["ContractOut"][];
+            /** Trainees */
+            trainees: components["schemas"]["TraineeOut"][];
+            /** Exams */
+            exams: components["schemas"]["ExamOut"][];
+            /** Lawyers */
+            lawyers: components["schemas"]["LawyerOut"][];
+            /** Seat Sizes */
+            seat_sizes: number[];
+            /** Lease Months */
+            lease_months: number;
+            /** Fit Out Per Seat Cents */
+            fit_out_per_seat_cents: number;
+            /** Lease Liabilities Cents */
+            lease_liabilities_cents: number;
+        };
         /** OnIn */
         OnIn: {
             /** On */
             on: boolean;
+        };
+        /** OpenOfficeIn */
+        OpenOfficeIn: {
+            /** City */
+            city: string;
+            /** Seats */
+            seats: number;
+            /**
+             * How
+             * @enum {string}
+             */
+            how: "organic" | "lateral_group" | "team_lift";
+            /** Practice */
+            practice?: string | null;
+            /** Partner Id */
+            partner_id?: number | null;
+            /** Rival Key */
+            rival_key?: string | null;
+            /**
+             * Partners
+             * @default 1
+             */
+            partners?: number;
+            /**
+             * Associates
+             * @default 0
+             */
+            associates?: number;
         };
         /** OpenSearchIn */
         OpenSearchIn: {
@@ -4019,6 +4298,8 @@ export interface components {
             level?: string | null;
             /** School Tiers */
             school_tiers?: string[];
+            /** City */
+            city?: string | null;
         };
         /** OpinionOut */
         OpinionOut: {
@@ -4439,6 +4720,13 @@ export interface components {
             school_tier: string | null;
             /** Bar Admissions */
             bar_admissions: string[];
+            /**
+             * Admissions
+             * @default []
+             */
+            admissions?: components["schemas"]["AdmissionOut"][];
+            /** Office */
+            office?: string | null;
             /** Background */
             background: string | null;
             /** Skills */
@@ -4671,24 +4959,6 @@ export interface components {
             label: string;
             /** Amount Cents */
             amount_cents: number;
-        };
-        /** PnlOut */
-        PnlOut: {
-            /** Label */
-            label: string;
-            /**
-             * Basis
-             * @enum {string}
-             */
-            basis: "accrual" | "cash";
-            /** Revenue Cents */
-            revenue_cents: number;
-            /** Costs Cents */
-            costs_cents: number;
-            /** Profit Cents */
-            profit_cents: number;
-            /** Lines */
-            lines: components["schemas"]["PnlLineOut"][];
         };
         /** PracticeBandsOut */
         PracticeBandsOut: {
@@ -5198,6 +5468,27 @@ export interface components {
             /** Practice */
             practice: string | null;
         };
+        /** RulesOut */
+        RulesOut: {
+            /** Jurisdiction */
+            jurisdiction: string;
+            /** Label */
+            label: string;
+            /** Regulator */
+            regulator: string;
+            /** Insurance Min Cents */
+            insurance_min_cents: number | null;
+            /** Insurance Llp Min Cents */
+            insurance_llp_min_cents: number | null;
+            /** Client Money */
+            client_money: string | null;
+            /** Llp */
+            llp: boolean;
+            /** Foreign Lawyers */
+            foreign_lawyers: string | null;
+            /** Ownership */
+            ownership: string;
+        };
         /** RunByOut */
         RunByOut: {
             /** Area */
@@ -5686,6 +5977,21 @@ export interface components {
             /** Link Id */
             link_id?: number | null;
         };
+        /** TraineeOut */
+        TraineeOut: {
+            /** Person Id */
+            person_id: number;
+            /** Name */
+            name: string;
+            /** Office Id */
+            office_id: number;
+            /** Seat */
+            seat: string;
+            /** Seats */
+            seats: string[];
+            /** Qualifies */
+            qualifies: string;
+        };
         /** TraitOut */
         TraitOut: {
             /** Key */
@@ -5780,6 +6086,24 @@ export interface components {
             /** Approve */
             approve: boolean;
         };
+        /** PnlOut */
+        ptk__api__finance__PnlOut: {
+            /** Label */
+            label: string;
+            /**
+             * Basis
+             * @enum {string}
+             */
+            basis: "accrual" | "cash";
+            /** Revenue Cents */
+            revenue_cents: number;
+            /** Costs Cents */
+            costs_cents: number;
+            /** Profit Cents */
+            profit_cents: number;
+            /** Lines */
+            lines: components["schemas"]["PnlLineOut"][];
+        };
         /** CauseOut */
         ptk__api__founder__CauseOut: {
             /** When */
@@ -5815,6 +6139,21 @@ export interface components {
             answer: "approve" | "modify" | "decline";
             /** Value */
             value?: number | null;
+        };
+        /** PnlOut */
+        ptk__api__offices__PnlOut: {
+            /** Month Fees Cents */
+            month_fees_cents: number;
+            /** Month Costs Cents */
+            month_costs_cents: number;
+            /** Month Profit Cents */
+            month_profit_cents: number;
+            /** Year Fees Cents */
+            year_fees_cents: number;
+            /** Year Costs Cents */
+            year_costs_cents: number;
+            /** Year Profit Cents */
+            year_profit_cents: number;
         };
         /** AnswerIn */
         ptk__api__standing__AnswerIn: {
@@ -13580,6 +13919,372 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PressOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getOffices: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfficesOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    openOffice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OpenOfficeIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfficesOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    closeOffice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                office_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfficesOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    offerTrainingContracts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                office_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContractsIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfficesOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    seekAdmission: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdmissionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfficesOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    moveLawyer: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MoveIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfficesOut"];
                 };
             };
             /** @description Bad Request */

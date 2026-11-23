@@ -40,6 +40,8 @@ class Branch:
     products: int
     ai_cut_cents: int
     dissolved: bool
+    genai: float = 0.0  # the firm's generative-AI adoption at the end
+    rolled_out: bool = False
 
 
 @dataclass
@@ -87,6 +89,8 @@ def _branch(name: str, game) -> Branch:  # type: ignore[no-untyped-def]
         products=0 if firm is None else sum(1 for p in firm.products if p.active),
         ai_cut_cents=cut,
         dissolved=game.state.ended and game.state.save_meta.game_state != "campaign_complete",
+        genai=0.0 if firm is None or firm.era("genai") is None else firm.era("genai").adoption,
+        rolled_out=firm is not None and firm.era("genai") is not None and firm.era("genai").rolled_out,
     )
 
 
@@ -182,6 +186,8 @@ def main() -> None:
             f"{r.seed:>4} | {n.lawyers}/{h.lawyers}/{f.lawyers} | {n.stage}/{h.stage}/{f.stage}"
             f" | {n.ai_cut_cents / m:.2f}/{h.ai_cut_cents / m:.2f}/{f.ai_cut_cents / m:.2f}"
             f" | {n.dissolved}/{h.dissolved}/{f.dissolved}"
+            f" | genai adoption hourly/fixed {h.genai:.2f}/{f.genai:.2f}"
+            f" rolled out {h.rolled_out}/{f.rolled_out}"
         )
     print()
     print("A fully adopted firm's exposed tasks (review, diligence, research, drafting), December 2030")

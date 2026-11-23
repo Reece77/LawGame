@@ -57,6 +57,8 @@ PT-M7b (2026-11-21) removed T5 (standard and hard), T9 (the rocket and the heede
 - **T8 restructuring** is measured only on firms with at least 10 lawyers in December 2008 (Measures).
 - **T9 heeded:** the heeded rocket asks the CFO's forecast before a guaranteed lateral and takes none until six months of trend show headroom (Measures).
 
+**PT-M7c (2026-11-23), the firm economics audit** (`docs/tasks/PT-M7c-firm-economics.md`, benchmarks in `docs/research/firm-economics.md`): a partner admitted in December now keeps a budget through December's allocation (homegrown equity partners had been poached within a year, holding leverage at 5.7 lawyers per equity partner). T2 passes on seeds 1-10 (steady 6, pyramid 4) and its row is removed; T3.lawyers (46; seeds 11-40 83.5), T4.steady ($2.72M) and T4.pyramid ($1.65M) keep their bounds, owned by Reece's decision on the rate card (the brief's decision 5: RPL is 83% above the Second Hundred's, from the rate).
+
 ## Measures (PT-M7)
 
 How `ptk/balance/report.py` reads each target (`make balance`; `tools/balance_runner.py --runs` prints one line per run). Year 1 is 2005, year 5 2009, year 11 2015; a run is 132 turns of `biglaw_spinout` over the pure sim, critical events answered with their first choice, events written by `MockLLMAdapter`.

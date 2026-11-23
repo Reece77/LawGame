@@ -1,7 +1,8 @@
 """PT-M11's acceptance runs (run with -s to see the printed readings).
 
 1. T11 extended to London: every UK rival's revenue within +-15% of its sourced path in
-   December 2009, 2015 and 2025 (the firms alive then in history), on seeds 1-10.
+   December 2009, 2015 and 2025 (the firms alive then in history), on seeds 1-10 (printed;
+   nightly: `check`'s T11 in test_pt_m5.py checks every pinned rival, these included).
 2. A firm that opens London in January 2007 with a 10-lawyer team lift (`london-lift`) reaches
    a positive office profit (its profit since opening, lease and fit-out included) within
    3 years on at least 6 of 10 seeds; one that opens with an organic start of one partner
@@ -37,6 +38,7 @@ LIFT_SEEDS = 6  # tunable-exempt: the brief's "at least 6 of 10 seeds"
 WITHIN_MONTHS = 36  # tunable-exempt: "within 3 years"
 
 
+@pytest.mark.nightly  # `check` runs T11 for every rival, UK rivals included (test_pt_m5.py)
 @pytest.mark.parametrize("seed", SEEDS)
 def test_t11_uk_rivals_hold_history(seed: int, data: GameData, balance: Balance) -> None:
     band = balance.rivals.pin.band

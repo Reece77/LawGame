@@ -58,7 +58,7 @@ From `pt-2008`, open Washington and then London, and play to 2012.
 
 ## Readings
 
-- **T11 extended to London** (`test_pt_m11.py`, seeds 1-10): see the final report; seed 1: 41 UK points (2009, 2015, 2025), worst gap 9.5%, no misses. T11 itself (all rivals, `test_pt_m5.py`) seed 1: worst gap 9.5%, top 10 kept 9.
+- **T11 extended to London** (`test_pt_m11.py`, seeds 1-10): 41 UK points a seed (2009, 2015, 2025), no misses on any seed after HSF Kramer (June 2025) became a rename: as an outside merger its step held 2018's revenue until mid-2025 and HSF read -15% (seed 8) and -17% (seed 10) at 2025. T11 itself (all rivals, `test_pt_m5.py`) seed 1: worst gap 9.5%, top 10 kept 9.
 - **London 2007** (`london-lift` / `london-organic`, seeds 1-10, months from opening until the office's cumulative profit since opening is positive): team lift 9, 4, 4, 4, 4, 5, 4, 6, 5, 6 (10 of 10 within 36 months); organic start >60, >60, >60, 40, >60, 43, >60, 36, >60, 42 (median >60).
 
 ## Follow-ups

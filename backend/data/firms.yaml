@@ -3250,12 +3250,11 @@ events:
   src: 'S A-s4.3: Herbert Smith and Freehills, 1 October 2012; lawyers added A'
 - key: hsf_kramer
   ym: [2025, 6]
-  kind: outside_merger
+  kind: rename
   firm: herbert_smith
   name: HSF Kramer
   short: HSF Kramer
-  lawyers_added: 350
-  src: 'S A-s4.3: HSF and Kramer Levin complete HSF Kramer, 1 June 2025; lawyers added A'
+  src: 'S A-s4.3: HSF and Kramer Levin complete HSF Kramer, 1 June 2025 (a rename: the FY2025 point, to April 2025, is before it, so it is no step in the pinned path)'
 - key: ashurst_blake_dawson
   ym: [2013, 11]
   kind: outside_merger

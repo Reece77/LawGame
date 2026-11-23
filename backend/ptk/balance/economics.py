@@ -208,7 +208,10 @@ def row(d: Decomposition) -> dict[str, float | None]:
         "admits/yr": _per(sum(d.admissions.get(y, 0) for y in years), len(years)),
         "share": d.won_share,
         "share held": d.held_share,
-        **{f"{t} %": _per(d.tiers.get(t, 0), sum(d.tiers.values())) for t in ("book", "large", "mid")},
+        **{
+            f"{t} %": _per(d.tiers.get(t, 0), sum(d.tiers.values()))
+            for t in ("book", "large", "mid")
+        },
     }
 
 

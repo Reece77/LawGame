@@ -124,7 +124,7 @@ class ClientCards:
     mid_max_bp: int
     book_bp: int
     full: bool = False  # a save from before PT-M7b: the full card for everyone
-    fade: float = 0.0  # 0-1: how far the book's rates have fallen to their tiers' (book_fade_months)
+    fade: float = 0.0  # 0-1: how far the book's rates have fallen to their tiers' cards
 
     def tier_bp(self, practice: str, client_id: int) -> int:
         bp = self.cards.get(practice, BP_DENOMINATOR)

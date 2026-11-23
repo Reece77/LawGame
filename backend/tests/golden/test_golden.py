@@ -89,7 +89,10 @@ def _fingerprint(path: Path, balance: Balance, data: GameData) -> dict[str, obje
     }
 
 
-@pytest.mark.parametrize("seed", SEEDS)
+# PT-M11 (check's runtime): seed 1 runs in check as a smoke test; the rest nightly
+@pytest.mark.parametrize(
+    "seed", [pytest.param(s, marks=pytest.mark.nightly) if s != 1 else s for s in SEEDS]
+)
 def test_golden_seed(
     seed: int, save_dir: Path, data: GameData, balance: Balance, request: pytest.FixtureRequest
 ) -> None:

@@ -58,6 +58,7 @@ def rows(data: GameData, balance: Balance) -> dict[int, tuple[float, int, int, f
     return {seed: _seed(seed, data, balance) for seed in SEEDS}
 
 
+@pytest.mark.nightly  # PT-M11: over 60 s; check's runtime (product manager, 2026-11-23)
 def test_the_acceptance_firm_is_busy_without_burning_out(
     rows: dict[int, tuple[float, int, int, float]], capsys: pytest.CaptureFixture[str]
 ) -> None:

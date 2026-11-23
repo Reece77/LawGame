@@ -56,6 +56,8 @@ From `pt-2008`, open Washington and then London, and play to 2012.
 
 14. **Matters need no city selector**: a matter's office is its client's city's (an office there, else the home office), and the Matters screen is unchanged; the selector is on Recruitment's search form.
 
+15. **`check`'s runtime** (the product manager's review of PR #26): tests over 60 s on the local 8-worker run moved to `nightly` (the full-campaign save 461 s, the exodus spiral 248, the steady-state ratio bands 212, golden seeds 2 and 3 about 210 each, the people growth and org-terms properties 168 and 74, PT-M5's collapse brought forward 132, resignations 131, the storyline 90, PT-M7a's acceptance firm 74, the founder book's mirror 70) with T11's seeds 2-10 (33-57 s each); T11 seed 1 and golden seed 1 stay in `check` as smoke tests (golden runs on pull requests only there: `determinism.yml` runs on main). `check.yml` runs the backend tests in three shards (`make check-shard`, `tools/test_shard.py`: test files sorted and dealt round-robin) beside one `static` job (vendoring, lint, types, the turn-time budgets, API sync, the front end); the job named `check` passes only when all of them succeeded. Durations before: main's last three `check` runs 12, 17 and 30 minutes; this PR's 18 and 25 (d7af8cb), then two cancelled at 30 (f130b3a). After: see the readings below.
+
 ## Readings
 
 - **T11 extended to London** (`test_pt_m11.py`, seeds 1-10): 41 UK points a seed (2009, 2015, 2025), no misses on any seed after HSF Kramer (June 2025) became a rename: as an outside merger its step held 2018's revenue until mid-2025 and HSF read -15% (seed 8) and -17% (seed 10) at 2025. T11 itself (all rivals, `test_pt_m5.py`) seed 1: worst gap 9.5%, top 10 kept 9.

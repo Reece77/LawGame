@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
@@ -60,6 +61,7 @@ def _check(
     st.integers(0, 2**32),
     st.data(),
 )
+@pytest.mark.nightly  # PT-M11: over 60 s; check's runtime (product manager, 2026-11-23)
 def test_growth_keeps_attributes_in_range(role: str, seed: int, draw: st.DataObject) -> None:
     from ptk.loader import load_balance, load_game_data
 
@@ -79,6 +81,7 @@ def test_growth_keeps_attributes_in_range(role: str, seed: int, draw: st.DataObj
     reports=st.integers(0, 40),
     mentor=st.booleans(),
 )
+@pytest.mark.nightly  # PT-M11: over 60 s; check's runtime (product manager, 2026-11-23)
 def test_org_terms_stay_in_bounds(
     leadership: float, communication: float, mentoring: float, reports: int, mentor: bool
 ) -> None:

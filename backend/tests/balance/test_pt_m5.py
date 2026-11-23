@@ -63,7 +63,10 @@ def _pinned(data: GameData, year: int) -> dict[str, int]:
     return out
 
 
-@pytest.mark.parametrize("seed", SEEDS)
+# PT-M11 (check's runtime): seed 1 runs in check as a smoke test; the rest nightly
+@pytest.mark.parametrize(
+    "seed", [pytest.param(s, marks=pytest.mark.nightly) if s != 1 else s for s in SEEDS]
+)
 def test_t11_rivals_hold_history(seed: int, data: GameData, balance: Balance) -> None:
     band = balance.rivals.pin.band
     state = start(data, balance, seed)
@@ -92,6 +95,7 @@ def test_t11_rivals_hold_history(seed: int, data: GameData, balance: Balance) ->
     assert kept >= TOP_KEPT
 
 
+@pytest.mark.nightly  # PT-M11: over 60 s; check's runtime (product manager, 2026-11-23)
 def test_hiring_away_a_third_brings_a_collapse_forward(data: GameData, balance: Balance) -> None:
     forward = 0
     turns = []

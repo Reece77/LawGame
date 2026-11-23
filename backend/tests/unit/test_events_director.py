@@ -65,6 +65,7 @@ def test_cooldowns_and_critical_gap(data: GameData, balance: Balance) -> None:
     assert all(later - first >= ev.critical_gap_turns for first, later in pairs)
 
 
+@pytest.mark.nightly  # PT-M11: over 60 s; check's runtime (product manager, 2026-11-23)
 def test_storyline_runs_its_steps(data: GameData, balance: Balance) -> None:
     seen = Counter()
     for seed in range(1, 9):

@@ -41,6 +41,7 @@ def _kpis(seed: int, data: GameData, balance: Balance) -> tuple[int, int, float,
     return real, coll, statistics.median(lockups), int(statistics.median(util))  # type: ignore[type-var]
 
 
+@pytest.mark.nightly  # PT-M11: over 60 s; check's runtime (product manager, 2026-11-23)
 def test_steady_state_ratios_are_in_the_real_bands(
     data: GameData, balance: Balance, capsys: pytest.CaptureFixture[str]
 ) -> None:

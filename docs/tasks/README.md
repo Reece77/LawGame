@@ -46,3 +46,13 @@ RNG ids by lane: PT-M7b 42-44, PT-M8 45-49, PT-M17 50-59.
 | [PT-M16-reputation-press-rankings.md](PT-M16-reputation-press-rankings.md) | Reputation, press and rankings | PT-M7b |
 
 RNG ids by lane: PT-M9 60-64, PT-M10 65-69, PT-M16 70-79.
+
+## v2, third wave (2026-11-22)
+
+| Brief | Milestone | Depends on |
+| --- | --- | --- |
+| [PT-M7c-firm-economics.md](PT-M7c-firm-economics.md) | Firm economics audit (T3, T4) | PT-M16 |
+| [PT-M11-offices-and-london.md](PT-M11-offices-and-london.md) | Offices, cities and London | PT-M10 |
+| [PT-M14-legal-tech-and-ai.md](PT-M14-legal-tech-and-ai.md) | Legal technology and AI | PT-M10 |
+
+RNG ids by lane: PT-M7c 80-84, PT-M11 100-109, PT-M14 110-119 (99 stays tests-only).

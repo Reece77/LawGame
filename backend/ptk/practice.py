@@ -1,6 +1,8 @@
 """Practice saves (PT-M7): ready-made positions to learn on. `pt-2008` is a 60-lawyer firm in
 June 2008, three months before Lehman, with a corporate associate who is a partnership
 candidate in December 2008 (the brief's manual check: get the firm through the crash).
+`pt-2022` (PT-M14) is a 120-lawyer firm (stage 3) in December 2022, a month after ChatGPT:
+decide the firm's AI strategy.
 
 Built, not hand-written: the biglaw spin-out plays from January 2005 to June 2008 over the pure
 sim (critical events take their first choice, events written with the mock adapter), so the
@@ -109,6 +111,7 @@ class PracticeSave:
     lateral_comp_cents: int
     lateral_book_cents: int
     fees_per_lawyer_cents: int  # the panels the firm is given, a year per lawyer at standard
+    copies: int = 1  # PT-M14: the GROWTH table hired this many times (pt-2022: stage 3)
 
 
 PRACTICE_SAVES: Final = {
@@ -122,7 +125,20 @@ PRACTICE_SAVES: Final = {
         lateral_comp_cents=150_000_000,  # tunable-exempt: $1.5M
         lateral_book_cents=250_000_000,  # tunable-exempt: $2.5M
         fees_per_lawyer_cents=80_000_000,  # tunable-exempt: $800k
-    )
+    ),
+    # PT-M14 (the brief's manual check): decide the firm's AI strategy a month after ChatGPT
+    "pt-2022": PracticeSave(
+        key="pt-2022",
+        label="December 2022: a 120-lawyer firm as generative AI arrives",
+        seed=2022,
+        scenario="biglaw_spinout",
+        until_ym=(2022, 12),
+        capital_cents=3_000_000_000,  # tunable-exempt: the practice save's own setting, $30M
+        lateral_comp_cents=250_000_000,  # tunable-exempt: $2.5M
+        lateral_book_cents=400_000_000,  # tunable-exempt: $4M
+        fees_per_lawyer_cents=110_000_000,  # tunable-exempt: $1.1M
+        copies=2,
+    ),
 }
 
 
@@ -217,7 +233,7 @@ def _grow(
         return with_reveals(st, [reveal])
 
     partners: list[tuple[int, str]] = []
-    for practice, equity, income, associates in GROWTH:
+    for practice, equity, income, associates in GROWTH * spec.copies:
         for _ in range(equity):
             p = replace(person(practice, "equity_partner"), book_cents=spec.lateral_book_cents)
             state = observe(with_people(state, [p]), p)

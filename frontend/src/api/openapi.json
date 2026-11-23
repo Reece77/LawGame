@@ -10078,6 +10078,469 @@
           }
         }
       }
+    },
+    "/api/saves/{slug}/tech": {
+      "get": {
+        "summary": "Get Tech",
+        "operationId": "getTech",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TechOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/tech/invest": {
+      "post": {
+        "summary": "Invest",
+        "operationId": "investInEra",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvestIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TechOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/tech/rollout": {
+      "post": {
+        "summary": "Rollout",
+        "operationId": "rolloutEra",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RolloutIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TechOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/tech/training": {
+      "post": {
+        "summary": "Training",
+        "operationId": "setTrainingProgramme",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrainingIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TechOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/tech/products": {
+      "post": {
+        "summary": "Launch",
+        "operationId": "launchProduct",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TechOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/tech/products/{product_id}/retire": {
+      "post": {
+        "summary": "Retire",
+        "operationId": "retireProduct",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Product Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TechOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -11494,6 +11957,66 @@
         ],
         "title": "ClientRowOut"
       },
+      "ClientsOut": {
+        "properties": {
+          "pressure": {
+            "type": "boolean",
+            "title": "Pressure"
+          },
+          "pressure_from_label": {
+            "type": "string",
+            "title": "Pressure From Label"
+          },
+          "cut_12m_cents": {
+            "type": "integer",
+            "title": "Cut 12M Cents"
+          },
+          "case_cut_bp": {
+            "type": "integer",
+            "title": "Case Cut Bp"
+          },
+          "deal_cut_bp": {
+            "type": "integer",
+            "title": "Deal Cut Bp"
+          },
+          "flow_cut_bp": {
+            "type": "integer",
+            "title": "Flow Cut Bp"
+          },
+          "rfp_asks": {
+            "type": "boolean",
+            "title": "Rfp Asks"
+          },
+          "rfp_standing": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rfp Standing"
+          },
+          "rfp_from_year": {
+            "type": "integer",
+            "title": "Rfp From Year"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pressure",
+          "pressure_from_label",
+          "cut_12m_cents",
+          "case_cut_bp",
+          "deal_cut_bp",
+          "flow_cut_bp",
+          "rfp_asks",
+          "rfp_standing",
+          "rfp_from_year"
+        ],
+        "title": "ClientsOut"
+      },
       "CompRoundIn": {
         "properties": {
           "person_id": {
@@ -12029,6 +12552,109 @@
           "cash_cents"
         ],
         "title": "EntryOut"
+      },
+      "EraOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "start_label": {
+            "type": "string",
+            "title": "Start Label"
+          },
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "strength_pct": {
+            "type": "integer",
+            "title": "Strength Pct"
+          },
+          "market_pct": {
+            "type": "integer",
+            "title": "Market Pct"
+          },
+          "adoption_pct": {
+            "type": "integer",
+            "title": "Adoption Pct"
+          },
+          "full": {
+            "type": "boolean",
+            "title": "Full"
+          },
+          "platform": {
+            "type": "boolean",
+            "title": "Platform"
+          },
+          "platform_cents": {
+            "type": "integer",
+            "title": "Platform Cents"
+          },
+          "subscription_cents": {
+            "type": "integer",
+            "title": "Subscription Cents"
+          },
+          "subscription_bp": {
+            "type": "integer",
+            "title": "Subscription Bp"
+          },
+          "monthly_cents": {
+            "type": "integer",
+            "title": "Monthly Cents"
+          },
+          "rolled_out": {
+            "type": "boolean",
+            "title": "Rolled Out"
+          },
+          "can_rollout": {
+            "type": "boolean",
+            "title": "Can Rollout"
+          },
+          "vote_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vote Label"
+          },
+          "tasks": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Tasks"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "start_label",
+          "available",
+          "strength_pct",
+          "market_pct",
+          "adoption_pct",
+          "full",
+          "platform",
+          "platform_cents",
+          "subscription_cents",
+          "subscription_bp",
+          "monthly_cents",
+          "rolled_out",
+          "can_rollout",
+          "vote_label",
+          "tasks"
+        ],
+        "title": "EraOut"
       },
       "ErrorBody": {
         "properties": {
@@ -13722,6 +14348,24 @@
         ],
         "title": "IntroduceIn"
       },
+      "InvestIn": {
+        "properties": {
+          "era": {
+            "type": "string",
+            "title": "Era"
+          },
+          "subscription_bp": {
+            "type": "integer",
+            "title": "Subscription Bp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "era",
+          "subscription_bp"
+        ],
+        "title": "InvestIn"
+      },
       "KeyPersonOut": {
         "properties": {
           "id": {
@@ -13759,6 +14403,44 @@
           "met"
         ],
         "title": "KeyPersonOut"
+      },
+      "KindOut": {
+        "properties": {
+          "practice": {
+            "type": "string",
+            "title": "Practice"
+          },
+          "kind_key": {
+            "type": "string",
+            "title": "Kind Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "exposed_pct": {
+            "type": "integer",
+            "title": "Exposed Pct"
+          },
+          "market_cost_pct": {
+            "type": "integer",
+            "title": "Market Cost Pct"
+          },
+          "hours_pct": {
+            "type": "integer",
+            "title": "Hours Pct"
+          }
+        },
+        "type": "object",
+        "required": [
+          "practice",
+          "kind_key",
+          "label",
+          "exposed_pct",
+          "market_cost_pct",
+          "hours_pct"
+        ],
+        "title": "KindOut"
       },
       "KpiOut": {
         "properties": {
@@ -14585,6 +15267,26 @@
           "can_assess": {
             "type": "boolean",
             "title": "Can Assess",
+            "default": false
+          },
+          "ai_hours_pct": {
+            "type": "integer",
+            "title": "Ai Hours Pct",
+            "default": 100
+          },
+          "ai_exposed_pct": {
+            "type": "integer",
+            "title": "Ai Exposed Pct",
+            "default": 0
+          },
+          "ai_client_cut_bp": {
+            "type": "integer",
+            "title": "Ai Client Cut Bp",
+            "default": 0
+          },
+          "ai_product": {
+            "type": "boolean",
+            "title": "Ai Product",
             "default": false
           }
         },
@@ -17999,6 +18701,16 @@
             },
             "type": "array",
             "title": "Reputation Causes"
+          },
+          "ai_cut_bp": {
+            "type": "integer",
+            "title": "Ai Cut Bp",
+            "default": 0
+          },
+          "ai_products": {
+            "type": "integer",
+            "title": "Ai Products",
+            "default": 0
           }
         },
         "type": "object",
@@ -18144,6 +18856,92 @@
           "hours"
         ],
         "title": "ProBonoCreditIn"
+      },
+      "ProductIn": {
+        "properties": {
+          "practice": {
+            "type": "string",
+            "title": "Practice"
+          },
+          "kind_key": {
+            "type": "string",
+            "title": "Kind Key"
+          },
+          "price_bp": {
+            "type": "integer",
+            "title": "Price Bp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "practice",
+          "kind_key",
+          "price_bp"
+        ],
+        "title": "ProductIn"
+      },
+      "ProductOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "practice": {
+            "type": "string",
+            "title": "Practice"
+          },
+          "kind_key": {
+            "type": "string",
+            "title": "Kind Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "price_bp": {
+            "type": "integer",
+            "title": "Price Bp"
+          },
+          "price_pct_of_standard": {
+            "type": "integer",
+            "title": "Price Pct Of Standard"
+          },
+          "launched_label": {
+            "type": "string",
+            "title": "Launched Label"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active"
+          },
+          "matters": {
+            "type": "integer",
+            "title": "Matters"
+          },
+          "billed_cents": {
+            "type": "integer",
+            "title": "Billed Cents"
+          },
+          "standard_cents": {
+            "type": "integer",
+            "title": "Standard Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "practice",
+          "kind_key",
+          "label",
+          "price_bp",
+          "price_pct_of_standard",
+          "launched_label",
+          "active",
+          "matters",
+          "billed_cents",
+          "standard_cents"
+        ],
+        "title": "ProductOut"
       },
       "PromiseIn": {
         "properties": {
@@ -19166,6 +19964,19 @@
           "practice"
         ],
         "title": "RoleOut"
+      },
+      "RolloutIn": {
+        "properties": {
+          "era": {
+            "type": "string",
+            "title": "Era"
+          }
+        },
+        "type": "object",
+        "required": [
+          "era"
+        ],
+        "title": "RolloutIn"
       },
       "RunByOut": {
         "properties": {
@@ -20386,6 +21197,44 @@
         ],
         "title": "TakeOverIn"
       },
+      "TaskOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "exposure_pct": {
+            "type": "integer",
+            "title": "Exposure Pct"
+          },
+          "efficiency_pct": {
+            "type": "integer",
+            "title": "Efficiency Pct"
+          },
+          "full_pct": {
+            "type": "integer",
+            "title": "Full Pct"
+          },
+          "market_pct": {
+            "type": "integer",
+            "title": "Market Pct"
+          },
+          "client_cut_bp": {
+            "type": "integer",
+            "title": "Client Cut Bp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "exposure_pct",
+          "efficiency_pct",
+          "full_pct",
+          "market_pct",
+          "client_cut_bp"
+        ],
+        "title": "TaskOut"
+      },
       "TeamMemberOut": {
         "properties": {
           "person": {
@@ -20417,6 +21266,99 @@
           "hours_last_month"
         ],
         "title": "TeamMemberOut"
+      },
+      "TechOut": {
+        "properties": {
+          "month_label": {
+            "type": "string",
+            "title": "Month Label"
+          },
+          "stage": {
+            "type": "integer",
+            "title": "Stage"
+          },
+          "lawyers": {
+            "type": "integer",
+            "title": "Lawyers"
+          },
+          "eras": {
+            "items": {
+              "$ref": "#/components/schemas/EraOut"
+            },
+            "type": "array",
+            "title": "Eras"
+          },
+          "tasks": {
+            "items": {
+              "$ref": "#/components/schemas/TaskOut"
+            },
+            "type": "array",
+            "title": "Tasks"
+          },
+          "training": {
+            "$ref": "#/components/schemas/TrainingOut"
+          },
+          "clients": {
+            "$ref": "#/components/schemas/ClientsOut"
+          },
+          "products": {
+            "items": {
+              "$ref": "#/components/schemas/ProductOut"
+            },
+            "type": "array",
+            "title": "Products"
+          },
+          "kinds": {
+            "items": {
+              "$ref": "#/components/schemas/KindOut"
+            },
+            "type": "array",
+            "title": "Kinds"
+          },
+          "can_launch": {
+            "type": "boolean",
+            "title": "Can Launch"
+          },
+          "product_stage": {
+            "type": "integer",
+            "title": "Product Stage"
+          },
+          "price_lo": {
+            "type": "integer",
+            "title": "Price Lo"
+          },
+          "price_hi": {
+            "type": "integer",
+            "title": "Price Hi"
+          },
+          "price_default": {
+            "type": "integer",
+            "title": "Price Default"
+          },
+          "max_products": {
+            "type": "integer",
+            "title": "Max Products"
+          }
+        },
+        "type": "object",
+        "required": [
+          "month_label",
+          "stage",
+          "lawyers",
+          "eras",
+          "tasks",
+          "training",
+          "clients",
+          "products",
+          "kinds",
+          "can_launch",
+          "product_stage",
+          "price_lo",
+          "price_hi",
+          "price_default",
+          "max_products"
+        ],
+        "title": "TechOut"
       },
       "TermOut": {
         "properties": {
@@ -20579,6 +21521,62 @@
           "title"
         ],
         "title": "TimelineItemOut"
+      },
+      "TrainingIn": {
+        "properties": {
+          "hours": {
+            "type": "integer",
+            "title": "Hours"
+          }
+        },
+        "type": "object",
+        "required": [
+          "hours"
+        ],
+        "title": "TrainingIn"
+      },
+      "TrainingOut": {
+        "properties": {
+          "hours": {
+            "type": "integer",
+            "title": "Hours"
+          },
+          "lo": {
+            "type": "integer",
+            "title": "Lo"
+          },
+          "hi": {
+            "type": "integer",
+            "title": "Hi"
+          },
+          "default": {
+            "type": "integer",
+            "title": "Default"
+          },
+          "full_hours": {
+            "type": "integer",
+            "title": "Full Hours"
+          },
+          "trainees": {
+            "type": "integer",
+            "title": "Trainees"
+          },
+          "monthly_cents": {
+            "type": "integer",
+            "title": "Monthly Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "hours",
+          "lo",
+          "hi",
+          "default",
+          "full_hours",
+          "trainees",
+          "monthly_cents"
+        ],
+        "title": "TrainingOut"
       },
       "TraitOut": {
         "properties": {

@@ -34,8 +34,9 @@ GROW_MONTHLY: Final = 2  # lateral associates a month while below GROW_TO
 
 
 def _steady(g: Game) -> None:
+    from ptk.balance.strategies import steady  # strategies imports this module
 
-    _steady(g)
+    steady(g)
 
 
 def _push(g: Game) -> None:

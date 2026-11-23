@@ -2165,6 +2165,108 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/saves/{slug}/tech": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Tech */
+        get: operations["getTech"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/tech/invest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Invest */
+        post: operations["investInEra"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/tech/rollout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Rollout */
+        post: operations["rolloutEra"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/tech/training": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Training */
+        post: operations["setTrainingProgramme"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/tech/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Launch */
+        post: operations["launchProduct"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/tech/products/{product_id}/retire": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Retire */
+        post: operations["retireProduct"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2655,6 +2757,27 @@ export interface components {
             share_estimate: components["schemas"]["RangeBpOut"];
             panel_status: components["schemas"]["PanelStatusOut"];
         };
+        /** ClientsOut */
+        ClientsOut: {
+            /** Pressure */
+            pressure: boolean;
+            /** Pressure From Label */
+            pressure_from_label: string;
+            /** Cut 12M Cents */
+            cut_12m_cents: number;
+            /** Case Cut Bp */
+            case_cut_bp: number;
+            /** Deal Cut Bp */
+            deal_cut_bp: number;
+            /** Flow Cut Bp */
+            flow_cut_bp: number;
+            /** Rfp Asks */
+            rfp_asks: boolean;
+            /** Rfp Standing */
+            rfp_standing: string | null;
+            /** Rfp From Year */
+            rfp_from_year: number;
+        };
         /** CompRoundIn */
         CompRoundIn: {
             /** Person Id */
@@ -2875,6 +2998,45 @@ export interface components {
             memo: string;
             /** Cash Cents */
             cash_cents: number;
+        };
+        /** EraOut */
+        EraOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Start Label */
+            start_label: string;
+            /** Available */
+            available: boolean;
+            /** Strength Pct */
+            strength_pct: number;
+            /** Market Pct */
+            market_pct: number;
+            /** Adoption Pct */
+            adoption_pct: number;
+            /** Full */
+            full: boolean;
+            /** Platform */
+            platform: boolean;
+            /** Platform Cents */
+            platform_cents: number;
+            /** Subscription Cents */
+            subscription_cents: number;
+            /** Subscription Bp */
+            subscription_bp: number;
+            /** Monthly Cents */
+            monthly_cents: number;
+            /** Rolled Out */
+            rolled_out: boolean;
+            /** Can Rollout */
+            can_rollout: boolean;
+            /** Vote Label */
+            vote_label: string | null;
+            /** Tasks */
+            tasks: {
+                [key: string]: number;
+            };
         };
         /** ErrorBody */
         ErrorBody: {
@@ -3422,6 +3584,13 @@ export interface components {
             /** Introducer Id */
             introducer_id?: number | null;
         };
+        /** InvestIn */
+        InvestIn: {
+            /** Era */
+            era: string;
+            /** Subscription Bp */
+            subscription_bp: number;
+        };
         /** KeyPersonOut */
         KeyPersonOut: {
             /** Id */
@@ -3436,6 +3605,21 @@ export interface components {
             real: boolean;
             /** Met */
             met: boolean;
+        };
+        /** KindOut */
+        KindOut: {
+            /** Practice */
+            practice: string;
+            /** Kind Key */
+            kind_key: string;
+            /** Label */
+            label: string;
+            /** Exposed Pct */
+            exposed_pct: number;
+            /** Market Cost Pct */
+            market_cost_pct: number;
+            /** Hours Pct */
+            hours_pct: number;
         };
         /** KpiOut */
         KpiOut: {
@@ -3729,6 +3913,26 @@ export interface components {
              * @default false
              */
             can_assess?: boolean;
+            /**
+             * Ai Hours Pct
+             * @default 100
+             */
+            ai_hours_pct?: number;
+            /**
+             * Ai Exposed Pct
+             * @default 0
+             */
+            ai_exposed_pct?: number;
+            /**
+             * Ai Client Cut Bp
+             * @default 0
+             */
+            ai_client_cut_bp?: number;
+            /**
+             * Ai Product
+             * @default false
+             */
+            ai_product?: boolean;
         };
         /** MatterRowOut */
         MatterRowOut: {
@@ -4814,6 +5018,16 @@ export interface components {
             band: number | null;
             /** Reputation Causes */
             reputation_causes: components["schemas"]["ReputationCauseOut"][];
+            /**
+             * Ai Cut Bp
+             * @default 0
+             */
+            ai_cut_bp?: number;
+            /**
+             * Ai Products
+             * @default 0
+             */
+            ai_products?: number;
         };
         /** PressOut */
         PressOut: {
@@ -4851,6 +5065,40 @@ export interface components {
         ProBonoCreditIn: {
             /** Hours */
             hours: number;
+        };
+        /** ProductIn */
+        ProductIn: {
+            /** Practice */
+            practice: string;
+            /** Kind Key */
+            kind_key: string;
+            /** Price Bp */
+            price_bp: number;
+        };
+        /** ProductOut */
+        ProductOut: {
+            /** Id */
+            id: number;
+            /** Practice */
+            practice: string;
+            /** Kind Key */
+            kind_key: string;
+            /** Label */
+            label: string;
+            /** Price Bp */
+            price_bp: number;
+            /** Price Pct Of Standard */
+            price_pct_of_standard: number;
+            /** Launched Label */
+            launched_label: string;
+            /** Active */
+            active: boolean;
+            /** Matters */
+            matters: number;
+            /** Billed Cents */
+            billed_cents: number;
+            /** Standard Cents */
+            standard_cents: number;
         };
         /** PromiseIn */
         PromiseIn: {
@@ -5197,6 +5445,11 @@ export interface components {
             label: string;
             /** Practice */
             practice: string | null;
+        };
+        /** RolloutIn */
+        RolloutIn: {
+            /** Era */
+            era: string;
         };
         /** RunByOut */
         RunByOut: {
@@ -5626,6 +5879,21 @@ export interface components {
              */
             slot?: number;
         };
+        /** TaskOut */
+        TaskOut: {
+            /** Key */
+            key: string;
+            /** Exposure Pct */
+            exposure_pct: number;
+            /** Efficiency Pct */
+            efficiency_pct: number;
+            /** Full Pct */
+            full_pct: number;
+            /** Market Pct */
+            market_pct: number;
+            /** Client Cut Bp */
+            client_cut_bp: number;
+        };
         /** TeamMemberOut */
         TeamMemberOut: {
             person: components["schemas"]["RefOut"];
@@ -5637,6 +5905,37 @@ export interface components {
             planned_hours: number;
             /** Hours Last Month */
             hours_last_month: number;
+        };
+        /** TechOut */
+        TechOut: {
+            /** Month Label */
+            month_label: string;
+            /** Stage */
+            stage: number;
+            /** Lawyers */
+            lawyers: number;
+            /** Eras */
+            eras: components["schemas"]["EraOut"][];
+            /** Tasks */
+            tasks: components["schemas"]["TaskOut"][];
+            training: components["schemas"]["TrainingOut"];
+            clients: components["schemas"]["ClientsOut"];
+            /** Products */
+            products: components["schemas"]["ProductOut"][];
+            /** Kinds */
+            kinds: components["schemas"]["KindOut"][];
+            /** Can Launch */
+            can_launch: boolean;
+            /** Product Stage */
+            product_stage: number;
+            /** Price Lo */
+            price_lo: number;
+            /** Price Hi */
+            price_hi: number;
+            /** Price Default */
+            price_default: number;
+            /** Max Products */
+            max_products: number;
         };
         /** TermOut */
         TermOut: {
@@ -5685,6 +5984,28 @@ export interface components {
             link_kind?: string | null;
             /** Link Id */
             link_id?: number | null;
+        };
+        /** TrainingIn */
+        TrainingIn: {
+            /** Hours */
+            hours: number;
+        };
+        /** TrainingOut */
+        TrainingOut: {
+            /** Hours */
+            hours: number;
+            /** Lo */
+            lo: number;
+            /** Hi */
+            hi: number;
+            /** Default */
+            default: number;
+            /** Full Hours */
+            full_hours: number;
+            /** Trainees */
+            trainees: number;
+            /** Monthly Cents */
+            monthly_cents: number;
         };
         /** TraitOut */
         TraitOut: {
@@ -13580,6 +13901,371 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PressOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getTech: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TechOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    investInEra: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InvestIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TechOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    rolloutEra: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RolloutIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TechOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    setTrainingProgramme: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TrainingIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TechOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    launchProduct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProductIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TechOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    retireProduct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                product_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TechOut"];
                 };
             };
             /** @description Bad Request */

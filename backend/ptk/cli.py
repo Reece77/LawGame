@@ -404,11 +404,16 @@ def staff_default(save: str = typer.Option(...), matter: int = typer.Option(...)
 
 @app.command("practice-save")
 def practice_save_cmd(
-    key: str = typer.Argument("pt-2008", help="The practice save (pt-2008)"),
+    key: str = typer.Argument("pt-2008", help="The practice save (pt-2008, pt-2022)"),
     name: str | None = typer.Option(None, help="Save name; the practice save's key if omitted"),
+    year: int | None = typer.Option(None, help="PT-M14: the practice save of a year (2008, 2022)"),
 ) -> None:
-    """Create a practice save (PT-M7): pt-2008 is a 60-lawyer firm in June 2008."""
+    """Create a practice save (PT-M7): pt-2008 is a 60-lawyer firm in June 2008; pt-2022
+    (PT-M14) a 120-lawyer firm in December 2022."""
     from ptk.practice import PRACTICE_SAVES, create_practice_save
+
+    if year is not None:
+        key = f"pt-{year}"
 
     if key not in PRACTICE_SAVES:
         raise typer.BadParameter(f"choose from {sorted(PRACTICE_SAVES)}")

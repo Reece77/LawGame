@@ -1448,11 +1448,20 @@ class TechBillingView:
 NO_TECH_BILLING: Final = TechBillingView(cuts={}, efficiency={}, products={})
 
 
-def kind_task_mix(kind: str, data: GameData) -> dict[str, float]:
-    """A matter kind's whole task mix (phase shares x task weights), for billing's cut."""
+def kind_task_mix(kind: str, data: GameData) -> Mapping[str, float]:
+    """A matter kind's whole task mix (phase shares x task weights), for billing's cut
+    (memoised on the data's identity: the mix never changes)."""
+    hit = _KIND_MIX.get(kind)
+    if hit is not None and hit[0] is data:
+        return hit[1]
     from ptk.sim.matters.formulas import kind_tasks
 
-    return kind_tasks(data.market.kinds[kind])
+    mix = kind_tasks(data.market.kinds[kind])
+    _KIND_MIX[kind] = (data, mix)
+    return mix
+
+
+_KIND_MIX: dict[str, tuple[GameData, Mapping[str, float]]] = {}
 
 
 def tech_hours(state: GameState, firm_id: int, data: GameData, balance: Balance) -> TechHoursView:

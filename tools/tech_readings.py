@@ -150,6 +150,42 @@ def run_seed(seed: int) -> SeedResult:
     return SeedResult(seed, tuple(branches), saving, growth, len(common))  # type: ignore[arg-type]
 
 
+def run_c3(seed: int) -> tuple[int, Branch, Branch]:
+    """Criterion 3 only: `ai-hourly` to December 2030, and `ai-fixed` forked from it at the
+    first month the firm could launch a product (the two scripts are identical until then)."""
+    from ptk.balance.game import start_game
+    from ptk.balance.report import SCENARIO
+    from ptk.balance.seats import fill_seats
+    from ptk.balance.strategies import PLAYABLE
+    from ptk.loader import load_balance, load_game_data
+
+    data_dir = ROOT / "backend" / "data"
+    data, balance = load_game_data(data_dir), load_balance(data_dir)
+    g = start_game(data, balance, seed, SCENARIO, "standard")
+    _play(g, PLAYABLE["steady"], (2015, 12), {})
+    hourly, fixed = PLAYABLE["ai-hourly"], PLAYABLE["ai-fixed"]
+    t: dict[str, int] = {}
+    fork = None
+    while not g.state.ended and g.ym <= (2030, 12):
+        if fork is None and g.state.player.stage >= balance.tech.products.stage:
+            fork = (copy.deepcopy(g), dict(t))
+        fill_seats(g)
+        hourly(g)
+        g.turn()
+        if g.ym[0] >= 2023:
+            for item in g.logs:
+                if item.firm_id == 1 and item.kind in ("rfp_won", "rfp_lost"):
+                    t[item.kind] = t.get(item.kind, 0) + 1
+    g.notes.update(t)
+    h = _branch("ai-hourly", g)
+    if fork is None:
+        return seed, h, h
+    f, ft = fork
+    _play(f, fixed, (2030, 12), ft)
+    f.notes.update(ft)
+    return seed, h, _branch("ai-fixed", f)
+
+
 def _seeds(text: str) -> list[int]:
     lo, _, hi = text.partition("-")
     return list(range(int(lo), int(hi or lo) + 1))
@@ -159,8 +195,25 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--seeds", default="1-10")
     parser.add_argument("--jobs", type=int, default=4)
+    parser.add_argument("--criterion3", action="store_true", help="ai-hourly against ai-fixed only")
     args = parser.parse_args()
     seeds = _seeds(args.seeds)
+    if args.criterion3:
+        with ProcessPoolExecutor(args.jobs) as pool:
+            rows = sorted(pool.map(run_c3, seeds))
+        print("Criterion 3: PEP 2026-2030 (sum of December PEP, $M), ai-hourly against ai-fixed")
+        print("seed | ai-hourly PEP real lawyers | ai-fixed PEP real lawyers products | fixed>hourly")
+        wins = 0
+        for seed, h, f in rows:
+            better = f.pep_2026_30 > h.pep_2026_30
+            wins += better
+            print(
+                f"{seed:>4} | {h.pep_2026_30 / 1e8:6.2f} {h.realisation_bp / 100:5.1f}% {h.lawyers}"
+                f" | {f.pep_2026_30 / 1e8:6.2f} {f.realisation_bp / 100:5.1f}% {f.lawyers} {f.products}"
+                f" | {'yes' if better else 'no'}{' (dissolved)' if h.dissolved or f.dissolved else ''}"
+            )
+        print(f"ai-fixed beats ai-hourly on {wins} of {len(rows)} seeds")
+        return
     with ProcessPoolExecutor(args.jobs) as pool:
         results = sorted(pool.map(run_seed, seeds), key=lambda r: r.seed)
     m = 1e8  # cents to $M

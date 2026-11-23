@@ -336,3 +336,15 @@ templates:
   automation_digest:
     title: "Your month: {month}"
     body: "{summary}"
+  ai_rollout_passed: # PT-M14
+    title: "Partners back the {era} rollout"
+    body: "{support} of {voters} equity partners supported rolling out {era} firm-wide."
+  ai_rollout_failed:
+    title: "Partners reject the {era} rollout"
+    body: "Only {support} of {voters} equity partners supported rolling out {era} firm-wide; it stays a pilot."
+  product_launched:
+    title: "Fixed-fee product launched: {kind}"
+    body: "New {kind} matters are now offered at a fixed price of {price_pct}% of what the market expects the work to cost."
+  product_retired:
+    title: "Fixed-fee product retired: {kind}"
+    body: "New {kind} matters return to the usual billing terms."

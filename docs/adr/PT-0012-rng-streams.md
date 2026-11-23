@@ -58,6 +58,8 @@
 | `press_rival` | 71 | `(*rival_key, n)` | A real rival's managing partner at their firm's move (a lateral hire, a team lift, a new office, a merger): whether they speak, then whether it is a jab at the player; n counts the firm's spoken moves that month | PT-M16 |
 | `auto_quality` | 60 | `(area_index, firm_id, slot)` | An automated area's month (spec 9.4): the first uniform decides whether the owner takes the default rule's answer (q from the true seat score, less overload); a mistake's noise and the actions' own draws follow on the same generator. area_index: the area's position in `automation.areas`; slot: 0, or a practice group's unit id (lane B's range 60-64) | PT-M9 |
 | `auto_events` | 61 | `(event_id,)` | An area owner's answer to a routine event (TST 40.5): the best displayed choice with probability q, else the second best | PT-M9 |
+| `tech_seed` | 110 | `(era_index, 0)` an era's strength target; `(era_index, 1)` the market's adoption target | A legal-tech era's path after December 2025: a target U(lo, hi) at its `by` month, drawn once at turn 0 (`ptk.sim.tech.eras`; lane C's range 110-119) | PT-M14 |
+| `tech_vote` | 111 | `(era_index,)` | A firm-wide rollout vote on an era's tools (at most one an era a month): each equity partner's support noise, in partner id order | PT-M14 |
 
 ## Consequences
 

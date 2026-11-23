@@ -54,6 +54,7 @@ from ptk.sim.errors import (
     SimError,
     StaffingError,
     SuccessionError,
+    TechActionError,
     UnknownDifficultyError,
     UnknownScenarioError,
 )
@@ -91,6 +92,7 @@ _STATUS: dict[type[SimError], int] = {
     CriticalEventOpenError: 409,
     # PT-M3b: billing
     BillingActionError: 409,
+    TechActionError: 409,  # PT-M14
     # PT-M17: the founder's life, family and succession
     FounderLifeError: 409,
     FamilyError: 409,

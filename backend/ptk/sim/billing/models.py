@@ -153,6 +153,7 @@ class MonthTotals:
     billable_tenths: int = 0
     capacity_tenths: int = 0
     crisis_writedown_cents: int = 0  # PT-M7b: write-downs the crisis's requests took off bills
+    ai_cut_cents: int = 0  # PT-M14: clients' cuts on hourly bills' AI-exposed tasks
 
 
 @dataclass(frozen=True, slots=True)

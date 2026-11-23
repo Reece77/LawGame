@@ -1440,10 +1440,12 @@ automation: # PT-M9: automation everywhere (spec 9.4; TST formulas.md 40)
       label: Knowledge and AI
       rule: knowledge
       seat: cko
-      available: false
-      unavailable_reason: "arrives with knowledge and AI (PT-M14)"
       energy: 15
-      does: "AI adoption within a budget and training (from PT-M14)."
+      guardrails: # PT-M14
+        - { key: budget_per_lawyer, label: "AI subscriptions a lawyer a month ($)", default: 1500, min: 0, max: 5000 }
+        - { key: training_hours, label: "Training programme (hours a lawyer a year)", default: 40, min: 0, max: 200 }
+        - { key: rollout, label: "Put firm-wide rollouts to the partners (1 yes, 0 no)", default: 1, min: 0, max: 1 }
+      does: "Subscribes to each available era's tools within the budget (newest first), keeps the training programme and puts rollouts to the partners; a new platform comes to you."
     risk:
       label: Risk and claims
       rule: risk
@@ -1467,3 +1469,40 @@ automation: # PT-M9: automation everywhere (spec 9.4; TST formulas.md 40)
       seat: coo
       energy: 10
       does: "Answers routine events no other automated area answers; critical events always come to you."
+tech: # PT-M14: legal technology and AI (spec 13; ADR PT-0011; ptk/sim/tech/, data/legal_eras.yaml)
+  exposed_min: 0.5 # a task is "exposed" (review, diligence, research, drafting) at this practices.yaml ai_exposure or more
+  adoption: # ADR PT-0011 3: adoption 0-1 by era moves monthly toward a target set by coverage, training and buy-in
+    speed: 0.08 # share of the gap to the target closed a month (about 2 years to 85%)
+    decay: 0.05 # share of the excess over a lower target lost a month (no upkeep: adoption decays)
+    cko_speed: 0.5 # speed x (1 + this x the CKO's e) (spec 9.1: AI adoption speed)
+    training_share: 0.4 # share of the target that needs the training programme (the rest needs only the tools)
+    training_full_hours: 30 # programme hours a lawyer a year at which training counts in full toward adoption
+    cko_training: 0.3 # training's effective hours x (1 + this x the CKO's e) (spec 9.1: training effectiveness)
+    buyin_from: 7.0 # partners' mean (adaptability + technology) / 2, 1-20: buy-in 0 at or below this
+    buyin_to: 15.0 # ... and 1 at or above this; the target is x (0.5 + 0.5 x buy-in)
+    support_score: 10.0 # a partner supports a firm-wide rollout at (adaptability + technology) / 2 + noise >= this
+    rollout_threshold_bp: 5000 # share of equity partners who must support (more than; a simple majority)
+    vote_sd: 2.0 # each partner's noise in the rollout vote (stream tech_vote, 111), attribute points
+    pilot_cap: 0.35 # adoption never exceeds this without a firm-wide rollout (a pilot group)
+    retry_months: 6 # months before a failed rollout can be put to the partners again
+    platform_months: 36 # a platform's cost amortises to 6100 over this many months
+    full_from: 0.999 # adoption at or above this reads as full on the screen
+  clients: # ADR PT-0011 4: client expectations follow the market's average adoption with a lag
+    pressure_from: [2016, 1] # first month clients press hourly bills on exposed tasks (pre-2016 eras are weak; T1-T12 to 2015 unchanged)
+    lag_months: 12 # clients expect what the market could do this many months ago
+    pass_through: 0.7 # share of the hours the market no longer needs that clients refuse to pay for (Reece q15: "clients claw back much of it")
+    discount: 0.10 # share of the market's saving clients also ask adopters to pass on, on hourly bills
+    max_cut: 0.6 # the most a task's realisation can fall (share of its fees)
+    rfp_from_year: 2023 # panel RFPs ask for AI and efficiency claims from this year (dossier s1: firm-wide tools 2023)
+    w_rfp: 0.6 # RFP score points per unit of (firm AI score - market AI score), -1..1; the ai_efficiency pitch claim (rivals.rfp.w_claim) is substantiated at 0 or more
+  training: # ADR PT-0006 4 and PT-0011 5: buying back juniors' learning
+    hours: { lo: 0, hi: 200, default: 40 } # the programme, non-billable hours a lawyer a year (dossier s6: Ropes & Gray credits up to ~400 AI hours)
+    cost_cents_per_hour: 5000 # $50 an attendee-hour: trainers and materials (6100) [A]
+    levels: [associate_1, associate_2, associate_3, associate_4, associate_5, associate_6, associate_7, associate_8, senior_associate, counsel] # who attends
+    learn_loss: 1.0 # substantive share lost per unit share of a person's task hours AI removes (no training)
+    restore: 0.8 # share of that loss a full programme buys back (the brief: at least half)
+    full_hours: 40 # programme hours a lawyer a year that count as full coverage for learning
+  products: # spec 13, 7.7: fixed-price products for a matter kind
+    stage: 3 # the firm's stage from which it may launch products
+    price_bp: { lo: 6000, hi: 15000, default: 10000 } # bp of what the market expects the work to cost (expected fees x market efficiency)
+    max_products: 10 # active products at once

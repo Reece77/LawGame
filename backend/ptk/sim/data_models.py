@@ -21,6 +21,8 @@ from ptk.sim.press.config import PressBalance
 from ptk.sim.rankings.config import RankingsBalance
 from ptk.sim.reputation.config import ReputationBalance
 from ptk.sim.rivals.data import RivalsBalance, RivalsData, WorldBalance
+from ptk.sim.tech.config import TASKS as TECH_TASKS
+from ptk.sim.tech.config import LegalEras, TechBalance
 
 type AccountType = Literal["asset", "liability", "equity", "income", "expense"]
 type PersonKind = Literal["lawyer", "paralegal", "business_services"]
@@ -1258,6 +1260,7 @@ class Balance(_Strict):
     press: PressBalance  # PT-M16
     rankings: RankingsBalance  # PT-M16
     automation: AutomationBalance  # PT-M9 (ptk.sim.automation.config)
+    tech: TechBalance  # PT-M14 (ptk.sim.tech.config)
 
 
 # --- People seed data (PT-M1a) ------------------------------------------------------------
@@ -1719,6 +1722,7 @@ class GameData(_Strict):
     event_templates: tuple[EventTemplate, ...] = ()  # PT-M6: events/*.yaml (TST 16.4)
     macro: MacroData  # PT-M7: macro_history.yaml
     seats: SeatsData  # PT-M8: seats.yaml
+    legal_eras: LegalEras  # PT-M14: legal_eras.yaml
 
     @model_validator(mode="after")
     def _unique(self) -> GameData:
@@ -1822,6 +1826,8 @@ class GameData(_Strict):
         for task in self.market.tasks:
             if bad := sorted(set(task.skills) - skills):
                 raise ValueError(f"task {task.key}: unknown skills {bad}")
+        if {t.key for t in self.market.tasks} != set(TECH_TASKS):  # PT-M14: legal_eras' tasks
+            raise ValueError(f"practices.yaml tasks must be {sorted(TECH_TASKS)}")
         courts = {c.key for c in self.courts.courts}
         for p in self.practices:
             if bad := sorted(set(p.cross_sell) - practices) or (

@@ -59,9 +59,11 @@ from ptk.sim.interfaces import (
     blended_rate_cents,
     bump_relationship,
     fee_earner_capacity_tenths,
+    kind_task_mix,
     month_hours,
     relationship_score,
     seat_effect,
+    tech_billing,
 )
 from ptk.sim.ledger import (
     BAD_DEBT_PROVISION,
@@ -128,6 +130,8 @@ class _Run:
             * seat_effect(state, firm_id, "pricing_director", balance, data)
         )
         self.ym = turn_to_ym(state.turn, state.save_meta.start_ym)
+        # PT-M14: client expectations on AI-exposed tasks, and the firm's fixed-fee products
+        self.tech = tech_billing(state, firm_id, data, balance)
         self.factors: dict[int, float] = {}
         self.eng: dict[int, Engagement] = {
             e.matter_id: e for e in b.engagements if not e.closed and e.firm_id == firm_id
@@ -205,6 +209,15 @@ class _Run:
         self.add("crisis_writedown_cents", cut)
         return cut
 
+    def ai_cut(self, fee: int, tasks: Mapping[str, float]) -> int:
+        """PT-M14 (ADR PT-0011 4): clients' cut on an hourly bill's AI-exposed tasks."""
+        bp = self.tech.cut_bp(tasks)
+        if bp <= 0 or fee <= 0:
+            return 0
+        cut = pct_of(fee, bp)
+        self.add("ai_cut_cents", cut)
+        return cut
+
     def point(self, client_id: int, points: float) -> None:
         if points:
             self.points[client_id] = self.points.get(client_id, 0.0) + points
@@ -222,6 +235,9 @@ class _Run:
         model = _pick_model(cfg.models.get(v.kind, {"hourly": 1.0}), u[0])
         if model == "contingency" and v.stakes_cents <= 0:
             model = "hourly"
+        product = self.tech.products.get(v.kind_key)  # PT-M14: the firm's fixed-fee product
+        if product is not None:
+            model = "fixed"
         months = max(1, v.planned_months)
         e = Engagement(
             matter_id=v.matter_id,
@@ -237,6 +253,8 @@ class _Run:
             e = replace(
                 e, price_cents=times(v.expected_fees_cents, fx.uniform(*cfg.cap_mult, u[2]))
             )
+        elif model == "fixed" and product is not None:
+            e = replace(e, price_cents=max(1, times(v.expected_fees_cents, product)))
         elif model == "fixed":
             e = replace(
                 e, price_cents=times(v.expected_fees_cents, fx.uniform(*cfg.fixed_mult, u[2]))
@@ -493,6 +511,7 @@ class _Run:
             fee -= pct_of(fee, e.writedown_bp)
             self.point(e.client_id, cfg.writedown_points * e.writedown_bp / 100)
         fee -= self.crisis_writedown(e.client_id, (CRISIS_MATTER, e.matter_id), fee)
+        fee -= self.ai_cut(fee, kind_task_mix(v.kind, self.data))  # PT-M14
         pad_standard, pad_fee = self.padding(v, wip, fee)
         bill = self.issue(
             client_id=e.client_id,
@@ -599,6 +618,7 @@ class _Run:
                 (CRISIS_FLOW + self.data.practice_keys.index(f.practice), f.client_id),
                 fee,
             )
+            fee -= self.ai_cut(fee, self.data.market.flow_tasks)  # PT-M14
             bill = self.issue(
                 client_id=f.client_id,
                 matter_id=None,

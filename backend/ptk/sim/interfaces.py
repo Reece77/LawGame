@@ -35,8 +35,8 @@ raise uses (`salary_cents`, `set_salary`).
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
-from dataclasses import dataclass
-from typing import TYPE_CHECKING, Literal, Protocol
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Final, Literal, Protocol
 
 if TYPE_CHECKING:
     import numpy as np
@@ -1380,3 +1380,97 @@ def run_seat_rule(
     )  # fmt: skip
     rule(h)
     return h.state
+
+
+# --- PT-M14 (legal tech and AI, lane C): the two hooks matters and billing read tech through --
+#
+# Matters (PT-M3a) read `tech_hours` where they compute hours: a phase's hours on each task are
+# its base hours x the firm's efficiency on the task (ADR PT-0011 3), so output an hour is
+# divided by the task mix's factor (progress, the staffing rule's expected output) and flow
+# work's hours are multiplied by it; training hours are non-billable and count as learning;
+# AI's removed hours lower a person's substantive share (ADR PT-0006 4). Billing (PT-M3b) reads
+# `tech_billing`: the realisation cut clients make on hourly bills' exposed tasks and the
+# firm's fixed-fee products (spec 13, 7.7). A firm with no technology gets exact no-ops.
+
+
+@dataclass(frozen=True, slots=True)
+class TechHoursView:
+    efficiency: Mapping[str, float]  # task -> hours multiplier (1.0: no saving)
+    learning_loss: float = 0.0  # learn_loss x (1 - restore x training cover)
+    training_tenths: Mapping[int, int] = field(default_factory=dict)  # person -> a month's
+
+    @property
+    def idle(self) -> bool:
+        return not self.efficiency and not self.training_tenths
+
+    def factor(self, tasks: Mapping[str, float]) -> float:
+        """Hours a task mix takes at the firm's efficiency, per base hour (1.0 when idle)."""
+        if not self.efficiency:
+            return 1.0
+        total = sum(tasks.values())
+        return sum(w * self.efficiency.get(t, 1.0) for t, w in tasks.items()) / total
+
+    def learning(self, mine: Mapping[str, float]) -> float:
+        """Multiplier on a person's substantive share for the tasks they do (`mine`: weights
+        summing to 1): 1 - loss x the share of those hours AI removes."""
+        if not self.efficiency or self.learning_loss <= 0:
+            return 1.0
+        removed = sum(w * (1.0 - self.efficiency.get(t, 1.0)) for t, w in mine.items())
+        return max(0.0, 1.0 - self.learning_loss * removed)
+
+
+NO_TECH_HOURS: Final = TechHoursView(efficiency={})
+
+
+@dataclass(frozen=True, slots=True)
+class TechBillingView:
+    cuts: Mapping[str, float]  # task -> realisation cut on hourly bills (0-1)
+    efficiency: Mapping[str, float]  # task -> the firm's efficiency (weights a bill's hours)
+    products: Mapping[str, float]  # matter kind key -> fixed price / standard expected fees
+
+    def cut_bp(self, tasks: Mapping[str, float]) -> int:
+        """The cut on an hourly bill for a task mix, in bp: each task's cut weighted by the
+        hours the firm spends on it (base weight x efficiency)."""
+        if not self.cuts:
+            return 0
+        hours = {t: w * self.efficiency.get(t, 1.0) for t, w in tasks.items()}
+        total = sum(hours.values())
+        if total <= 0:
+            return 0
+        cut = sum(h * self.cuts.get(t, 0.0) for t, h in hours.items()) / total
+        return round(cut * 10000)  # tunable-exempt: basis points
+
+
+NO_TECH_BILLING: Final = TechBillingView(cuts={}, efficiency={}, products={})
+
+
+def kind_task_mix(kind: str, data: GameData) -> dict[str, float]:
+    """A matter kind's whole task mix (phase shares x task weights), for billing's cut."""
+    from ptk.sim.matters.formulas import kind_tasks
+
+    return kind_tasks(data.market.kinds[kind])
+
+
+def tech_hours(state: GameState, firm_id: int, data: GameData, balance: Balance) -> TechHoursView:
+    """The firm's month of technology for matters' hours (memoised on what it reads)."""
+    from ptk.sim.tech.hooks import hours_view
+
+    return hours_view(state, firm_id, data, balance)
+
+
+def tech_billing(
+    state: GameState, firm_id: int, data: GameData, balance: Balance
+) -> TechBillingView:
+    """Client expectations and products for billing this month."""
+    from ptk.sim.tech.hooks import billing_view
+
+    return billing_view(state, firm_id, data, balance)
+
+
+def tech_rfp_gap(state: GameState, firm_id: int, data: GameData, balance: Balance) -> float | None:
+    """PT-M14 (spec 13, ADR PT-0011 4): from `tech.clients.rfp_from_year`, how far the firm's
+    AI adoption runs ahead of (+) or behind (-) the market's, -1..1, for RFPs and the
+    `ai_efficiency` pitch claim; None before then."""
+    from ptk.sim.tech.hooks import rfp_gap
+
+    return rfp_gap(state, firm_id, data, balance)

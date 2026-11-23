@@ -31,7 +31,8 @@ rest act through the player's own action functions. Rules read only what the fir
   (search, diligence, offer at the ask; a guarantee makes it a one-off).
 - Offices and support (COO): business-services support kept at `support_per_100` people per
   100 lawyers (0, the default: off until a support-coverage system exists).
-- Knowledge and AI (CKO): unavailable until PT-M14.
+- Knowledge and AI (CKO, PT-M14): the training programme, subscriptions within the budget a
+  lawyer (newest era first) and rollout votes; a new platform is a one-off (a proposal).
 - Risk and claims (general counsel): conflicts only until PT-M15: keeps the conflict checks on.
 - Pro bono (a partner): once a year (`automation.pro_bono_month`), after the firm's first year
   (its moving average starts at zero), the credit policy stepped toward `target_hours` pro bono
@@ -471,7 +472,55 @@ def offices(run: AutoRun) -> None:
 
 
 def knowledge(run: AutoRun) -> None:
-    """Unavailable until PT-M14 (the area exists)."""
+    """PT-M14 (spec 9.4): the CKO keeps the training programme at its guardrail, subscribes
+    to each era begun within the monthly budget a lawyer (newest era first, full coverage
+    while the budget lasts), and puts a rollout to the partners where one is due. An era's
+    first investment buys its platform: a one-off, so it comes to the player as a proposal."""
+    from ptk.sim.tech.actions import InvestInEra, RolloutEra, SetTrainingProgramme
+    from ptk.sim.tech.efficiency import ym_of
+
+    state, b, data = run.state, run.balance, run.data
+    owner = run.owner.person_id
+    firm = state.tech.firm(run.firm_id)
+    hours = run.noisy(run.rail("training_hours"), "training_hours")
+    if (0 if firm is None else firm.training_hours) != hours:
+        run.attempt(
+            SetTrainingProgramme(owner, hours),
+            f"set the training programme at {hours} hours a lawyer a year",
+            mistake=not run.right,
+            link=("tech", 0),
+        )
+    budget = run.rail("budget_per_lawyer") * 100  # tunable-exempt: dollars to cents
+    ym = ym_of(state)
+    for era in reversed(data.legal_eras.eras):
+        if ym < era.start or era.subscription_cents <= 0:
+            continue
+        firm = run.state.tech.firm(run.firm_id)
+        mine = None if firm is None else firm.era(era.key)
+        bp = min(10000, budget * 10000 // era.subscription_cents)  # tunable-exempt: bp
+        budget -= era.subscription_cents * bp // 10000  # tunable-exempt: bp
+        if (0 if mine is None else mine.subscription_bp) != bp:
+            run.attempt(
+                InvestInEra(owner, era.key, bp),
+                f"set {era.label} at {bp / 100:.0f}% coverage",
+                mistake=not run.right,
+                link=("tech", 0),
+            )
+        held = run.state.tech.firm(run.firm_id) or firm
+        cur = None if held is None else held.era(era.key)
+        wait = b.tech.adoption.retry_months
+        if (
+            run.rail("rollout")
+            and cur is not None
+            and cur.subscription_bp > 0
+            and not cur.rolled_out
+            and (cur.vote_turn is None or state.turn - cur.vote_turn >= wait)
+        ):
+            run.attempt(
+                RolloutEra(owner, era.key),
+                f"put the {era.label} rollout to the partners",
+                link=("tech", 0),
+            )
 
 
 def risk(run: AutoRun) -> None:

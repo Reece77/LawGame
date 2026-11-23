@@ -635,3 +635,11 @@ class AutomationRow(Base):
     __tablename__ = "automation"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)  # always 1
     data_json: Mapped[str] = mapped_column(Text)
+
+
+class TechRow(Base):
+    """PT-M14 (schema v16): the firm's technology as JSON (`ptk.db.tech_io`)."""
+
+    __tablename__ = "tech"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)  # always 1
+    data_json: Mapped[str] = mapped_column(Text)

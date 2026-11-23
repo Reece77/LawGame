@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from typing import Final
 
 from ptk.balance.game import PLAYER, Game, is_associate
-from ptk.sim.hiring.actions import Interview, LayOff, MakeOffer, OpenSearch
+from ptk.sim.hiring.actions import Interview, LayOff, MakeOffer, OpenSearch, SetPayPolicy
 from ptk.sim.ledger import REVOLVER
 from ptk.sim.matters.actions import Introduce, SetHoursPolicy, SetMatterHours, SetRatePolicy
 from ptk.sim.money import BP_DENOMINATOR
@@ -518,3 +518,12 @@ def lay_off_idle(g: Game, below: float, target: float, max_share: float) -> int:
     for p in associates[: max(0, cut)]:
         made += g.act(LayOff(g.founder_id, p.id))
     return made
+
+
+def pay_policy(g: Game, pct_bp: int) -> None:
+    """PT-M7c: set the firm's pay against the market scale once (spec 5.4: a firm whose clients
+    pay mid-market rates lags the top scale); 10000 matches."""
+    if g.state.firm(PLAYER).pay_policy.pct_bp == pct_bp:
+        return
+    mode = "match" if pct_bp == 10_000 else ("lag" if pct_bp < 10_000 else "lead")
+    g.act(SetPayPolicy(g.founder_id, mode, pct_bp))  # type: ignore[arg-type]

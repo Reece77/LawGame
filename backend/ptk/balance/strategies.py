@@ -29,6 +29,10 @@ PYRAMID_POLICY_HOURS: Final = 2300
 PYRAMID_LAYOFF_BELOW: Final = 0.75  # three months' utilisation under this: lay off
 PYRAMID_LAYOFF_TARGET: Final = 0.85  # ... enough associates to bring it back toward this
 PYRAMID_LAYOFF_MAX: Final = 0.10  # at most this share of the associates in a month
+# PT-M7c (client tiers; CLAUDE.md 9 rule 2): a pyramid billing mid-market clients at below the
+# market's rates pays below the top New York scale, as mid-size firms do (65-72% of the scale,
+# docs/research/firm-economics.md s5); at the full scale it dissolved on 13 of seeds 11-40
+PYRAMID_PAY_BP: Final = 8000
 CORPORATE: Final = "corporate_ma"
 LITIGATION: Final = "commercial_litigation"
 # The order steady adds practices in (one at each 30 lawyers): cross-sell from M&A first.
@@ -223,9 +227,10 @@ def pyramid(g: Game) -> None:
     """Leverage 5+, associates hired only when utilisation reaches 88% (a 2,100-hour year),
     volume work at rates below the market (market - 2 points), two-tier with few equity
     admissions (income partners instead), a moderate revolver (two months' fees); PT-M10:
-    associates laid off while utilisation stays below 75%."""
+    associates laid off while utilisation stays below 75%; PT-M7c: pays 80% of the scale."""
     mv.answer_election(g)
     mv.comp_system(g, "modified_lockstep", two_tier=True)
+    mv.pay_policy(g, PYRAMID_PAY_BP)  # PT-M7c: mid-market rates, mid-market pay
     mv.set_rates(g, max(0, _market_bp(g) - 200))
     held = mv.practices_held(g)
     lawyers = len(g.lawyers())

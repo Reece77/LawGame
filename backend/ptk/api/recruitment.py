@@ -168,6 +168,7 @@ class OpenSearchIn(BaseModel):
     channel: HiringChannel
     level: str | None = None
     school_tiers: list[str] = Field(default_factory=list)
+    city: str | None = None  # PT-M11: hire into the firm's office in this city (None: home)
 
 
 class OfferIn(BaseModel):
@@ -447,7 +448,12 @@ def make_router(errors: dict[int | str, dict[str, Any]]) -> APIRouter:
         return _act(
             slug,
             lambda a: OpenSearch(
-                a, body.role, body.channel, level=body.level, school_tiers=tuple(body.school_tiers)
+                a,
+                body.role,
+                body.channel,
+                level=body.level,
+                school_tiers=tuple(body.school_tiers),
+                city=body.city,
             ),
         )
 

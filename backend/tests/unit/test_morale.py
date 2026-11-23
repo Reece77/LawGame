@@ -96,6 +96,7 @@ def test_morale_follows_pay_and_hours(data: GameData, balance: Balance) -> None:
     assert tired.person_state(pid).morale < fair.person_state(pid).morale  # type: ignore[operator]
 
 
+@pytest.mark.nightly  # PT-M11: over 60 s; check's runtime (product manager, 2026-11-23)
 def test_resignations_are_seeded_and_give_notice(data: GameData, balance: Balance) -> None:
     def leavers(seed: int) -> list[tuple[int, int]]:
         game = start(data, balance, seed=seed)

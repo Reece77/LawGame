@@ -64,6 +64,12 @@ STREAM_IDS: Final = MappingProxyType(
         "family": 51,  # (head_id, index) a member; (head_id, 0, k) events; (pid, 1); (pid, 2, 0)
         "investments": 52,  # (person_id,): a player's month of investment returns
         "press": 70,  # (firm_id,): a broken claim's reminder wait (PT-M16, lane C's 70-79)
+        # PT-M11 (lane B's range 100-109)
+        "city_clients": 100,  # (city_index, n): a city's clients, made when a firm opens there
+        "bar_exam": 101,  # (exam_id,): a bar exam's pass draw
+        "office_team": 102,  # (office_id, n): an office's lifted or lateral team and its books
+        "city_demand": 103,  # (city_index, practice_index): a city's monthly demand noise
+        "trainees": 104,  # (contract_id, n): a training contract's trainee and their seats
         "press_rival": 71,  # (*rival_key, n): a rival MP's statement at a move, a jab (PT-M16)
         # PT-M9 (lane B, ids 60-64): automation
         "auto_quality": 60,  # (area_index, firm_id, slot): an area's month: q, then its draws

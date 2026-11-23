@@ -250,3 +250,17 @@ PT-M9 (automation everywhere, lane B) ported `tst/sim/automation/` (not `chain.p
 - `backend/ptk/sim/automation/actions.py`: give, take over, settings and answer a proposal, as the managing partner.
 - `frontend/src/screens/AutomationScreen.tsx`, `components/RunBy.tsx`, `components/OwnerRecord.tsx`, `lib/automation.ts` (TST's `hooks/automation.ts`): one firm, Partner Track's endpoints, Take over and Hand back, proposals and the digest on the screen.
 
+
+PT-M11 (offices, cities and London, lane B) ported TST's geography (`tst/sim/geo/`, formulas.md 19) from upstream commit **`718997f0b761e0054f58984229a74ddbb2455907`** (2026-11-23, TST at M43r), not the commit above: each file's header names it and what changed. TST's `geo/markets.py` (regional product markets, sizes and prices) and `geo/marketing.py` (marketing splits by region) were read, not copied: a law firm's city market is its clients (`Client.city`, `ptk/sim/geo/markets.py` is Partner Track's own), and there is no marketing budget.
+
+| Local | Upstream | Mark | SHA-256 after rename |
+| --- | --- | --- | --- |
+| `backend/ptk/sim/geo/models.py` | `backend/tst/sim/geo/models.py` | ported | — |
+| `backend/ptk/sim/geo/formulas.py` | `backend/tst/sim/geo/formulas.py` | ported | — |
+| `backend/ptk/sim/geo/cities.py` | `backend/tst/sim/geo/cities.py` | ported | — |
+| `backend/ptk/sim/geo/offices.py` | `backend/tst/sim/geo/offices.py` | ported | — |
+
+- `backend/ptk/sim/geo/models.py`: an office is a law firm's lease (term, rent per lawyer seat, fit-out, how it was opened); the home office is implicit (id 0); no regional markets, marketing splits or product regions; Partner Track's admissions, pro hac vice, training contracts and trainees.
+- `backend/ptk/sim/geo/formulas.py`: rent per lawyer seat by city over a term; the lease as a liability (2500) against a right-of-use asset (1510); fit-out capitalised (1500) and amortised straight-line; a city's rate factor; no localisation, regional sizes or talent bonuses.
+- `backend/ptk/sim/geo/cities.py`: a person works in the firm's office in their city; a client's work is its city's; rivals are present in their headquarters' region; no units' offices, remote work or flexible seats.
+- `backend/ptk/sim/geo/offices.py`: the lease's monthly postings, renewal and break, England and Wales's indemnity insurance, each office's P&L from the ledger's office dimension; no crowding or flexible-seat costs.

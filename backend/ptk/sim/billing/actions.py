@@ -92,14 +92,17 @@ def respond_dispute(state: GameState, a: RespondDispute, draws: Draws, balance: 
     state = bump_relationship(state, bill.client_id, firm, points)
     entries: tuple[LedgerEntry, ...] = ()
     if credit > 0:
+        from ptk.sim.geo.cities import client_office_id  # PT-M11: the office dimension
+
+        office = client_office_id(state, firm, state.market.client(bill.client_id)) or None
         entries = (
             LedgerEntry(
                 turn=state.turn,
                 firm_id=firm,
                 memo=bk.CREDIT_NOTES,
                 lines=(
-                    LedgerLine(FEES, credit, practice=bill.practice),
-                    LedgerLine(RECEIVABLES, -credit, practice=bill.practice),
+                    LedgerLine(FEES, credit, practice=bill.practice, office_id=office),
+                    LedgerLine(RECEIVABLES, -credit, practice=bill.practice, office_id=office),
                 ),
             ),
         )

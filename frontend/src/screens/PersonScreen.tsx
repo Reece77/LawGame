@@ -80,6 +80,21 @@ export function PersonScreen() {
             <span>Bar admissions</span>
             <span>{p.bar_admissions.length ? p.bar_admissions.join(', ') : '—'}</span>
           </div>
+          {p.office && (
+            <div className="tst-row">
+              <span>Office</span>
+              <span data-testid="person-office">{p.office}</span>
+            </div>
+          )}
+          {(p.admissions ?? []).map((a) => (
+            <div className="tst-row" key={`${a.jurisdiction}-${a.how}`} data-testid="admission-row">
+              <span>{a.jurisdiction}</span>
+              <span>
+                {humanize(a.how)}
+                {a.since ? ` · ${a.since}` : ''}
+              </span>
+            </div>
+          ))}
           {p.background && (
             <div className="tst-row">
               <span>Background</span>

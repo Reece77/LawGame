@@ -635,3 +635,11 @@ class AutomationRow(Base):
     __tablename__ = "automation"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)  # always 1
     data_json: Mapped[str] = mapped_column(Text)
+
+
+class GeoRow(Base):
+    """PT-M11: the one row holding the geography state as JSON (ptk.db.geo_io)."""
+
+    __tablename__ = "geo"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)  # always 1
+    data_json: Mapped[str] = mapped_column(Text)

@@ -14,6 +14,7 @@ from ptk.sim.events.data import (
     template_problems,
 )
 from ptk.sim.founder.config import FamilyBalance, FounderLifeBalance, SuccessionBalance
+from ptk.sim.geo.data import GeoBalance, GeoData
 from ptk.sim.macro_data import SERIES as MACRO_SERIES
 from ptk.sim.macro_data import MacroBalance, MacroData
 from ptk.sim.org.seat_data import AuthorityBalance, PitchesBalance, SeatDef, SeatsBalance, SeatsData
@@ -424,6 +425,11 @@ ENERGY_ACTIONS: Final = (
     "press_answer",  # PT-M16: answer a press moment
     "submission",  # PT-M16: the March directory submission
     "lay_off",  # PT-M10: let an associate or a member of staff go (TST's fire)
+    # PT-M11
+    "open_office",  # open an office in a city (spec 8.8)
+    "close_office",  # close an office (a one-off)
+    "bar_admission",  # sit a bar exam, apply on motion or register as a foreign lawyer
+    "training_contracts",  # offer a year's training contracts (spec 5.7)
 )
 LATERAL_CHANNELS: Final = ("referral", "job_post", "recruiter")
 
@@ -1258,6 +1264,7 @@ class Balance(_Strict):
     press: PressBalance  # PT-M16
     rankings: RankingsBalance  # PT-M16
     automation: AutomationBalance  # PT-M9 (ptk.sim.automation.config)
+    geo: GeoBalance  # PT-M11 (ptk.sim.geo.data): offices and the UK path
 
 
 # --- People seed data (PT-M1a) ------------------------------------------------------------
@@ -1497,6 +1504,7 @@ class ClientsData(_Strict):
     generated_sector_weights: dict[str, float]
     panel_firms: tuple[PanelFirmDef, ...] = Field(min_length=1)
     real_clients: tuple[RealClientDef, ...]
+    uk_clients: tuple[RealClientDef, ...] = ()  # PT-M11: London's real clients (FTSE names)
 
     def sector(self, key: str) -> SectorDef:
         for s in self.sectors:
@@ -1719,6 +1727,7 @@ class GameData(_Strict):
     event_templates: tuple[EventTemplate, ...] = ()  # PT-M6: events/*.yaml (TST 16.4)
     macro: MacroData  # PT-M7: macro_history.yaml
     seats: SeatsData  # PT-M8: seats.yaml
+    geo: GeoData = GeoData()  # PT-M11: cities.yaml and bar_rules.yaml
 
     @model_validator(mode="after")
     def _unique(self) -> GameData:
@@ -1752,6 +1761,7 @@ class GameData(_Strict):
             if bad := sorted((set(shock.demand) | set(shock.hours)) - set(self.practice_keys)):
                 raise ValueError(f"macro shock {shock.from_ym}: unknown practices {bad}")
         self.rivals.check(set(self.practice_keys), {c.key for c in self.courts.courts})
+        self._check_geo()  # PT-M11
         traits = set(self.skill_keys) | {t.key for t in self.personality}
         for seat in self.seats.seats:  # PT-M8: seat weights name skills or personality traits
             if bad := sorted(set(seat.weights) - traits):
@@ -1759,6 +1769,17 @@ class GameData(_Strict):
         if problems := template_problems(self.event_templates):
             raise ValueError("event templates: " + "; ".join(problems))
         return self
+
+    def _check_geo(self) -> None:
+        """PT-M11: cities.yaml and bar_rules.yaml name known jurisdictions, courts, practices."""
+        jurisdictions = {j.key for j in self.jurisdictions}
+        if bad := sorted({j.key for j in self.geo.jurisdictions} - jurisdictions):
+            raise ValueError(f"bar_rules.yaml: jurisdictions not in scenarios.yaml {bad}")
+        if bad := sorted(set(self.geo.courts) - {c.key for c in self.courts.courts}):
+            raise ValueError(f"bar_rules.yaml: unknown courts {bad}")
+        for city in self.geo.cities:
+            if bad := sorted(set(city.mix) - set(self.practice_keys)):
+                raise ValueError(f"city {city.key!r}: unknown practices {bad}")
 
     def _check_references(self) -> None:
         skills, practices = set(self.skill_keys), set(self.practice_keys)

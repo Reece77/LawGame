@@ -199,6 +199,7 @@ def _exodus(data: GameData, balance: Balance, seed: int, respond: bool) -> str:
     return g.state.save_meta.game_state
 
 
+@pytest.mark.nightly  # PT-M11: over 60 s; check's runtime (product manager, 2026-11-23)
 def test_the_exodus_spiral(
     data: GameData, balance: Balance, capsys: pytest.CaptureFixture[str]
 ) -> None:

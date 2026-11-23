@@ -20,6 +20,7 @@ import { useState } from 'react';
 import { useParams } from 'react-router';
 import { rangeText } from '../lib/attr';
 import {
+  useOffices,
   useOfferPreview,
   useRecruitment,
   useRecruitmentAction,
@@ -126,6 +127,9 @@ function OpenSearchForm({
   const [channel, setChannel] = useState<string | null>('campus');
   const [level, setLevel] = useState<string | null>(null);
   const [tiers, setTiers] = useState<string[]>([]);
+  const [city, setCity] = useState<string | null>(null);
+  const { slug = '' } = useParams();
+  const offices = useOffices(slug).data?.offices ?? []; // PT-M11: a local hiring pool
   const kind = r.roles.find((x) => x.key === role)?.kind ?? 'lawyer';
   const levels = (r.levels[kind] ?? []).filter((l) => l !== 'associate_1' || channel !== 'campus');
   const chosen = r.channels.find((c) => c.key === channel);
@@ -167,10 +171,23 @@ function OpenSearchForm({
             onChange={setTiers}
           />
         )}
+        {offices.length > 1 && channel !== 'campus' && (
+          <Select
+            label="Office"
+            placeholder="Home office"
+            data={offices.map((o) => ({ value: o.city, label: o.label }))}
+            value={city}
+            onChange={setCity}
+            clearable
+            data-testid="search-office"
+          />
+        )}
         <Button
           loading={busy}
           disabled={!role || !channel}
-          onClick={() => role && channel && onOpen(buildBody({ role, channel, level, tiers }))}
+          onClick={() =>
+            role && channel && onOpen(buildBody({ role, channel, level, tiers, city }))
+          }
         >
           Open search
         </Button>
@@ -184,12 +201,14 @@ function buildBody(v: {
   channel: string;
   level: string | null;
   tiers: string[];
+  city?: string | null;
 }): OpenSearchBody {
   return {
     role: v.role,
     channel: v.channel as 'campus' | 'recruiter' | 'job_post' | 'referral',
     level: v.channel === 'campus' ? null : v.level,
     school_tiers: v.tiers,
+    city: v.channel === 'campus' ? null : (v.city ?? null),
   };
 }
 

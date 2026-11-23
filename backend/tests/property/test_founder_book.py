@@ -14,6 +14,7 @@ import contextlib
 from collections import defaultdict
 from dataclasses import replace
 
+import pytest
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
@@ -107,6 +108,7 @@ def test_personal_book_balances_and_stays_apart(
         max_size=24,
     )
 )
+@pytest.mark.nightly  # PT-M11: over 60 s; check's runtime (product manager, 2026-11-23)
 def test_mirror_always_balances(steps: list[tuple[int, int, int, bool]]) -> None:
     """Whatever the partnership shows, the mirror's entries balance and stay personal."""
     from ptk.loader import load_balance

@@ -135,7 +135,9 @@ def slots(state: GameState, firm_id: int, seat: SeatDef, balance: Balance) -> tu
         case "committee":
             return tuple(range(1, exco_max(state, firm_id, balance) + 1))
         case _:
-            return ()  # per_office: offices beyond the home city arrive with PT-M11
+            # per_office (PT-M11): from a second office, each office's (the home office is 0)
+            offices = state.geo.firm_offices(firm_id)
+            return (0, *(o.id for o in offices)) if offices else ()
 
 
 def managing_partner(state: GameState, firm_id: int) -> int | None:
@@ -274,8 +276,10 @@ def effect(
         if slot is None or slot not in slots(state, firm_id, seat, balance):
             return 0.0
         return holder_effect(state, firm_id, seat, slot, balance)
-    if seat.slots == "per_office":
-        return 0.0  # no offices beyond the home city before PT-M11
+    if seat.slots == "per_office":  # PT-M11: the office's managing partner
+        if slot is None or slot not in slots(state, firm_id, seat, balance):
+            return 0.0
+        return holder_effect(state, firm_id, seat, slot, balance)
     return holder_effect(state, firm_id, seat, SINGLE_SLOT, balance)
 
 

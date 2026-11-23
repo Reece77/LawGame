@@ -58,6 +58,14 @@ jurisdictions:
   - { key: us_ny, label: New York }
   - { key: us_dc, label: District of Columbia }
   - { key: uspto, label: USPTO patent bar }
+  # PT-M11: the offices' jurisdictions (bar_rules.yaml)
+  - { key: us_il, label: Illinois }
+  - { key: us_ma, label: Massachusetts }
+  - { key: us_ca, label: California }
+  - { key: us_tx, label: Texas }
+  - { key: us_de, label: Delaware }
+  - { key: ew, label: England and Wales (solicitor) }
+  - { key: ew_rfl, label: Registered foreign lawyer (England and Wales) }
 # PT-M7b (difficulty teeth): books_mult_bp x the founders' books; revolver_mult_bp x the
 # scenario's revolver (the facility and its January floor); loyalty_points added to the
 # founders' clients' starting relationships (0-100); card_mult_bp x the new firm's starting

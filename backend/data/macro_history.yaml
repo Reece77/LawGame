@@ -79,3 +79,24 @@ shocks:
     hours: { commercial_litigation: 0.15, white_collar: 0.10, ip: 0.10, employment: 0.05 } # PT-M10 tuning: courts' hearings adjourned; deals' hours not paused (the ma and pe indices' April-May 2020 trough carries the deal drop): with deals at 0.30 T8.2020 read -41.1%, at 0.15 -35.8% (seeds 1-10)
     docket: true
     src: "history-2016-2025 s2 (the pandemic's shape): lockdowns from mid-March 2020, courts' trials suspended, deals paused; shares [A]"
+
+# PT-M11: the uk region's series (London's market; docs/research/london-and-us-cities.md s1) as
+# multipliers on the indices above, interpolated between points and held after the last. [A] from
+# the dossier's narrative: UK banks' deeper 2008-09 lending freeze, the eurozone's 2011-12 drag,
+# the June 2016 referendum's chill on M&A, property and listings, and London's 2022-25 IPO drought.
+regions:
+  uk:
+    - { ym: [2005, 1], values: { ma: 1.0, lending: 1.0, real_estate: 1.0, issuance: 1.0, cycle: 1.0 } }
+    - { ym: [2008, 7], values: { ma: 1.0, lending: 1.0, real_estate: 1.0, issuance: 1.0, cycle: 1.0 } }
+    - { ym: [2008, 10], values: { lending: 0.85, real_estate: 0.85, cycle: 0.98 }, note: "UK banks' rescue (October 2008)" }
+    - { ym: [2009, 4], values: { ma: 0.95, lending: 0.80, real_estate: 0.80, cycle: 0.97 } }
+    - { ym: [2010, 7], values: { lending: 0.90, real_estate: 0.92 } }
+    - { ym: [2012, 7], values: { ma: 0.88, lending: 0.90, real_estate: 0.95 }, note: "the eurozone crisis" }
+    - { ym: [2014, 7], values: { ma: 1.0, lending: 1.0, real_estate: 1.0, issuance: 1.0, cycle: 1.0 } }
+    - { ym: [2016, 6], values: { ma: 1.0, lending: 1.0, real_estate: 1.0, issuance: 1.0, cycle: 1.0 } }
+    - { ym: [2016, 10], values: { ma: 0.88, real_estate: 0.85, issuance: 0.85, cycle: 0.99 }, note: "after the 23 June 2016 referendum" }
+    - { ym: [2019, 7], values: { ma: 0.90, real_estate: 0.90, issuance: 0.90 } }
+    - { ym: [2020, 7], values: { ma: 0.92, real_estate: 0.88, issuance: 0.90, cycle: 0.97 } }
+    - { ym: [2021, 7], values: { ma: 0.98, real_estate: 0.95, issuance: 1.0, cycle: 1.0 } }
+    - { ym: [2023, 7], values: { ma: 0.90, issuance: 0.70, real_estate: 0.90 }, note: "London's IPO drought" }
+    - { ym: [2025, 7], values: { ma: 0.92, issuance: 0.75, real_estate: 0.92 } }

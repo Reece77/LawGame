@@ -59,6 +59,7 @@ from ptk.sim.hiring.models import (
 from ptk.sim.hiring.pay import (
     firm_pay_cents,
     firm_scale_cents,
+    london_pay_cents,
     market_bonus_cents,
     market_pay_cents,
     on_scale,
@@ -354,15 +355,29 @@ class CostLine:
 
 
 def monthly_cost_lines(
-    state: GameState, firm_id: int, balance: Balance, data: GameData
+    state: GameState,
+    firm_id: int,
+    balance: Balance,
+    data: GameData,
+    office_id: int | None = None,
 ) -> tuple[CostLine, ...]:
     """One firm's phase-6 costs this month (before December bonuses). The Overview shows the
-    same lines as this month's payroll projection (TST 8 pattern)."""
+    same lines as this month's payroll projection (TST 8 pattern). PT-M11: `office_id` gives
+    one office's lines (its people's pay and overheads at its city's band; rent per head only
+    in the home office, a leased office's rent is its lease's); None, the whole firm's."""
+    from ptk.sim.geo.cities import office_city, person_office_id
+    from ptk.sim.geo.models import HOME_OFFICE_ID
+
     by_account: dict[AccountCode, Cents] = {}
     benefits = 0
     heads = 0
     lawyers = 0
+    home = office_id is None or office_id == HOME_OFFICE_ID
     for e in state.staff(firm_id):
+        if office_id is not None and (
+            person_office_id(state, firm_id, state.person(e.person_id)) != office_id
+        ):
+            continue
         heads += 1
         person = state.person(e.person_id)
         lawyers += data.role(person.role).kind == "lawyer"
@@ -379,6 +394,10 @@ def monthly_cost_lines(
         if s.firm_id == firm_id and s.status == "open" and s.channel == "job_post"
     )
     summer = _summer_pay_cents(state, firm_id, balance, data)
+    city = firm.home_city
+    if not home:  # PT-M11: a leased office pays its lease (ptk.sim.geo.offices), not per head
+        assert office_id is not None
+        city, heads, job_posts, summer = office_city(state, firm_id, office_id), 0, 0, 0
     lines = [
         CostLine("Associate and counsel salaries", SALARIES, by_account.get(SALARIES, 0)),
         CostLine(
@@ -389,7 +408,7 @@ def monthly_cost_lines(
         CostLine("Staff salaries", STAFF_SALARIES, by_account.get(STAFF_SALARIES, 0)),
         CostLine("Benefits", BENEFITS, benefits),
         CostLine("Rent", RENT, _office_rent(state, firm_id, heads, balance, data)),
-        *overhead_lines(lawyers, firm.home_city, balance),
+        *overhead_lines(lawyers, city, balance),
         CostLine("Job posts", RECRUITING, balance.hiring.job_post_cost_cents * job_posts),
         CostLine("Summer programme", RECRUITING, summer),
     ]
@@ -464,40 +483,64 @@ def payroll(
     logs: list[LogItem] = []
     december = _ym(state)[1] == balance.pay.bonus_month
     for firm in state.firms:
-        costs = [c for c in monthly_cost_lines(state, firm.id, balance, data) if c.amount]
-        total = sum(c.amount for c in costs)
-        if total:
-            entries.append(
-                LedgerEntry(
-                    turn=state.turn,
-                    firm_id=firm.id,
-                    memo="Monthly costs: " + ", ".join(c.label for c in costs),
-                    lines=(
-                        *(LedgerLine(c.account, c.amount) for c in costs),
-                        LedgerLine(CASH, -total),
-                    ),
+        for office_id in _payroll_offices(state, firm.id):  # PT-M11: one entry an office
+            costs = [
+                c for c in monthly_cost_lines(state, firm.id, balance, data, office_id) if c.amount
+            ]
+            total = sum(c.amount for c in costs)
+            office = office_id or None  # the home office posts firm-wide lines, as v1
+            if total:
+                entries.append(
+                    LedgerEntry(
+                        turn=state.turn,
+                        firm_id=firm.id,
+                        memo="Monthly costs: " + ", ".join(c.label for c in costs),
+                        lines=(
+                            *(LedgerLine(c.account, c.amount, office_id=office) for c in costs),
+                            LedgerLine(CASH, -total, office_id=office),
+                        ),
+                    )
                 )
-            )
         if not december:
             continue
         paid = 0
         count = 0
+        by_office: dict[int, int] = {}  # PT-M11: each office's bonuses
         for e in state.staff(firm.id):
             amount, _market = bonus_cents(state, e, state.person(e.person_id), balance, data)
             if amount:
                 paid += amount
                 count += 1
+                oid = _office_of(state, firm.id, e.person_id)
+                by_office[oid] = by_office.get(oid, 0) + amount
         if paid:
-            entries.append(
-                LedgerEntry.transfer(
-                    turn=state.turn,
-                    firm_id=firm.id,
-                    memo=f"Year-end bonuses ({count})",
-                    debit=BONUSES,
-                    credit=CASH,
-                    amount=paid,
+            if set(by_office) <= {0}:  # all in the home office: v1's entry
+                entries.append(
+                    LedgerEntry.transfer(
+                        turn=state.turn,
+                        firm_id=firm.id,
+                        memo=f"Year-end bonuses ({count})",
+                        debit=BONUSES,
+                        credit=CASH,
+                        amount=paid,
+                    )
                 )
-            )
+            else:
+                entries.append(
+                    LedgerEntry(
+                        turn=state.turn,
+                        firm_id=firm.id,
+                        memo=f"Year-end bonuses ({count})",
+                        lines=tuple(
+                            line
+                            for oid, amt in sorted(by_office.items())
+                            for line in (
+                                LedgerLine(BONUSES, amt, office_id=oid or None),
+                                LedgerLine(CASH, -amt, office_id=oid or None),
+                            )
+                        ),
+                    )
+                )
             pct = firm.pay_policy.pct_bp
             policy = (
                 "in line with" if pct == 10_000 else "below" if pct < 10_000 else "above"
@@ -514,6 +557,48 @@ def payroll(
                 )
             )
     return tuple(entries), tuple(logs)
+
+
+def _payroll_offices(state: GameState, firm_id: int) -> tuple[int | None, ...]:
+    """PT-M11: None (the whole firm, v1) without other offices; else each office's id."""
+    offices = state.geo.firm_offices(firm_id)
+    if not offices:
+        return (None,)
+    return (0, *(o.id for o in offices))
+
+
+def person_city(state: GameState, firm_id: int, person: Person) -> str:
+    """PT-M11: the city someone works or would work in: their city where the firm has an
+    office there, else the firm's home city (v1)."""
+    if not state.geo.offices:
+        return state.firm(firm_id).home_city
+    from ptk.sim.geo.cities import work_city
+
+    return work_city(state, firm_id, person)
+
+
+def city_jurisdiction(state: GameState, city: str, data: GameData, home: str) -> str:
+    """PT-M11: where a lawyer hired in `city` is admitted: the city's jurisdiction, or the
+    scenario's (home) one in the home city."""
+    if city == "" or city == state.player.home_city or not data.geo.has_city(city):
+        return home
+    return data.geo.city(city).jurisdiction
+
+
+def search_city(state: GameState, search: Search) -> str:
+    """PT-M11: a search's city (its office's, from OpenSearch's `city`), else home."""
+    for sid, city in state.geo.search_cities:
+        if sid == search.id:
+            return city
+    return state.firm(search.firm_id).home_city
+
+
+def _office_of(state: GameState, firm_id: int, person_id: int) -> int:
+    if not state.geo.offices:
+        return 0
+    from ptk.sim.geo.cities import person_office_id
+
+    return person_office_id(state, firm_id, state.person(person_id))
 
 
 # --- Phase 8: morale, resignations, tag reveals ----------------------------------------------
@@ -541,7 +626,7 @@ def morale_terms(
     """P + interesting work + hours + prospects + the manager term (spec 5.3; TST 9) + pro
     bono (PT-M7a, spec 7.8: real responsibility early)."""
     cfg = balance.morale
-    city = state.firm(e.firm_id).home_city
+    city = person_city(state, e.firm_id, person)  # PT-M11: where they work
     market = market_pay_cents(data, balance, person.level, _ym(state), city)
     return (
         pay_term(e.salary_cents, market, cfg)
@@ -686,6 +771,10 @@ def apply_scale(state: GameState, data: GameData) -> GameState:
         if not on_scale(person.level):
             continue
         scale = firm_scale_cents(data, ym, person.level, state.firm(e.firm_id).pay_policy)
+        if state.geo.offices:  # PT-M11: a London associate is on the London scale
+            london = london_pay_cents(data, person.level, ym, person_city(state, e.firm_id, person))
+            if london is not None:
+                scale = policy_pay_cents(london, state.firm(e.firm_id).pay_policy)
         if scale > e.salary_cents:
             state = with_employment(state, replace(e, salary_cents=scale))
     return state
@@ -719,7 +808,7 @@ def ask_cents(
     last from the person's own generator."""
     ask_cfg = balance.hiring.ask
     market = market_pay_cents(
-        data, balance, person.level, _ym(state), state.firm(firm_id).home_city
+        data, balance, person.level, _ym(state), person_city(state, firm_id, person)
     )
     if person.school_tier is not None:
         market = pct_of(
@@ -809,7 +898,8 @@ def lateral_batches(
             count += channel.sociability_bonus
         role = data.role(search.role)
         mix = balance.hiring.level_mix[role.kind]
-        city = state.firm(search.firm_id).home_city
+        city = search_city(state, search)  # PT-M11: the search's office
+        bar = city_jurisdiction(state, city, data, jurisdiction)  # PT-M11: admitted there
         first = state.next_id("person")
         people: list[tuple[Person, Cents]] = []
         for n in range(1, count + 1):
@@ -830,7 +920,7 @@ def lateral_batches(
                 level,
                 person_id=first + n - 1,
                 city=city,
-                jurisdiction=jurisdiction,
+                jurisdiction=bar,
                 school_tier=tier,
             )
             people.append((person, ask_cents(gen, person, state, search.firm_id, balance, data)))
@@ -896,7 +986,7 @@ def campus_pools(
     expires = state.turn + (campus.offer_month - campus.pool_month)
     for search in [s for s in state.searches if s.status == "open" and s.channel == "campus"]:
         role = data.role(search.role)
-        city = state.firm(search.firm_id).home_city
+        city = search_city(state, search)  # PT-M11: the search's office
         people: list[tuple[Person, Cents]] = []
         # PT-M8 (spec 9.1): the CHRO's campus programme draws a stronger (or weaker) class
         lift = balance.seats.effects.chro_campus_points * seat_effect(

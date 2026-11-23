@@ -70,6 +70,7 @@ class OpenSearch:
     level: str | None = None
     school_tiers: tuple[str, ...] = ()
     plan_id: int | None = None
+    city: str | None = None  # PT-M11: hire into the firm's office in this city (None: home)
     kind: Literal["open_search"] = "open_search"
 
 
@@ -257,7 +258,20 @@ def open_search(
         school_tiers=tuple(sorted(set(action.school_tiers))),
         plan_id=action.plan_id,
     )
-    return Outcome(with_search(state, search))
+    state = with_search(state, search)
+    if action.city is not None and action.city != state.firm(firm).home_city:
+        from ptk.sim.geo.cities import office_in  # PT-M11: a local hiring pool
+
+        if action.channel == "campus":
+            raise InvalidActionError("campus searches hire into the home office")
+        if office_in(state, firm, action.city) is None:
+            raise InvalidActionError(f"the firm has no office in {action.city!r}")
+        geo = state.geo
+        state = replace(
+            state,
+            geo=replace(geo, search_cities=(*geo.search_cities, (search.id, action.city))),
+        )
+    return Outcome(state)
 
 
 def close_search(state: GameState, action: CloseSearch, balance: Balance) -> Outcome:

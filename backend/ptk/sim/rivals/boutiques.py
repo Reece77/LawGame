@@ -38,7 +38,12 @@ def found(state: GameState, rng: RngFactory, month: Month) -> tuple[GameState, l
     gen = streams.rival_gen(rng, month.turn, BOUTIQUE_KEY, n)
     if float(gen.random()) >= bb.monthly_bp / 10_000 or alive >= bb.max_alive:
         return state, []
-    sources = [f for f in rivals.active if f.kind == "real"]
+    from ptk.sim.geo.cities import rival_region
+
+    # PT-M11: spin-offs leave US firms (UK rivals compete in London only)
+    sources = [
+        f for f in rivals.active if f.kind == "real" and rival_region(month.data, f.hq) == "us"
+    ]
     if not sources:
         return state, []
     source = sources[min(int(float(gen.random()) * len(sources)), len(sources) - 1)]

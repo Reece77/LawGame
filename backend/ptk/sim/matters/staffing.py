@@ -57,7 +57,7 @@ from ptk.sim.matters.models import (
     TeamMember,
     TeamRole,
 )
-from ptk.sim.matters.rates import indexed_rate, practice_index
+from ptk.sim.matters.rates import client_indexes, indexed_rate
 from ptk.sim.money import round_half_even
 from ptk.sim.people.models import Person, WorkMonth
 from ptk.sim.people.strain import monthly_capacity_tenths
@@ -511,7 +511,7 @@ def month_hours(
     turn = state.turn
     ym = turn_to_ym(turn, state.save_meta.start_ym)
     firm = state.firm(firm_id)
-    index = {p: practice_index(firm, p) for p in data.practice_keys}  # PT-M7b: by practice
+    index = client_indexes(state, firm, balance)  # PT-M7b: by practice; PT-M7c: by client tier
     earners = fee_earners(state, firm_id, data, balance)
     by_id = {e.id: e for e in earners}
     cap = {e.id: e.capacity for e in earners}
@@ -572,7 +572,7 @@ def month_hours(
                 phase.tasks,
                 data,
                 balance,
-                index[m.practice] * rate_f(m.client_id),
+                index(m.practice, m.client_id) * rate_f(m.client_id),
             )
         )
         used[pid] += t
@@ -646,7 +646,7 @@ def month_hours(
                             flow_tasks,
                             data,
                             balance,
-                            index[practice] * rate_f(cid),
+                            index(practice, cid) * rate_f(cid),
                         )
                     )
     for cid, wanted_t in all_t.items():  # (client, "") -> its unserved share of all its flow

@@ -59,6 +59,7 @@ class Decomposition:
     won_share: float | None = None  # the year's worked value over the market's demand
     held_share: float | None = None  # ... over the demand in the practices the firm holds
     unserved: float | None = None  # the year's flow the firm could not staff, of its flow
+    tiers: dict[str, int] = field(default_factory=dict)  # the year's worked value by client tier
 
 
 def _group(account: str) -> str:
@@ -117,6 +118,7 @@ def decompose(strategy: str, seed: int, year: int = YEAR, data_dir: str = "data"
                 None,
             )
             held = _held(game)
+            _tiers(game, out.tiers)
             worked += month.worked_cents if month else 0
             market += sum(demand)
             held_market += sum(d for k, d in zip(practices, demand, strict=True) if k in held)
@@ -143,6 +145,23 @@ def decompose(strategy: str, seed: int, year: int = YEAR, data_dir: str = "data"
     out.won_share = worked / market if market else None
     out.held_share = worked / held_market if held_market else None
     return out
+
+
+def _tiers(game: Game, into: dict[str, int]) -> None:
+    """The month's worked value (hours records) by client tier: the founders' book, large,
+    mid-market (PT-M7c)."""
+    from ptk.sim.matters.setup import SETUP_TURN
+
+    state = game.state
+    book = {
+        r.client_id
+        for r in state.market.relationships
+        if r.firm_id == PLAYER and r.since_turn == SETUP_TURN
+    }
+    large = {c.id for c in state.market.clients if c.size_class == "large"}
+    for h in state.market.hours:
+        tier = "book" if h.client_id in book else "large" if h.client_id in large else "mid"
+        into[tier] = into.get(tier, 0) + h.value_cents
 
 
 def _held(game: Game) -> set[str]:
@@ -189,6 +208,7 @@ def row(d: Decomposition) -> dict[str, float | None]:
         "admits/yr": _per(sum(d.admissions.get(y, 0) for y in years), len(years)),
         "share": d.won_share,
         "share held": d.held_share,
+        **{f"{t} %": _per(d.tiers.get(t, 0), sum(d.tiers.values())) for t in ("book", "large", "mid")},
     }
 
 

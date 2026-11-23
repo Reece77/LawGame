@@ -140,14 +140,29 @@ def appeal_rep(state: GameState, firm_id: int, practice: str, balance: Balance) 
     )
 
 
-def card_progress(state: GameState, firm_id: int, practice: str, balance: Balance) -> float:
-    """PT-M7b's card progress 0-1 (spec 7.1): the firm's reputation over full_share of the
-    market's top_quantile reputation in the practice, at most 1."""
-    cfg = balance.reputation.card
-    top = market_quantile(state, practice, cfg.top_quantile)
-    if top <= 0:
+def percentile(
+    state: GameState, firm_id: int, practice: str, balance: Balance, region: int = REGION_NEW_YORK
+) -> float:
+    """PT-M7c: the firm's percentile 0-1 among every seeded firm in a practice and region: the
+    share of the other firms whose reputation is below its own (ties count half)."""
+    mine = reputation(state, firm_id, practice, balance, region)
+    others = [
+        e.value
+        for e in state.standing.reputation.entries
+        if e.practice == practice and e.region == region and e.firm_id != firm_id
+    ]
+    if not others:
         return 1.0
-    return min(1.0, reputation(state, firm_id, practice, balance) / (cfg.full_share * top))
+    below = sum(1.0 if v < mine else 0.5 if v == mine else 0.0 for v in others)
+    return below / len(others)
+
+
+def card_progress(state: GameState, firm_id: int, practice: str, balance: Balance) -> float:
+    """PT-M7b's card progress 0-1 (spec 7.1); PT-M7c (Reece, 2026-11-23): relative, the firm's
+    percentile in the practice over `top_quantile`, at most 1, so only a top-decile firm earns
+    the full card (an elite boutique among them)."""
+    cfg = balance.reputation.card
+    return min(1.0, percentile(state, firm_id, practice, balance) / cfg.top_quantile)
 
 
 def prestige_term(state: GameState, firm_id: int, balance: Balance) -> float:

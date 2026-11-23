@@ -3,27 +3,27 @@
     [
       1,
       "1000_cash",
-      275302544
+      110428341
     ],
     [
       1,
       "1100_unbilled_wip",
-      81700118
+      87128629
     ],
     [
       1,
       "1110_wip_provision",
-      -6090928
+      -38932594
     ],
     [
       1,
       "1200_receivables",
-      48344739
+      22718279
     ],
     [
       1,
       "1210_bad_debt_provision",
-      -483449
+      -227184
     ],
     [
       1,
@@ -32,18 +32,23 @@
     ],
     [
       1,
+      "2300_revolver",
+      0
+    ],
+    [
+      1,
       "2700_partner_current_accounts",
-      -132332292
+      -36827605
     ],
     [
       1,
       "3000_partners_capital",
-      -142970252
+      -73600736
     ],
     [
       1,
       "3100_undistributed_profit",
-      8561391628
+      5283924486
     ],
     [
       1,
@@ -53,12 +58,12 @@
     [
       1,
       "4000_fees",
-      -9720843845
+      -6516338041
     ],
     [
       1,
       "4100_success_fees",
-      -225444466
+      -25943324
     ],
     [
       1,
@@ -98,12 +103,17 @@
     [
       1,
       "6700_write_offs",
-      23633151
+      3886853
+    ],
+    [
+      1,
+      "6800_interest",
+      269223
     ],
     [
       1,
       "6900_general_admin",
-      384235544
+      329956165
     ],
     [
       101,
@@ -3589,12 +3599,16 @@
       21
     ],
     [
+      "collapsed",
+      1
+    ],
+    [
       "done",
-      16
+      14
     ],
     [
       "lost",
-      5
+      4
     ],
     [
       "open",
@@ -3602,17 +3616,17 @@
     ],
     [
       "won",
-      2
+      3
     ]
   ],
-  "matters": "85007db9d8f6c23c2ccd050e48f9a899c475d434f8b253766237fbf943e53fdb",
+  "matters": "0bee778bf93067e3c6fb11fa0e521e04e5b3af877178b6dfbc804b0161ab6b6f",
   "names": [
     "Jennifer King",
     "Kevin Carter",
     "Ashley Cook",
     "Whitney Brown"
   ],
-  "people": "7271a32faac019bf9a7475a7e9866fb63eeefc905883c71aad79a63d41c609c3",
-  "relationships": "1fce19d191d1d2eebb961f3ced197ae40457904a1ebeeedade9b549208a338ec",
-  "sha256": "5ff9a259b14a08652fc3d2b5e8784f326445f94396e3a7a1780d6d7310d7f2f6"
+  "people": "6078ca1ee079eeba3781a89b108992a2c725ce72217e8f6cb51cce31371ae9cb",
+  "relationships": "4f93d6cc02e7ec2e8e3a4984cd8f82a70a92c1d3ba0bb5f07f28e40f04827440",
+  "sha256": "36ab31b1ed9ad77df429db91f78949119ed5c01e5c05b87cadd1ae0022caab86"
 }

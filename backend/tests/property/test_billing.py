@@ -10,6 +10,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from dataclasses import replace
 
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
@@ -27,7 +28,7 @@ from ptk.sim.ledger import (
 )
 from ptk.sim.matters import formulas as fx
 from ptk.sim.matters.models import PRO_BONO_CLIENT_ID
-from ptk.sim.matters.rates import indexed_rate, practice_index
+from ptk.sim.matters.rates import client_indexes, indexed_rate
 from ptk.sim.money import round_half_even
 from tests.billing_support import Played, played
 
@@ -45,6 +46,9 @@ def test_wip_at_standard_is_hours_times_rate(
     worked: dict[int, int] = defaultdict(int)
     for before, result in zip(game.befores, game.results, strict=True):
         people = {p.id: p for p in before.people}
+        # PT-M7c: the month's card by client tier, as the staffing rule read it
+        month = replace(result.new_state, turn=before.turn)
+        cards = client_indexes(month, month.firm(1), balance)
         for r in result.new_state.market.hours:
             if r.turn != before.turn:
                 continue
@@ -53,8 +57,9 @@ def test_wip_at_standard_is_hours_times_rate(
                 continue
             rate = indexed_rate(
                 fx.rate_cents(data.practice(r.practice), people[r.person_id].level, data),
-                # PT-M7a: the card after January's rise; PT-M7b: the practice's card share
-                practice_index(result.new_state.firm(1), r.practice),
+                # PT-M7a: the card after January's rise; PT-M7b: the practice's card share;
+                # PT-M7c: the client's tier
+                cards(r.practice, r.client_id),
             )
             assert r.value_cents == round_half_even(r.tenths * rate, fx.TENTHS)
             if r.matter_id is not None:

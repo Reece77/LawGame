@@ -922,8 +922,13 @@ rates: # PT-M7a: the firm's yearly rate rise over the practices' 2005 cards; the
   rise_max_bp: 2000 # or raise them up to 20%
   month: 1 # calendar month the rise takes effect (January)
   card: # PT-M7b: a new firm's card by practice, a share of the top 2005 card (practices.yaml), times the rate index
-    start_bp: 9850 # bp: a new firm starts every practice at this share of the top card; PT-M7b tuning 6500 -> 9850 (T5: at 6500 steady dissolved on 9 of 10 seeds in its first year, 8500: 4, 9000: 3, 9500: 1; PT-M4's exodus guard: 3 of 10 heeded firms dissolved at 9500, 2 at 9750, 1 at 9850)
-    step_bp: 50 # bp: the most a practice's share moves toward its target each January (a reputation is earned over years); PT-M7b tuning 250 -> 50
+    start_bp: 8000 # bp: a new firm starts every practice at this share of the top card; PT-M7c (client tiers): what large clients pay a new firm, 9850 -> 8000 (the founders' book keeps 9850); PT-M7b tuning 6500 -> 9850 (T5: at 6500 steady dissolved on 9 of 10 seeds in its first year, 8500: 4, 9000: 3, 9500: 1; PT-M4's exodus guard: 3 of 10 heeded firms dissolved at 9500, 2 at 9750, 1 at 9850)
+    step_bp: 400 # bp: the most a practice's share moves toward its target each January (a reputation is earned over years); PT-M7b tuning 250 -> 50; PT-M7c 50 -> 400 (with an 80% start, a top-decile firm reaches the full card in five years)
+    # PT-M7c (Reece, 2026-11-23): client tiers. The practice's share (start_bp, moving with reputation) is what large clients pay; only a top-decile firm reaches the full card
+    mid_max_bp: 6000 # bp of the top card a mid-market client pays at most (Reece: 55-60%; the Second Hundred's partners billed $650 against the Am Law 100's $875 and a top card of about $1,090 in 2015, docs/research/firm-economics.md s11)
+    book_months: 24 # months from the founding the book clients keep the founders' rates (Reece: "so the first two years survive"); then they pay their tier's card
+    book_fade_months: 60 # then months over which a book client's share falls linearly to its tier's card (a cliff at month 24 cut 2007's profit below zero, zero allocations sent every partner's flight to its cap and steady dissolved on 7 of 10 seeds)
+    book_bp: 9850 # bp of the top card the founders' book clients keep (their portable relationships came at the founders' BigLaw rates; PT-M7b's start)
 macro: # PT-M7: how macro_history.yaml's indices act on the firm (ptk/sim/macro.py; spec 6, 14)
   beta_scale: 1.3 # multiplier on every practice's demand beta (T8's tuning key); PT-M7 tuning 1.0 -> 1.3 (T1, T8)
   demand_floor: 0.25 # a practice's driver term never falls below 25% of its base
@@ -1242,7 +1247,7 @@ reputation: # PT-M16: reputation by (firm, practice, region), 0-100, public (spe
   league: { top3: 1.0, top10: 0.4 } # points for a quarter's league-table place (top three; four to ten)
   bands: [2.0, 1.2, 0.6, 0.2, 0.0, 0.0] # PT-M16 tuning [.., 0.0, -0.4, -0.8] -> [.., 0.2, 0.0, 0.0] (a band 6 entry cost reputation that being unranked did not); October's points by directory band 1..6 (spec 12.1)
   prestige: { pep_points: 10, offer_weight: 0.2 } # prestige = revenue-weighted reputation + 10 x PEP percentile; offer-score points at prestige 100 (campus and laterals)
-  card: { full_share: 0.95, curve: 2.0, top_quantile: 0.9 } # PT-M7b's card target: full card at 95% of the market's top-decile reputation in the practice, curve 2 (replaces rates.card.full_reputation and curve)
+  card: { curve: 2.0, top_quantile: 0.9 } # PT-M7b's card target, curve 2; PT-M7c (Reece, 2026-11-23): relative, the firm's percentile among all firms in the practice and region over top_quantile, so only a top-decile firm reaches the full card (full_share 0.95 of the top-decile reputation removed)
   appeal_span: 0.2 # the appeal's Rep (spec 7.1) added by reputation 0 to 100, on top of the partners' own standing in the practice (best partner's familiarity, 0-1): a new firm +0.02-0.03, a top-decile firm (80+) about +0.16. PT-M16 tuning against PT-M4's exodus guard (heeded <= 1 and ignored >= 3 of 10 dissolved; main 1 and 3+): 0.05 1/3, 0.1 1/2, 0.15 2/3, 0.2 1/3, 0.25 2/4, 0.3 3/3 (a flat floor in place of the standing failed every floor tried: decision 3)
   causes_kept: 30 # the player's reputation changes kept with their causes (Practices screen)
 press: # PT-M16: the legal press (spec 12.2; TST formulas.md 29, in Partner Track's units: reputation points for brand-target points)

@@ -106,7 +106,7 @@ def test_hooks_are_called_and_no_op(
     base: GameState, data: GameData, balance: Balance, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """Effects through the interfaces hooks: WIP write-downs (PT-M3b, merged), reputation
-    (a no-op until PT-M5) and confidence (a no-op until PT-M4)."""
+    (PT-M16's reputation) and confidence (a no-op until PT-M4)."""
     m = base.market.open_matters(base.player.id)[0]
     fid = base.player.id
     calls: list[str] = []
@@ -120,9 +120,9 @@ def test_hooks_are_called_and_no_op(
         calls.append(f"wip {matter_id} {pct}")
         return real_wip(state, matter_id, pct, memo)
 
-    def rep(state: GameState, firm_id: int, points: float) -> GameState:
+    def rep(state: GameState, firm_id: int, points: float, bal: Balance) -> GameState:
         calls.append(f"rep {points}")
-        return real_rep(state, firm_id, points)
+        return real_rep(state, firm_id, points, bal)
 
     def conf(state: GameState, firm_id: int, points: float) -> GameState:
         calls.append(f"conf {points}")

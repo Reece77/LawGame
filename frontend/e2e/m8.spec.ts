@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { answerBlocking } from './helpers.js';
 
 // PT-M8: in the practice save (a 60-lawyer firm at stage 2), appoint a CFO on the Org
 // screen's Leadership panel, give the seat authority, then receive the CFO's pitch in the
@@ -7,6 +8,7 @@ test('appoint a CFO, receive and approve a pitch', async ({ page }) => {
   test.setTimeout(180_000);
   const made = await page.request.post('/api/practice/pt-2008');
   expect([200, 409]).toContain(made.status()); // m7's spec may have opened it already
+  await answerBlocking(page, 'pt-2008'); // PT-M16: a critical event may be waiting
 
   await page.goto('/game/pt-2008/org');
   const panel = page.getByTestId('leadership-panel');

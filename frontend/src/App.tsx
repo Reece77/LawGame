@@ -19,6 +19,8 @@ import { PartnershipScreen } from './screens/PartnershipScreen';
 import { PeopleScreen } from './screens/PeopleScreen';
 import { PersonScreen } from './screens/PersonScreen';
 import { PracticesScreen } from './screens/PracticesScreen';
+import { PressScreen } from './screens/PressScreen';
+import { RankingsScreen } from './screens/RankingsScreen';
 import { RecruitmentScreen } from './screens/RecruitmentScreen';
 import { RivalScreen } from './screens/RivalScreen';
 import { SavesScreen } from './screens/SavesScreen';
@@ -48,6 +50,8 @@ export default function App() {
           <Route path="finance" element={<FinanceScreen />} />
           <Route path="market" element={<MarketScreen />} />
           <Route path="market/rivals/:firmId" element={<RivalScreen />} />
+          <Route path="rankings" element={<RankingsScreen />} />
+          <Route path="press" element={<PressScreen />} />
           <Route path="partnership" element={<PartnershipScreen />} />
           <Route path="history" element={<HistoryScreen />} />
           <Route path="founder" element={<FounderScreen />} />

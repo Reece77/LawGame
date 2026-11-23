@@ -35,4 +35,59 @@ Play a fresh campaign to 2010 and read each spring's tables and October's bands:
 
 ## Decisions made
 
+Recorded by the PT-M16 session (2026-11-22). Readings are seeds 1-10, steady, January 2005 to December 2015 (`tools/reputation_pace.py`, `ptk/standing_pace.py`); "main" is `b5cfdd0` (before PT-M9 merged) on the same machine.
+
+1. **Reputation's model** (`ptk/sim/reputation/`, spec 12.1). Per (firm, practice, region) 0-100 (one region, New York, until PT-M11). Each month `value += speed x (mean - value) + pulses`, the long-run mean `floor 5 + size 15 x s + record 65 x r + pep 15 x q`: s the practice's lawyers (log, full at 300), q the PEP percentile among firms with a PEP, r the record: the player's public outcomes (named matters by outcome and size, over 36 months, full at `record_full`), a rival's franchise (0.6 in its `firms.yaml` strong practices, generated firms none, + 0.4 x its share of the practice's market). Pulses: the player's outcomes, star partners (book >= $3M) joining and leaving, rivals' key partners leaving, league-table places (top 3, top 10), October's bands, the press and events (`interfaces.reputation_change`, previously a no-op). Real rivals start at their mean, a new firm at 15 / 5 (the brief). Prestige = revenue-weighted reputation + 10 x PEP percentile; `reputation.prestige.offer_weight` x prestige / 100 replaces `hiring.prestige_term` (0) in offer scores.
+2. **The 2005 bands.** With directory thresholds 72/60/50/40/30/15, 118 of the 123 dossier strengths (firms.yaml `strong`) start in band 1 (agreement 96%; Wachtell M&A 85, Cravath and Skadden band 1 as the brief names; test `test_the_2005_bands_put_historys_leaders_in_band_1`). Generated firms' largest pools are not a franchise (their record is market share only), so they do not crowd band 1.
+3. **The appeal's reputation term** (spec 7.1): `Rep = the partners' standing in the practice (the best partner's familiarity, PT-M3a's measure) + reputation.appeal_span x reputation / 100 + the band's appeal_bonus`. A flat floor in place of the partners' standing (0.75, 0.9, 0.95, 1.0 tried) gave a new firm appeal in practices where no partner has standing; it took work it could not serve and the first-year guards broke (PT-M17's annuity test's firm lost money in 2005 at every floor; with the standing restored the branch matched main exactly). **For Reece:** reputation adds to the partners' standing rather than replacing it; the stand-in's measure survives as the partners' personal standing, which is what the earlier milestones' guards pin.
+4. **`appeal_span` against PT-M4's exodus guard** (`test_the_exodus_spiral`: heeded at most 1 and ignored at least 3 of 10 dissolved; main 1 and 3+), my key (CLAUDE.md 9 rule 2): span 0.05 1/3, 0.1 1/2, 0.15 2/3, **0.2 1/3**, 0.25 2/4, 0.3 3/3. The guard is knife-edge (non-monotone in the span); 0.2 passes and gives a top-decile firm about +0.16 Rep.
+5. **The card** (sub-task 2): PT-M7b's target reads `card_progress` = reputation / (0.95 x the market's top-decile reputation in the practice), curve 2 (`reputation.card`, replacing `rates.card.full_reputation` and `curve`); `start_bp` 9850 and `step_bp` 50 stay PT-M7b's. Acceptance: the highest share any practice reached in the first five years is 99.0-99.4% on seeds 1-10 (none at the full card; nightly test `tests/balance/test_pt_m16.py`).
+6. **Pace** (sub-task 2: 8-12 years to the top decile): `record_full` 30 -> 50 and `pulse` 1.5 -> 0.5 (at 30 / 1.5: median 7 years, 5-9, and private equity reputations saturated at 100; at 50 / 1.5: median 7.5, 6-11, still 100 on two seeds). At 50 / 0.5: 8 of 10 seeds reached it after 7-10 years (median 8). **Final (with decision 11's bands): 7 of 10 seeds reach the top decile, after 7, 8, 8, 8, 8, 9, 10 years (median 8)**; seed 8 does not by 2015, seeds 3 and 9 dissolve (main: seed 7; 2 of 10 is inside T5 standard's 5-20%). The practice is private equity on 9 of 10: its market's top decile (35.5) is low, few real firms being strong there.
+7. **The press** (TST 29, ported): moments are the press's own (answered on the Press screen by `answer_press`, an unanswered one gets the press office's measured answer at its month's end), not the event director's; effects in reputation points for TST's brand-target points (same numbers), audience 0.5/1.0/1.5 by the firm's stage (below 2, below 4, 4+); claims are Partner Track's (headcount, no layoffs, matching the scale, a directory band); a broken claim raises PT-M17's Reckless source `broken_claim` and costs partners' confidence for trust; only real rivals' managing partners speak (164 firms' moves made a jab every month). **ADR PT-0013:** layoffs, collapse, jab, rivalry and reminder moments never carry a person; a real managing partner's jab is spoken by the firm's spokesperson; the state holds people by id only and the API names them, so `world.real_people` off changes nothing but names (PT-M5's test).
+8. **Rankings**: tables in April for the prior fiscal year (revenue 200 places, PEP 100, firms of $60M or more, the player recorded each December); league tables at each quarter's end for practices with deal or restructuring kinds (the player's closed matters at fees x 400; rivals' a quarter of their practice revenue x 0.6 in deals of the practice's typical size); bands in October (the player adds key matters and its submission: +6 x strength, or -4 without one); individuals: rivals' real notables by standing (elite 1, leading 2, strong 3) and the player's partners who led 3+ public matters in three years; Best places to work in July (before August's campus offers). Each list's latest edition is in the state and every edition in the new `ranking_entry` table (the screen's history), so the live state does not grow.
+9. **Streams** `press` 70 (the month's reminder waits) and `press_rival` 71 (`(*rival_key, n)`); ADR PT-0012's table.
+10. **Schema** v15 (`0015_standing`), re-chained after PT-M9's `0014_automation`, which merged first.
+11. **Band 6 and October's pulses** (my keys): band 6 from 20 -> 15 and the bands' reputation points [2, 1.2, 0.6, 0, -0.4, -0.8] -> [2, 1.2, 0.6, 0.2, 0, 0]. At 20 no new firm earned a band in its second October on seeds 1-8 (reputation 10-20 less the missing submission's 4), and band 6 cost reputation that being unranked did not. At 15, seeds 1 and 3 enter band 6 in their founders' practices by October 2006 without a submission.
+12. **Fixtures moved to robust seeds** (CLAUDE.md 9 rule 5; no assertion loosened): PT-M6's events property test (the first seed from 8 with an open matter at turn 8), PT-M4's guarantee test (seed 5: the scenario sinks seeds 2-4 and 7 on main too), the Screens API (seed 1: seed 3 opens no named matter by March now), e2e m3c (seed 18), m16 (seed 1, which earns band 6 by October 2006); e2e m7, m8 and m9 answer a blocking critical event in the practice save first (`answerBlocking`), the leadership API (answers a blocking critical event first, as the e2e do), PT-M1b's save round trip (compares without engagements closed in the last turn, which the loader never holds and billing never reads).
+
+**T3 lawyers and T4 steady** (sub-task 7; their bands unchanged; PT-M10 had not merged, so the known-miss rows are lane A's to update):
+
+| Seed | main lawyers | PT-M16 lawyers | main PEP | PT-M16 PEP | PT-M16 years to top decile |
+| --- | --- | --- | --- | --- | --- |
+| 1 | 18 | 72 | $4.19M | $4.37M | 7 |
+| 2 | 51 | 65 | $4.15M | $4.66M | 8 |
+| 3 | 66 | 22 (dissolved) | $3.18M | -$0.60M | - |
+| 4 | 49 | 43 | $5.12M | $3.27M | 8 |
+| 5 | 50 | 83 | $3.32M | $5.13M | 8 |
+| 6 | 45 | 69 | $3.87M | $6.46M | 9 |
+| 7 | 19 (dissolved) | 42 | -$3.39M | $5.08M | 10 |
+| 8 | 49 | 62 | $5.48M | $3.75M | - |
+| 9 | 47 | 13 (dissolved) | $3.97M | -$1.24M | - |
+| 10 | 36 | 50 | $2.77M | $3.12M | 8 |
+| **Median** | **48** | **56** | **$3.92M** | **$4.06M** | **8 (7 of 10 seeds)** |
+
+T3 lawyers moves toward its band (100-250; median 48 -> 56) but stays a miss; T4 steady moves slightly away from its band ($0.5-1.2M; $3.92M -> $4.06M): earned reputation lifts the card and demand, so a firm earns more per partner. No `reputation.*` key brings either into its band. **For Reece (proposed default):** keep both known misses with these readings; T4 steady's band was set before reputation could raise a firm's card, and a $4M PEP for a 50-80 lawyer firm in 2015 is in line with the Am Law 50's profit per partner.
+
+**The product manager's decisions on PR #22** (2026-11-22, authorised rows and xfail):
+
+13. **T1** (a gate) read 8/10 on seeds 1-10 (main 9/10). Seeds 11-40: main 26/30, PT-M16 28/30; all 40: main 35/40, PT-M16 36/40. Seed variance (rule 4): a known-miss row owned by PT-M18, known while at least 8 of 10 fail, authorised by the product manager. `reputation.appeal_span` did not move it (8/10 at 0.2 and at 0.05).
+14. **PT-M8's strong-group-leader guard** (`tests/balance/test_pt_m8.py`, utilisation gap >= 3.0) read 2.83 on seeds 1-10. Seeds 11-40 (main in a separate worktree): utilisation gap main 2.61, PT-M16 2.58; morale gap 7.29 and 7.31. Within 0.5 points of main: seed variance; the test is a strict xfail naming PT-M18 and these readings.
+15. **Final readings after merging PT-M9 and PT-M10** (`make balance` in the nightly on the branch, seeds 1-10; "main" is PT-M10's last nightly on `be0cb32`, main's code before PT-M16):
+
+| Target | Band | main | PT-M16 | Row |
+| --- | --- | --- | --- | --- |
+| T3 steady lawyers | 100-250 | 45.5 | 55.0 | kept (PT-M16), still a miss |
+| T3 steady revenue | $60-150M | $51.62M | $56.95M | printed (no row) |
+| T4 steady PEP | $0.5-1.2M | $3.60M | $3.39M | kept (PT-M16), still a miss |
+| T4 pyramid PEP | $0.7-1.6M | $3.21M | $2.36M | moved to PT-M18 (a new row: PT-M10 had removed it) |
+
+Also printed (not gates) and worse than main: T5.hard 50% (main 30%, band 20-45%), T9.heeded 2/10 (main 1/10), T9.rocket 2/10 (main 4/10, band 3-6), T8.restructuring -16.6% on 3 firms (main -2.3% on 5). The full-campaign save test runs solvent (seed 7's untouched firm now dissolves in 2025; it tests the campaign's end).
+
 ## Follow-ups
+
+- Reputation by region once offices beyond New York arrive (PT-M11): the region axis is in the model and the stream keys.
+- The top decile measured among firms with a real presence in the practice (generated firms' small pools make private equity's top decile low).
+- A press moment's deep link from the inbox (the link id is a moment or a claim; the API could say which).
+- `PressOut.claim_months` as two fields (the generated client sees the tuple as `number[]`).
+- LLM-written statements for rival managing partners within PT-M6's budget (templates only now).
+- Malpractice and scandals' reputation pulses with PT-M15.

@@ -27,3 +27,16 @@ export async function advanceMonths(page: Page, slug: string, months: number): P
     expect(r.ok()).toBeTruthy();
   }
 }
+
+// PT-M16: answer a blocking critical event with choice A through the API (the practice save
+// may open with one waiting; its dialog would cover the screen under test).
+export async function answerBlocking(page: Page, slug: string): Promise<void> {
+  const game = await (await page.request.get(`/api/saves/${slug}/game`)).json();
+  if (game.blocking_event_id !== null) {
+    const chose = await page.request.post(
+      `/api/saves/${slug}/events/${game.blocking_event_id}/choose`,
+      { data: { choice: 'A' } },
+    );
+    expect(chose.ok()).toBeTruthy();
+  }
+}

@@ -2,7 +2,7 @@
 
 Ported from backend/tst/sim/hiring/rules.py @ 02fba2aa (Tech Startup Tycoon); changed: no
 option pool, equity or mission; the fit term counts interests the candidate's home practice
-favours; the firm's prestige term (0 until PT-M5/PT-M16); the campus calendar; the offer
+favours; the firm's prestige term (PT-M16); the campus calendar; the offer
 dialog's hint reads the firm's revealed ranges only.
 """
 
@@ -38,14 +38,27 @@ def offer_pitch(state: GameState, actor_id: int, balance: Balance) -> float:
     return pitch(state.person(actor_id).skills[RECRUITING], balance.hiring)
 
 
-def prestige(state: GameState, firm_id: int, balance: Balance) -> float:
-    """The firm's prestige term in offer scores: a constant until PT-M16, plus (PT-M7a, spec
-    7.8) the recruiting appeal of the firm's pro bono hours a lawyer."""
+def prestige(
+    state: GameState,
+    firm_id: int,
+    balance: Balance,
+    role: str | None = None,
+    campus: bool = False,
+) -> float:
+    """The firm's prestige term in offer scores (PT-M16, spec 12.1 and 12.3): its prestige
+    times `reputation.prestige.offer_weight`, plus the directory band in the candidate's
+    practice and, for campus offers, a Best places to work place (`rankings.recruiting_term`);
+    plus (PT-M7a, spec 7.8) the recruiting appeal of the firm's pro bono hours a lawyer."""
     from ptk.sim.matters.pro_bono import recruiting_appeal
+    from ptk.sim.rankings.effects import recruiting_term
+    from ptk.sim.reputation.formulas import prestige_term
 
     firm = next((f for f in state.firms if f.id == firm_id), None)
     pro_bono = recruiting_appeal(firm.pro_bono_avg_tenths, balance) if firm is not None else 0.0
-    return balance.hiring.prestige_term + pro_bono
+    standing = prestige_term(state, firm_id, balance) + recruiting_term(
+        state, firm_id, role, campus, balance
+    )
+    return standing + pro_bono
 
 
 def floor_cents(ask_cents: int, balance: Balance) -> int:
@@ -116,7 +129,9 @@ def offer_preview(
         matching_interests=fit,
         risk_appetite=(lo + hi) / 2,
         offer=balance.hiring.offer,
-        prestige=prestige(state, candidate.firm_id, balance),
+        prestige=prestige(
+            state, candidate.firm_id, balance, person.role, candidate.channel == "campus"
+        ),
         pitch=0.0 if actor_id is None else offer_pitch(state, actor_id, balance),
     )
     hint: HintBand = (

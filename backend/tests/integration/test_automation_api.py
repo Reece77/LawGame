@@ -150,6 +150,12 @@ def test_the_manual_check_automates_three_areas_and_reads_digests(save_dir: Path
     run_by = client.get(f"{BASE}/run-by/billing").json()
     assert run_by["owner"]["person_id"] == billing["owner"]["person_id"]
     for _ in range(3):
+        # a blocking critical event takes its first choice first, as the e2e do (PT-M16: the
+        # practice save meets different events since reputation moved its world)
+        game = client.get("/api/saves/pt-2008/game").json()
+        if game["blocking_event_id"] is not None:
+            choose = f"/api/saves/pt-2008/events/{game['blocking_event_id']}/choose"
+            assert client.post(choose, json={"choice": "A"}).status_code == 200
         assert client.post("/api/saves/pt-2008/advance").status_code == 200
     inbox = client.get("/api/saves/pt-2008/inbox").json()
     digests = [i for i in inbox if i["template"] == "automation_digest"]

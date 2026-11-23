@@ -41,6 +41,7 @@ from ptk.sim.org.seat_phase import phase_twelve, phase_two
 from ptk.sim.partnership import phase as partnership
 from ptk.sim.people.models import WorkMonth
 from ptk.sim.people.phase import people_month
+from ptk.sim.reputation import turn_hooks as standing
 from ptk.sim.rivals import phase as rival_phase
 from ptk.sim.rivals.models import RivalMove
 from ptk.sim.rng import RngFactory
@@ -229,14 +230,16 @@ def market_and_macro_update(ctx: TurnContext) -> TurnContext:
 def stage_checks(ctx: TurnContext) -> TurnContext:
     """10. Stages, the month's P&L, partner confidence, petitions and elections, dissolution
     (PT-M4); the founder's persona, bar politics, foundation, family, adviser and succession
-    (PT-M17)."""
+    (PT-M17); reputation moves, the rankings and tables publish (PT-M16)."""
     state, logs = partnership.stage_checks(ctx.state, ctx.rng, ctx.balances, ctx.balance, ctx.data)
     ctx = replace(ctx, state=state).log(*logs)
     life = founder_life.month(
         ctx.state, ctx.start or ctx.state, ctx.rng, ctx.balances, ctx.balance, ctx.data
     )
     ctx = replace(ctx, state=life.state, personal_book=ctx.personal_book + life.personal)
-    return ctx.post(*life.entries).log(*life.log)
+    ctx = ctx.post(*life.entries).log(*life.log)
+    state, logs = standing.month(ctx.state, ctx.start or ctx.state, ctx.rng, ctx.balance, ctx.data)
+    return replace(ctx, state=state).log(*logs)  # PT-M16: reputation, rankings
 
 
 def snapshot_and_month_end_report(ctx: TurnContext) -> TurnContext:

@@ -278,6 +278,25 @@ Ledger accounts first posted in PT-M17: 2600 (retired-partner annuities: booked 
 
 A practice group leader's seat is the unit's leader (`org_unit.leader_id`, PT-M2): it is not copied into `leadership`, so PT-M2's existing leaders are the holders. The managing partner's seat is the partnership's MP. `decision_log` gains `source` `seat` rows (a `SeatDecision` as JSON), recomputed on replay. `llm_text.kind` gains `seat_report` (`ref_id`: the holder). `inbox_item` gains templates `seat_appointed`, `seat_vacated`, `pitch`, `pitch_answered`, `pitch_lapsed`, `pitch_scored`, `partners_meeting`, `exco_term` and `exco_elected`, and link kinds `org` and `pitch`.
 
+## Schema v15 (`0015_standing`, PT-M16)
+
+| Table | Column | Type | Meaning |
+| --- | --- | --- | --- |
+| `standing` | `id` | int, pk | Always 1 |
+| | `data_json` | text | `ptk.sim.reputation.models.StandingState` as JSON. `reputation`: `entries` (firm, practice, region (0 New York), `value` 0-100, `mean` the long-run mean it drifts toward), `causes` (the player's last `reputation.causes_kept` changes: turn, practice or null for every practice, delta, cause), `outcomes` (the player's public outcomes in the record window: turn, practice, matter, outcome, points), `practice_value` (the player's standard value of work by practice, the last 12 months), `stars` (the player's star partners last month: person, practice), `prestige` (firm, 0-100). `press`: `moments` (id, trigger, turn, status pending/open/skipped/answered, `due_turn`, practice, rival firm, person (never a real person for a restricted trigger), displayed facts, tone, answered turn, `by_office`, a bold answer's reputation `baseline` and `backfired`, engine-only until it happens), `claims` (id, kind headcount/no_layoffs/match_scale/band, made and deadline turns, moment, practice, target, public baseline, ambition, audience, status open/kept/broken, resolved turn, reminder turn), `credibility` (0-100; null before the first month) and `cred_history`, `feuds` (rival firm, score 0-100, causes, rivalry turn, the rival's key partners lost to the player as last counted), `statements` (id, rival, person or null for its spokesperson, turn, kind statement/jab/answer, text), `next_id`, `scale_seen` (the market's first-year salary last month). `rankings`: the latest `tables` (fiscal year, kind revenue/pep, place, firm, name, value, lawyers), `league` (quarter-end turn, practice, region, place, firm, name, deals, value), `bands` (year, practice, region, firm, name, band 1-6, score), `people` (year, practice, person, firm, name, band), `places` (year, place, firm, name, survey score); `submission` (year, turn, matter ids, referee client ids, strength 0-1); `history` (the player's places: turn, list kind, practice, place or band); `years` (the player's fiscal years recorded each December: year, revenue, lawyers, PEP); `published` (list kind -> the turn it last published) |
+| `ranking_entry` | `id` | int, pk | Written order |
+| | `turn` | int | The month the list published |
+| | `kind` | text | `revenue`, `pep`, `league`, `places`, `bands`, `people` |
+| | `practice` | text, null | The practice (league tables, bands, individuals) |
+| | `place` | int | The place; the band (1-6) for `bands` and `people` |
+| | `firm_id` | int | The firm (the player's or a rival's id) |
+| | `person_id` | int, null | A named individual (`people`) |
+| | `name` | text | The firm's or person's name as published |
+| | `value_cents` | bigint, null | Revenue or PEP (tables), deal value (league); the score x 100 (places, bands) |
+| | `count` | int, null | Lawyers (tables), deals (league) |
+| | `year` | int, null | The fiscal year (tables) or the ranking's year (places, bands, individuals) |
+
+`ranking_entry` is appended when a list publishes (the turn's write) and never rewritten; the live state keeps only each list's latest edition. A save from before PT-M16 has no `standing` row: its first month seeds reputation. `decision_log` gains actions `answer_press` and `make_submission`. `inbox_item` gains templates `tables_published`, `league_tables`, `places_published`, `directory_bands`, `submission_made`, `press_moment`, `claim_made`, `claim_kept` and `claim_broken`, and link kinds `rankings` and `press`.
 ## Schema v14 (`0014_automation`, PT-M9)
 
 | Table | Column | Type | Meaning |

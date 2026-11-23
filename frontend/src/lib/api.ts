@@ -93,6 +93,8 @@ export function useAdvance(slug: string) {
         'guidance',
         'founder', // PT-M17
         'family',
+        'rankings', // PT-M16
+        'press',
       ]) {
         void client.invalidateQueries({ queryKey: [key, slug] });
       }
@@ -1117,6 +1119,87 @@ export function useFamilyAction(slug: string) {
       void client.invalidateQueries({ queryKey: ['founder', slug] });
       void client.invalidateQueries({ queryKey: ['game', slug] });
       void client.invalidateQueries({ queryKey: ['people', slug] });
+    },
+  });
+}
+
+// --- PT-M16: reputation, press and rankings -------------------------------------------------
+
+export type Rankings = Schemas['RankingsOut'];
+export type TableRow = Schemas['TableRowOut'];
+export type League = Schemas['LeagueOut'];
+export type LeagueRow = Schemas['LeagueRowOut'];
+export type PracticeBands = Schemas['PracticeBandsOut'];
+export type BandFirm = Schemas['BandFirmOut'];
+export type PersonBand = Schemas['PersonBandOut'];
+export type PlacesRow = Schemas['PlacesRowOut'];
+export type PlayerPlace = Schemas['PlayerPlaceOut'];
+export type Submission = Schemas['SubmissionOut'];
+export type SubmissionMatter = Schemas['SubmissionMatterOut'];
+export type SubmissionReferee = Schemas['SubmissionRefereeOut'];
+export type Press = Schemas['PressOut'];
+export type PressMoment = Schemas['MomentOut'];
+export type PressClaim = Schemas['ClaimOut'];
+export type PressStatement = Schemas['ptk__api__standing__StatementOut'];
+export type PressFeud = Schemas['FeudOut'];
+export type PressCause = Schemas['ptk__api__standing__CauseOut'];
+export type AnswerPressBody = Schemas['ptk__api__standing__AnswerIn'];
+
+export const useRankings = (slug: string) =>
+  useQuery({
+    queryKey: ['rankings', slug],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/saves/{slug}/rankings', { params: { path: { slug } } })),
+  });
+
+export const usePress = (slug: string) =>
+  useQuery({
+    queryKey: ['press', slug],
+    // openapi-fetch widens claim_months' [lo, hi] tuple to number[]; the schema's type is exact.
+    queryFn: async (): Promise<Press> =>
+      unwrap(await api.GET('/api/saves/{slug}/press', { params: { path: { slug } } })) as Press,
+  });
+
+export function useMakeSubmission(slug: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: { matter_ids: number[]; referee_ids: number[] }) =>
+      unwrap(
+        await api.POST('/api/saves/{slug}/rankings/submission', {
+          params: { path: { slug } },
+          body,
+        }),
+      ),
+    onSuccess: (data) => {
+      client.setQueryData(['rankings', slug], data);
+      for (const key of ['game', 'inbox', 'clients', 'founder']) {
+        void client.invalidateQueries({ queryKey: [key, slug] });
+      }
+    },
+  });
+}
+
+export function useAnswerPress(slug: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      momentId,
+      body,
+    }: {
+      momentId: number;
+      body: AnswerPressBody;
+    }): Promise<Press> =>
+      unwrap(
+        await api.POST('/api/saves/{slug}/press/{moment_id}/answer', {
+          params: { path: { slug, moment_id: momentId } },
+          body,
+        }),
+      ) as Press,
+    onSuccess: (data) => {
+      client.setQueryData(['press', slug], data);
+      for (const key of ['game', 'inbox', 'founder', 'practices']) {
+        void client.invalidateQueries({ queryKey: [key, slug] });
+      }
     },
   });
 }

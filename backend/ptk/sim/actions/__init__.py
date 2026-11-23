@@ -3,6 +3,8 @@
 
 Ported from backend/tst/sim/actions/__init__.py @ 02fba2aa (Tech Startup Tycoon) as a
 pattern; changed: hiring actions (PT-M1b), client and matter actions (PT-M3a), billing actions
+(PT-M3b), the answer to an event (PT-M6), rival-firm actions (PT-M5) and the founder's life
+(PT-M17), the press and the directory submission (PT-M16); later milestones
 (PT-M3b), the answer to an event (PT-M6), rival-firm actions (PT-M5), the founder's life
 (PT-M17) and automation (PT-M9); later milestones
 add theirs here.
@@ -56,6 +58,7 @@ from ptk.sim.partnership.actions import (
     PartnershipAction,
     apply_partnership_action,
 )
+from ptk.sim.press.actions import STANDING_ACTION_TYPES, StandingAction, apply_standing_action
 from ptk.sim.rivals.actions import RIVAL_ACTION_TYPES, RivalAction, apply_rival_action
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
@@ -70,6 +73,7 @@ type Action = (
     | SeatAction
     | AnswerPitch
     | FounderAction
+    | StandingAction
     | AutomationAction
 )
 
@@ -91,6 +95,7 @@ ACTION_TYPES: dict[str, type[Any]] = {
     **SEAT_ACTION_TYPES,  # PT-M8
     "answer_pitch": AnswerPitch,  # PT-M8
     **FOUNDER_ACTION_TYPES,  # PT-M17
+    **STANDING_ACTION_TYPES,  # PT-M16
     **AUTOMATION_ACTION_TYPES,  # PT-M9
 }
 
@@ -130,6 +135,8 @@ def apply_action(
     if type(action) in SEAT_ACTION_TYPES.values():  # PT-M8
         seated = apply_seat_action(state, action, balance, data)  # type: ignore[arg-type]
         return Outcome(seated.state, (), seated.log)
+    if type(action) in STANDING_ACTION_TYPES.values():  # PT-M16: the press, the submission
+        return apply_standing_action(state, action, balance, data)  # type: ignore[arg-type]
     if type(action) in FOUNDER_ACTION_TYPES.values():  # PT-M17
         return apply_founder_action(state, action, draws, balance, data)  # type: ignore[arg-type]
     if type(action) in RIVAL_ACTION_TYPES.values():

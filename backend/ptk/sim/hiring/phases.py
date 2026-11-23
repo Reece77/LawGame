@@ -212,7 +212,13 @@ def resolve_offers(
                 matching_interests=favoured_interests(person, data, balance),
                 risk_appetite=person.personality["risk_appetite"],
                 offer=hiring.offer,
-                prestige=prestige(state, offer.firm_id, balance),
+                prestige=prestige(
+                    state,
+                    offer.firm_id,
+                    balance,
+                    person.role,
+                    candidate.channel == "campus",
+                ),
                 pitch=offer_pitch(state, offer.actor_id, balance)
                 + founder_recruiting_term(state, offer.firm_id, balance),  # PT-M17
             )

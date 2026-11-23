@@ -33,7 +33,7 @@ from ptk.sim.data_models import PARTNER_LEVELS, Balance, GameData
 from ptk.sim.errors import NotFoundError
 from ptk.sim.matters import formulas as fx
 from ptk.sim.matters.assessment import merits_words
-from ptk.sim.matters.market import firm_reputation, monthly_demand
+from ptk.sim.matters.market import monthly_demand
 from ptk.sim.matters.models import Matter
 from ptk.sim.matters.rates import (
     card_bp,
@@ -48,6 +48,7 @@ from ptk.sim.money import BP_DENOMINATOR
 from ptk.sim.people.formulas import fam_factor
 from ptk.sim.people.models import Person, fam_key
 from ptk.sim.people.reveal import revealed_range
+from ptk.sim.reputation.formulas import card_progress, market_quantile, reputation
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
 
@@ -66,6 +67,9 @@ OUTLOOK_BANDS: Final = (
 
 type Unit = Literal["cents", "hours", "percent", "ratio", "text", "range"]
 type Metric = Literal["utilisation", "realisation", "matter_margin", "outlook"]
+
+
+CAUSES_SHOWN = 6  # tunable-exempt: reputation changes listed per practice (PT-M16)
 
 
 class RefOut(BaseModel):
@@ -124,6 +128,14 @@ class PracticeRateOut(BaseModel):
     ours_cents: int | None  # the firm's standard value an hour last month in the band
 
 
+class ReputationCauseOut(BaseModel):
+    """PT-M16: one change to the firm's reputation and its cause (public, spec 12.1)."""
+
+    date_label: str
+    delta: float
+    cause: str
+
+
 class PracticeScreenOut(BaseModel):
     key: str
     label: str
@@ -143,6 +155,10 @@ class PracticeScreenOut(BaseModel):
     card_bp: int  # PT-M7b: the firm's share of the practice's top card
     card_target_bp: int  # the share its reputation earns; January moves the card toward it
     market_index_bp: int  # the market's rate index (10000 = 2005)
+    reputation: int  # PT-M16: the firm's public reputation 0-100 in the practice (New York)
+    reputation_top: int  # the market's top-decile reputation in the practice
+    band: int | None  # the latest October's directory band (None: not ranked)
+    reputation_causes: list[ReputationCauseOut]  # its latest changes, newest first
 
 
 class ExplainItemOut(BaseModel):
@@ -340,9 +356,21 @@ def practices_screen(state: GameState, data: GameData, balance: Balance) -> list
                 rates=rates,
                 card_bp=card_bp(player, p.key),
                 card_target_bp=card_target_bp(
-                    firm_reputation(state, player.id, p.key), start_bp, balance
+                    card_progress(state, player.id, p.key, balance), start_bp, balance
                 ),
                 market_index_bp=market,
+                reputation=round(reputation(state, player.id, p.key, balance)),
+                reputation_top=round(
+                    market_quantile(state, p.key, balance.reputation.card.top_quantile)
+                ),
+                band=state.standing.rankings.band(player.id, p.key),
+                reputation_causes=[
+                    ReputationCauseOut(
+                        date_label=format_turn(c.turn, start), delta=c.delta, cause=c.cause
+                    )
+                    for c in reversed(state.standing.reputation.causes)
+                    if c.practice in (p.key, None)
+                ][:CAUSES_SHOWN],
             )
         )
     return out

@@ -289,6 +289,34 @@ templates:
   family_joined_firm:
     title: "{name} joins the firm"
     body: "{name} starts as a first-year associate. The partners will watch how fast they rise."
+  # PT-M16: rankings and the legal press (spec 12.2-12.3)
+  tables_published:
+    title: "The {year} tables are out: the firm is {place} by revenue"
+    body: "The legal press's revenue and profit-per-partner tables for {year}: the firm is {place} by revenue and {pep_place} by profit per partner. {leader} leads on {revenue}. The top: {top}."
+  league_tables:
+    title: "League tables, {quarter}: {best}"
+    body: "This quarter's deal league tables place the firm {places}. A top-ten place lifts its reputation in the practice."
+  places_published:
+    title: "Best places to work {year}: the firm is {place}"
+    body: "The associates' survey (morale, hours, pay and training) is out: the firm is {place}. The top: {top}. A top-ten place helps campus recruiting for a year."
+  directory_bands:
+    title: "The {year} directory bands: {bands}"
+    body: "October's directory ranks the firm {bands}, with {people} of its partners named individually. The firm submitted {submitted} a March submission. Bands raise clients' appeal and associate recruiting for the year."
+  submission_made:
+    title: "Directory submission made ({strength})"
+    body: "The firm's submission showcases {matters} matters and names {referees} referees; each referee spent a little of the relationship. Its strength counts toward October's bands."
+  press_moment:
+    title: "The press wants a word: {about}"
+    body: "The legal press is asking about {about} ({detail}). Answer bold, measured or deflect on the Press screen this month, or the press office gives a measured answer."
+  claim_made:
+    title: "On the record: you said you will {claim}"
+    body: "The press will check this claim at its deadline. Keeping it lifts the firm's reputation and your credibility; breaking it costs both."
+  claim_kept:
+    title: "Claim kept: {claim}"
+    body: "You said you would {claim}, and the firm did. Reputation and credibility rise."
+  claim_broken:
+    title: "Claim broken: {claim}"
+    body: "You said you would {claim}. The press noticed: reputation and credibility fall, and expect to hear about it again."
   # PT-M9: automation (spec 9.4; TST 40)
   area_given:
     title: "{name} now runs {area}"

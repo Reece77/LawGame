@@ -101,7 +101,13 @@ def test_appoint_a_cfo_authority_pitch_and_report(
     assert next(p for p in view["pitches"] if p["id"] == pitch_id)["status"] == "approved"
     again = client.post(f"{base}/pitches/{pitch_id}/answer", json={"answer": "decline"})
     assert again.status_code == 409
-    # June 2008 is a quarter's end: the CFO's report arrives with the month
+    # June 2008 is a quarter's end: the CFO's report arrives with the month (a blocking critical
+    # event takes its first choice first, as the e2e do: PT-M16's reputation moved which events
+    # the practice save meets)
+    game = client.get("/api/saves/pt-2008/game").json()
+    if game["blocking_event_id"] is not None:
+        choose = f"/api/saves/pt-2008/events/{game['blocking_event_id']}/choose"
+        assert client.post(choose, json={"choice": "A"}).status_code == 200
     assert client.post("/api/saves/pt-2008/advance").status_code == 200
     inbox = client.get("/api/saves/pt-2008/inbox").json()
     reports = [i for i in inbox if "quarterly report" in i["title"]]

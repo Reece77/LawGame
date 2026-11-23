@@ -34,8 +34,14 @@ SEVERITIES = ("minor", "major", "critical")
 
 @cache
 def _base() -> GameState:
-    # PT-M7: seed 8 (seed 7's firm, in the universe with Chrysler, has no open matter at turn 8)
-    return played(DATA, BALANCE, seed=8, turns=8)
+    # PT-M7: seed 8 (seed 7's firm, in the universe with Chrysler, has no open matter at turn 8);
+    # PT-M16: the first seed from 8 whose firm has an open matter at turn 8 (reputation moved
+    # seed 8's intake), so the fixture never depends on one seed's luck
+    for seed in range(8, 30):
+        state = played(DATA, BALANCE, seed=seed, turns=8)
+        if state.market.open_matters(state.player.id):
+            return state
+    raise AssertionError("no seed 8-29 has an open matter at turn 8")
 
 
 def _event(state: GameState, template_id: str, severity: str, base: int) -> GameEvent:

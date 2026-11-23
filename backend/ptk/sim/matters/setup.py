@@ -185,7 +185,7 @@ def founders_books(
         practices = _book_practices(person, data)
         gen = rng.stream(SETUP_TURN, "book", founder_index)
         cap = cfg.max_client_share * person.book_cents
-        reps = {p: firm_reputation(state, firm_id, p) for p in practices}
+        reps = {p: firm_reputation(state, firm_id, p, balance) for p in practices}
         expected: dict[int, float] = {}
         for client in clients:
             if client.id in chosen:

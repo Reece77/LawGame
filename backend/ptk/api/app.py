@@ -22,6 +22,7 @@ from ptk.api.org import make_org_router
 from ptk.api.partnership import make_partnership_router
 from ptk.api.people import make_router
 from ptk.api.screens import make_screens_router
+from ptk.api.standing import make_standing_router
 from ptk.config import get_settings
 from ptk.db import saves
 from ptk.holiday import REASON_TEXT, HolidayError, run_holiday
@@ -340,6 +341,7 @@ def create_app() -> FastAPI:
     app.include_router(make_leadership_router(errors))  # PT-M8
     app.include_router(make_automation_router(errors))  # PT-M9
     app.include_router(make_founder_router(errors))  # PT-M17
+    app.include_router(make_standing_router(errors))  # PT-M16
     return app
 
 

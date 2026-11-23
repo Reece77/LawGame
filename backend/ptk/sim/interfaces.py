@@ -287,9 +287,12 @@ def write_down_wip(
     return replace(state, billing=replace(state.billing, engagements=engagements)), ()
 
 
-def reputation_change(state: GameState, firm_id: int, points: float) -> GameState:
-    """Move a firm's reputation by `points` (PT-M5). No-op until rankings arrive."""
-    return state
+def reputation_change(state: GameState, firm_id: int, points: float, balance: Balance) -> GameState:
+    """Move a firm's reputation by `points` in every practice (PT-M16, spec 12.1): an event's
+    choice. The cause is remembered for the player's Practices screen."""
+    from ptk.sim.reputation.formulas import apply_pulse
+
+    return apply_pulse(state, firm_id, points, "an event", balance)
 
 
 def confidence_change(state: GameState, firm_id: int, points: float) -> GameState:
@@ -1130,6 +1133,202 @@ def terms_threshold_bp(state: GameState, firm_id: int, balance: Balance) -> int:
     """The agreement's threshold for a change to its terms."""
     fp = state.partnership.of(firm_id)
     return balance.partnership.agreement.terms_bp if fp is None else fp.agreement.terms_bp
+
+
+# --- PT-M16 (reputation, press and rankings, lane C): what lane C reads of rivals -----------
+#
+# Thin, read-only views of the rival firms (PT-M5), so reputation, the press and the rankings
+# never reach into `ptk.sim.rivals`. Only public figures and labels: a rival's lawyers by
+# practice (its pools, the legal press's headcounts), its trailing revenue and profit (Am Law's
+# figures), its strong practices (firms.yaml, the dossier) and the key people the press may
+# name. Never demand, shocks, books or hidden traits.
+
+
+@dataclass(frozen=True, slots=True)
+class RivalStandingView:
+    firm_id: int
+    rival_key: tuple[int, ...]  # its stable stream key (ADR-0013 amendment)
+    key: str
+    name: str
+    short: str
+    kind: str  # real, generated, boutique
+    lawyers: tuple[tuple[str, float], ...]  # by practice, practices.yaml order
+    revenue_12m_cents: int
+    profit_12m_cents: int
+    equity_partners: float
+    strong: frozenset[str]
+    departures: int  # key partners who left it this month
+    lost_to_player: int  # key partners the player's firm has hired from it, ever
+    founded_turn: int
+    personality: str
+    associates: float
+    utilisation: float  # its lawyers' hours over capacity (the associates' survey reads it)
+    years: tuple[tuple[int, int, int, int], ...]  # fiscal years: (year, revenue, lawyers, pep)
+
+    @property
+    def total_lawyers(self) -> float:
+        return sum(n for _, n in self.lawyers)
+
+    def in_practice(self, practice: str) -> float:
+        return next((n for p, n in self.lawyers if p == practice), 0.0)
+
+
+_STANDING_MEMO: dict[str, tuple[object, int, tuple[RivalStandingView, ...]]] = {}
+
+
+def rival_standing(state: GameState, data: GameData) -> tuple[RivalStandingView, ...]:
+    """Every active rival, by firm id (PT-M16); memoised on the rivals' state and the turn (a
+    month reads it several times)."""
+    hit = _STANDING_MEMO.get("last")
+    if hit is not None and hit[0] is state.rivals and hit[1] == state.turn:
+        return hit[2]
+    views = _rival_standing(state, data)
+    _STANDING_MEMO["last"] = (state.rivals, state.turn, views)
+    return views
+
+
+def _rival_standing(state: GameState, data: GameData) -> tuple[RivalStandingView, ...]:
+    from ptk.sim.rivals.market import strong_practices
+
+    turn = state.turn
+    out = []
+    for f in state.rivals.active:
+        out.append(
+            RivalStandingView(
+                firm_id=f.id,
+                rival_key=f.rival_key,
+                key=f.key,
+                name=f.name,
+                short=f.short,
+                kind=f.kind,
+                lawyers=tuple((p.practice, p.lawyers) for p in f.pools),
+                revenue_12m_cents=f.revenue_12m,
+                profit_12m_cents=f.profit_12m,
+                equity_partners=f.equity_partners,
+                strong=strong_practices(f, data),
+                departures=sum(n for t, n in f.departures if t == turn),
+                lost_to_player=f.lost_to_player,
+                founded_turn=f.founded_turn,
+                personality=f.personality,
+                associates=sum(p.associates for p in f.pools),
+                utilisation=f.utilisation,
+                years=tuple((y.year, y.revenue_cents, y.lawyers, y.pep_cents) for y in f.history),
+            )
+        )
+    return tuple(out)
+
+
+@dataclass(frozen=True, slots=True)
+class RivalMoveView:
+    """A rival's move this month as the legal press reports it."""
+
+    firm_id: int
+    action: str
+    detail: str
+    person_id: int | None
+    other_firm_id: int | None
+
+
+def rival_moves_in(state: GameState, turn: int) -> tuple[RivalMoveView, ...]:
+    return tuple(
+        RivalMoveView(m.firm_id, m.action, m.detail, m.person_id, m.other_firm_id)
+        for m in state.rivals.moves
+        if m.turn == turn
+    )
+
+
+def rival_name(state: GameState, firm_id: int) -> str | None:
+    """A rival's current name (or a gone rival's last), None for an unknown id."""
+    f = state.rivals.firm(firm_id)
+    return f.name if f is not None else None
+
+
+@dataclass(frozen=True, slots=True)
+class RivalPersonView:
+    person_id: int
+    name: str
+    real: bool  # a real lawyer (ADR PT-0013): professional matters only
+    practice: str
+    notable_standing: str | None  # notables.yaml standing (elite, leading, strong) if real
+
+
+def rival_managing_partner(
+    state: GameState, firm_id: int, data: GameData, balance: Balance
+) -> RivalPersonView | None:
+    """A rival's managing partner (TST 29.4's CEO): its chair (notables.yaml `chair`) while on
+    its staff, else its key partner with the lowest id; re-chosen whenever asked."""
+    members = [m for m in state.rivals.members_of(firm_id) if m.kind == "partner"]
+    if not members:
+        return None
+    chairs = {n.key for n in data.rivals.people.notables if n.chair}
+    chosen = next((m for m in members if m.notable in chairs), None) or min(
+        members, key=lambda m: m.person_id
+    )
+    return _person_view(state, chosen.person_id, data, balance)
+
+
+def rival_key_people(
+    state: GameState, firm_id: int, data: GameData, balance: Balance
+) -> tuple[RivalPersonView, ...]:
+    """A rival's key partners, by id (the directory's individuals)."""
+    out = []
+    for m in state.rivals.members_of(firm_id):
+        if m.kind == "partner":
+            view = _person_view(state, m.person_id, data, balance)
+            if view is not None:
+                out.append(view)
+    return tuple(out)
+
+
+def _person_view(
+    state: GameState, person_id: int, data: GameData, balance: Balance
+) -> RivalPersonView | None:
+    from ptk.sim.rivals.people import find_person
+
+    m = state.rivals.member(person_id)
+    person = find_person(state, person_id, data, balance)
+    if person is None:
+        return None
+    standing = None
+    if m is not None and m.notable is not None:
+        standing = next(
+            (n.standing for n in data.rivals.people.notables if n.key == m.notable), None
+        )
+    return RivalPersonView(
+        person_id=person_id,
+        name=f"{person.first_name} {person.last_name}",
+        real=person.real,
+        practice=m.practice if m is not None else person.role,
+        notable_standing=standing,
+    )
+
+
+def rival_stance_nudge(state: GameState, firm_id: int, points: float) -> GameState:
+    """A feud's rivalry (TST 29.4) moves the rival's stance toward the player (PT-M5's label)."""
+    from dataclasses import replace
+
+    firms = tuple(
+        replace(f, stance=f.stance + points) if f.id == firm_id else f for f in state.rivals.firms
+    )
+    return replace(state, rivals=replace(state.rivals, firms=firms))
+
+
+def founder_persona_source(
+    state: GameState, firm_id: int, source: str, balance: Balance
+) -> GameState:
+    """PT-M16: a persona source PT-M17 left without one (`broken_claim`, spec 2.3), on the
+    player's founding partner's life, if they have one yet."""
+    from dataclasses import replace
+
+    from ptk.sim.founder.models import with_life
+    from ptk.sim.founder.persona import apply_source
+
+    you = state.founder_of(firm_id)
+    life = state.founder_life.life(you) if you is not None else None
+    if life is None:
+        return state
+    life = apply_source(life, source, state.turn, balance)
+    return replace(state, founder_life=with_life(state.founder_life, life))
 
 
 # --- PT-M9 (automation, lane B): an area runs a seat's default rule ---------------------------

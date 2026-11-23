@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { advanceMonths } from './helpers.js';
+import { advanceMonths, answerBlocking } from './helpers.js';
 
 // PT-M7: the Overview's What next and Getting started (the guided first year: a step ticks
 // from state, the checklist dismisses), and the History screen's years and timeline.
@@ -46,6 +46,8 @@ test('the practice save opens in June 2008', async ({ page }) => {
   await page.goto('/');
   await page.getByTestId('practice-2008').click();
   await expect(page.getByTestId('date')).toHaveText('Jun 2008', { timeout: 60_000 });
+  await answerBlocking(page, 'pt-2008'); // PT-M16: a critical event may be waiting
+  await page.reload();
   await page.getByRole('link', { name: 'People' }).click();
   await expect(page.getByRole('heading', { name: 'People' })).toBeVisible();
 });

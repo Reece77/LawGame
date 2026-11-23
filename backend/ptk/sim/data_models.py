@@ -17,6 +17,9 @@ from ptk.sim.founder.config import FamilyBalance, FounderLifeBalance, Succession
 from ptk.sim.macro_data import SERIES as MACRO_SERIES
 from ptk.sim.macro_data import MacroBalance, MacroData
 from ptk.sim.org.seat_data import AuthorityBalance, PitchesBalance, SeatDef, SeatsBalance, SeatsData
+from ptk.sim.press.config import PressBalance
+from ptk.sim.rankings.config import RankingsBalance
+from ptk.sim.reputation.config import ReputationBalance
 from ptk.sim.rivals.data import RivalsBalance, RivalsData, WorldBalance
 
 type AccountType = Literal["asset", "liability", "equity", "income", "expense"]
@@ -418,6 +421,8 @@ ENERGY_ACTIONS: Final = (
     "exco_term",  # propose the agreement's exco_elected term for the December vote (spec 9.2)
     "answer_pitch",  # approve or decline a seat holder's pitch (TST 27.1)
     "hours_policy",  # PT-M7b: the firm's billable target
+    "press_answer",  # PT-M16: answer a press moment
+    "submission",  # PT-M16: the March directory submission
     "lay_off",  # PT-M10: let an associate or a member of staff go (TST's fire)
 )
 LATERAL_CHANNELS: Final = ("referral", "job_post", "recruiter")
@@ -479,7 +484,6 @@ class HiringBalance(_Strict):
     hint_bands: HintBands
     offer: OfferBalance
     pitch_per_recruiting: float
-    prestige_term: float
     ask: AskBalance
     recruiter_fee_bp: RecruiterFeeBalance
     recruiter_senior_from: str
@@ -776,8 +780,7 @@ class CardBalance(_Strict):
     """PT-M7b: a new firm's rate card by practice, a share of the practices' 2005 cards."""
 
     start_bp: int = Field(gt=0, le=10000)  # a new firm's share of the top card in each practice
-    full_reputation: float = Field(gt=0, le=1)  # reputation (0-1) at which the target is 100%
-    curve: float = Field(gt=0)  # target = start + (1 - start) x (rep / full)^curve
+    # PT-M16: the target's curve is reputation.card (full_share, curve, top_quantile)
     step_bp: int = Field(gt=0)  # most a practice's share moves toward its target each January
 
 
@@ -1251,6 +1254,9 @@ class Balance(_Strict):
     founder_life: FounderLifeBalance  # PT-M17
     family: FamilyBalance  # PT-M17
     succession: SuccessionBalance  # PT-M17
+    reputation: ReputationBalance  # PT-M16
+    press: PressBalance  # PT-M16
+    rankings: RankingsBalance  # PT-M16
     automation: AutomationBalance  # PT-M9 (ptk.sim.automation.config)
 
 

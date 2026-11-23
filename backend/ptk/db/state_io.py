@@ -34,6 +34,7 @@ from ptk.db.models import (
 from ptk.db.org_io import load_org, write_org
 from ptk.db.partnership_io import load_partnership, write_partnership
 from ptk.db.rivals_io import insert_rivals, load_rivals, write_panels, write_rivals
+from ptk.db.standing_io import load_standing, write_standing
 from ptk.sim.billing.models import ClientBookEntry
 from ptk.sim.data_models import InboxTemplate
 from ptk.sim.founder.models import PersonalEntry
@@ -114,6 +115,7 @@ def insert_new(session: Session, state: GameState, entries: tuple[LedgerEntry, .
     write_events(session, state.events)
     write_entries(session, entries)
     write_founder_life(session, state.founder_life, state.family)  # PT-M17
+    write_standing(session, state.standing)  # PT-M16
 
 
 def load_state(session: Session) -> GameState:
@@ -183,6 +185,7 @@ def load_state(session: Session) -> GameState:
         market=load_market(session, row.current_turn),
         partnership=load_partnership(session),
         leadership=load_leadership(session),  # PT-M8
+        standing=load_standing(session),  # PT-M16
         automation=load_automation(session),  # PT-M9
         events=load_events(session),
         searches=tuple(
@@ -549,6 +552,7 @@ def write_turn(
     write_leadership(session, new_state.leadership)  # PT-M8
     write_automation(session, new_state.automation)  # PT-M9
     write_founder_life(session, new_state.founder_life, new_state.family)  # PT-M17
+    write_standing(session, new_state.standing, new_state.turn - 1)  # PT-M16
 
 
 def write_firms(session: Session, state: GameState) -> None:

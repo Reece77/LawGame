@@ -12,7 +12,11 @@ import {
 } from '@mantine/core';
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
-import { useApproachRival, usePracticeLabels, useRival } from '../lib/api';
+import { createColumnHelper, useTable } from '@tanstack/react-table';
+import { DataTable } from '../components/DataTable';
+import { useApproachRival, usePracticeLabels, useRival, type RivalDetail } from '../lib/api';
+import { bandText } from '../lib/standing';
+import { gameTableFeatures, type GameTableFeatures } from '../lib/table';
 import { formatMoneyShort, formatWhole, humanize } from '../lib/format';
 import { News } from './MarketScreen';
 
@@ -91,11 +95,9 @@ export function RivalScreen() {
       )}
       <div>
         <Title order={4} mb="xs">
-          Lawyers by practice
+          Practices
         </Title>
-        <Text size="sm">
-          {r.practices.map((p) => `${p.label} ${formatWhole(p.lawyers)}`).join(' · ')}
-        </Text>
+        <RivalPractices rows={r.practices} />
       </div>
       <div>
         <Group justify="space-between" mb="xs">
@@ -150,6 +152,39 @@ export function RivalScreen() {
       <News news={r.news} slug={slug} />
     </Stack>
   );
+}
+
+type RivalPractice = RivalDetail['practices'][number];
+const practiceHelper = createColumnHelper<GameTableFeatures, RivalPractice>();
+const practiceColumns = practiceHelper.columns([
+  practiceHelper.accessor('label', { header: 'Practice', sortFn: 'alphanumeric' }),
+  practiceHelper.accessor('lawyers', {
+    header: 'Lawyers',
+    sortFn: 'basic',
+    cell: (c) => <span className="tst-num">{formatWhole(c.getValue())}</span>,
+  }),
+  practiceHelper.accessor('reputation', {
+    header: 'Reputation',
+    sortFn: 'basic',
+    cell: (c) => <span className="tst-num">{c.getValue()}</span>,
+  }),
+  practiceHelper.accessor((p) => p.band ?? 99, {
+    id: 'band',
+    header: 'Band',
+    sortFn: 'basic',
+    cell: ({ row }) => bandText(row.original.band),
+  }),
+]);
+
+// PT-M16: lawyers, reputation and directory band by practice (public figures).
+function RivalPractices({ rows }: { rows: RivalPractice[] }) {
+  const table = useTable({
+    features: gameTableFeatures,
+    columns: practiceColumns,
+    data: rows,
+    getRowId: (p) => p.practice,
+  });
+  return <DataTable table={table} label="Rival practices" rowTestId="rival-practice" empty="—" />;
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {

@@ -25,6 +25,7 @@ from ptk.sim.people.generator import generate_person, people_gen_stream
 from ptk.sim.people.models import Employment, Person, RevealState
 from ptk.sim.people.reveal import apply_knowledge_action, new_reveal_state
 from ptk.sim.people.strain import initial_strain
+from ptk.sim.reputation.phase import seed as seed_reputation
 from ptk.sim.rivals.setup import new_rivals
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import FirmState, GameState, SaveMeta
@@ -107,6 +108,7 @@ def new_game(
     state = replace(
         state, partnership=founding_partnership(state, firm.id, capital, scenario, balance, data)
     )
+    state = seed_reputation(state, data, balance)  # PT-M16: 2005's standing (spec 12.1)
     if family is not None:  # PT-M17: the player's family (default none: no record)
         state = start_family(state, family, RngFactory(master_seed), balance, data)
     entries: tuple[LedgerEntry, ...] = ()

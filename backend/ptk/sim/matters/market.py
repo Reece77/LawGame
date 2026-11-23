@@ -124,17 +124,13 @@ def rival_appeal(firm_key: str, practice: str, data: GameData, balance: Balance)
     return firm.base + (balance.appeal.rival_strong if practice in firm.strong else 0.0)
 
 
-def firm_reputation(state: GameState, firm_id: int, practice: str) -> float:
-    """0-1 reputation in a practice: the best partner's familiarity, (f - 1) / 19. A stand-in
-    until reputation and rankings (spec 12) arrive."""
-    from ptk.sim.data_models import PARTNER_LEVELS
+def firm_reputation(state: GameState, firm_id: int, practice: str, balance: Balance) -> float:
+    """The appeal's Rep 0-1 in a practice (spec 7.1): PT-M16's public reputation
+    (`reputation.formulas.appeal_rep`), which replaced PT-M3a's stand-in (the best partner's
+    familiarity)."""
+    from ptk.sim.reputation.formulas import appeal_rep
 
-    staff = set(state.staff_ids(firm_id))
-    best = 0.0
-    for person in state.people:
-        if person.id in staff and person.level in PARTNER_LEVELS:
-            best = max(best, (person.familiarity[practice] - 1.0) / 19.0)
-    return best
+    return appeal_rep(state, firm_id, practice, balance)
 
 
 def player_appeal(

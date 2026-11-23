@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { advanceMonths } from './helpers.js';
+import { advanceMonths, answerBlocking } from './helpers.js';
 
 // PT-M9: in the practice save, give billing to the CFO on the Automation screen, set its
 // limit, play a month, open the digest from the inbox, see "Run by" on Finance and take over.
@@ -7,6 +7,7 @@ test('automate billing, read the digest, take over', async ({ page }) => {
   test.setTimeout(240_000);
   const made = await page.request.post('/api/practice/pt-2008');
   expect([200, 409]).toContain(made.status()); // an earlier spec may have opened it
+  await answerBlocking(page, 'pt-2008'); // PT-M16: a critical event may be waiting
 
   const lead = await (await page.request.get('/api/saves/pt-2008/leadership')).json();
   const cfo = lead.seats.find((s: { key: string }) => s.key === 'cfo').slots[0];

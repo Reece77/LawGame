@@ -162,6 +162,16 @@ Takeaways for the game (A): an elite start-up can grow 15-25% a year for its fir
 | Revenue per lawyer, earlier years (Am Law 100) | n/a | 2005: $730k D; 2009: $802k S |
 | PEP, earlier years (Am Law 100) | n/a | 2005: $1.06M S; 2009: $1.26M S |
 
+## 11. Billing rates and billable hours (added by the PT-M7c session)
+
+| Figure | Value | Tag | Source |
+|---|---|---|---|
+| Equity partner standard rate, Am Law 100, 2015 | $875 an hour (up 3.4%) | S | [51] (search excerpt) |
+| Equity partner standard rate, Second Hundred, 2015 | $650 an hour (up 2.3%) | S | [51] (search excerpt) |
+| Associate billable hours, largest firms, 2014 | 1,873 billable of 2,199 worked (85%) | S | [52] (search excerpt) |
+| Blended standard rate, Second Hundred, 2015 | about $440 an hour | D | $649,023 RPL / (1,750 hours x 0.84 collected realisation, sections 1 and 7); 1,750 is A (partners below associates' 1,873) |
+| Partner billable hours | not found | - | searched Peer Monitor, NALP, Altman Weil for 2015; the game's 1,700-hour partner target is A |
+
 ## Sources
 
 1. Adam Smith, Esq. (Bruce MacEwen), "What's So Bad About Being in the AmLaw 100?", May 2006. https://adamsmithesq.com/2006/05/whats_so_bad_about_being/ — [1b] "The 2006 AmLaw 100: More fun with numbers", Apr 2006. https://adamsmithesq.com/2006/04/the_2006_amlaw_100_more_f/
@@ -209,3 +219,5 @@ Takeaways for the game (A): an elite start-up can grow 15-25% a year for its fir
 48. ABA Journal, "Why Associates Leave is Clear, But What Would Lure Them to Stay?", 2008. https://www.abajournal.com/news/article/why_associates_leave_is_clear_but_what_would_lure_them_to_stay ; The Daily Record, 20 Apr 2008. https://thedailyrecord.com/2008/04/20/firms-looking-for-ways-to-keep-young-associates-around/
 49. ABA Journal, "Law firms lost 15 associates for every 20 they hired, NALP Foundation study finds". https://abajournal.com/news/article/law-firms-lost-15-associates-for-every-20-they-hired-study-finds
 50. National Law Journal, NLJ 350 coverage (c. 2016). https://www.law.com/nationallawjournal/almID/1202749129310 (search excerpt)
+51. ABA Journal, "Top law firms boost hourly rates for equity partners by 3.9%, leaving mid-tier firms $400 behind" (Wells Fargo Private Bank Legal Specialty Group, 2015 rates). https://abajournal.com/news/article/top_law_firms_boost_hourly_rates_for_equity_partners_by_3.9_leaving_mid_tie (search excerpt)
+52. NALP Bulletin, "Update on Associate Hours Worked", May 2016. https://www.nalp.org/0516research (search excerpt)

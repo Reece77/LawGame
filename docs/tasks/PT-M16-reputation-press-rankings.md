@@ -68,6 +68,21 @@ Recorded by the PT-M16 session (2026-11-22). Readings are seeds 1-10, steady, Ja
 
 T3 lawyers moves toward its band (100-250; median 48 -> 56) but stays a miss; T4 steady moves slightly away from its band ($0.5-1.2M; $3.92M -> $4.06M): earned reputation lifts the card and demand, so a firm earns more per partner. No `reputation.*` key brings either into its band. **For Reece (proposed default):** keep both known misses with these readings; T4 steady's band was set before reputation could raise a firm's card, and a $4M PEP for a 50-80 lawyer firm in 2015 is in line with the Am Law 50's profit per partner.
 
+**The product manager's decisions on PR #22** (2026-11-22, authorised rows and xfail):
+
+13. **T1** (a gate) read 8/10 on seeds 1-10 (main 9/10). Seeds 11-40: main 26/30, PT-M16 28/30; all 40: main 35/40, PT-M16 36/40. Seed variance (rule 4): a known-miss row owned by PT-M18, known while at least 8 of 10 fail, authorised by the product manager. `reputation.appeal_span` did not move it (8/10 at 0.2 and at 0.05).
+14. **PT-M8's strong-group-leader guard** (`tests/balance/test_pt_m8.py`, utilisation gap >= 3.0) read 2.83 on seeds 1-10. Seeds 11-40 (main in a separate worktree): utilisation gap main 2.61, PT-M16 2.58; morale gap 7.29 and 7.31. Within 0.5 points of main: seed variance; the test is a strict xfail naming PT-M18 and these readings.
+15. **Final readings after merging PT-M9 and PT-M10** (`make balance` in the nightly on the branch, seeds 1-10; "main" is PT-M10's last nightly on `be0cb32`, main's code before PT-M16):
+
+| Target | Band | main | PT-M16 | Row |
+| --- | --- | --- | --- | --- |
+| T3 steady lawyers | 100-250 | 45.5 | 55.0 | kept (PT-M16), still a miss |
+| T3 steady revenue | $60-150M | $51.62M | $56.95M | printed (no row) |
+| T4 steady PEP | $0.5-1.2M | $3.60M | $3.39M | kept (PT-M16), still a miss |
+| T4 pyramid PEP | $0.7-1.6M | $3.21M | $2.36M | moved to PT-M18 (a new row: PT-M10 had removed it) |
+
+Also printed (not gates) and worse than main: T5.hard 50% (main 30%, band 20-45%), T9.heeded 2/10 (main 1/10), T9.rocket 2/10 (main 4/10, band 3-6), T8.restructuring -16.6% on 3 firms (main -2.3% on 5). The full-campaign save test runs solvent (seed 7's untouched firm now dissolves in 2025; it tests the campaign's end).
+
 ## Follow-ups
 
 - Reputation by region once offices beyond New York arrive (PT-M11): the region axis is in the model and the stream keys.

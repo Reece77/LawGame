@@ -45,16 +45,15 @@ KNOWN_MISSES: Final[tuple[KnownMiss, ...]] = (
         owner="PT-M16",
         # score: minus the median lawyers; known while at least 45
         worse_than=-45.0,
-        reason="50 (PT-M7b; PT-M7: 53): a lower card makes a firm poorer, not bigger; the band "
-        "is unchanged and the miss moves to PT-M16's reputation that gates the card (Reece, "
-        "2026-11-22)",
+        reason="55.0 on PT-M16 (main 45.5; PT-M7b 50): reputation that gates the card and "
+        "the appeal grows steady but not to its band; the band is unchanged (Reece, 2026-11-22)",
     ),
     KnownMiss(
         target="T4.steady",  # steady PEP $0.5-1.2M in 2015
         owner="PT-M16",
         # score: median PEP in $M; known while at most $5.0M
         worse_than=5.0,
-        reason="$4.02M (PT-M7b; PT-M7: $4.07M): as T3.lawyers, to PT-M16 (Reece, 2026-11-22)",
+        reason="$3.39M on PT-M16 (main $3.60M; PT-M7b $4.02M): as T3.lawyers (Reece, 2026-11-22)",
     ),
     KnownMiss(
         target="T1",  # do-nothing fails on at least 9 of 10 seeds
@@ -64,6 +63,13 @@ KNOWN_MISSES: Final[tuple[KnownMiss, ...]] = (
         reason="8/10 on PT-M16 (main 9/10): seed variance, rule 4 (the product manager, "
         "2026-11-22, PR #22): seeds 11-40 main 26/30, PT-M16 28/30; all 40 main 35/40, "
         "PT-M16 36/40",
+    ),
+    KnownMiss(
+        target="T4.pyramid",  # pyramid PEP $0.7-1.6M in 2015
+        owner="PT-M18",
+        worse_than=3.5,  # score: median PEP in $M; known while at most $3.5M
+        reason="$2.36M on PT-M16 (main $3.21M, printed without a row): still above its band; "
+        "the row moves to PT-M18 (the product manager, 2026-11-22, PR #22)",
     ),
     KnownMiss(
         target="T8.corporate",  # corporate-heavy firms' 2009 revenue -30% to -10% on 2008

@@ -40,7 +40,9 @@ T12_MS = 250  # tunable-exempt: the target
 T12_LAWYERS = 150  # tunable-exempt: steady's size by 2015 (T3's band is 100-250)
 T12_TIMED = 12
 T12_YEAR = 2025  # PT-M10: the history pin's last year (PT-M5: 2015)
-T12_CAPITAL = 5_000_000_000  # tunable-exempt: $50M of partners' capital for the test firm
+# PT-M11: $50M ran out in month 11 (main's in month 12, one turn spare): the unmanaged firm
+# burns cash, and T12 times turns, not survival
+T12_CAPITAL = 15_000_000_000  # tunable-exempt: $150M of partners' capital for the test firm
 
 
 def _pinned(data: GameData, year: int) -> dict[str, int]:

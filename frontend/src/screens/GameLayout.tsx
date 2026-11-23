@@ -1,4 +1,4 @@
-import { AppShell, Button, Group, Modal, NavLink, Text } from '@mantine/core';
+import { AppShell, Button, Group, Modal, NavLink, ScrollArea, Text } from '@mantine/core';
 import { Link, Outlet, useParams } from 'react-router';
 import { EventCard } from '../components/EventCard';
 import { HolidayButton } from '../components/HolidayButton';
@@ -35,29 +35,32 @@ export function GameLayout() {
         </Group>
       </AppShell.Header>
       <AppShell.Navbar p="xs">
-        <NavLink component={Link} to={`/game/${slug}`} label="Overview" />
-        <NavLink
-          component={Link}
-          to={`/game/${slug}/inbox`}
-          label={unread ? `Inbox (${unread})` : 'Inbox'}
-        />
-        <NavLink component={Link} to={`/game/${slug}/people`} label="People" />
-        <NavLink component={Link} to={`/game/${slug}/matters`} label="Matters" />
-        <NavLink component={Link} to={`/game/${slug}/clients`} label="Clients" />
-        <NavLink component={Link} to={`/game/${slug}/practices`} label="Practices" />
-        <NavLink component={Link} to={`/game/${slug}/recruitment`} label="Recruitment" />
-        <NavLink component={Link} to={`/game/${slug}/org`} label="Org" />
-        <NavLink component={Link} to={`/game/${slug}/automation`} label="Automation" />
-        <NavLink component={Link} to={`/game/${slug}/finance`} label="Finance" />
-        <NavLink component={Link} to={`/game/${slug}/market`} label="Market" />
-        <NavLink component={Link} to={`/game/${slug}/rankings`} label="Rankings" />
-        <NavLink component={Link} to={`/game/${slug}/offices`} label="Offices" />
-        <NavLink component={Link} to={`/game/${slug}/press`} label="Press" />
-        <NavLink component={Link} to={`/game/${slug}/partnership`} label="Partnership" />
-        <NavLink component={Link} to={`/game/${slug}/history`} label="History" />
-        <NavLink component={Link} to={`/game/${slug}/founder`} label="Founder" />
-        <NavLink component={Link} to={`/game/${slug}/family`} label="Family" />
-        <NavLink component={Link} to="/" label="Main menu" />
+        {/* PT-M11: the links scroll when they outgrow the window */}
+        <AppShell.Section grow component={ScrollArea}>
+          <NavLink component={Link} to={`/game/${slug}`} label="Overview" />
+          <NavLink
+            component={Link}
+            to={`/game/${slug}/inbox`}
+            label={unread ? `Inbox (${unread})` : 'Inbox'}
+          />
+          <NavLink component={Link} to={`/game/${slug}/people`} label="People" />
+          <NavLink component={Link} to={`/game/${slug}/matters`} label="Matters" />
+          <NavLink component={Link} to={`/game/${slug}/clients`} label="Clients" />
+          <NavLink component={Link} to={`/game/${slug}/practices`} label="Practices" />
+          <NavLink component={Link} to={`/game/${slug}/recruitment`} label="Recruitment" />
+          <NavLink component={Link} to={`/game/${slug}/org`} label="Org" />
+          <NavLink component={Link} to={`/game/${slug}/automation`} label="Automation" />
+          <NavLink component={Link} to={`/game/${slug}/finance`} label="Finance" />
+          <NavLink component={Link} to={`/game/${slug}/market`} label="Market" />
+          <NavLink component={Link} to={`/game/${slug}/rankings`} label="Rankings" />
+          <NavLink component={Link} to={`/game/${slug}/offices`} label="Offices" />
+          <NavLink component={Link} to={`/game/${slug}/press`} label="Press" />
+          <NavLink component={Link} to={`/game/${slug}/partnership`} label="Partnership" />
+          <NavLink component={Link} to={`/game/${slug}/history`} label="History" />
+          <NavLink component={Link} to={`/game/${slug}/founder`} label="Founder" />
+          <NavLink component={Link} to={`/game/${slug}/family`} label="Family" />
+          <NavLink component={Link} to="/" label="Main menu" />
+        </AppShell.Section>
       </AppShell.Navbar>
       <AppShell.Main>
         <Outlet />

@@ -2333,6 +2333,730 @@ firms:
     lawyers: 1040
     src: rev S ATL-AL12 revised; lawyers S LION-DL12
   src: successor of Dewey Ballantine and LeBoeuf [S W-DB]
+# PT-M11: UK rivals (docs/research/london-and-us-cities.md part A s4). Fiscal years end in April:
+# a point's year is the year its fiscal year ends (FY2005/06 is 2006), in US dollars at that fiscal
+# year's GBP/USD (A s5: 8/12 of the first calendar year's rate, 4/12 of the second's). hq london:
+# they compete in London (no New York office in the game: NY RFPs, poaching and tables are US firms').
+- key: clifford_chance
+  name: Clifford Chance
+  short: Clifford Chance
+  personality: global_verein
+  hq: london
+  ny_office: false
+  offices: 30
+  comp: modified lockstep
+  strong: [banking_finance, capital_markets, corporate_ma]
+  fy2005:
+    year: 2005
+    revenue_cents: 167152000000
+    lawyers: 2600
+    equity_partners: 400
+    pep_cents: 126553000
+    src: 'rev S A-L1 (FY2004/05 GBP 914m at 1.8288); lawyers A back-cast from A-L3; EP A A-s4.1; PEP A FY2005/06 x 0.85 (london-and-us-cities)'
+  path:
+  - year: 2006
+    revenue_cents: 188294000000
+    src: 'rev S A-L2 (GBP 1030m, FY to April 2006, at 1.8281); london-and-us-cities A s4.2'
+  - year: 2007
+    revenue_cents: 226418000000
+    src: 'rev S A-L2 (GBP 1194m, FY to April 2007, at 1.8963); london-and-us-cities A s4.2'
+  - year: 2008
+    revenue_cents: 259332000000
+    src: 'rev D A-L3 (GBP 1328m, FY to April 2008, at 1.9528); london-and-us-cities A s4.2'
+  - year: 2009
+    revenue_cents: 221910000000
+    lawyers: 2903
+    src: 'rev S A-L3 (GBP 1262m, FY to April 2009, at 1.7584); london-and-us-cities A s4.2'
+  - year: 2010
+    revenue_cents: 186624000000
+    src: 'rev S A-L5 (GBP 1197m, FY to April 2010, at 1.5591); london-and-us-cities A s4.2'
+  - year: 2015
+    revenue_cents: 217134000000
+    lawyers: 2992
+    src: 'rev S A-L6 (GBP 1350m, FY to April 2015, at 1.6084); london-and-us-cities A s4.2'
+  - year: 2018
+    revenue_cents: 211769000000
+    src: 'rev S A-L7 (GBP 1623m, FY to April 2018, at 1.3048); london-and-us-cities A s4.2'
+  - year: 2025
+    revenue_cents: 310032000000
+    src: 'rev S A-s4.2 (GBP 2400m, FY to April 2025, at 1.2918); london-and-us-cities A s4.2'
+- key: linklaters
+  name: Linklaters
+  short: Linklaters
+  personality: elite_lockstep
+  hq: london
+  ny_office: false
+  offices: 30
+  comp: modified lockstep
+  strong: [corporate_ma, banking_finance, capital_markets]
+  fy2005:
+    year: 2005
+    revenue_cents: 147218000000
+    lawyers: 2000
+    equity_partners: 410
+    pep_cents: 164775000
+    src: 'rev S A-L1 (FY2004/05 GBP 805m at 1.8288); lawyers A back-cast from A-L3; EP A A-s4.1; PEP A FY2005/06 x 0.85 (london-and-us-cities)'
+  path:
+  - year: 2006
+    revenue_cents: 170982000000
+    src: 'rev S A-L2 (GBP 935.3m, FY to April 2006, at 1.8281); london-and-us-cities A s4.2'
+  - year: 2007
+    revenue_cents: 212575000000
+    src: 'rev S A-L2 (GBP 1121m, FY to April 2007, at 1.8963); london-and-us-cities A s4.2'
+  - year: 2008
+    revenue_cents: 252497000000
+    src: 'rev D A-L3 (GBP 1293m, FY to April 2008, at 1.9528); london-and-us-cities A s4.2'
+  - year: 2009
+    revenue_cents: 228240000000
+    lawyers: 2202
+    src: 'rev S A-L3 (GBP 1298m, FY to April 2009, at 1.7584); london-and-us-cities A s4.2'
+  - year: 2010
+    revenue_cents: 184442000000
+    src: 'rev S A-L5 (GBP 1183m, FY to April 2010, at 1.5591); london-and-us-cities A s4.2'
+  - year: 2015
+    revenue_cents: 204267000000
+    lawyers: 2601
+    src: 'rev S A-L6 (GBP 1270m, FY to April 2015, at 1.6084); london-and-us-cities A s4.2'
+  - year: 2018
+    revenue_cents: 198786000000
+    src: 'rev S A-L7 (GBP 1523.5m, FY to April 2018, at 1.3048); london-and-us-cities A s4.2'
+  - year: 2025
+    revenue_cents: 299698000000
+    src: 'rev S A-s4.2 (GBP 2320m, FY to April 2025, at 1.2918); london-and-us-cities A s4.2'
+- key: freshfields
+  name: Freshfields Bruckhaus Deringer
+  short: Freshfields
+  personality: elite_lockstep
+  hq: london
+  ny_office: false
+  offices: 28
+  comp: modified lockstep
+  strong: [corporate_ma, commercial_litigation, capital_markets]
+  fy2005:
+    year: 2005
+    revenue_cents: 142646000000
+    lawyers: 2000
+    equity_partners: 410
+    pep_cents: 129296000
+    src: 'rev S A-L1 (FY2004/05 GBP 780m at 1.8288); lawyers A back-cast from A-L3; EP A A-s4.1; PEP A FY2005/06 x 0.85 (london-and-us-cities)'
+  path:
+  - year: 2006
+    revenue_cents: 161238000000
+    src: 'rev S A-L2 (GBP 882m, FY to April 2006, at 1.8281); london-and-us-cities A s4.2'
+  - year: 2007
+    revenue_cents: 186975000000
+    src: 'rev S A-L2 (GBP 986m, FY to April 2007, at 1.8963); london-and-us-cities A s4.2'
+  - year: 2008
+    revenue_cents: 230040000000
+    src: 'rev D A-L3 (GBP 1178m, FY to April 2008, at 1.9528); london-and-us-cities A s4.2'
+  - year: 2009
+    revenue_cents: 226306000000
+    lawyers: 2194
+    src: 'rev S A-L3 (GBP 1287m, FY to April 2009, at 1.7584); london-and-us-cities A s4.2'
+  - year: 2010
+    revenue_cents: 177893000000
+    src: 'rev S A-L5 (GBP 1141m, FY to April 2010, at 1.5591); london-and-us-cities A s4.2'
+  - year: 2015
+    revenue_cents: 200246000000
+    lawyers: 2322
+    src: 'rev S A-L6 (GBP 1245m, FY to April 2015, at 1.6084); london-and-us-cities A s4.2'
+  - year: 2018
+    revenue_cents: 183063000000
+    src: 'rev S A-L7 (GBP 1403m, FY to April 2018, at 1.3048); london-and-us-cities A s4.2'
+  - year: 2025
+    revenue_cents: 290655000000
+    src: 'rev S snip A-N2 LLP accounts (GBP 2250m, FY to April 2025, at 1.2918); london-and-us-cities A s4.2'
+- key: allen_overy
+  name: Allen & Overy
+  short: A&O
+  personality: elite_lockstep
+  hq: london
+  ny_office: false
+  offices: 25
+  comp: modified lockstep
+  strong: [banking_finance, capital_markets, corporate_ma]
+  fy2005:
+    year: 2005
+    revenue_cents: 121798000000
+    lawyers: 1850
+    equity_partners: 360
+    pep_cents: 122530000
+    src: 'rev S A-L1 (FY2004/05 GBP 666m at 1.8288); lawyers A back-cast from A-L3; EP A A-s4.1; PEP A FY2005/06 x 0.85 (london-and-us-cities)'
+  path:
+  - year: 2006
+    revenue_cents: 134548000000
+    src: 'rev S A-L2 (GBP 736m, FY to April 2006, at 1.8281); london-and-us-cities A s4.2'
+  - year: 2007
+    revenue_cents: 168202000000
+    src: 'rev S A-L2 (GBP 887m, FY to April 2007, at 1.8963); london-and-us-cities A s4.2'
+  - year: 2008
+    revenue_cents: 198404000000
+    src: 'rev D A-L3 (GBP 1016m, FY to April 2008, at 1.9528); london-and-us-cities A s4.2'
+  - year: 2009
+    revenue_cents: 191841000000
+    lawyers: 2052
+    src: 'rev S A-L3 (GBP 1091m, FY to April 2009, at 1.7584); london-and-us-cities A s4.2'
+  - year: 2010
+    revenue_cents: 163705000000
+    src: 'rev S A-L5 (GBP 1050m, FY to April 2010, at 1.5591); london-and-us-cities A s4.2'
+  - year: 2015
+    revenue_cents: 206036000000
+    lawyers: 2523
+    src: 'rev S A-L6 (GBP 1281m, FY to April 2015, at 1.6084); london-and-us-cities A s4.2'
+  - year: 2018
+    revenue_cents: 205271000000
+    src: 'rev S A-L7 (GBP 1573.2m, FY to April 2018, at 1.3048); london-and-us-cities A s4.2'
+- key: slaughter_may
+  name: Slaughter and May
+  short: Slaughters
+  personality: elite_lockstep
+  hq: london
+  ny_office: false
+  offices: 4
+  comp: pure lockstep [S]
+  strong: [corporate_ma, commercial_litigation, banking_finance]
+  fy2005:
+    year: 2005
+    revenue_cents: 53035000000
+    lawyers: 500
+    equity_partners: 125
+    pep_cents: 202082000
+    src: 'rev S A-L1 (FY2004/05 GBP 290m at 1.8288); lawyers A back-cast from A-L3; EP A A-s4.1; PEP A FY2005/06 x 0.85 (london-and-us-cities)'
+  path:
+  - year: 2006
+    revenue_cents: 58682000000
+    src: 'rev S est A-L2 (GBP 321m, FY to April 2006, at 1.8281); london-and-us-cities A s4.2'
+  - year: 2007
+    revenue_cents: 79076000000
+    src: 'rev S est A-L2 (GBP 417m, FY to April 2007, at 1.8963); london-and-us-cities A s4.2'
+  - year: 2008
+    revenue_cents: 81822000000
+    src: 'rev D A-L3 (GBP 419m, FY to April 2008, at 1.9528); london-and-us-cities A s4.2'
+  - year: 2009
+    revenue_cents: 75893000000
+    lawyers: 550
+    src: 'rev S est A-L3 (GBP 431.6m, FY to April 2009, at 1.7584); london-and-us-cities A s4.2'
+  - year: 2010
+    revenue_cents: 68522000000
+    src: 'rev S est A-L5 (GBP 439.5m, FY to April 2010, at 1.5591); london-and-us-cities A s4.2'
+  - year: 2015
+    revenue_cents: 81144000000
+    lawyers: 702
+    src: 'rev S est A-L6 (GBP 504.5m, FY to April 2015, at 1.6084); london-and-us-cities A s4.2'
+  - year: 2018
+    revenue_cents: 74504000000
+    src: 'rev S est A-L7 (GBP 571m, FY to April 2018, at 1.3048); london-and-us-cities A s4.2'
+- key: herbert_smith
+  name: Herbert Smith
+  short: Herbert Smith
+  personality: elite_lockstep
+  hq: london
+  ny_office: false
+  offices: 14
+  comp: lockstep
+  strong: [commercial_litigation, white_collar, corporate_ma]
+  fy2005:
+    year: 2005
+    revenue_cents: 48463000000
+    lawyers: 930
+    equity_partners: 125
+    pep_cents: 130393000
+    src: 'rev S A-L1 (FY2004/05 GBP 265m at 1.8288); lawyers A back-cast from A-L3; EP A A-s4.1; PEP A FY2005/06 x 0.85 (london-and-us-cities)'
+  path:
+  - year: 2006
+    revenue_cents: 54112000000
+    src: 'rev S A-L2 (GBP 296m, FY to April 2006, at 1.8281); london-and-us-cities A s4.2'
+  - year: 2007
+    revenue_cents: 63336000000
+    src: 'rev S A-L2 (GBP 334m, FY to April 2007, at 1.8963); london-and-us-cities A s4.2'
+  - year: 2008
+    revenue_cents: 82408000000
+    src: 'rev D A-L3 (GBP 422m, FY to April 2008, at 1.9528); london-and-us-cities A s4.2'
+  - year: 2009
+    revenue_cents: 78073000000
+    lawyers: 1038
+    src: 'rev S A-L3 (GBP 444m, FY to April 2009, at 1.7584); london-and-us-cities A s4.2'
+  - year: 2010
+    revenue_cents: 70144000000
+    src: 'rev S A-L5 (GBP 449.9m, FY to April 2010, at 1.5591); london-and-us-cities A s4.2'
+  - year: 2015
+    revenue_cents: 131085000000
+    lawyers: 2294
+    src: 'rev S A-L6 (GBP 815m, FY to April 2015, at 1.6084); london-and-us-cities A s4.2'
+  - year: 2018
+    revenue_cents: 120929000000
+    src: 'rev S A-L7 (GBP 926.8m, FY to April 2018, at 1.3048); london-and-us-cities A s4.2'
+  - year: 2025
+    revenue_cents: 175426000000
+    src: 'rev S snip A-N2 (GBP 1358m, FY to April 2025, at 1.2918); london-and-us-cities A s4.2'
+- key: lovells
+  name: Lovells
+  short: Lovells
+  personality: global_verein
+  hq: london
+  ny_office: false
+  offices: 26
+  comp: lockstep
+  strong: [commercial_litigation, ip, real_estate]
+  fy2005:
+    year: 2005
+    revenue_cents: 66934000000
+    lawyers: 1200
+    equity_partners: 230
+    pep_cents: 78090000
+    src: 'rev S A-L1 (FY2004/05 GBP 366m at 1.8288); lawyers A back-cast from A-L3; EP A A-s4.1; PEP A FY2005/06 x 0.85 (london-and-us-cities)'
+  path:
+  - year: 2006
+    revenue_cents: 72393000000
+    src: 'rev S A-L2 (GBP 396m, FY to April 2006, at 1.8281); london-and-us-cities A s4.2'
+  - year: 2007
+    revenue_cents: 80593000000
+    src: 'rev S A-L2 (GBP 425m, FY to April 2007, at 1.8963); london-and-us-cities A s4.2'
+  - year: 2008
+    revenue_cents: 93539000000
+    src: 'rev D A-L3 (GBP 479m, FY to April 2008, at 1.9528); london-and-us-cities A s4.2'
+  - year: 2009
+    revenue_cents: 93371000000
+    lawyers: 1500
+    src: 'rev S A-L3 (GBP 531m, FY to April 2009, at 1.7584); london-and-us-cities A s4.2'
+  - year: 2010
+    revenue_cents: 84503000000
+    src: 'rev S A-L5 (GBP 542m, FY to April 2010, at 1.5591); london-and-us-cities A s4.2'
+- key: ashurst
+  name: Ashurst
+  short: Ashurst
+  personality: elite_lockstep
+  hq: london
+  ny_office: false
+  offices: 12
+  comp: lockstep
+  strong: [banking_finance, real_estate, corporate_ma]
+  fy2005:
+    year: 2005
+    revenue_cents: 36759000000
+    lawyers: 700
+    equity_partners: 120
+    pep_cents: 103693000
+    src: 'rev S A-L1 (FY2004/05 GBP 201m at 1.8288); lawyers A back-cast from A-L3; EP A A-s4.1; PEP A FY2005/06 x 0.85 (london-and-us-cities)'
+  path:
+  - year: 2006
+    revenue_cents: 39121000000
+    src: 'rev S A-L2 (GBP 214m, FY to April 2006, at 1.8281); london-and-us-cities A s4.2'
+  - year: 2007
+    revenue_cents: 52148000000
+    src: 'rev S A-L2 (GBP 275m, FY to April 2007, at 1.8963); london-and-us-cities A s4.2'
+  - year: 2008
+    revenue_cents: 63075000000
+    src: 'rev D A-L3 (GBP 323m, FY to April 2008, at 1.9528); london-and-us-cities A s4.2'
+  - year: 2009
+    revenue_cents: 52928000000
+    lawyers: 844
+    src: 'rev S A-L3 (GBP 301m, FY to April 2009, at 1.7584); london-and-us-cities A s4.2'
+  - year: 2010
+    revenue_cents: 45682000000
+    src: 'rev S A-L5 (GBP 293m, FY to April 2010, at 1.5591); london-and-us-cities A s4.2'
+  - year: 2015
+    revenue_cents: 90231000000
+    lawyers: 1633
+    src: 'rev S A-L6 (GBP 561m, FY to April 2015, at 1.6084); london-and-us-cities A s4.2'
+  - year: 2018
+    revenue_cents: 73591000000
+    src: 'rev S A-L7 (GBP 564m, FY to April 2018, at 1.3048); london-and-us-cities A s4.2'
+  - year: 2025
+    revenue_cents: 133572000000
+    src: 'rev S A-s4.2 (GBP 1034m, FY to April 2025, at 1.2918); london-and-us-cities A s4.2'
+- key: norton_rose
+  name: Norton Rose
+  short: Norton Rose
+  personality: global_verein
+  hq: london
+  ny_office: false
+  offices: 20
+  comp: lockstep
+  strong: [banking_finance, commercial_litigation, corporate_ma]
+  fy2005:
+    year: 2005
+    revenue_cents: 38405000000
+    lawyers: 850
+    equity_partners: 150
+    pep_cents: 71689000
+    src: 'rev S A-L1 (FY2004/05 GBP 210m at 1.8288); lawyers A back-cast from A-L3; EP A A-s4.1; PEP A FY2005/06 x 0.85 (london-and-us-cities)'
+  path:
+  - year: 2006
+    revenue_cents: 38390000000
+    src: 'rev S A-L2 (GBP 210m, FY to April 2006, at 1.8281); london-and-us-cities A s4.2'
+  - year: 2007
+    revenue_cents: 44184000000
+    src: 'rev S A-L2 (GBP 233m, FY to April 2007, at 1.8963); london-and-us-cities A s4.2'
+  - year: 2008
+    revenue_cents: 57998000000
+    src: 'rev D A-L3 (GBP 297m, FY to April 2008, at 1.9528); london-and-us-cities A s4.2'
+  - year: 2009
+    revenue_cents: 55214000000
+    lawyers: 996
+    src: 'rev S A-L3 (GBP 314m, FY to April 2009, at 1.7584); london-and-us-cities A s4.2'
+  - year: 2010
+    revenue_cents: 47864000000
+    src: 'rev S A-L5 (GBP 307m, FY to April 2010, at 1.5591); london-and-us-cities A s4.2'
+  - year: 2015
+    revenue_cents: 179819000000
+    lawyers: 3405
+    src: 'rev S A-L6 (GBP 1118m, FY to April 2015, at 1.6084); london-and-us-cities A s4.2'
+  - year: 2018
+    revenue_cents: 199112000000
+    src: 'rev S A-L7 (GBP 1526m, FY to April 2018, at 1.3048); london-and-us-cities A s4.2'
+- key: simmons
+  name: Simmons & Simmons
+  short: Simmons
+  personality: elite_lockstep
+  hq: london
+  ny_office: false
+  offices: 21
+  comp: lockstep
+  strong: [banking_finance, ip, employment]
+  fy2005:
+    year: 2005
+    revenue_cents: 35844000000
+    lawyers: 700
+    equity_partners: 125
+    pep_cents: 77724000
+    src: 'rev S A-L1 (FY2004/05 GBP 196m at 1.8288); lawyers A back-cast from A-L3; EP A A-s4.1; PEP A FY2005/06 x 0.85 (london-and-us-cities)'
+  path:
+  - year: 2006
+    revenue_cents: 41498000000
+    src: 'rev S A-L2 (GBP 227m, FY to April 2006, at 1.8281); london-and-us-cities A s4.2'
+  - year: 2007
+    revenue_cents: 47483000000
+    src: 'rev S A-L2 (GBP 250.4m, FY to April 2007, at 1.8963); london-and-us-cities A s4.2'
+  - year: 2008
+    revenue_cents: 56436000000
+    src: 'rev D A-L3 (GBP 289m, FY to April 2008, at 1.9528); london-and-us-cities A s4.2'
+  - year: 2009
+    revenue_cents: 51222000000
+    lawyers: 769
+    src: 'rev S A-L3 (GBP 291.3m, FY to April 2009, at 1.7584); london-and-us-cities A s4.2'
+  - year: 2010
+    revenue_cents: 39133000000
+    src: 'rev S A-L5 (GBP 251m, FY to April 2010, at 1.5591); london-and-us-cities A s4.2'
+  - year: 2015
+    revenue_cents: 46660000000
+    lawyers: 842
+    src: 'rev S A-L6 (GBP 290.1m, FY to April 2015, at 1.6084); london-and-us-cities A s4.2'
+  - year: 2018
+    revenue_cents: 46203000000
+    src: 'rev S A-L7 (GBP 354.1m, FY to April 2018, at 1.3048); london-and-us-cities A s4.2'
+  - year: 2025
+    revenue_cents: 79446000000
+    src: 'rev S A-s4.2 (GBP 615m, FY to April 2025, at 1.2918); london-and-us-cities A s4.2'
+- key: cms_cameron_mckenna
+  name: CMS Cameron McKenna
+  short: CMS
+  personality: global_verein
+  hq: london
+  ny_office: false
+  offices: 10
+  comp: modified lockstep
+  strong: [real_estate, corporate_ma, banking_finance]
+  fy2005:
+    year: 2005
+    revenue_cents: 29809000000
+    lawyers: 700
+    equity_partners: 120
+    pep_cents: 74615000
+    src: 'rev S A-L1 (FY2004/05 GBP 163m at 1.8288); lawyers A back-cast from A-L3; EP A A-s4.1; PEP A FY2005/06 x 0.85 (london-and-us-cities)'
+  path:
+  - year: 2006
+    revenue_cents: 33143000000
+    src: 'rev S A-L2 (GBP 181.3m, FY to April 2006, at 1.8281); london-and-us-cities A s4.2'
+  - year: 2007
+    revenue_cents: 37433000000
+    src: 'rev S A-L2 (GBP 197.4m, FY to April 2007, at 1.8963); london-and-us-cities A s4.2'
+  - year: 2008
+    revenue_cents: 45891000000
+    src: 'rev D A-L3 (GBP 235m, FY to April 2008, at 1.9528); london-and-us-cities A s4.2'
+  - year: 2009
+    revenue_cents: 42202000000
+    lawyers: 785
+    src: 'rev S A-L3 (GBP 240m, FY to April 2009, at 1.7584); london-and-us-cities A s4.2'
+  - year: 2010
+    revenue_cents: 33427000000
+    src: 'rev S A-L5 (GBP 214.4m, FY to April 2010, at 1.5591); london-and-us-cities A s4.2'
+  - year: 2018
+    revenue_cents: 147938000000
+    src: 'rev S A-L7 CMS UK after the May 2017 merger (GBP 1133.8m, FY to April 2018, at 1.3048); london-and-us-cities A s4.2'
+- key: eversheds
+  name: Eversheds
+  short: Eversheds
+  personality: volume_mid_market
+  hq: london
+  ny_office: false
+  offices: 20
+  comp: merit-based
+  strong: [employment, real_estate, commercial_litigation]
+  fy2005:
+    year: 2005
+    revenue_cents: 55413000000
+    lawyers: 1150
+    equity_partners: 150
+    pep_cents: 56144000
+    src: 'rev S A-L1 (FY2004/05 GBP 303m at 1.8288); lawyers A back-cast from A-L3; EP A A-s4.1; PEP A FY2005/06 x 0.85 (london-and-us-cities)'
+  path:
+  - year: 2006
+    revenue_cents: 59048000000
+    src: 'rev S A-L2 (GBP 323m, FY to April 2006, at 1.8281); london-and-us-cities A s4.2'
+  - year: 2007
+    revenue_cents: 67508000000
+    src: 'rev S A-L2 (GBP 356m, FY to April 2007, at 1.8963); london-and-us-cities A s4.2'
+  - year: 2008
+    revenue_cents: 76354000000
+    src: 'rev D A-L3 (GBP 391m, FY to April 2008, at 1.9528); london-and-us-cities A s4.2'
+  - year: 2009
+    revenue_cents: 64340000000
+    lawyers: 1247
+    src: 'rev S A-L3 (GBP 365.9m, FY to April 2009, at 1.7584); london-and-us-cities A s4.2'
+  - year: 2010
+    revenue_cents: 55379000000
+    src: 'rev S A-L5 (GBP 355.2m, FY to April 2010, at 1.5591); london-and-us-cities A s4.2'
+  - year: 2015
+    revenue_cents: 61232000000
+    lawyers: 1364
+    src: 'rev S A-L6 (GBP 380.7m, FY to April 2015, at 1.6084); london-and-us-cities A s4.2'
+- key: addleshaw_goddard
+  name: Addleshaw Goddard
+  short: Addleshaw Goddard
+  personality: regional_champion
+  hq: london
+  ny_office: false
+  offices: 3
+  comp: modified lockstep
+  strong: [real_estate, corporate_ma, banking_finance]
+  fy2005:
+    year: 2005
+    revenue_cents: 25420000000
+    lawyers: 580
+    equity_partners: 110
+    pep_cents: 70043000
+    src: 'rev S A-L1 (FY2004/05 GBP 139m at 1.8288); lawyers A back-cast from A-L3; EP A A-s4.1; PEP A FY2005/06 x 0.85 (london-and-us-cities)'
+  path:
+  - year: 2006
+    revenue_cents: 29469000000
+    src: 'rev S A-L2 (GBP 161.2m, FY to April 2006, at 1.8281); london-and-us-cities A s4.2'
+  - year: 2007
+    revenue_cents: 33508000000
+    src: 'rev S A-L2 (GBP 176.7m, FY to April 2007, at 1.8963); london-and-us-cities A s4.2'
+  - year: 2008
+    revenue_cents: 38080000000
+    src: 'rev D A-L3 (GBP 195m, FY to April 2008, at 1.9528); london-and-us-cities A s4.2'
+  - year: 2009
+    revenue_cents: 30438000000
+    lawyers: 598
+    src: 'rev S A-L3 (GBP 173.1m, FY to April 2009, at 1.7584); london-and-us-cities A s4.2'
+  - year: 2010
+    revenue_cents: 26115000000
+    src: 'rev S A-L5 (GBP 167.5m, FY to April 2010, at 1.5591); london-and-us-cities A s4.2'
+  - year: 2015
+    revenue_cents: 30962000000
+    lawyers: 674
+    src: 'rev S A-L6 (GBP 192.5m, FY to April 2015, at 1.6084); london-and-us-cities A s4.2'
+  - year: 2018
+    revenue_cents: 31628000000
+    src: 'rev S A-L7 (GBP 242.4m, FY to April 2018, at 1.3048); london-and-us-cities A s4.2'
+  - year: 2025
+    revenue_cents: 71178000000
+    src: 'rev S A-s4.2 (GBP 551m, FY to April 2025, at 1.2918); london-and-us-cities A s4.2'
+- key: berwin_leighton_paisner
+  name: Berwin Leighton Paisner
+  short: BLP
+  personality: performance_machine
+  hq: london
+  ny_office: false
+  offices: 4
+  comp: merit-based
+  strong: [real_estate, commercial_litigation, corporate_ma]
+  fy2005:
+    year: 2005
+    revenue_cents: 22128000000
+    lawyers: 620
+    equity_partners: 80
+    pep_cents: 77724000
+    src: 'rev S A-L1 (FY2004/05 GBP 121m at 1.8288); lawyers A back-cast from A-L3; EP A A-s4.1; PEP A FY2005/06 x 0.85 (london-and-us-cities)'
+  path:
+  - year: 2006
+    revenue_cents: 26507000000
+    src: 'rev S A-L2 (GBP 145m, FY to April 2006, at 1.8281); london-and-us-cities A s4.2'
+  - year: 2007
+    revenue_cents: 32047000000
+    src: 'rev S A-L2 (GBP 169m, FY to April 2007, at 1.8963); london-and-us-cities A s4.2'
+  - year: 2008
+    revenue_cents: 36127000000
+    src: 'rev D A-L3 (GBP 185m, FY to April 2008, at 1.9528); london-and-us-cities A s4.2'
+  - year: 2009
+    revenue_cents: 31651000000
+    lawyers: 746
+    src: 'rev S A-L3 (GBP 180m, FY to April 2009, at 1.7584); london-and-us-cities A s4.2'
+  - year: 2010
+    revenue_cents: 29779000000
+    src: 'rev S A-L5 (GBP 191m, FY to April 2010, at 1.5591); london-and-us-cities A s4.2'
+  - year: 2015
+    revenue_cents: 39567000000
+    lawyers: 706
+    src: 'rev S A-L6 (GBP 246m, FY to April 2015, at 1.6084); london-and-us-cities A s4.2'
+  - year: 2018
+    revenue_cents: 37617000000
+    src: 'rev S A-L7 (GBP 288.3m, FY to April 2018, at 1.3048); london-and-us-cities A s4.2'
+- key: sj_berwin
+  name: SJ Berwin
+  short: SJ Berwin
+  personality: performance_machine
+  hq: london
+  ny_office: false
+  offices: 9
+  comp: merit-based
+  strong: [private_equity, real_estate, corporate_ma]
+  fy2005:
+    year: 2005
+    revenue_cents: 22311000000
+    lawyers: 500
+    equity_partners: 95
+    pep_cents: 101133000
+    src: 'rev S A-L1 (FY2004/05 GBP 122m at 1.8288); lawyers A back-cast from A-L3; EP A A-s4.1; PEP A FY2005/06 x 0.85 (london-and-us-cities)'
+  path:
+  - year: 2006
+    revenue_cents: 28336000000
+    src: 'rev S A-L2 (GBP 155m, FY to April 2006, at 1.8281); london-and-us-cities A s4.2'
+  - year: 2007
+    revenue_cents: 35840000000
+    src: 'rev S A-L2 (GBP 189m, FY to April 2007, at 1.8963); london-and-us-cities A s4.2'
+  - year: 2008
+    revenue_cents: 41985000000
+    src: 'rev D A-L3 (GBP 215m, FY to April 2008, at 1.9528); london-and-us-cities A s4.2'
+  - year: 2009
+    revenue_cents: 32355000000
+    lawyers: 589
+    src: 'rev S A-L3 (GBP 184m, FY to April 2009, at 1.7584); london-and-us-cities A s4.2'
+  - year: 2010
+    revenue_cents: 26661000000
+    src: 'rev S A-L5 (GBP 171m, FY to April 2010, at 1.5591); london-and-us-cities A s4.2'
+- key: pinsent_masons
+  name: Pinsent Masons
+  short: Pinsent Masons
+  personality: regional_champion
+  hq: london
+  ny_office: false
+  offices: 11
+  comp: modified lockstep
+  strong: [real_estate, commercial_litigation, employment]
+  fy2005:
+    year: 2005
+    revenue_cents: 27432000000
+    lawyers: 850
+    equity_partners: 110
+    pep_cents: 65288000
+    src: 'rev S A-L1 (FY2004/05 GBP 150m at 1.8288); lawyers A back-cast from A-L3; EP A A-s4.1; PEP A FY2005/06 x 0.85 (london-and-us-cities)'
+  path:
+  - year: 2006
+    revenue_cents: 31443000000
+    src: 'rev S A-L2 (GBP 172m, FY to April 2006, at 1.8281); london-and-us-cities A s4.2'
+  - year: 2007
+    revenue_cents: 36485000000
+    src: 'rev S A-L2 (GBP 192.4m, FY to April 2007, at 1.8963); london-and-us-cities A s4.2'
+  - year: 2008
+    revenue_cents: 41595000000
+    src: 'rev D A-L3 (GBP 213m, FY to April 2008, at 1.9528); london-and-us-cities A s4.2'
+  - year: 2009
+    revenue_cents: 37806000000
+    lawyers: 939
+    src: 'rev S A-L3 (GBP 215m, FY to April 2009, at 1.7584); london-and-us-cities A s4.2'
+  - year: 2010
+    revenue_cents: 32117000000
+    src: 'rev S A-L5 (GBP 206m, FY to April 2010, at 1.5591); london-and-us-cities A s4.2'
+  - year: 2015
+    revenue_cents: 51983000000
+    lawyers: 1548
+    src: 'rev S A-L6 (GBP 323.2m, FY to April 2015, at 1.6084); london-and-us-cities A s4.2'
+  - year: 2018
+    revenue_cents: 58703000000
+    src: 'rev S A-L7 (GBP 449.9m, FY to April 2018, at 1.3048); london-and-us-cities A s4.2'
+  - year: 2025
+    revenue_cents: 87842000000
+    src: 'rev S A-s4.2 (GBP 680m, FY to April 2025, at 1.2918); london-and-us-cities A s4.2'
+- key: macfarlanes
+  name: Macfarlanes
+  short: Macfarlanes
+  personality: elite_lockstep
+  hq: london
+  ny_office: false
+  offices: 1
+  comp: lockstep
+  strong: [private_equity, corporate_ma, real_estate]
+  fy2005:
+    year: 2005
+    revenue_cents: 13533000000
+    lawyers: 210
+    equity_partners: 50
+    pep_cents: 155448000
+    src: 'rev S A-L1 (FY2004/05 GBP 74m at 1.8288); lawyers A back-cast from A-L3; EP A A-s4.1; PEP A FY2005/06 x 0.85 (london-and-us-cities)'
+  path:
+  - year: 2006
+    revenue_cents: 16453000000
+    src: 'rev S A-L2 (GBP 90m, FY to April 2006, at 1.8281); london-and-us-cities A s4.2'
+  - year: 2007
+    revenue_cents: 19532000000
+    src: 'rev S A-L2 (GBP 103m, FY to April 2007, at 1.8963); london-and-us-cities A s4.2'
+  - year: 2008
+    revenue_cents: 21676000000
+    src: 'rev D A-L3 (GBP 111m, FY to April 2008, at 1.9528); london-and-us-cities A s4.2'
+  - year: 2009
+    revenue_cents: 17408000000
+    lawyers: 227
+    src: 'rev S A-L3 (GBP 99m, FY to April 2009, at 1.7584); london-and-us-cities A s4.2'
+  - year: 2010
+    revenue_cents: 14406000000
+    src: 'rev S A-L5 (GBP 92.4m, FY to April 2010, at 1.5591); london-and-us-cities A s4.2'
+  - year: 2015
+    revenue_cents: 25670000000
+    lawyers: 344
+    src: 'rev S A-L6 (GBP 159.6m, FY to April 2015, at 1.6084); london-and-us-cities A s4.2'
+  - year: 2018
+    revenue_cents: 26305000000
+    src: 'rev S A-L7 (GBP 201.6m, FY to April 2018, at 1.3048); london-and-us-cities A s4.2'
+- key: travers_smith
+  name: Travers Smith
+  short: Travers Smith
+  personality: elite_lockstep
+  hq: london
+  ny_office: false
+  offices: 2
+  comp: lockstep
+  strong: [private_equity, corporate_ma, employment]
+  fy2005:
+    year: 2005
+    revenue_cents: 10058000000
+    lawyers: 190
+    equity_partners: 45
+    pep_cents: 101133000
+    src: 'rev S A-L1 (FY2004/05 GBP 55m at 1.8288); lawyers A back-cast from A-L3; EP A A-s4.1; PEP A FY2005/06 x 0.85 (london-and-us-cities)'
+  path:
+  - year: 2006
+    revenue_cents: 12449000000
+    src: 'rev S A-L2 (GBP 68.1m, FY to April 2006, at 1.8281); london-and-us-cities A s4.2'
+  - year: 2007
+    revenue_cents: 14886000000
+    src: 'rev S A-L2 (GBP 78.5m, FY to April 2007, at 1.8963); london-and-us-cities A s4.2'
+  - year: 2008
+    revenue_cents: 15818000000
+    src: 'rev D A-L3 (GBP 81m, FY to April 2008, at 1.9528); london-and-us-cities A s4.2'
+  - year: 2009
+    revenue_cents: 11342000000
+    lawyers: 204
+    src: 'rev S A-L3 (GBP 64.5m, FY to April 2009, at 1.7584); london-and-us-cities A s4.2'
+  - year: 2015
+    revenue_cents: 17033000000
+    lawyers: 317
+    src: 'rev S A-L6 (GBP 105.9m, FY to April 2015, at 1.6084); london-and-us-cities A s4.2'
+  - year: 2018
+    revenue_cents: 19168000000
+    src: 'rev S A-L7 (GBP 146.9m, FY to April 2018, at 1.3048); london-and-us-cities A s4.2'
 events:
 - key: kl_preston_gates
   ym:
@@ -2481,3 +3205,108 @@ events:
   short: A&O Shearman
   lawyers_added: 3100
   src: 'S snip A&O Shearman release: effective 1 May 2024; lawyers added D (about 3,900 combined less Shearman''s about 800)'
+# PT-M11: the UK rivals' dated events (docs/research/london-and-us-cities.md part A s4.3)
+- key: lovells_hogan
+  ym: [2010, 5]
+  kind: absorbed
+  firm: lovells
+  other: hogan_hartson
+  share: 0.7
+  src: 'S A-s4.3: Lovells and Hogan & Hartson form Hogan Lovells, 1 May 2010 (Hogan Lovells is hogan_hartson''s outside merger)'
+- key: allen_overy_shearman
+  ym: [2024, 5]
+  kind: absorbed
+  firm: allen_overy
+  other: shearman
+  share: 0.7
+  src: 'S A-s4.3: A&O and Shearman & Sterling complete A&O Shearman, 1 May 2024 (A&O Shearman is shearman''s outside merger)'
+- key: norton_rose_ogilvy
+  ym: [2011, 6]
+  kind: outside_merger
+  firm: norton_rose
+  lawyers_added: 450
+  src: 'A A-s4.3: Norton Rose and Ogilvy Renault (date A); lawyers added A'
+- key: norton_rose_macleod
+  ym: [2012, 1]
+  kind: outside_merger
+  firm: norton_rose
+  lawyers_added: 200
+  src: 'A A-s4.3: Norton Rose and Macleod Dixon (date A); lawyers added A'
+- key: norton_rose_fulbright
+  ym: [2013, 6]
+  kind: outside_merger
+  firm: norton_rose
+  name: Norton Rose Fulbright
+  short: NRF
+  lawyers_added: 850
+  src: 'S A-s4.3: Norton Rose and Fulbright & Jaworski, June 2013; lawyers added A'
+- key: herbert_smith_freehills
+  ym: [2012, 10]
+  kind: outside_merger
+  firm: herbert_smith
+  name: Herbert Smith Freehills
+  short: HSF
+  lawyers_added: 800
+  src: 'S A-s4.3: Herbert Smith and Freehills, 1 October 2012; lawyers added A'
+- key: hsf_kramer
+  ym: [2025, 6]
+  kind: outside_merger
+  firm: herbert_smith
+  name: HSF Kramer
+  short: HSF Kramer
+  lawyers_added: 350
+  src: 'S A-s4.3: HSF and Kramer Levin complete HSF Kramer, 1 June 2025; lawyers added A'
+- key: ashurst_blake_dawson
+  ym: [2013, 11]
+  kind: outside_merger
+  firm: ashurst
+  lawyers_added: 800
+  src: 'S A-s4.3: Ashurst and Blake Dawson''s full merger, November 2013; lawyers added A'
+- key: pinsent_mcgrigors
+  ym: [2012, 5]
+  kind: outside_merger
+  firm: pinsent_masons
+  lawyers_added: 300
+  src: 'S/A A-s4.3: Pinsent Masons and McGrigors, 2012 (month A); lawyers added A'
+- key: sj_berwin_kwm
+  ym: [2013, 11]
+  kind: rename
+  firm: sj_berwin
+  name: King & Wood Mallesons (Europe)
+  short: KWM Europe
+  src: 'S A-s4.3: SJ Berwin joins King & Wood Mallesons, November 2013'
+- key: kwm_europe_collapse
+  ym: [2017, 1]
+  kind: collapse
+  firm: sj_berwin
+  src: 'S A-s4.3: KWM Europe enters administration, January 2017'
+- key: eversheds_sutherland
+  ym: [2017, 2]
+  kind: outside_merger
+  firm: eversheds
+  name: Eversheds Sutherland
+  short: Eversheds Sutherland
+  lawyers_added: 700
+  src: 'S A-s4.3: Eversheds and Sutherland Asbill & Brennan, February 2017; lawyers added A'
+- key: cms_nabarro_olswang
+  ym: [2017, 5]
+  kind: outside_merger
+  firm: cms_cameron_mckenna
+  name: CMS
+  short: CMS
+  lawyers_added: 700
+  src: 'S A-s4.3: CMS Cameron McKenna, Nabarro and Olswang, May 2017; lawyers added A'
+- key: addleshaw_hbj
+  ym: [2017, 5]
+  kind: outside_merger
+  firm: addleshaw_goddard
+  lawyers_added: 120
+  src: 'S/A A-s4.3: Addleshaw Goddard and HBJ Gateley, 2017 (month A); lawyers added A'
+- key: bryan_cave_leighton_paisner
+  ym: [2018, 4]
+  kind: outside_merger
+  firm: berwin_leighton_paisner
+  name: Bryan Cave Leighton Paisner
+  short: BCLP
+  lawyers_added: 1000
+  src: 'S A-s4.3: BLP and Bryan Cave form Bryan Cave Leighton Paisner, 3 April 2018; lawyers added A'

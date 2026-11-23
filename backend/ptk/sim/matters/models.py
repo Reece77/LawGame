@@ -58,6 +58,7 @@ class Client:
     loyalty: float  # 1-20
     gc: GeneralCounsel
     panel: tuple[str, ...]  # static panel firms' keys (clients.yaml panel_firms), sorted
+    city: str = ""  # PT-M11: cities.yaml key of its local market; "" = the home market
 
 
 _NEUTRAL = 10.0  # tunable-exempt: a neutral 1-20 trait

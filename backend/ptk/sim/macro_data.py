@@ -71,12 +71,22 @@ class ShockDef(_Strict):
         return self
 
 
+class RegionPoint(_Strict):
+    """PT-M11: a region's multipliers on the indices at a dated month (interpolated between
+    points, 1.0 before the first and held after the last); a series not listed is 1.0."""
+
+    ym: tuple[int, int]
+    values: dict[str, float]
+    note: str = ""
+
+
 class MacroData(_Strict):
     sources: dict[str, str]  # series -> the dossier's source line
     points: tuple[MacroPoint, ...] = Field(min_length=1)
     rate_rise: dict[int, float]  # year -> the market's January rate rise (0.065 = 6.5%)
     shocks: tuple[ShockDef, ...] = ()  # PT-M10: dated shocks (the 2020 pandemic)
     seed: int | None = None  # PT-M10: set on a save's seeded world (ptk.sim.macro_seed)
+    regions: dict[str, tuple[RegionPoint, ...]] = Field(default_factory=dict)  # PT-M11: uk
 
     @model_validator(mode="after")
     def _check(self) -> MacroData:

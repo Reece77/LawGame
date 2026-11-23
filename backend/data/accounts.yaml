@@ -10,6 +10,7 @@ accounts:
   - { code: 1300_disbursements, name: "Disbursements recoverable", type: asset }
   - { code: 1400_prepaid, name: "Prepaid expenses", type: asset }
   - { code: 1500_ppe, name: "Property, equipment and fit-out", type: asset }
+  - { code: 1510_right_of_use, name: "Right-of-use assets (office leases)", type: asset } # PT-M11
   - { code: 2000_payables, name: "Payables", type: liability }
   - { code: 2100_accrued_comp, name: "Accrued salaries and bonuses", type: liability }
   - { code: 2200_deferred_fees, name: "Deferred fee income (retainers)", type: liability }
@@ -31,6 +32,7 @@ accounts:
   - { code: 5100_staff_salaries, name: "Staff salaries", type: expense }
   - { code: 5200_benefits, name: "Benefits", type: expense }
   - { code: 6000_rent, name: "Rent", type: expense }
+  - { code: 6050_depreciation, name: "Depreciation and amortisation (fit-out)", type: expense } # PT-M11
   - { code: 6100_technology, name: "Technology and AI", type: expense }
   - { code: 6200_recruiting, name: "Recruiting and lateral fees", type: expense }
   - { code: 6300_insurance, name: "Malpractice insurance", type: expense }

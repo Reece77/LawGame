@@ -336,3 +336,26 @@ templates:
   automation_digest:
     title: "Your month: {month}"
     body: "{summary}"
+  # PT-M11: offices, admissions and the UK path
+  office_opened:
+    title: "New office in {city}"
+    body: "The firm signed a lease in {city} for {seats} lawyer seats at {rent_cents} a month. Its clients' work now reaches the firm there."
+  office_closed:
+    title: "The {city} office closes"
+    body: "The lease in {city} is broken and its people move to the home office."
+  bar_admitted:
+    title: "{name} is admitted in {jurisdiction}"
+    body: "{name} may now lead matters in {jurisdiction}."
+  bar_failed:
+    title: "{name} did not pass in {jurisdiction}"
+    body: "{name} was not admitted in {jurisdiction} this time. They can sit again."
+  training_contracts:
+    title: "{count} training contracts offered"
+    body: "{count} trainees will join the office in September {year}, two years ahead as the London market recruits."
+  trainees_joined:
+    title: "{count} trainees join"
+    body: "{count} trainee solicitors begin their first six-month seats."
+  trainee_qualified:
+    title: "{name} qualifies as a solicitor"
+    body: "{name} qualifies into {practice} as a newly qualified solicitor."
+

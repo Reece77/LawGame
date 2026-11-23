@@ -290,6 +290,12 @@ def set_lead(state: GameState, a: SetMatterLead, balance: Balance, data: GameDat
         or state.person(a.person_id).level not in PARTNER_LEVELS
     ):
         raise StaffingError(f"person {a.person_id} is not a partner at the firm")
+    from ptk.sim.geo.admissions import may_lead  # PT-M11 (spec 11.1)
+
+    if not may_lead(state, state.person(a.person_id), matter, data):
+        raise StaffingError(
+            f"person {a.person_id} is not admitted where this matter is led (bar admissions)"
+        )
     member = matter.member(a.person_id)
     if member is None:
         step = balance.matters.staff_round_tenths

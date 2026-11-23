@@ -74,7 +74,7 @@ def decide(state: GameState, rng: RngFactory, data: GameData, balance: Balance) 
         gen = rng.stream(month.turn, "rival_firm", *firm.rival_key)
         firm = january(firm, month)
         firm = update_demand(firm, float(gen.standard_normal()), month)
-        target = poaching.has_target(state, firm, pool, balance)
+        target = poaching.has_target(state, firm, pool, balance, data)
         for choice in choose(firm, month, gen, target):
             firm = with_cooldown(firm, choice.action, month)
             person_id = None
@@ -156,13 +156,17 @@ def after_intake(state: GameState, rng: RngFactory, data: GameData, balance: Bal
             continue
         gen = rng.stream(state.turn, "opposing", m.id)
         u, v = float(gen.random()), float(gen.random())
-        if u >= REAL_SHARE or total <= 0:
+        m_lit, m_weights, m_total = lit, weights, total
+        client = state.market.client(m.client_id)
+        if client.city:  # PT-M11: a local case's other side is a firm of its region
+            m_lit, m_weights, m_total = _local_litigators(state, client.city, data)
+        if u >= REAL_SHARE or m_total <= 0:
             new.append((m.id, ""))
             matters.append(m)
             continue
-        x = v * total
-        firm = lit[-1]
-        for f, w in zip(lit, weights, strict=True):
+        x = v * m_total
+        firm = m_lit[-1]
+        for f, w in zip(m_lit, m_weights, strict=True):
             if x < w:
                 firm = f
                 break
@@ -176,6 +180,22 @@ def after_intake(state: GameState, rng: RngFactory, data: GameData, balance: Bal
     opposing = tuple(sorted((*state.rivals.opposing, *new)))
     market = replace(state.market, matters=tuple(matters))
     return Phase(replace(state, market=market, rivals=replace(state.rivals, opposing=opposing)))
+
+
+def _local_litigators(
+    state: GameState, city: str, data: GameData
+) -> tuple[list[RivalFirm], list[float], float]:
+    """PT-M11: real firms of a city's region, weighted by their litigators."""
+    from ptk.sim.geo.cities import region_of_city, rival_region
+
+    region = region_of_city(data, city)
+    lit = [
+        f for f in state.rivals.active if f.kind == "real" and rival_region(data, f.hq) == region
+    ]
+    weights = [
+        f.pool("commercial_litigation").lawyers + f.pool("white_collar").lawyers for f in lit
+    ]
+    return lit, weights, sum(weights)
 
 
 def team_craft(state: GameState, firm: RivalFirm, data: GameData, balance: Balance) -> float:

@@ -129,6 +129,7 @@ class _Run:
         )
         self.ym = turn_to_ym(state.turn, state.save_meta.start_ym)
         self.factors: dict[int, float] = {}
+        self.offices: dict[int, int | None] = {}  # PT-M11
         self.eng: dict[int, Engagement] = {
             e.matter_id: e for e in b.engagements if not e.closed and e.firm_id == firm_id
         }
@@ -157,6 +158,19 @@ class _Run:
         self.views: dict[int, MatterBillingView] = {}
 
     # --- helpers ----------------------------------------------------------------------------
+
+    def office(self, client_id: int) -> int | None:
+        """PT-M11: the office a client's work belongs to (the ledger's office dimension); None
+        for the home office, so a firm with no other office posts exactly as before."""
+        if not self.state.geo.offices:
+            return None
+        if client_id not in self.offices:
+            from ptk.sim.geo.cities import client_office_id
+
+            client = self.state.market.client(client_id)
+            oid = client_office_id(self.state, self.firm_id, client)
+            self.offices[client_id] = oid or None
+        return self.offices[client_id]
 
     def client(self, client_id: int) -> ClientBillingView:
         if client_id not in self.clients:
@@ -300,8 +314,17 @@ class _Run:
                 continue
             short = min(bill.outstanding_cents, bill.short_cents)
             pay = bill.outstanding_cents - short
-            self.books.move(bk.COLLECTIONS, CASH, RECEIVABLES, pay, bill.practice)
-            self.books.move(bk.CREDIT_NOTES, FEES, RECEIVABLES, short, bill.practice)
+            self.books.move(
+                bk.COLLECTIONS, CASH, RECEIVABLES, pay, bill.practice, self.office(bill.client_id)
+            )
+            self.books.move(
+                bk.CREDIT_NOTES,
+                FEES,
+                RECEIVABLES,
+                short,
+                bill.practice,
+                self.office(bill.client_id),
+            )
             self.add("collected_cents", pay)
             self.add("credited_cents", short)
             self.bills[bid] = replace(
@@ -350,7 +373,14 @@ class _Run:
 
     def write_off(self, bill: Bill) -> int:
         amount = bill.outstanding_cents
-        self.books.move(bk.WRITE_OFFS, WRITE_OFFS, RECEIVABLES, amount, bill.practice)
+        self.books.move(
+            bk.WRITE_OFFS,
+            WRITE_OFFS,
+            RECEIVABLES,
+            amount,
+            bill.practice,
+            self.office(bill.client_id),
+        )
         self.add("written_off_cents", amount)
         self.bills[bill.id] = replace(
             bill,
@@ -394,12 +424,12 @@ class _Run:
             )
             if u[0] < chance:
                 fee -= times(fee, fx.uniform(*cfg.guideline_share, u[1]))
-        self.books.move(memo, RECEIVABLES, WIP, standard, practice)
+        self.books.move(memo, RECEIVABLES, WIP, standard, practice, self.office(client_id))
         diff = fee - standard
         if diff < 0:
-            self.books.move(memo, FEES, RECEIVABLES, -diff, practice)
+            self.books.move(memo, FEES, RECEIVABLES, -diff, practice, self.office(client_id))
         else:
-            self.books.move(memo, RECEIVABLES, revenue, diff, practice)
+            self.books.move(memo, RECEIVABLES, revenue, diff, practice, self.office(client_id))
         dispute = None
         if disputable and fee > 0 and u[2] < fx.dispute_chance(client, padding > 0, cfg):
             share = fx.uniform(*cfg.dispute_share, u[3])
@@ -474,7 +504,14 @@ class _Run:
     def transfer(self, bill: Bill, amount: int) -> None:
         self.client_book.pay_out(bk.TRANSFERS, bill.client_id, amount)
         self.hold_funds(bill.client_id, -amount)
-        self.books.move(bk.CLIENT_TRANSFERS, CASH, RECEIVABLES, amount, bill.practice)
+        self.books.move(
+            bk.CLIENT_TRANSFERS,
+            CASH,
+            RECEIVABLES,
+            amount,
+            bill.practice,
+            self.office(bill.client_id),
+        )
         self.add("collected_cents", amount)
         paid = replace(bill, paid_cents=bill.paid_cents + amount)
         if paid.outstanding_cents <= 0:
@@ -527,7 +564,7 @@ class _Run:
         standard = times(wip, self.cfg.padding_share)
         if standard <= 0:
             return 0, 0
-        self.books.move(bk.WIP_POSTED, WIP, FEES, standard, v.practice)
+        self.books.move(bk.WIP_POSTED, WIP, FEES, standard, v.practice, self.office(v.client_id))
         return standard, round_half_even(standard * fee, wip)
 
     def padding_found(self, bill: Bill) -> Bill:
@@ -536,7 +573,9 @@ class _Run:
         v = self.views.get(bill.matter_id) if bill.matter_id is not None else None
         lead = v.lead_id if v is not None else None
         amount = min(bill.padding_cents, bill.outstanding_cents)
-        self.books.move(bk.CREDIT_NOTES, FEES, RECEIVABLES, amount, bill.practice)
+        self.books.move(
+            bk.CREDIT_NOTES, FEES, RECEIVABLES, amount, bill.practice, self.office(bill.client_id)
+        )
         self.add("credited_cents", amount)
         self.point(bill.client_id, self.cfg.padding_points)
         if lead is not None:
@@ -640,7 +679,9 @@ class _Run:
         for r in month_hours(self.state, self.firm_id):
             if r.value_cents == 0 and r.tenths == 0:
                 continue
-            self.books.move(bk.WIP_POSTED, WIP, FEES, r.value_cents, r.practice)
+            self.books.move(
+                bk.WIP_POSTED, WIP, FEES, r.value_cents, r.practice, self.office(r.client_id)
+            )
             self.add("worked_cents", r.value_cents)
             self.add("billable_tenths", r.tenths)
             e = self.eng.get(r.matter_id) if r.matter_id is not None else None
@@ -674,8 +715,22 @@ class _Run:
                 continue
             fee = e.price_cents
             if e.advance_turn == self.turn:  # an advance bill covered this month: earn it
-                self.books.move(bk.RETAINERS, DEFERRED_FEES, WIP, e.wip_cents, e.practice)
-                self.books.move(bk.RETAINERS, DEFERRED_FEES, FEES, fee - e.wip_cents, e.practice)
+                self.books.move(
+                    bk.RETAINERS,
+                    DEFERRED_FEES,
+                    WIP,
+                    e.wip_cents,
+                    e.practice,
+                    self.office(e.client_id),
+                )
+                self.books.move(
+                    bk.RETAINERS,
+                    DEFERRED_FEES,
+                    FEES,
+                    fee - e.wip_cents,
+                    e.practice,
+                    self.office(e.client_id),
+                )
                 self.deferred -= fee
             else:  # the first month: billed as it is earned
                 bill = self.issue(
@@ -729,7 +784,9 @@ class _Run:
             if v is None or v.status != "closed" or e.closed:
                 continue
             if v.outcome == "disqualified":
-                self.books.move(bk.CLOSINGS, FEES, WIP, e.wip_cents, e.practice)
+                self.books.move(
+                    bk.CLOSINGS, FEES, WIP, e.wip_cents, e.practice, self.office(e.client_id)
+                )
                 self.realised(e.wip_cents, 0)
                 e = replace(e, wip_cents=0, wip_tenths=0)
             elif e.model == "contingency":
@@ -779,7 +836,9 @@ class _Run:
             recovery = 0
         fee = pct_of(recovery, e.share_bp)
         if fee <= 0:
-            self.books.move(bk.CLOSINGS, FEES, WIP, e.wip_cents, e.practice)
+            self.books.move(
+                bk.CLOSINGS, FEES, WIP, e.wip_cents, e.practice, self.office(e.client_id)
+            )
             self.realised(e.wip_cents, 0)
             return replace(e, wip_cents=0, wip_tenths=0)
         self.client_book.receive(bk.RECOVERIES, e.client_id, recovery)
@@ -815,7 +874,14 @@ class _Run:
             bill, credit, points = resolve_dispute(
                 bill, "negotiate", u[0], rel, self.turn, self.cfg
             )
-            self.books.move(bk.CREDIT_NOTES, FEES, RECEIVABLES, credit, bill.practice)
+            self.books.move(
+                bk.CREDIT_NOTES,
+                FEES,
+                RECEIVABLES,
+                credit,
+                bill.practice,
+                self.office(bill.client_id),
+            )
             self.add("credited_cents", credit)
             self.point(bill.client_id, points)
             self.bills[bid] = bill

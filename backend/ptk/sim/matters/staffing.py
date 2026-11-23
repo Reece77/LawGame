@@ -41,7 +41,7 @@ capacity), up to the firm's pool (`pro_bono_pool_tenths`). Pro bono records carr
 from __future__ import annotations
 
 import math
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field, replace
 from typing import Final
 
@@ -190,6 +190,7 @@ def default_team(
     balance: Balance,
     founder_id: int | None,
     policy_hours: int | None = None,
+    lead_ok: Callable[[Person], bool] | None = None,
 ) -> tuple[int | None, tuple[TeamMember, ...]]:
     """The default staffing rule: (lead id, team) for a matter (module docstring). Wants are
     output tenths; each person's hours are their output over `expected_output`."""
@@ -218,8 +219,11 @@ def default_team(
     def best(cands: Sequence[FeeEarner]) -> FeeEarner | None:
         return min(cands, key=lambda c: (-free[c.id], c.id)) if cands else None
 
-    partners = [e for e in pool if e.level == len(fx.LEVEL_BANDS) - 1]
+    ok = lead_ok or (lambda _p: True)  # PT-M11: admitted where the matter is led
+    partners = [e for e in pool if e.level == len(fx.LEVEL_BANDS) - 1 and ok(e.person)]
     origin = by_id.get(matter.originator_id) if matter.originator_id is not None else None
+    if origin is not None and not ok(origin.person):
+        origin = None
     lead: FeeEarner | None
     if (
         origin is not None
@@ -231,6 +235,8 @@ def default_team(
         lead = best(partners) or origin
     if lead is None and founder_id is not None:
         lead = by_id.get(founder_id)
+        if lead is not None and not ok(lead.person):
+            lead = None
     if lead is None:
         return None, ()
     plan: dict[int, int] = {}
@@ -299,8 +305,17 @@ def staff_matter(state: GameState, matter: Matter, data: GameData, balance: Bala
         balance,
         state.founder_of(matter.firm_id),
         state.firm(matter.firm_id).billable_target_hours,  # PT-M7b: the hours policy
+        _lead_rule(state, matter, data),  # PT-M11: bar admissions
     )
     return replace(matter, lead_id=lead, team=team)
+
+
+def _lead_rule(state: GameState, matter: Matter, data: GameData) -> Callable[[Person], bool] | None:
+    """PT-M11: None while the firm has no other office and no case outside the home courts
+    needs a check (v1's rule unchanged); else `ptk.sim.geo.admissions.lead_check`."""
+    from ptk.sim.geo.admissions import lead_check
+
+    return lead_check(state, matter, data) if data.geo.jurisdictions else None
 
 
 # --- The month's hours ----------------------------------------------------------------------
@@ -409,6 +424,46 @@ def _is_lawyer(e: FeeEarner, data: GameData) -> bool:
     return data.role(e.person.role).kind == "lawyer"
 
 
+type OfficeGroups = tuple[
+    Callable[[int], float],
+    Callable[[int], int],
+    list[tuple[int | None, list[FeeEarner]]],
+]
+
+
+def office_groups(
+    state: GameState, firm_id: int, earners: Sequence[FeeEarner], data: GameData
+) -> OfficeGroups:
+    """PT-M11: (client -> rate factor, client -> office, flow groups). Without other offices
+    every factor is 1.0 and one group holds everyone (v1's allocation, unchanged)."""
+    if not state.geo.firm_offices(firm_id):
+        return (lambda _cid: 1.0), (lambda _cid: 0), [(None, list(earners))]
+    from ptk.sim.geo.cities import client_office_id, office_city, person_office_id
+    from ptk.sim.geo.formulas import rate_factor
+
+    rates: dict[int, float] = {}
+    offices: dict[int, int] = {}
+
+    def office(cid: int) -> int:
+        if cid not in offices:
+            offices[cid] = client_office_id(state, firm_id, state.market.client(cid))
+        return offices[cid]
+
+    def rate(cid: int) -> float:
+        if cid not in rates:
+            oid = office(cid)
+            city = data.geo.city(office_city(state, firm_id, oid)) if oid else None
+            rates[cid] = rate_factor(city) if city is not None else 1.0
+        return rates[cid]
+
+    ids = [0, *(o.id for o in state.geo.firm_offices(firm_id))]
+    groups: list[tuple[int | None, list[FeeEarner]]] = [
+        (oid, [e for e in earners if person_office_id(state, firm_id, e.person) == oid])
+        for oid in ids
+    ]
+    return rate, office, groups
+
+
 def month_hours(
     state: GameState,
     firm_id: int,
@@ -426,6 +481,9 @@ def month_hours(
     cap = {e.id: e.capacity for e in earners}
     matters = [m for m in state.market.open_matters(firm_id) if m.team]
     records: list[HoursRecord] = []
+    # PT-M11: each client's work is its city's office's, at the city's card; flow work is
+    # served by that office's people (one group, everyone, without other offices: v1)
+    rate_f, client_office, groups = office_groups(state, firm_id, earners, data)
     # 1. named matters: planned, capped by what the matter still needs (at the team's expected
     # output, PT-M7a) and by max load
     wanted: dict[tuple[int, int], int] = {}
@@ -478,7 +536,7 @@ def month_hours(
                 phase.tasks,
                 data,
                 balance,
-                index[m.practice],
+                index[m.practice] * rate_f(m.client_id),
             )
         )
         used[pid] += t
@@ -490,25 +548,33 @@ def month_hours(
     all_t: dict[int, float] = {}
     flow_tasks = data.market.flow_tasks
     min_fam = balance.matters.flow_min_familiarity
-    for practice in data.practice_keys:
-        demands = {cid: t for (cid, p), t in flow_tenths.items() if p == practice and t > 0}
+    for practice, (group, members) in ((p, g) for p in data.practice_keys for g in groups):
+        demands = {
+            cid: t
+            for (cid, p), t in flow_tenths.items()
+            if p == practice and t > 0 and (group is None or client_office(cid) == group)
+        }
         total = sum(demands.values())
         if total <= 0:
             continue
         served: dict[int, int] = {}
         left = total
         pools = (
-            [e for e in earners if e.home == practice],
+            [e for e in members if e.home == practice],
             [
                 e
-                for e in earners
+                for e in members
                 if e.home != practice and e.person.familiarity[practice] >= min_fam
             ],
             [  # PT-M7a: idle capacity takes flow before it is left unserved
                 e
-                for e in earners
+                for e in members
                 if e.home != practice and e.person.familiarity[practice] < min_fam
             ],
+            # PT-M11: then the practice's lawyers in the firm's other offices (none in v1)
+            [e for e in earners if e.home == practice and e not in members]
+            if group is not None
+            else [],
         )
         for pool in pools:
             free = {e.id: max(0, int(fills[e.id] * cap[e.id]) - used[e.id]) for e in pool}
@@ -544,7 +610,7 @@ def month_hours(
                             flow_tasks,
                             data,
                             balance,
-                            index[practice],
+                            index[practice] * rate_f(cid),
                         )
                     )
     for cid, wanted_t in all_t.items():  # (client, "") -> its unserved share of all its flow

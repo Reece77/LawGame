@@ -151,6 +151,10 @@ energy: # the founding partner's monthly energy (TST formulas.md 6, M4c values; 
     lobby: 3 # a lobbying conversation with one partner (one a month each)
     promise: 0 # promise a partner lockstep points
     withdraw_vote: 0 # withdraw an open vote
+    open_office: 20 # PT-M11: open an office (a lease and its people; spec 8.8)
+    close_office: 10 # PT-M11: close an office (a one-off)
+    bar_admission: 5 # PT-M11: sit a bar exam, apply on motion or register as a foreign lawyer
+    training_contracts: 5 # PT-M11: offer a year's training contracts in an office
     press_answer: 2 # PT-M16: answer a press moment (spec 12.2)
     submission: 6 # PT-M16: the March directory submission (spec 12.3)
     draws: 2 # suspend or restore partners' draws
@@ -1467,3 +1471,29 @@ automation: # PT-M9: automation everywhere (spec 9.4; TST formulas.md 40)
       seat: coo
       energy: 10
       does: "Answers routine events no other automated area answers; critical events always come to you."
+
+# PT-M11: offices, cities and the UK path (ptk/sim/geo; spec 8.8, 5.2, 5.7, 11.1). Sources and
+# tags: docs/research/london-and-us-cities.md. Lease rent per seat and local markets are in
+# cities.yaml; bar rules, insurance and the London scale in bar_rules.yaml.
+geo:
+  seat_sizes: [5, 10, 15, 25, 50, 100] # lawyer seats a lease may be sized for
+  lease_months: 120 # a lease's term (a renewal starts another) [A] dossier s7: 10-15 years typical
+  fit_out_per_seat_cents: 2500000 # $25,000 a lawyer seat, once, to 1500 and amortised over the term [A] dossier s7
+  close_penalty_months: 6 # months of rent to break a lease early, once (6000)
+  reach_penalty: 1.5 # appeal logit points off a client's work in a city where the firm has no office (spec 8.8's local reach)
+  lift_portability: [0.55, 0.9] # a lifted partner's share of book clients that follow (uniform; hidden); a lateral group's is PT-M4's 0.3-0.7
+  lift_months: 6 # a lifted team's clients follow within this many months (PT-M4's laterals: 12-24)
+  organic_clients: 2 # local clients an organic start's partner is introduced to
+  organic_relationship: [10.0, 20.0] # their relationships start between these (0-100)
+  omp_appeal: 0.4 # appeal logit points x the office managing partner's e on the office's clients (spec 9.1: local BD)
+  lift_associates_per_partner: 3.0 # a team lift's associates per lifted partner
+  lift_book_share: 0.6 # share of a lifted partner's book that comes as named clients
+  local_client_revenue_bn: [0.4, 6.0] # a generated local client's 2005 revenue, USD bn (log-uniform)
+  training_contract_cost_cents: 1500000 # $15,000 a contract: the LPC fees and a grant (6200) [A] dossier s3
+  trainee_seat_months: 6 # four six-month seats (spec 5.2)
+  training_months: 24 # a training contract's two years
+  qualify_month: 9 # trainees qualify each September (newly qualified, class 1)
+  contract_lead_years: 2 # training contracts are offered two years ahead
+  max_contracts: 30 # an office's training contracts offered in a year at most
+  rfl_cost_cents: 100000 # registering a US lawyer as a registered foreign lawyer (6200) [A] dossier s6
+

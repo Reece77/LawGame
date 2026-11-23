@@ -1188,11 +1188,14 @@ def rival_standing(state: GameState, data: GameData) -> tuple[RivalStandingView,
 
 
 def _rival_standing(state: GameState, data: GameData) -> tuple[RivalStandingView, ...]:
+    from ptk.sim.geo.cities import rival_region
     from ptk.sim.rivals.market import strong_practices
 
     turn = state.turn
     out = []
     for f in state.rivals.active:
+        if rival_region(data, f.hq) != "us":  # PT-M11: the US tables, reputation and press
+            continue
         out.append(
             RivalStandingView(
                 firm_id=f.id,

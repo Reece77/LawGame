@@ -75,7 +75,7 @@ def wallets(
     sectors = tuple(
         (x.key, x.intensity, tuple(sorted(x.mix.items()))) for x in data.clients.sectors
     )
-    key = tuple((c.id, c.sector, c.revenue_bn) for c in clients)
+    key = tuple((c.id, c.sector, c.revenue_bn, c.city) for c in clients)
     failed: tuple[tuple[int, tuple[float, ...]], ...] = ()
     if turn is not None and start is not None:
         failed = tuple(
@@ -88,7 +88,7 @@ def wallets(
 
 @lru_cache(maxsize=32)
 def _wallets(
-    clients: tuple[tuple[int, str, float], ...],
+    clients: tuple[tuple[int, str, float, str], ...],
     sectors: tuple[tuple[str, float, tuple[tuple[str, float], ...]], ...],
     keys: tuple[str, ...],
     exponent: float,
@@ -99,17 +99,27 @@ def _wallets(
     table = {k: (intensity, dict(mix)) for k, intensity, mix in sectors}
     factors = dict(failed)
     raw: dict[int, tuple[float, ...]] = {}
-    for cid, sector, revenue in clients:
+    city_of: dict[int, str] = {}
+    for cid, sector, revenue, city in clients:
         intensity, mix = table[sector]
         size = dmath.pow(revenue, exponent) * intensity
         row = tuple(size * mix.get(p, 0.0) for p in keys)
         if cid in factors:
             row = tuple(w * f for w, f in zip(row, factors[cid], strict=True))
         raw[cid] = row
-    totals = [sum(w[i] for w in raw.values()) for i in range(len(keys))]
+        city_of[cid] = city
+    # PT-M11: each city's clients split that city's market (v1: one market, city "")
+    totals: dict[str, list[float]] = {}
+    for cid, w in raw.items():
+        t = totals.setdefault(city_of[cid], [0.0] * len(keys))
+        for i in range(len(keys)):
+            t[i] += w[i]
     return Wallets(
         shares={
-            cid: tuple(w[i] / totals[i] if totals[i] > 0 else 0.0 for i in range(len(keys)))
+            cid: tuple(
+                w[i] / tot[i] if (tot := totals[city_of[cid]])[i] > 0 else 0.0
+                for i in range(len(keys))
+            )
             for cid, w in raw.items()
         }
     )
@@ -140,8 +150,11 @@ def player_appeal(
     conflicted: bool,
     balance: Balance,
     price_term: float = 0.0,
+    reach: float = 0.0,
 ) -> float:
-    """A_f = w_rel R + w_rep Rep + w_price (1 - rate/ref) + w_cap Cap - w_conf Conflict.
+    """A_f = w_rel R + w_rep Rep + w_price (1 - rate/ref) + w_cap Cap - w_conf Conflict
+    - reach (PT-M11: `geo.reach_penalty` for a client's work in a city where the firm has no
+    office; 0 in the home market).
 
     The price term (PT-M7a) is 1 - the firm's rate index / the market's (`rates.price_term`):
     0 for a firm whose card rises with the market; Cap is minus last month's unserved share
@@ -154,6 +167,7 @@ def player_appeal(
         + w.price * price_term
         - w.capacity * rel.lost_share
         - w.conflict * (1.0 if conflicted else 0.0)
+        - reach
     )
 
 
@@ -167,13 +181,14 @@ def player_share(
     balance: Balance,
     appeals: Mapping[str, tuple[float, ...]] | None = None,
     price_term: float = 0.0,
+    reach: float = 0.0,
 ) -> float:
     """s_f = e^A_f / Σ_g e^A_g over the client's panel (spec 7.1). `appeals` (PT-M5): the
     rival firms' live appeal by practice (`RivalsState.appeals`); the static panel appeal
     stands in for a key it does not hold. `price_term` (PT-M7a): `rates.price_term`."""
     if practice not in rel.practices:
         return 0.0
-    mine = dmath.exp(player_appeal(client, rel, reputation, conflicted, balance, price_term))
+    mine = dmath.exp(player_appeal(client, rel, reputation, conflicted, balance, price_term, reach))
     index = data.practice_keys.index(practice)
     rivals = 0.0
     for k in client.panel:

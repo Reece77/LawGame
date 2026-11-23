@@ -1,0 +1,105 @@
+# Cities a firm may open an office in (PT-M11; spec 8.8). Sources and tags: docs/research/
+# london-and-us-cities.md (s7 the US cities against New York, s1-s3 London). S sourced, D derived,
+# A assumed (basis in the dossier).
+#
+#   region: the macro and reputation region (us, uk). jurisdiction: bar_rules.yaml key where a
+#     lawyer must be admitted to lead the office's matters.
+#   demand: the city's large-firm market x New York's D0 (practices.yaml), by practice x `mix`
+#     (1.0 where a practice is not listed); its clients split it by wallet, like New York's.
+#   rate_bp: the local rate card as bp of the firm's card. pay_bp: local salary bands as bp of
+#     New York's (London associates and trainees: bar_rules.yaml london_scale).
+#   rent_per_seat_cents: a lease's monthly rent per lawyer seat (space for the lawyer and their
+#     share of support staff), 2005 dollars.
+#   clients: generated local clients made when a firm first opens in the city (stream
+#     city_clients, id 100); London also has its real clients (clients.yaml uk_clients).
+#   aliases: firms.yaml hq keys that mean the same city (a rival's region).
+cities:
+  - key: new_york
+    label: New York
+    region: us
+    jurisdiction: us_ny
+    demand: 1.0
+    rate_bp: 10000
+    pay_bp: 10000
+    rent_per_seat_cents: 400000 # $4,000 [A] dossier s7: Class A Midtown ~$60/sq ft x ~800 sq ft a lawyer
+    aliases: [armonk]
+    src: "home market (v1)"
+  - key: washington_dc
+    label: Washington, D.C.
+    region: us
+    jurisdiction: us_dc
+    demand: 0.40 # [A] dossier s7: DC's large-firm lawyers about 40% of New York's
+    mix: { white_collar: 2.0, commercial_litigation: 1.1, ip: 1.2, employment: 1.0, corporate_ma: 0.6, private_equity: 0.4, capital_markets: 0.4, banking_finance: 0.5, restructuring: 0.5, real_estate: 0.8 }
+    rate_bp: 9000 # [A] dossier s7
+    pay_bp: 9000 # balance.yaml pay.city_bp washington_dc
+    rent_per_seat_cents: 340000 # [A] dossier s7
+    clients: 20
+    aliases: [washington]
+    src: "[A] dossier s7"
+  - key: chicago
+    label: Chicago
+    region: us
+    jurisdiction: us_il
+    demand: 0.35 # [A] dossier s7
+    mix: { commercial_litigation: 1.2, corporate_ma: 1.0, private_equity: 1.1, restructuring: 1.2, banking_finance: 1.0, capital_markets: 0.7, white_collar: 0.8, ip: 0.9, employment: 0.9, real_estate: 0.9 }
+    rate_bp: 8500 # [A] dossier s7
+    pay_bp: 8500
+    rent_per_seat_cents: 250000 # [A] dossier s7
+    clients: 20
+    src: "[A] dossier s7"
+  - key: boston
+    label: Boston
+    region: us
+    jurisdiction: us_ma
+    demand: 0.20 # [A] dossier s7
+    mix: { private_equity: 1.4, ip: 1.5, corporate_ma: 1.0, capital_markets: 0.7, banking_finance: 0.7, restructuring: 0.6, commercial_litigation: 0.9, white_collar: 0.7, employment: 0.8, real_estate: 0.8 }
+    rate_bp: 8500 # [A] dossier s7
+    pay_bp: 9000
+    rent_per_seat_cents: 300000 # [A] dossier s7
+    clients: 15
+    src: "[A] dossier s7"
+  - key: los_angeles
+    label: Los Angeles
+    region: us
+    jurisdiction: us_ca
+    demand: 0.30 # [A] dossier s7
+    mix: { commercial_litigation: 1.4, real_estate: 1.3, ip: 1.2, employment: 1.3, corporate_ma: 0.8, private_equity: 0.7, capital_markets: 0.6, banking_finance: 0.6, restructuring: 0.8, white_collar: 0.8 }
+    rate_bp: 9000 # [A] dossier s7
+    pay_bp: 9500
+    rent_per_seat_cents: 280000 # [A] dossier s7
+    clients: 18
+    src: "[A] dossier s7"
+  - key: san_francisco
+    label: San Francisco Bay Area
+    region: us
+    jurisdiction: us_ca
+    demand: 0.30 # [A] dossier s7
+    mix: { ip: 2.0, corporate_ma: 1.0, capital_markets: 1.2, private_equity: 0.6, banking_finance: 0.5, restructuring: 0.4, commercial_litigation: 1.0, white_collar: 0.7, employment: 1.0, real_estate: 0.7 }
+    rate_bp: 9500 # [A] dossier s7
+    pay_bp: 9500
+    rent_per_seat_cents: 320000 # [A] dossier s7
+    clients: 18
+    aliases: [palo_alto, bay_area]
+    src: "[A] dossier s7"
+  - key: houston
+    label: Houston
+    region: us
+    jurisdiction: us_tx
+    demand: 0.18 # [A] dossier s7
+    mix: { corporate_ma: 1.2, banking_finance: 1.2, capital_markets: 1.0, restructuring: 1.0, commercial_litigation: 1.0, private_equity: 0.7, white_collar: 0.5, ip: 0.4, employment: 0.8, real_estate: 0.8 }
+    rate_bp: 8000 # [A] dossier s7
+    pay_bp: 8000
+    rent_per_seat_cents: 220000 # [A] dossier s7
+    clients: 15
+    src: "[A] dossier s7"
+  - key: london
+    label: London
+    region: uk
+    jurisdiction: ew
+    demand: 0.60 # [A] dossier s1: London's large-firm market against New York's
+    mix: { banking_finance: 1.6, capital_markets: 1.2, corporate_ma: 1.0, private_equity: 1.0, restructuring: 1.0, commercial_litigation: 0.9, white_collar: 0.5, ip: 0.5, employment: 0.5, real_estate: 0.9 }
+    rate_bp: 10000 # [A] dossier s2: Magic Circle partners at or above New York's median
+    pay_bp: 8500 # [A] dossier s3: bands (associates and trainees on london_scale)
+    rent_per_seat_cents: 500000 # [A] dossier s7: City Class A ~ GBP 55/sq ft
+    clients: 20
+    src: "[A] dossier s1-s3, s7"

@@ -36,6 +36,8 @@ SEEDS = range(1, 11)
 UK_YEARS = (2009, 2015, 2025)
 LIFT_SEEDS = 6  # tunable-exempt: the brief's "at least 6 of 10 seeds"
 WITHIN_MONTHS = 36  # tunable-exempt: "within 3 years"
+LIFT_LAWYERS = 12  # tunable-exempt: T12's London team lift (3 partners, 9 associates)
+GROUP_LAWYERS = 6  # tunable-exempt: T12's Washington lateral group (2 partners, 4 associates)
 
 
 @pytest.mark.nightly  # `check` runs T11 for every rival, UK rivals included (test_pt_m5.py)
@@ -106,7 +108,8 @@ def test_a_london_team_lift_pays_within_three_years_and_organic_is_slower() -> N
 
 @pytest.mark.timing
 def test_t12_turn_time_at_december_2025_with_two_offices(data: GameData, balance: Balance) -> None:
-    state = grown_firm(data, balance, T12_LAWYERS, 1)
+    # a firm of steady's size (T12's 150 lawyers) with 18 of them in its two offices
+    state = grown_firm(data, balance, T12_LAWYERS - LIFT_LAWYERS - GROUP_LAWYERS, 1)
     rng = RngFactory(1)
     first = turn_of(state, T12_YEAR, 1)
     while state.turn < first:
@@ -115,6 +118,10 @@ def test_t12_turn_time_at_december_2025_with_two_offices(data: GameData, balance
     state = open_london(
         state, data, balance, how="lateral_group", city="washington_dc", partners=2, associates=4
     ).state
+    lawyers = sum(
+        1 for pid in state.staff_ids(1) if data.role(state.person(pid).role).kind == "lawyer"
+    )
+    assert lawyers == T12_LAWYERS
     assert len(state.geo.firm_offices(1)) == 2
     balances: dict[tuple[int, str], int] = {
         (1, CASH): T12_CAPITAL,

@@ -65,6 +65,7 @@ From `pt-2008`, open Washington and then London, and play to 2012.
 
 ## Follow-ups
 
+- Automation's revenue gap is about -15 to -18% on 30 seeds, not PT-M9's -9.5% on 10; for PT-M18 (pricing and lateral partners are unautomated below stage 3).
 - London's own rankings, reputation (region 1) and press: PT-M16's lists and reputation stay US-only (UK rivals are filtered from `rival_standing`).
 - Overheads by office city for lane A's per-lawyer overhead lines (they now take the office's city band, but the office's support staff and technology are not otherwise local).
 - UK rivals' New York offices (Clifford Chance, Linklaters, Freshfields, A&O and Lovells had them): bidding on New York RFPs and poaching there would change v1's market; left out here.

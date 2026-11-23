@@ -61,6 +61,8 @@ From `pt-2008`, open Washington and then London, and play to 2012.
 - **T11 extended to London** (`test_pt_m11.py`, seeds 1-10): 41 UK points a seed (2009, 2015, 2025), no misses on any seed after HSF Kramer (June 2025) became a rename: as an outside merger its step held 2018's revenue until mid-2025 and HSF read -15% (seed 8) and -17% (seed 10) at 2025. T11 itself (all rivals, `test_pt_m5.py`) seed 1: worst gap 9.5%, top 10 kept 9.
 - **London 2007** (`london-lift` / `london-organic`, seeds 1-10, months from opening until the office's cumulative profit since opening is positive): team lift 9, 4, 4, 4, 4, 5, 4, 6, 5, 6 (10 of 10 within 36 months); organic start >60, >60, >60, 40, >60, 43, >60, 36, >60, 42 (median >60).
 
+- **PT-M9's steady-automated guard (nightly) misses on seeds 1-10 as seed variance** (CLAUDE.md section 9 rule 4): 2015 revenue medians, steady against steady-automated: main seeds 1-10 $56.95M / $52.12M (-8.5%), branch seeds 1-10 $70.2M / $45.7M (-34.9%, red); main seeds 11-40 $63.57M / $53.84M (-15.3%), branch seeds 11-40 $64.18M / $52.65M (-18.0%), both within the 20% band. Seed 1 is identical to main until month 39, when the first pro hac vice fee (a Delaware case, $2,500) posts; the runs diverge from there. Not added to `known_misses.py`.
+
 ## Follow-ups
 
 - London's own rankings, reputation (region 1) and press: PT-M16's lists and reputation stay US-only (UK rivals are filtered from `rival_standing`).

@@ -10,6 +10,7 @@ changes what the run does.
 from __future__ import annotations
 
 from collections import Counter
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from statistics import median
 from typing import Final
@@ -150,7 +151,7 @@ def _held(game: Game) -> set[str]:
     return set(practices_held(game))
 
 
-def _expenses(game: Game, types: dict[str, str]) -> dict[str, int]:
+def _expenses(game: Game, types: Mapping[str, str]) -> dict[str, int]:
     out: Counter[str] = Counter()
     for (firm, account), amount in game.balances.items():
         if firm == PLAYER and types.get(account) == "expense":

@@ -263,3 +263,25 @@ def test_a_confident_partnership_re_elects(data: GameData, balance: Balance) -> 
     g.advance()
     assert g.fp.mp_id == g.founder
     assert g.fp.term_ends_turn is not None and g.fp.term_ends_turn > g.state.turn
+
+
+def test_a_december_admission_keeps_its_budget(data: GameData, balance: Balance) -> None:
+    """PT-M7c: a partner voted in December joins January's allocation; December's close of the
+    year must not leave them a zero budget (flight read their comp as nothing and nearly every
+    new partner left within the year)."""
+    from ptk.sim.partnership.flight import firm_comp_cents
+
+    g = start(data, balance, 10)
+    pid = _eligible_associate(g)
+    _to_month(g, 12)
+    _confidence(g, 100.0)
+    for p in g.fp.partners:
+        if p.person_id != g.founder:
+            g.act(Lobby(g.founder, p.person_id))
+    g.act(ProposePartner(g.founder, pid, "equity"))
+    g.advance()
+    partner = g.fp.partner(pid)
+    assert partner is not None and partner.equity, "the lobbied vote passes on seed 10"
+    assert partner.comp_last_cents == 0  # no share of the year it was not a partner in
+    assert partner.budget_cents > 0
+    assert firm_comp_cents(partner) == partner.budget_cents

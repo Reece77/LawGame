@@ -133,7 +133,27 @@ def expected_output(
     person: Person, tasks: Mapping[str, float], practice: str, data: GameData, balance: Balance
 ) -> float:
     """PT-M7a: output an hour the default rule expects of a person on a task mix: effective
-    skill / 10 x the strain factor, held to staffing.output_floor-output_cap."""
+    skill / 10 x the strain factor, held to staffing.output_floor-output_cap. PT-M11 (T12):
+    memoised on the identity of the (immutable) person, task mix, data and balance, so a month
+    that staffs many matters asks once per person and mix."""
+    key = (id(person), id(tasks), practice, id(data), id(balance))
+    hit = _OUTPUT.get(key)
+    if hit is not None and hit[0] is person and hit[1] is tasks:
+        return hit[2]
+    value = _expected_output(person, tasks, practice, data, balance)
+    if len(_OUTPUT) >= _OUTPUT_KEEP:
+        _OUTPUT.clear()
+    _OUTPUT[key] = (person, tasks, value)
+    return value
+
+
+_OUTPUT: dict[tuple[int, int, str, int, int], tuple[Person, Mapping[str, float], float]] = {}
+_OUTPUT_KEEP = 1 << 16  # tunable-exempt: memoised outputs (a cache, not a rule)
+
+
+def _expected_output(
+    person: Person, tasks: Mapping[str, float], practice: str, data: GameData, balance: Balance
+) -> float:
     cfg = balance.staffing
     f = (
         fx.effective_skill(person, tasks, practice, data, balance)
@@ -270,8 +290,16 @@ def default_team(
         remaining = shares[level] * need
         for candidates in pools:
             for gap in range(top + 1):
+                # PT-M11 (T12): someone with no free step takes nothing (the lead always
+                # takes a step), so they are left out: the same plan, fewer calls
                 cands = sorted(
-                    (e for e in candidates if abs(e.level - level) == gap and e.level < top),
+                    (
+                        e
+                        for e in candidates
+                        if abs(e.level - level) == gap
+                        and e.level < top
+                        and (free[e.id] >= step or e.id == lead.id)
+                    ),
                     key=lambda e: (-free[e.id], e.id),
                 )
                 for e in cands:

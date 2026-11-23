@@ -76,7 +76,8 @@ def _adopt(g: Game, training: int = TRAINING_HOURS) -> None:
         mine = None if firm is None else firm.era(era.key)
         if mine is None or mine.subscription_bp < 10_000:
             g.act(InvestInEra(me, era.key, 10_000))
-            mine = (g.state.tech.firm(g.state.player.id) or firm).era(era.key)  # type: ignore[union-attr]
+            now = g.state.tech.firm(g.state.player.id)
+            mine = None if now is None else now.era(era.key)  # refused: nothing to roll out
         if mine is not None and not mine.rolled_out:
             g.act(RolloutEra(me, era.key))  # refused while the partners' last vote is recent
 

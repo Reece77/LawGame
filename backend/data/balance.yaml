@@ -1478,9 +1478,10 @@ tech: # PT-M14: legal technology and AI (spec 13; ADR PT-0011; ptk/sim/tech/, da
     training_share: 0.4 # share of the target that needs the training programme (the rest needs only the tools)
     training_full_hours: 30 # programme hours a lawyer a year at which training counts in full toward adoption
     cko_training: 0.3 # training's effective hours x (1 + this x the CKO's e) (spec 9.1: training effectiveness)
-    buyin_from: 7.0 # partners' mean (adaptability + technology) / 2, 1-20: buy-in 0 at or below this
-    buyin_to: 15.0 # ... and 1 at or above this; the target is x (0.5 + 0.5 x buy-in)
-    support_score: 10.0 # a partner supports a firm-wide rollout at (adaptability + technology) / 2 + noise >= this
+    buyin_from: 4.0 # partners' mean (adaptability + technology) / 2, 1-20: buy-in 0 at or below this (partners' technology averages ~4 before 2016's generations: pt-2022's 26 partners read 7.0)
+    buyin_to: 12.0 # ... and 1 at or above this; the target is x (buyin_floor + (1 - buyin_floor) x buy-in)
+    buyin_floor: 0.7 # the target's share that needs no buy-in (the tools work for the willing)
+    support_score: 6.5 # a partner supports a firm-wide rollout at (adaptability + technology) / 2 + noise >= this (pt-2022: about 55% of partners on a vote)
     rollout_threshold_bp: 5000 # share of equity partners who must support (more than; a simple majority)
     vote_sd: 2.0 # each partner's noise in the rollout vote (stream tech_vote, 111), attribute points
     pilot_cap: 0.35 # adoption never exceeds this without a firm-wide rollout (a pilot group)

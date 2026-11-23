@@ -7,9 +7,10 @@ Each month, for the player's firm, every era it has touched:
   `tech.adoption.platform_months`), and the training programme (trainees x a month's programme
   hours x `tech.training.cost_cents_per_hour`).
 - **Adoption** moves toward a target: coverage x (1 - training_share + training_share x
-  training) x (0.5 + 0.5 x buy-in), where training = programme hours x (1 + cko_training x e)
-  / training_full_hours (at most 1), buy-in = the equity partners' mean (adaptability +
-  technology) / 2 between `buyin_from` and `buyin_to`, and e the CKO's seat effect. No platform
+  training) x (buyin_floor + (1 - buyin_floor) x buy-in), where training = programme hours
+  x (1 + cko_training x e) / training_full_hours (at most 1), buy-in = the equity partners'
+  mean (adaptability + technology) / 2 between `buyin_from` and `buyin_to`, and e the CKO's
+  seat effect. No platform
   (for an era that has one) means a target of 0; without a firm-wide rollout the target is at
   most `pilot_cap`. Up at `speed` x (1 + cko_speed x e) of the gap, down at `decay` of it:
   adoption decays without upkeep.
@@ -75,7 +76,7 @@ def target(
     coverage = era.subscription_bp / BP
     share = cfg.training_share
     t = coverage * (1.0 - share + share * training_level(firm, cko, balance))
-    t *= 0.5 + 0.5 * b  # tunable-exempt: half the target needs the partners
+    t *= cfg.buyin_floor + (1.0 - cfg.buyin_floor) * b
     if not era.rolled_out:
         t = min(t, cfg.pilot_cap)
     return min(1.0, max(0.0, t))

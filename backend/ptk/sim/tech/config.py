@@ -144,6 +144,7 @@ class AdoptionBalance(_Strict):
     cko_training: float = Field(ge=0)
     buyin_from: float = Field(ge=1, le=20)
     buyin_to: float = Field(ge=1, le=20)
+    buyin_floor: float = Field(ge=0, le=1)
     support_score: float = Field(ge=1, le=20)
     rollout_threshold_bp: int = Field(gt=0, le=10000)
     vote_sd: float = Field(ge=0)

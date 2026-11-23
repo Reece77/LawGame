@@ -7,8 +7,9 @@
 - `ai-fixed`: the same, and from stage 3 it moves exposed work to fixed fees: a product for
   each matter kind of the practices it holds whose task mix is at least `EXPOSED_SHARE`
   exposed, priced at `PRICE_BP` of what the market expects the work to cost. Below stage 3
-  (products open at 101 lawyers) it hires toward it (`GROW_TO`) as a firm planning products
-  would; so does `ai-hourly`, so the two differ only in pricing.
+  (products open at 101 lawyers) it hires toward it (`GROW_TO`, while it has the work and
+  the bank is quiet) as a firm planning products would; so does `ai-hourly`, so the two
+  differ only in pricing.
 - `never`: steady with the same growth push and no technology (the brief's "never adopts").
 - `ai-untrained`: `ai-hourly` without the training programme (the learning reading).
 
@@ -31,6 +32,7 @@ EXPOSED_SHARE: Final = 0.5  # a kind whose exposed tasks are at least this share
 PRICE_BP: Final = 10_000  # products at the market's expected cost
 GROW_TO: Final = 110  # lawyers the scripts hire toward from FROM_YEAR (stage 3 opens at 101)
 GROW_MONTHLY: Final = 2  # lateral associates a month while below GROW_TO
+PUSH_UTILISATION: Final = 0.65  # ... while the firm has the work and the bank is quiet
 
 
 def _steady(g: Game) -> None:
@@ -42,7 +44,12 @@ def _steady(g: Game) -> None:
 def _push(g: Game) -> None:
     from ptk.balance.strategies import _grow
 
-    if g.ym[0] >= FROM_YEAR and len(g.lawyers()) < GROW_TO:
+    if (
+        g.ym[0] >= FROM_YEAR
+        and len(g.lawyers()) < GROW_TO
+        and mv.utilisation(g) >= PUSH_UTILISATION
+        and mv.bank_quiet(g)
+    ):
         _grow(g, mv.practices_held(g), GROW_MONTHLY)
 
 

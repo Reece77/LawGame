@@ -32,6 +32,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass, replace
+from typing import Final
 
 from ptk.sim.billing import books as bk
 from ptk.sim.billing import formulas as fx
@@ -99,6 +100,9 @@ class BillingMonth:
     entries: tuple[LedgerEntry, ...]
     book: tuple[ClientBookEntry, ...]
     log: tuple[LogItem, ...]
+
+
+PRODUCT_REPLACES: Final = frozenset({"hourly", "blended", "capped", "fixed"})  # PT-M14
 
 
 class _Run:
@@ -235,9 +239,13 @@ class _Run:
         model = _pick_model(cfg.models.get(v.kind, {"hourly": 1.0}), u[0])
         if model == "contingency" and v.stakes_cents <= 0:
             model = "hourly"
-        product = self.tech.products.get(v.kind_key)  # PT-M14: the firm's fixed-fee product
-        if product is not None:
+        # PT-M14: the firm's fixed-fee product replaces hourly-type terms (hourly, blended,
+        # capped, fixed); success, contingency and retainer terms stay the client's choice
+        product = self.tech.products.get(v.kind_key)
+        if product is not None and model in PRODUCT_REPLACES:
             model = "fixed"
+        else:
+            product = None
         months = max(1, v.planned_months)
         e = Engagement(
             matter_id=v.matter_id,

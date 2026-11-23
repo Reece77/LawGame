@@ -175,16 +175,17 @@ def test_the_office_pnls_sum_to_the_firms_each_month(data: GameData, balance: Ba
         entries = [e for e in result.ledger_entries if e.firm_id == 1]
         pnl = office_pnl(entries, 1, data)
         firm = -sum(
-            ln.amount for e in entries for ln in e.lines if types[ln.account] in ("income", "expense")
+            ln.amount
+            for e in entries
+            for ln in e.lines
+            if types[ln.account] in ("income", "expense")
         )
         assert sum(pnl.values()) == firm
         london_lines += sum(1 for e in entries for ln in e.lines if ln.office_id == 1)
         state = result.new_state
     assert london_lines > 0
     # fees, salaries and the lease all reached London's P&L
-    accounts = {
-        ln.account for e in result.ledger_entries for ln in e.lines if ln.office_id == 1
-    }
+    accounts = {ln.account for e in result.ledger_entries for ln in e.lines if ln.office_id == 1}
     assert {RENT, "5000_associate_salaries"} <= accounts
 
 
@@ -224,8 +225,16 @@ def test_leads_must_be_admitted_where_the_matter_is(data: GameData, balance: Bal
     from ptk.sim.matters.models import Matter
 
     deal = Matter(
-        id=999, firm_id=1, client_id=london.id, practice="corporate_ma", kind_key="ma_deal",
-        kind="deal", name="x", opened_turn=0, planned_months=6, expected_fees_cents=1,
+        id=999,
+        firm_id=1,
+        client_id=london.id,
+        practice="corporate_ma",
+        kind_key="ma_deal",
+        kind="deal",
+        name="x",
+        opened_turn=0,
+        planned_months=6,
+        expected_fees_cents=1,
         hours_needed_tenths=10,
     )
     case = replace(deal, kind="case", court="ew_commercial")
@@ -248,9 +257,19 @@ def test_pro_hac_vice_posts_once_per_case_and_lead(data: GameData, balance: Bala
     state = game(data, balance)
     founder = state.founder_of(1)
     m = Matter(
-        id=500, firm_id=1, client_id=1, practice="commercial_litigation", kind_key="x",
-        kind="case", name="A v B", opened_turn=0, planned_months=6, expected_fees_cents=1,
-        hours_needed_tenths=10, court="ddel", lead_id=founder,
+        id=500,
+        firm_id=1,
+        client_id=1,
+        practice="commercial_litigation",
+        kind_key="x",
+        kind="case",
+        name="A v B",
+        opened_turn=0,
+        planned_months=6,
+        expected_fees_cents=1,
+        hours_needed_tenths=10,
+        court="ddel",
+        lead_id=founder,
     )
     state = replace(state, market=with_matter(state.market, m))
     state, entries, _ = pro_hac_vice_month(state, data)
@@ -267,11 +286,19 @@ def test_an_exam_result_is_seeded_and_a_motion_is_granted(data: GameData, balanc
     act = lambda s, a: apply_action(  # noqa: E731
         s, a, seq=3, rng=RngFactory(1), balance=balance, data=data, ledger_balances={}
     )
-    out = act(state, SeekAdmission(actor_id=founder, person_id=founder, jurisdiction="us_dc", route="motion"))
+    out = act(
+        state,
+        SeekAdmission(actor_id=founder, person_id=founder, jurisdiction="us_dc", route="motion"),
+    )
     exam = out.state.geo.exams[0]
     assert exam.kind == "motion" and out.entries
     with pytest.raises(SimError):  # California has no admission on motion
-        act(state, SeekAdmission(actor_id=founder, person_id=founder, jurisdiction="us_ca", route="motion"))
+        act(
+            state,
+            SeekAdmission(
+                actor_id=founder, person_id=founder, jurisdiction="us_ca", route="motion"
+            ),
+        )
     from ptk.sim.geo.admissions import exams_month
 
     later = replace(out.state, turn=exam.result_turn)
@@ -283,10 +310,19 @@ def test_an_exam_result_is_seeded_and_a_motion_is_granted(data: GameData, balanc
 def test_moving_a_lawyer_changes_their_office(data: GameData, balance: Balance) -> None:
     state = london_game(data, balance).state
     founder = state.founder_of(1) or 0
-    assoc = next(p for p in state.people if p.level.startswith("associate_") and p.city == "new_york" and p.id in state.staff_ids(1))
+    assoc = next(
+        p
+        for p in state.people
+        if p.level.startswith("associate_") and p.city == "new_york" and p.id in state.staff_ids(1)
+    )
     out = apply_action(
-        state, MoveLawyer(actor_id=founder, person_id=assoc.id, office_id=1), seq=4,
-        rng=RngFactory(1), balance=balance, data=data, ledger_balances={},
+        state,
+        MoveLawyer(actor_id=founder, person_id=assoc.id, office_id=1),
+        seq=4,
+        rng=RngFactory(1),
+        balance=balance,
+        data=data,
+        ledger_balances={},
     )
     assert person_office_id(out.state, 1, out.state.person(assoc.id)) == 1
 
@@ -297,12 +333,19 @@ def test_training_contracts_bring_trainees_who_qualify(data: GameData, balance: 
     state = london_game(data, balance).state
     founder = state.founder_of(1) or 0
     out = apply_action(
-        state, OfferTrainingContracts(actor_id=founder, office_id=1, count=3), seq=5,
-        rng=RngFactory(1), balance=balance, data=data, ledger_balances={},
+        state,
+        OfferTrainingContracts(actor_id=founder, office_id=1, count=3),
+        seq=5,
+        rng=RngFactory(1),
+        balance=balance,
+        data=data,
+        ledger_balances={},
     )
     contract = out.state.geo.contracts[0]
     assert out.entries and contract.count == 3
-    joined, logs = trainees_join(replace(out.state, turn=contract.start_turn), RngFactory(1), balance, data)
+    joined, logs = trainees_join(
+        replace(out.state, turn=contract.start_turn), RngFactory(1), balance, data
+    )
     trainees = [p for p in joined.people if p.level == "trainee"]
     assert len(trainees) == 3 and logs
     assert all(not p.bar_admissions for p in trainees)
@@ -315,6 +358,11 @@ def test_training_contracts_bring_trainees_who_qualify(data: GameData, balance: 
     assert any(i.kind == "trainee_qualified" for i in logs)
     with pytest.raises(SimError):  # only once a year an office
         apply_action(
-            out.state, OfferTrainingContracts(actor_id=founder, office_id=1, count=1), seq=6,
-            rng=RngFactory(1), balance=balance, data=data, ledger_balances={},
+            out.state,
+            OfferTrainingContracts(actor_id=founder, office_id=1, count=1),
+            seq=6,
+            rng=RngFactory(1),
+            balance=balance,
+            data=data,
+            ledger_balances={},
         )

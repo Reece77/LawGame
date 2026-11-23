@@ -1483,7 +1483,7 @@ geo:
   reach_penalty: 1.5 # appeal logit points off a client's work in a city where the firm has no office (spec 8.8's local reach)
   lift_portability: [0.55, 0.9] # a lifted partner's share of book clients that follow (uniform; hidden); a lateral group's is PT-M4's 0.3-0.7
   lift_months: 6 # a lifted team's clients follow within this many months (PT-M4's laterals: 12-24)
-  organic_clients: 2 # local clients an organic start's partner is introduced to
+  organic_clients: 0 # local clients an organic start's partner is introduced to: none (PT-M11 decision 5: it builds its book through RFPs and pitches)
   organic_relationship: [10.0, 20.0] # their relationships start between these (0-100)
   omp_appeal: 0.4 # appeal logit points x the office managing partner's e on the office's clients (spec 9.1: local BD)
   lift_associates_per_partner: 3.0 # a team lift's associates per lifted partner

@@ -79,6 +79,14 @@ class PersonRowOut(BaseModel):
     pro_bono_hours: float | None = None  # own firm only: this calendar year's (PT-M7a)
 
 
+class AdmissionOut(BaseModel):
+    """PT-M11 (spec 11.1): a bar admission, or one in progress."""
+
+    jurisdiction: str
+    how: str  # home, exam, motion, qualified, rfl, in progress
+    since: str | None
+
+
 class PersonOut(PersonRowOut):
     """The Person profile."""
 
@@ -87,6 +95,8 @@ class PersonOut(PersonRowOut):
     city: str
     school_tier: str | None
     bar_admissions: list[str]
+    admissions: list[AdmissionOut] = []  # PT-M11: own firm: when and how, and in progress
+    office: str | None = None  # PT-M11: own firm: the office they work in
     background: str | None
     skills: list[AttributeOut]
     personality: list[AttributeOut]
@@ -219,6 +229,7 @@ def person_profile(state: GameState, person_id: int, data: GameData, balance: Ba
             "city": person.city,
             "school_tier": tier,
             "bar_admissions": [labels.get(b, b) for b in person.bar_admissions],
+            **_geo_fields(state, person, own, labels, data),
             "background": background.label if background else None,
             "skills": [
                 AttributeOut(
@@ -278,3 +289,42 @@ def make_router(errors: dict[int | str, dict[str, Any]]) -> APIRouter:
         return person_profile(_state(slug), person_id, loader.game_data(), loader.balance())
 
     return router
+
+
+def _geo_fields(
+    state: GameState, person: Person, own: bool, labels: dict[str, str], data: GameData
+) -> dict[str, object]:
+    """PT-M11: the Person screen's admissions (with how and when) and office, own firm only."""
+    if not own:
+        return {}
+    from ptk.sim.calendar import format_turn
+    from ptk.sim.geo.cities import work_city
+
+    start = state.save_meta.start_ym
+    rows = [
+        AdmissionOut(
+            jurisdiction=labels.get(r.jurisdiction, r.jurisdiction),
+            how=r.how,
+            since=format_turn(r.turn, start),
+        )
+        for r in state.geo.admissions
+        if r.person_id == person.id
+    ]
+    recorded = {r.jurisdiction for r in state.geo.admissions if r.person_id == person.id}
+    rows = [
+        AdmissionOut(jurisdiction=labels.get(b, b), how="home", since=None)
+        for b in person.bar_admissions
+        if b not in recorded
+    ] + rows
+    rows += [
+        AdmissionOut(
+            jurisdiction=labels.get(e.jurisdiction, e.jurisdiction),
+            how=f"{e.kind} in progress",
+            since=format_turn(e.result_turn, start),
+        )
+        for e in state.geo.exams
+        if e.person_id == person.id
+    ]
+    city = work_city(state, state.player.id, person)
+    label = data.geo.city(city).label if data.geo.has_city(city) else city
+    return {"admissions": rows, "office": label}

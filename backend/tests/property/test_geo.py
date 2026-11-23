@@ -61,7 +61,13 @@ def test_a_lease_balances_and_clears(rent: int, term: int, fit_out: int, close_a
     assert b.get((1, PPE), 0) == 0
 
 
-KINDS = (("deal", None), ("case", "sdny"), ("case", "ddel"), ("case", "ew_commercial"), ("case", "icc"))
+KINDS = (
+    ("deal", None),
+    ("case", "sdny"),
+    ("case", "ddel"),
+    ("case", "ew_commercial"),
+    ("case", "icc"),
+)
 
 
 @settings(max_examples=40, deadline=None)
@@ -129,6 +135,9 @@ def test_played_months_keep_leads_admitted_and_pnls_summed(seed: int) -> None:
         entries = [e for e in result.ledger_entries if e.firm_id == 1]
         types = {a.code: a.type for a in data.accounts}
         firm = -sum(
-            ln.amount for e in entries for ln in e.lines if types[ln.account] in ("income", "expense")
+            ln.amount
+            for e in entries
+            for ln in e.lines
+            if types[ln.account] in ("income", "expense")
         )
         assert sum(office_pnl(entries, 1, data).values()) == firm

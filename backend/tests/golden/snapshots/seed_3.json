@@ -3,7 +3,7 @@
     [
       1,
       "1000_cash",
-      207693432
+      141536446
     ],
     [
       1,
@@ -18,12 +18,12 @@
     [
       1,
       "1200_receivables",
-      52577719
+      33013550
     ],
     [
       1,
       "1210_bad_debt_provision",
-      -525780
+      -330134
     ],
     [
       1,
@@ -33,17 +33,17 @@
     [
       1,
       "2700_partner_current_accounts",
-      -113665180
+      -71704214
     ],
     [
       1,
       "3000_partners_capital",
-      -94028252
+      -69832232
     ],
     [
       1,
       "3100_undistributed_profit",
-      7836560911
+      7072315785
     ],
     [
       1,
@@ -53,7 +53,7 @@
     [
       1,
       "4000_fees",
-      -9254824445
+      -8466540887
     ],
     [
       1,
@@ -98,12 +98,12 @@
     [
       1,
       "6700_write_offs",
-      4449178
+      4216049
     ],
     [
       1,
       "6900_general_admin",
-      370038320
+      365601540
     ],
     [
       101,
@@ -3300,14 +3300,14 @@
       2
     ]
   ],
-  "matters": "48fac3d6c7777447f560dec51b0c5bb7f65269d97f01419ddf7f86cba871dcd6",
+  "matters": "c1ed6be209878301f4ff177ed7aa1b3a44416f9f0d9d0d9803ca93a3b681c338",
   "names": [
     "James Jackson",
     "Michael Garcia",
     "Megan Brown",
     "Hannah Allen"
   ],
-  "people": "df9d1fd6246aaae15b4e30e47642e95ca5e0b3c6ee7f44c30ed7b725b144cb21",
-  "relationships": "689f0d660854ecfec910eabefb3b686fe576d38a354385276bfbc5e65740d6c9",
-  "sha256": "957d14768048f96bd8e541aec2735aba593e7c9edb4e21b36f8e0613efa1d392"
+  "people": "5bc83788f193add7cd63736b5f12dc04f6a8dd997f95095602d858e5a3f01860",
+  "relationships": "223850383b9f105eb26ed4e507cdc8212bf98e986fc8f5422565b76e87636215",
+  "sha256": "0bd7bb945d0ec3a2f61d8c80926205390b4c730e9b88b83c155539af5dfd6a89"
 }

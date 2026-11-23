@@ -53,6 +53,40 @@ Engineering and tuning decisions the spec, ADR PT-0011 and the brief left open (
 13. **Practice save `pt-2022`** (`ptk practice-save pt-2022` or `--year 2022`): the biglaw spin-out played to December 2022, then grown by PT-M7's table twice (114 lawyers, stage 3), for the manual check and e2e `m14.spec.ts`.
 14. **Balance scripts** (`ptk/balance/tech.py`, one line in `strategies.VARIANTS`): `never`, `ai-hourly`, `ai-fixed` (and `ai-untrained` for the learning reading) are steady plus a growth push toward 110 lawyers from 2016 (products open at 101 lawyers; steady alone peaks below it), so the three differ only in technology and pricing.
 
-READINGS_PLACEHOLDER
+15. **Tuning (rule 1, this milestone's keys), with the readings it followed** (`tools/tech_readings.py`, seeds 1-10; each run steady to December 2015, then `never`, `ai-hourly` and `ai-fixed` to December 2030):
+    - run 1 (buy-in 7-15, support score 10, discount 0.10): pt-2022's 26 equity partners average (adaptability + technology) / 2 = 7.0 (technology 4.1), so no rollout passed and adoption stayed at the 0.35 pilot cap; fixed beat hourly on 2 of 10. **`buyin_from` 7 -> 4, `buyin_to` 15 -> 12, new `buyin_floor` 0.7, `support_score` 10 -> 6.5**; the scripts' growth push waits for utilisation 0.6 and a quiet bank (rule 2: it hired seeds 3, 9 and 10 into insolvency).
+    - run 2: every surviving seed's rollout passed (generative AI adoption 0.82-0.84 by 2030); fixed beat hourly on 5 of 10. **`clients.discount` 0.10 -> 0.25** (dossier s4); the `ai-fixed` script retires a product whose closed matters billed less than their hours at standard rates (rule 2: the screen shows the product's P&L).
+    - run 3: 4 of 10. **Products replace hourly-type terms only** (decision 9).
+    - run 4 (final): 4 of 10, the table below.
+
+| seed | never PEP 2026-30 ($M) / realisation / RFPs won-lost from 2023 | ai-hourly | ai-fixed | fixed > hourly |
+|---|---|---|---|---|
+| 1 | 29.78 / 68.6% / 2-157 | 37.70 / 77.5% / 4-156 | 47.26 / 97.9% / 5-156 | yes |
+| 2 | 36.36 / 65.4% / 6-153 | 31.88 / 75.8% / 15-98 | 32.94 / 83.6% / 15-146 | yes |
+| 3 | dissolved before 2016 (steady, every branch) | — | — | — |
+| 4 | 36.84 / 67.0% / 8-143 | 46.44 / 76.4% / 26-140 | 46.44 / 76.4% / 26-140 (stage 2: no products) | tie |
+| 5 | 39.62 / 69.9% / 3-156 | 47.63 / 77.6% / 20-153 | 37.12 / 75.2% / 19-153 | no |
+| 6 | 29.04 / 67.0% / 6-160 | 52.12 / 82.6% / 18-148 | 47.97 / 79.7% / 18-148 | no |
+| 7 | 35.66 / 72.5% / 12-163 | 48.04 / 92.7% / 34-135 | 80.61 / 135.9% / 33-136 | yes |
+| 8 | 43.55 / 75.9% / 8-153 | 50.89 / 83.5% / 28-135 | 60.00 / 104.8% / 27-138 | yes |
+| 9 | dissolved before 2016 (steady, every branch) | — | — | — |
+| 10 | dissolved 2016-2030 | 50.47 / 80.4% / 11-151 | 26.47 / 74.2% / 15-76 | no |
+
+    The never-adopter loses realisation (65-76% against the adopters' 76-93%) and RFPs (2-12 won from 2023 against 4-34) on every surviving seed; clients' AI cuts over the trailing months at December 2030 are $47.6-80.3M for `never` against $6.0-15.9M (hourly) and $1.3-13.7M (fixed). **Criterion 3's "at least 7 of 10" is not met (4 of 10; 4 of the 7 seeds with products)**: see the question for Reece below.
+16. **Criterion 2** (fully adopted exposed tasks at December 2030, seeds 1-10): 51.1, 52.4, 55.8, 54.9, 54.5, 55.1, 55.4, 51.9, 52.4, 51.2% fewer hours (band 40-70%; also `tests/unit/test_pt_m14_tech.py`).
+17. **Criterion 4** (learning, the 2030 cohort: juniors in years 1-3 present all year, from `ai-hourly`'s January 2030, growth in CA over 2030 with AI off / AI without training / AI with training, share of the loss restored), run 4: seed 1 3.118 / 2.348 / 3.038 (0.90); 4 5.396 / 3.936 / 5.327 (0.95); 5 2.907 / 2.031 / 2.796 (0.87); 6 4.233 / 2.971 / 4.093 (0.89); 7 4.518 / 3.535 / 4.501 (0.98); 8 3.531 / 2.767 / 3.464 (0.91); 10 3.490 / 2.544 / 3.421 (0.93); seed 2's cohort of 3 lost nothing (none on exposed work), seeds 3 and 9 dissolved. Training restores 0.87-0.98 of the loss (at least half: met).
+18. **Criterion 5**: with PT-M14's two new fields left out, the state cache's nine runs (January 2005 to December 2015) are identical to the previous fixture month by month: T1-T12 to 2015 cannot have moved. T12 at December 2025: `make check-timing` (see the final report).
+
+### Question for Reece (criterion 3)
+
+Fixed fees beat hourly only where the firm's teams finish matters near their base hours. A product's price is the matter's expected fees × the market's efficiency. Hourly bills, meanwhile, are written up to the expected fees whatever the team's skill. So a firm whose teams overrun (rework, a strict judge, unfamiliar juniors) loses on products. In the game, nothing yet stops a player pricing a product above the market's cost: clients accept any price in the 60-150% band. Proposed default: price acceptance, where a product above 100% of the market's cost is taken by a falling share of clients (100% at 100, 0 at 150) and the rest stay on hourly terms, with the `ai-fixed` script pricing at 110%. The alternative is to accept 4 of 10 as the model's honest reading and move criterion 3 to a later milestone (PT-M18's balance).
 
 ## Follow-ups
+
+- Criterion 3 (the question above): price acceptance for products, or a reading at PT-M18.
+- Products: a price below the market's cost could raise the firm's appeal for the kind (more work); products have no demand effect yet.
+- Partners' buy-in: training covers associates and counsel only; a partners' programme (raising their technology skill) would give a player a way to win the rollout vote.
+- Rivals' own adoption is the market's path; a rival that leads or lags on AI (ADR PT-0011 §4: "rivals and ALSPs move too") and ALSPs and the Big Four's legal arms (dossier s5) are not modelled.
+- The pyramid-to-diamond reshaping is left to the player's hiring; no script tests it.
+- Courts' AI standing orders and sanctions (dossier s1) as events (PT-M15's discipline machinery).
+- The readings take about two hours on four cores (a 110-lawyer firm's turns run seconds each in 2025-2030); a state cache at December 2015 would halve them.

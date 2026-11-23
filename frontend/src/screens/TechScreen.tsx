@@ -35,6 +35,11 @@ import {
 // programme; client expectations and RFPs; fixed-fee products. Every number is the API's: the
 // screen formats, it never computes a game value.
 
+const STANDING: Record<string, string> = {
+  ahead: 'ahead of',
+  level: 'level with',
+  behind: 'behind',
+};
 const FULL_BP = 10000; // a full subscription's coverage (an input value, not a game number)
 
 function EraActions({ slug, e }: { slug: string; e: TechEra }) {
@@ -76,7 +81,7 @@ function EraActions({ slug, e }: { slug: string; e: TechEra }) {
           onClick={() => rollout.mutate({ era: e.key })}
           data-testid={`rollout-${e.key}`}
         >
-          Roll out firm-wide
+          Roll out
         </Button>
       )}
       {(invest.error || rollout.error) && (
@@ -247,7 +252,7 @@ function Clients({ c }: { c: Tech['clients'] }) {
       )}
       <Text size="sm" mt={4} data-testid="rfp-standing">
         {c.rfp_asks
-          ? `RFPs ask for AI and efficiency: the firm is ${c.rfp_standing ?? 'level'} with the market.`
+          ? `RFPs ask for AI and efficiency: the firm is ${STANDING[c.rfp_standing ?? 'level'] ?? 'level with'} the market.`
           : `RFPs ask for AI and efficiency from ${c.rfp_from_year}.`}
       </Text>
     </div>

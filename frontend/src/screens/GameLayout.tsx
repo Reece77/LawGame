@@ -34,7 +34,7 @@ export function GameLayout() {
           </Group>
         </Group>
       </AppShell.Header>
-      <AppShell.Navbar p="xs">
+      <AppShell.Navbar p="xs" style={{ overflowY: 'auto' }}>
         <NavLink component={Link} to={`/game/${slug}`} label="Overview" />
         <NavLink
           component={Link}

@@ -3,7 +3,7 @@
     [
       1,
       "1000_cash",
-      1036271566
+      985143259
     ],
     [
       1,
@@ -18,12 +18,12 @@
     [
       1,
       "1200_receivables",
-      56197162
+      39191903
     ],
     [
       1,
       "1210_bad_debt_provision",
-      -561973
+      -391919
     ],
     [
       1,
@@ -33,17 +33,17 @@
     [
       1,
       "2700_partner_current_accounts",
-      -901028833
+      -865236286
     ],
     [
       1,
       "3000_partners_capital",
-      -135242733
+      -119906973
     ],
     [
       1,
       "3100_undistributed_profit",
-      9236093536
+      8658801925
     ],
     [
       1,
@@ -53,7 +53,7 @@
     [
       1,
       "4000_fees",
-      -10610698610
+      -10012669096
     ],
     [
       1,
@@ -98,12 +98,12 @@
     [
       1,
       "6700_write_offs",
-      5310791
+      5140737
     ],
     [
       1,
       "6900_general_admin",
-      411813390
+      408080746
     ],
     [
       101,
@@ -3268,6 +3268,6 @@
     "Logan Robinson"
   ],
   "people": "3ef2d799069843686d2f1c718d1f819ec2dd086bbbcdd217c28c71e0cf4f96ff",
-  "relationships": "dc1dbefba52e632014fad84978e06ec8d4d3a20e0b6b24ff8d3e2cf78b757703",
-  "sha256": "2bc1ad9475b11f9c96b7bbb012fba2362ec71d9e90548d0437968358053689a0"
+  "relationships": "a70860fb41b57a98a0976a2514978e1f2c88e9c5da48c63d55b4794ff7af0f1a",
+  "sha256": "e91fda3a330272b8d0789cb439bb70d25a2a4a6d471a2e67daef5076b3825d40"
 }

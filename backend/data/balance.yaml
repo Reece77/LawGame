@@ -1492,7 +1492,7 @@ tech: # PT-M14: legal technology and AI (spec 13; ADR PT-0011; ptk/sim/tech/, da
     pressure_from: [2016, 1] # first month clients press hourly bills on exposed tasks (pre-2016 eras are weak; T1-T12 to 2015 unchanged)
     lag_months: 12 # clients expect what the market could do this many months ago
     pass_through: 0.7 # share of the hours the market no longer needs that clients refuse to pay for (Reece q15: "clients claw back much of it")
-    discount: 0.10 # share of the market's saving clients also ask adopters to pass on, on hourly bills
+    discount: 0.25 # share of the market's saving clients also ask every firm to pass on, on hourly bills (dossier s4: 80% of Fortune 1000 executives expect lower bills from AI); PT-M14 tuning 0.10 -> 0.25
     max_cut: 0.6 # the most a task's realisation can fall (share of its fees)
     rfp_from_year: 2023 # panel RFPs ask for AI and efficiency claims from this year (dossier s1: firm-wide tools 2023)
     w_rfp: 0.6 # RFP score points per unit of (firm AI score - market AI score), -1..1; the ai_efficiency pitch claim (rivals.rfp.w_claim) is substantiated at 0 or more

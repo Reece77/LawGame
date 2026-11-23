@@ -6,7 +6,9 @@
   partners until it passes. It bills as it always has (hourly by the matter's terms).
 - `ai-fixed`: the same, and from stage 3 it moves exposed work to fixed fees: a product for
   each matter kind of the practices it holds whose task mix is at least `EXPOSED_SHARE`
-  exposed, priced at `PRICE_BP` of what the market expects the work to cost. Below stage 3
+  exposed, priced at `PRICE_BP` of what the market expects the work to cost; each January it
+  retires a product whose closed matters billed less than their hours at standard rates.
+  Below stage 3
   (products open at 101 lawyers) it hires toward it (`GROW_TO`, while it has the work and
   the bank is quiet) as a firm planning products would; so does `ai-hourly`, so the two
   differ only in pricing.
@@ -24,15 +26,22 @@ from typing import Final
 
 from ptk.balance import moves as mv
 from ptk.balance.game import Game
-from ptk.sim.tech.actions import InvestInEra, LaunchProduct, RolloutEra, SetTrainingProgramme
+from ptk.sim.tech.actions import (
+    InvestInEra,
+    LaunchProduct,
+    RetireProduct,
+    RolloutEra,
+    SetTrainingProgramme,
+)
 
 FROM_YEAR: Final = 2016  # the scripts adopt from this year (contract analysis, TAR's courts)
 TRAINING_HOURS: Final = 40  # the programme, hours a lawyer a year (tech.training.full_hours)
 EXPOSED_SHARE: Final = 0.5  # a kind whose exposed tasks are at least this share gets a product
 PRICE_BP: Final = 10_000  # products at the market's expected cost
+REVIEW_MATTERS: Final = 3  # closed matters before a product's P&L is judged
 GROW_TO: Final = 110  # lawyers the scripts hire toward from FROM_YEAR (stage 3 opens at 101)
 GROW_MONTHLY: Final = 2  # lateral associates a month while below GROW_TO
-PUSH_UTILISATION: Final = 0.65  # ... while the firm has the work and the bank is quiet
+PUSH_UTILISATION: Final = 0.60  # ... while the firm has the work and the bank is quiet
 
 
 def _steady(g: Game) -> None:
@@ -80,11 +89,38 @@ def _exposed_share(g: Game, kind: str) -> float:
     return sum(w for t, w in mix.items() if t in exposed) / sum(mix.values())
 
 
+def _review(g: Game) -> None:
+    """Each January a product whose closed matters (at least `REVIEW_MATTERS`) billed less
+    than their hours at standard rates is retired (the Technology screen's product P&L)."""
+    firm = g.state.tech.firm(g.state.player.id)
+    if firm is None or g.ym[1] != 1:
+        return
+    for p in firm.products:
+        if not p.active:
+            continue
+        done = [
+            e
+            for e in g.state.billing.engagements
+            if e.closed
+            and e.model == "fixed"
+            and e.opened_turn >= p.launched_turn
+            and (m := g.state.market.matter(e.matter_id)) is not None
+            and m.kind_key == p.kind_key
+        ]
+        if len(done) >= REVIEW_MATTERS and sum(e.billed_cents for e in done) < sum(
+            e.standard_cents for e in done
+        ):
+            g.act(RetireProduct(g.founder_id, p.id))
+
+
 def _products(g: Game) -> None:
     firm = g.state.tech.firm(g.state.player.id)
     if g.state.player.stage < g.balance.tech.products.stage or firm is None:
         return
-    have = {p.kind_key for p in firm.products if p.active}
+    _review(g)
+    firm = g.state.tech.firm(g.state.player.id)
+    assert firm is not None
+    have = {p.kind_key for p in firm.products}  # a retired kind is not relaunched
     for practice in mv.practices_held(g):
         for mk in g.data.practice(practice).matter_kinds:
             if mk.key in have or _exposed_share(g, mk.kind) < EXPOSED_SHARE:

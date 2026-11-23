@@ -60,7 +60,8 @@ def test_market_rival_and_actions(save_dir: Path) -> None:
     names = [r["name"] for r in market["rivals"]]
     assert "Skadden, Arps, Slate, Meagher & Flom" in names
     assert market["rivals"][0]["revenue_cents"] >= market["rivals"][-1]["revenue_cents"]
-    assert market["claims"] == ["references", "track_record", "continuity"]
+    claims = ["references", "track_record", "continuity", "ai_efficiency"]  # PT-M14
+    assert market["claims"] == claims
     skadden = next(r for r in market["rivals"] if r["short"] == "Skadden")
     rival = client.get(f"/api/saves/mkt/rivals/{skadden['id']}").json()
     assert rival["people"] and any(p["real"] for p in rival["people"])

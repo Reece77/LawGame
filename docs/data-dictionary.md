@@ -306,3 +306,12 @@ A practice group leader's seat is the unit's leader (`org_unit.leader_id`, PT-M2
 | `inbox_item` | `in_digest` | bool, default false | The item came from an automated area: the inbox's default view leaves it out and the month's digest lists it (TST 40.4) |
 
 `decision_log` gains `source` `area` rows (an `AreaDecision` as JSON), recomputed on replay (ADR-0015). `inbox_item` gains templates `area_given`, `area_returned`, `auto_proposal`, `auto_proposal_expired`, `auto_proposal_answered` and `automation_digest`, and link kind `automation` (a proposal's id, or for a digest the month's turn).
+
+## Schema v16 (`0016_tech`, PT-M14)
+
+| Table | Column | Type | Meaning |
+| --- | --- | --- | --- |
+| `tech` | `id` | int, pk | Always 1 |
+| | `data_json` | text | `ptk.sim.tech.models.TechState` as JSON: `firms` (the player's firm): `eras` (in `legal_eras.yaml` order, once touched: era key, `adoption` 0-1, `platform` bought, `platform_turn`, `capex_left_cents` unamortised platform cost in 1500, `amortise_cents` a month's amortisation to 6100, `subscription_bp` coverage of the era's per-lawyer subscription, `rolled_out` a firm-wide rollout passed, `vote_turn` the last rollout vote), `training_hours` (the programme, hours a lawyer a year), `products` (id, matter kind key, practice, `price_bp` of the market's expected cost, launched turn, retired turn or null) and `next_product_id` |
+
+A save from before PT-M14 has no `tech` row: the firm has no technology. `billing_month.data_json`'s `MonthTotals` gains `ai_cut_cents` (clients' cuts on hourly bills' AI-exposed tasks; 0 on older rows). `decision_log` gains actions `invest_in_era`, `rollout_era`, `set_training_programme`, `launch_product` and `retire_product`. `inbox_item` gains templates `ai_rollout_passed`, `ai_rollout_failed`, `product_launched` and `product_retired`, and link kind `tech` (the Technology screen). Ledger: subscriptions, platform amortisation and the training programme post to `6100_technology`; a platform's purchase debits `1500_ppe`.

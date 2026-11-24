@@ -18,7 +18,7 @@
 | --- | --- | --- | --- | --- |
 | **do-nothing** | founders only | flow work only, no BD | no revolver use | no votes |
 | **boutique** | grow to 25 lawyers, leverage ≤ 2 | two practices, high rates, premium clients | conservative | pure lockstep; admit one partner every two years |
-| **steady** | grow while utilisation ≥ 80%; campus class each year | add a practice at each 30 lawyers; cross-sell | revolver ≤ 1 × monthly fees | modified lockstep; admit by business case |
+| **steady** | grow while utilisation ≥ 80%; campus class each year; PT-M7c: lays off associates while utilisation stays below 70% | add a practice at each 30 lawyers; cross-sell | revolver ≤ 1 × monthly fees | modified lockstep; admit by business case |
 | **lateral rocket** | lateral partners whenever a book of $2M+ is available, with guarantees | follow laterals' books | revolver to its covenant limit | eat what you kill |
 | **pyramid** | leverage 5+, utilisation targets 2,100 hours (PT-M7b: an hours policy of 2,300); PT-M10: lays off associates while utilisation stays below 75%; PT-M7c: pays 80% of the scale | volume work, fixed fees | moderate | two-tier; few equity admissions |
 

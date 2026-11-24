@@ -23,11 +23,11 @@
 
 ## Acceptance criteria
 
-- [ ] Hours on each task equal base hours × efficiency (property test); money still reconciles with hours (PT-0005).
-- [ ] By 2030, a fully adopted firm's exposed tasks take 40-70% fewer hours (Reece's question 15 default; printed on seeds 1-10).
-- [ ] A firm that adopts early and moves exposed work to fixed fees earns more PEP in 2026-2030 than one that adopts and stays hourly, on at least 7 of 10 seeds; one that never adopts loses realisation and RFPs (printed).
-- [ ] Juniors' growth falls without training when AI removes their review hours, and training restores at least half of it (printed).
-- [ ] T1-T12 to 2015 unchanged (eras before 2016 are weak); T12 holds at December 2025.
+- [x] Hours on each task equal base hours × efficiency (property test); money still reconciles with hours (PT-0005).
+- [x] By 2030, a fully adopted firm's exposed tasks take 40-70% fewer hours (Reece's question 15 default; printed on seeds 1-10).
+- [ ] (known miss `PT-M14.fixed_fees`, PT-M18: 4/10 and 9/30; the never-adopter's losses: met) A firm that adopts early and moves exposed work to fixed fees earns more PEP in 2026-2030 than one that adopts and stays hourly, on at least 7 of 10 seeds; one that never adopts loses realisation and RFPs (printed).
+- [x] Juniors' growth falls without training when AI removes their review hours, and training restores at least half of it (printed).
+- [x] T1-T12 to 2015 unchanged (eras before 2016 are weak); T12 holds at December 2025.
 - [ ] `make check`, `make e2e` and the nightly run green; `Milestone-Tag: pt-m14-done`.
 
 ## Manual check (Reece)
@@ -97,11 +97,46 @@ Engineering and tuning decisions the spec, ADR PT-0011 and the brief left open (
 | 10 | 33.09 / 70.9% / 3-163 | 37.53 / 86.1% / 11-152 | 36.87 / 86.0% (10) | no |
 
     Fixed beats hourly on **4 of 10** (4 of the 6 seeds with products; the two losses are within 2-3%). The never-adopter's realisation is 69-72% on every seed it survives at size, against 73-86% for adopters, and it wins 2-14 RFPs from 2023 against 5-21. Criterion 2 is unchanged (51.1-55.8%); criterion 4: training restores 0.95-1.04 of the loss (seeds 2, 4-8, 10).
-20. **Seeds 11-40** (criterion 3 only: `ai-fixed` forked from `ai-hourly` at the first month the firm could launch a product; the scripts are identical until then): READINGS_11_40
+20. **Seeds 11-40** (criterion 3 only: `ai-fixed` forked from `ai-hourly` at the first month the firm could launch a product; the scripts are identical until then): fixed beats hourly on **9 of 30** (9 of the 16 seeds where the firm reaches stage 3 and launches products; 6 dissolve on both branches, 8 never reach stage 3).
+
+| seed | ai-hourly PEP 2026-30 ($M) / realisation / lawyers 2030 | ai-fixed (products) | fixed > hourly |
+|---|---|---|---|
+| 11 | 0.00 / 0.0% / 43 | 0.00 / 0.0% / 43 (0) | no (dissolved) |
+| 12 | 47.45 / 82.2% / 61 | 47.45 / 82.2% / 61 (0) | no |
+| 13 | 31.61 / 80.0% / 73 | 31.61 / 80.0% / 73 (0) | no |
+| 14 | 39.07 / 79.7% / 128 | 52.69 / 115.3% / 127 (10) | yes |
+| 15 | 14.82 / 76.4% / 34 | 14.82 / 76.4% / 34 (0) | no |
+| 16 | 0.00 / 0.0% / 16 | 0.00 / 0.0% / 16 (0) | no (dissolved) |
+| 17 | 44.35 / 80.8% / 134 | 44.78 / 81.4% / 134 (10) | yes |
+| 18 | 32.78 / 79.5% / 121 | 31.86 / 85.9% / 119 (10) | no |
+| 19 | 10.78 / 126.1% / 3 | 10.78 / 126.1% / 3 (0) | no |
+| 20 | 39.60 / 80.0% / 125 | 39.40 / 75.8% / 137 (10) | no |
+| 21 | 34.50 / 77.0% / 123 | 36.41 / 88.4% / 123 (10) | yes |
+| 22 | 28.97 / 79.3% / 100 | 38.59 / 104.1% / 100 (10) | yes |
+| 23 | 29.46 / 81.4% / 129 | 31.19 / 81.9% / 111 (10) | yes |
+| 24 | 70.86 / 78.8% / 102 | 45.44 / 81.5% / 103 (10) | no |
+| 25 | 32.73 / 81.2% / 132 | 35.49 / 95.8% / 164 (10) | yes |
+| 26 | 15.34 / 138.0% / 2 | 15.34 / 138.0% / 2 (0) | no |
+| 27 | 0.00 / 0.0% / 18 | 0.00 / 0.0% / 18 (0) | no (dissolved) |
+| 28 | 44.92 / 85.8% / 122 | 50.08 / 89.2% / 122 (10) | yes |
+| 29 | 54.79 / 83.2% / 106 | 80.07 / 114.3% / 118 (10) | yes |
+| 30 | -1.65 / 83.3% / 35 | -1.65 / 83.3% / 35 (0) | no (dissolved) |
+| 31 | 0.00 / 0.0% / 0 | 0.00 / 0.0% / 0 (0) | no (dissolved) |
+| 32 | 14.76 / 82.6% / 30 | 14.76 / 82.6% / 30 (0) | no |
+| 33 | 41.72 / 78.5% / 124 | 40.34 / 80.9% / 112 (10) | no |
+| 34 | 43.27 / 80.9% / 35 | 43.27 / 80.9% / 35 (0) | no |
+| 35 | 45.56 / 84.4% / 119 | 55.35 / 105.4% / 120 (10) | yes |
+| 36 | 37.58 / 76.9% / 77 | 37.58 / 76.9% / 77 (0) | no |
+| 37 | 0.00 / 0.0% / 41 | 0.00 / 0.0% / 41 (0) | no (dissolved) |
+| 38 | 35.68 / 80.4% / 130 | 32.74 / 83.0% / 141 (10) | no |
+| 39 | 11.78 / 138.3% / 4 | 11.78 / 138.3% / 4 (0) | no |
+| 40 | 41.65 / 77.0% / 104 | 39.74 / 76.2% / 104 (10) | no |
+
+21. **Criterion 3 is a known miss** (`ptk/balance/known_misses.py`, `PT-M14.fixed_fees`, owner PT-M18, authorised by the product manager): 4 of 10 on seeds 1-10, 9 of 30 on seeds 11-40. Where the firm offers products, fixed fees win 13 of 22 seeds; most misses are firms that never reach stage 3 (products' gate) or dissolve, which PT-M18's balance owns.
 
 ## Follow-ups
 
-- Criterion 3 (the question above): price acceptance for products, or a reading at PT-M18.
+- Criterion 3 (known miss `PT-M14.fixed_fees`, PT-M18): firms that never reach stage 3 cannot offer products; PT-M18 may revisit the products' stage gate or the growth that reaches it.
 - Products: a price below the market's cost could raise the firm's appeal for the kind (more work); products have no demand effect yet.
 - Partners' buy-in: training covers associates and counsel only; a partners' programme (raising their technology skill) would give a player a way to win the rollout vote.
 - Rivals' own adoption is the market's path; a rival that leads or lags on AI (ADR PT-0011 §4: "rivals and ALSPs move too") and ALSPs and the Big Four's legal arms (dossier s5) are not modelled.

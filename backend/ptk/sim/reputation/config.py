@@ -53,12 +53,12 @@ class PrestigeBalance(_Frozen):
 
 
 class CardCurve(_Frozen):
-    """PT-M7b's card target from reputation (replaces rates.card.full_reputation and curve):
-    start + (1 - start) x min(1, rep / (full_share x the market's top-decile rep))^curve."""
+    """PT-M7b's card target from reputation; PT-M7c (Reece, 2026-11-23): relative, read as the
+    firm's percentile among all firms in the practice and region:
+    start + (1 - start) x min(1, percentile / top_quantile)^curve."""
 
-    full_share: float = Field(gt=0, le=1)
     curve: float = Field(gt=0)
-    top_quantile: float = Field(gt=0, lt=1)  # the market's reputation at this quantile is "top"
+    top_quantile: float = Field(gt=0, lt=1)  # a firm at this percentile or above is "top"
 
 
 class ReputationBalance(_Frozen):

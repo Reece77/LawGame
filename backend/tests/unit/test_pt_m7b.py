@@ -17,6 +17,7 @@ from ptk.sim.matters.rates import (
     card_bp,
     card_moved,
     card_target_bp,
+    client_indexes,
     practice_index,
     price_term,
     start_card_bp,
@@ -111,7 +112,16 @@ def test_hours_are_valued_on_the_practice_card(data: GameData, balance: Balance)
         rows = [r for r in s.market.hours if r.value_cents and r.practice == "corporate_ma"]
         return sum(r.value_cents for r in rows) / sum(r.tenths for r in rows)
 
-    assert rate(b) == pytest.approx(rate(a) * balance.rates.card.start_bp / BP_DENOMINATOR, 0.05)
+    # PT-M7c (Reece, 2026-11-23): each client pays its tier's card (the founders' book at the
+    # founders' rates first), so the expected rate is the full card times the hours-weighted
+    # share of the card the month's clients pay
+    month = replace(b, turn=b.turn - 1)
+    cards = client_indexes(month, month.player, balance)
+    rows = [r for r in b.market.hours if r.value_cents and r.practice == "corporate_ma"]
+    share = sum(r.tenths * cards.bp(r.practice, r.client_id) for r in rows) / sum(
+        r.tenths for r in rows
+    )
+    assert rate(b) == pytest.approx(rate(a) * share / BP_DENOMINATOR, 0.05)
 
 
 def test_the_rise_keeps_the_card(data: GameData, balance: Balance) -> None:

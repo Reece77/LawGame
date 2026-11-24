@@ -30,6 +30,16 @@ PYRAMID_POLICY_HOURS: Final = 2300
 PYRAMID_LAYOFF_BELOW: Final = 0.75  # three months' utilisation under this: lay off
 PYRAMID_LAYOFF_TARGET: Final = 0.85  # ... enough associates to bring it back toward this
 PYRAMID_LAYOFF_MAX: Final = 0.10  # at most this share of the associates in a month
+# PT-M7c (client tiers; CLAUDE.md 9 rule 2): a pyramid billing mid-market clients at below the
+# market's rates pays below the top New York scale, as mid-size firms do (65-72% of the scale,
+# docs/research/firm-economics.md s5); at the full scale it dissolved on 13 of seeds 11-40
+PYRAMID_PAY_BP: Final = 8000
+# PT-M7c (client tiers; CLAUDE.md 9 rule 2): steady lays off associates while utilisation stays
+# low (more patient than the pyramid); without it every easy-difficulty death came in 2009 (a
+# loss year zeroes the partners' allocations and flight takes them): T5 easy 40%, standard 30%
+STEADY_LAYOFF_BELOW: Final = 0.70  # three months' utilisation under this: lay off
+STEADY_LAYOFF_TARGET: Final = 0.80  # ... enough associates to bring it back toward this
+STEADY_LAYOFF_MAX: Final = 0.10  # at most this share of the associates in a month
 CORPORATE: Final = "corporate_ma"
 LITIGATION: Final = "commercial_litigation"
 # The order steady adds practices in (one at each 30 lawyers): cross-sell from M&A first.
@@ -142,7 +152,8 @@ def steady(g: Game, adds: tuple[str, ...] = STEADY_ADDS) -> None:
     """Grow while utilisation is at least 80%; a campus class each year (10% of lawyers,
     through the groups' delegates once they exist); a practice added at each 30 lawyers by a
     lateral partner; the revolver at most a month's fees; modified lockstep; partners admitted
-    by business case (leverage above 3 associates a partner)."""
+    by business case (leverage above 3 associates a partner); PT-M7c: associates laid off while
+    utilisation stays below 70%."""
     mv.answer_election(g)
     mv.comp_system(g, "modified_lockstep")
     mv.set_rates(g, None)
@@ -152,6 +163,8 @@ def steady(g: Game, adds: tuple[str, ...] = STEADY_ADDS) -> None:
     lawyers = len(g.lawyers())
     mv.practice_groups(g)
     _campus_split(g, held, max(2, lawyers // 10), delegated=True)
+    # PT-M7c (rule 2): associates laid off while utilisation stays low, as 2009's firms did
+    mv.lay_off_idle(g, STEADY_LAYOFF_BELOW, STEADY_LAYOFF_TARGET, STEADY_LAYOFF_MAX)
     if mv.utilisation(g) >= 0.80:
         _grow(g, held, max(2, lawyers // 8))
     wanted = 2 + lawyers // 30  # practices the firm should hold
@@ -224,9 +237,10 @@ def pyramid(g: Game) -> None:
     """Leverage 5+, associates hired only when utilisation reaches 88% (a 2,100-hour year),
     volume work at rates below the market (market - 2 points), two-tier with few equity
     admissions (income partners instead), a moderate revolver (two months' fees); PT-M10:
-    associates laid off while utilisation stays below 75%."""
+    associates laid off while utilisation stays below 75%; PT-M7c: pays 80% of the scale."""
     mv.answer_election(g)
     mv.comp_system(g, "modified_lockstep", two_tier=True)
+    mv.pay_policy(g, PYRAMID_PAY_BP)  # PT-M7c: mid-market rates, mid-market pay
     mv.set_rates(g, max(0, _market_bp(g) - 200))
     held = mv.practices_held(g)
     lawyers = len(g.lawyers())

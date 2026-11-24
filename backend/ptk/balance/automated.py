@@ -101,6 +101,8 @@ def steady_automated(g: Game) -> None:
         st._campus_split(g, held, max(2, lawyers // 10), delegated=True)
         if mv.utilisation(g) >= 0.80:
             st._grow(g, held, max(2, lawyers // 8))
+    # PT-M7c (Reece, 2026-11-24; rule 2): steady's layoff rule, the managing partner's own call
+    mv.lay_off_idle(g, st.STEADY_LAYOFF_BELOW, st.STEADY_LAYOFF_TARGET, st.STEADY_LAYOFF_MAX)
     if not automated(g, "laterals"):
         wanted = 2 + lawyers // 30
         missing = [p for p in st.STEADY_ADDS if p not in held]

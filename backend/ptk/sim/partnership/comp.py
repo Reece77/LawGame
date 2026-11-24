@@ -128,6 +128,12 @@ def allocate_year(
         points = fx.next_points(p.points + p.promised_points, steps, cfg.lockstep)
         nudge = p.nudge + (cfg.confidence.comp_step * steps if lockstep else 0.0)
         budget = max(0, alloc - p.promised_cents)
+        if p.admitted_turn > state.turn:
+            # PT-M7c: admitted from January (December's vote), so no share of this year's pool:
+            # next year's budget is their points' share of it, as `effects.admit` sets (a zero
+            # budget left them seeing no comp, and flight's comp gap took nearly every one)
+            total = sum(q.points for q in fp.equity_partners) or 1.0
+            budget = round(max(pool, 0) * p.points / total)
         required = max(p.capital_required_cents, pct_of(budget, fp.agreement.capital_share_bp))
         instalment = -(-(required - p.capital_cents) // cfg.capital.pay_in_months)
         fp = with_partner(

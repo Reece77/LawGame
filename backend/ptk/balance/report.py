@@ -384,6 +384,7 @@ def _t3(results: Sequence[RunResult]) -> list[Row]:
             _m(revenue),
             "$60M-$150M",
             _in(revenue, 60 * MILLION, 150 * MILLION),
+            score=None if revenue is None else -revenue / MILLION,  # PT-M7c: less is worse
         ),
     ]
 
@@ -435,14 +436,17 @@ def _t5(results: Sequence[RunResult]) -> list[Row]:
     return out
 
 
-def _attrition(r: RunResult) -> list[float]:
-    """Associates who left in each full year / the year's average associates."""
+def _attrition(r: RunResult, layoffs: bool = False) -> list[float]:
+    """Associates who left in each full year / the year's average associates: departures
+    other than layoffs (Reece, 2026-11-24), or with `layoffs` the layoffs alone."""
     out = []
     for year in range(2006, FINAL_YEAR + 1):
         ms = [m for m in r.months if m.ym[0] == year]
         avg = sum(m.associates for m in ms) / len(ms) if len(ms) == 12 else 0
         if avg >= 2:
-            out.append(sum(m.associates_left for m in ms) / avg)
+            laid = sum(m.associates_laid_off for m in ms)
+            left = laid if layoffs else sum(m.associates_left for m in ms) - laid
+            out.append(left / avg)
     return out
 
 
@@ -454,16 +458,34 @@ def _t6(results: Sequence[RunResult]) -> list[Row]:
         for x in _attrition(r)
     ]
     attrition = _med(rates)
+    active = [
+        r
+        for r in results
+        if r.difficulty == "standard" and r.strategy in STRATEGIES and r.strategy != "do-nothing"
+    ]
+    laid = sum(m.associates_laid_off for r in active for m in r.months if m.ym[0] >= 2006)
+    years = sum(m.associates for r in active for m in r.months if m.ym[0] >= 2006) / 12
+    by = ", ".join(
+        f"{s} {sum(m.associates_laid_off for r in active if r.strategy == s for m in r.months)}"
+        for s in sorted({r.strategy for r in active})
+    )
     steady = _runs(results, "steady")
     size = sum(r.class_size for r in steady)
     share = sum(r.class_equity for r in steady) / size if size else None
     return [
         Row(
             "T6.attrition",
-            "associate attrition a year (median of years and strategies)",
+            "associate attrition a year, layoffs apart (median of years and strategies)",
             _pct(attrition),
             "15%-25%",
             _in(attrition, 0.15, 0.25),
+        ),
+        Row(  # Reece (2026-11-24): layoffs print as their own line
+            "T6.layoffs",
+            f"associates laid off a year, pooled (2006-2015; {by})",
+            _pct(laid / years if years else None),
+            "printed",
+            None,
         ),
         Row(
             "T6.partners",

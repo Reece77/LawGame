@@ -3,27 +3,27 @@
     [
       1,
       "1000_cash",
-      239639677
+      188818968
     ],
     [
       1,
       "1100_unbilled_wip",
-      39234770
+      23761918
     ],
     [
       1,
       "1110_wip_provision",
-      -12375527
+      -7495044
     ],
     [
       1,
       "1200_receivables",
-      47085710
+      26385679
     ],
     [
       1,
       "1210_bad_debt_provision",
-      -679220
+      -263856
     ],
     [
       1,
@@ -38,17 +38,17 @@
     [
       1,
       "2700_partner_current_accounts",
-      -99302260
+      -54235659
     ],
     [
       1,
       "3000_partners_capital",
-      -140337417
+      -134583309
     ],
     [
       1,
       "3100_undistributed_profit",
-      7759002908
+      6333821402
     ],
     [
       1,
@@ -58,17 +58,17 @@
     [
       1,
       "4000_fees",
-      -9186015497
+      -7729595890
     ],
     [
       1,
       "4100_success_fees",
-      -322209578
+      -298582434
     ],
     [
       1,
       "5000_associate_salaries",
-      270218966
+      271809416
     ],
     [
       1,
@@ -83,7 +83,7 @@
     [
       1,
       "5200_benefits",
-      67554732
+      67952342
     ],
     [
       1,
@@ -108,17 +108,17 @@
     [
       1,
       "6700_write_offs",
-      5248919
+      5880186
     ],
     [
       1,
       "6800_interest",
-      961529
+      1574880
     ],
     [
       1,
       "6900_general_admin",
-      393642288
+      366421401
     ],
     [
       101,
@@ -3591,11 +3591,11 @@
   "matter_outcomes": [
     [
       "closed",
-      36
+      35
     ],
     [
       "collapsed",
-      3
+      4
     ],
     [
       "done",
@@ -3614,14 +3614,14 @@
       6
     ]
   ],
-  "matters": "44be31711aa22bf206d03192538e506c8a51f59df4f99697309aae9103aae803",
+  "matters": "d2a5c62327d0e6f3389027dedaa291b435e8ef0872b3e9a79d89e4f1ae10a528",
   "names": [
     "Sarah Williams",
     "Kevin Stewart",
     "Luis Allen",
     "Logan Robinson"
   ],
-  "people": "e79bbb9820a88e0a1c25c90b79fa7858ea617d123eafc32f42c640e827023fc2",
-  "relationships": "57ecb95fb4736b3f8d5c6cc7a1c834f578ba49b0eb9a7b73ed7e09af7303cb59",
-  "sha256": "ec054d655ac458404b9747793f8bd0b92042da723753a11512aaec786f9eb076"
+  "people": "16eeec08ae01818124b930736c63d3eb7ff0335a5a922da0bfffb2b0164f5c01",
+  "relationships": "94a8723e64dbbfb3343b1dbc36aef77164b7045fc264193c7d8d1c4f0de3b5f2",
+  "sha256": "a9281ad4c14e212fac1254f7d86679963404451fd42370af521835186b74f3fc"
 }

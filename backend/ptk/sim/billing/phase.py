@@ -80,7 +80,7 @@ from ptk.sim.ledger import (
 )
 from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.macro import bankrupt_by, collections_stress, crisis_factor, crisis_stress
-from ptk.sim.matters.rates import practice_index
+from ptk.sim.matters.rates import client_indexes
 from ptk.sim.money import BP_DENOMINATOR, pct_of, round_half_even, times
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState, with_reveals
@@ -298,7 +298,9 @@ class _Run:
                     v.practice,
                     v.kind_key,
                     self.data,
-                    practice_index(self.state.firm(self.firm_id), v.practice),  # PT-M7b
+                    client_indexes(self.state, self.state.firm(self.firm_id), self.balance)(
+                        v.practice, v.client_id
+                    ),  # PT-M7b; PT-M7c: the client's tier
                 ),
                 cfg.blended_mult,
             )

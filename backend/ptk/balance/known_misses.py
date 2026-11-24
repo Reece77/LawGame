@@ -31,45 +31,36 @@ KNOWN_MISSES: Final[tuple[KnownMiss, ...]] = (
     # by Reece's decisions on PT-M7b's targets (2026-11-22, docs/tasks/PT-M10-history-to-2025.md
     # sub-task 0): T2 moves to PT-M18; T3 lawyers and T4 steady to PT-M16 (reputation that
     # gates the card); T8 corporate's -9% is accepted as noise. PT-M10's readings are in its
-    # brief's "Decisions made".
-    KnownMiss(
-        target="T2",  # no strategy has the best score on more than 6 of 10 seeds
-        owner="PT-M18",
-        # score: the most wins of one strategy; known while at most 9 of 10
-        worse_than=9.0,
-        reason="steady 9, boutique 1 (PT-M7b; PT-M7: steady 9, pyramid 1): the measure is "
-        "unchanged and the miss moves to PT-M18 (Reece, 2026-11-22)",
-    ),
+    # brief's "Decisions made". PT-M7c (2026-11-23) removes T2 (steady 6, pyramid 4 on seeds 1-10)
+    # and takes over T3.lawyers, T4.steady and T4.pyramid with its readings. Reece (2026-11-24,
+    # after the client tiers): T1 (10/10) and T4.pyramid ($0.98M) pass and their rows go;
+    # T3.lawyers, T3.revenue and T4.steady are PT-M18's with PT-M7c's readings.
     KnownMiss(
         target="T3.lawyers",  # steady 100-250 lawyers in December 2015
-        owner="PT-M16",
+        owner="PT-M18",
         # score: minus the median lawyers; known while at least 45
         worse_than=-45.0,
-        reason="55.0 on PT-M16 (main 45.5; PT-M7b 50): reputation that gates the card and "
-        "the appeal grows steady but not to its band; the band is unchanged (Reece, 2026-11-22)",
+        reason="60.0 on PT-M7c's client tiers (before the tiers 46.0, main 60.0); seeds 11-40 "
+        "71.5 (before 72.5): growth to 100-250 is expected from PT-M12 (practices) and PT-M13 "
+        "(mergers) (Reece, 2026-11-24)",
+    ),
+    KnownMiss(
+        target="T3.revenue",  # steady $60-150M revenue in 2015
+        owner="PT-M18",
+        # score: minus the median revenue in $M; known while at least $40M (a new row, PT-M7c)
+        worse_than=-40.0,
+        reason="$47.21M on PT-M7c's client tiers (before the tiers $44.39M, main $70.21M); "
+        "seeds 11-40 $63.3M (before $84.9M): client tiers lower RPL to $882k; growth expected "
+        "from PT-M12 and PT-M13 (Reece, 2026-11-24)",
     ),
     KnownMiss(
         target="T4.steady",  # steady PEP $0.5-1.2M in 2015
-        owner="PT-M16",
+        owner="PT-M18",
         # score: median PEP in $M; known while at most $5.0M
         worse_than=5.0,
-        reason="$3.39M on PT-M16 (main $3.60M; PT-M7b $4.02M): as T3.lawyers (Reece, 2026-11-22)",
-    ),
-    KnownMiss(
-        target="T1",  # do-nothing fails on at least 9 of 10 seeds
-        owner="PT-M18",
-        # score: minus the seeds where do-nothing fails; known while at least 8 of 10 fail
-        worse_than=-8.0,
-        reason="8/10 on PT-M16 (main 9/10): seed variance, rule 4 (the product manager, "
-        "2026-11-22, PR #22): seeds 11-40 main 26/30, PT-M16 28/30; all 40 main 35/40, "
-        "PT-M16 36/40",
-    ),
-    KnownMiss(
-        target="T4.pyramid",  # pyramid PEP $0.7-1.6M in 2015
-        owner="PT-M18",
-        worse_than=3.5,  # score: median PEP in $M; known while at most $3.5M
-        reason="$2.36M on PT-M16 (main $3.21M, printed without a row): still above its band; "
-        "the row moves to PT-M18 (the product manager, 2026-11-22, PR #22)",
+        reason="$1.31M on PT-M7c's client tiers (before the tiers $2.72M, main $4.37M); seeds "
+        "11-40 $1.65M (before $3.09M): steady's large clients at a top-decile card "
+        "(Reece, 2026-11-24)",
     ),
     KnownMiss(
         target="PT-M14.fixed_fees",  # ai-fixed earns more PEP 2026-2030 than ai-hourly, 7 of 10

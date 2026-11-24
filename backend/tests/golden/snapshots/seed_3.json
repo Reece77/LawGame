@@ -3,27 +3,27 @@
     [
       1,
       "1000_cash",
-      240169543
+      233204441
     ],
     [
       1,
       "1100_unbilled_wip",
-      41146978
+      39558442
     ],
     [
       1,
       "1110_wip_provision",
-      -4587921
+      -4410884
     ],
     [
       1,
       "1200_receivables",
-      48400614
+      46527075
     ],
     [
       1,
       "1210_bad_debt_provision",
-      -484007
+      -465269
     ],
     [
       1,
@@ -32,18 +32,23 @@
     ],
     [
       1,
+      "2300_revolver",
+      0
+    ],
+    [
+      1,
       "2700_partner_current_accounts",
-      -76952879
+      -72813381
     ],
     [
       1,
       "3000_partners_capital",
-      -163216664
+      -160391060
     ],
     [
       1,
       "3100_undistributed_profit",
-      8651073399
+      7467298793
     ],
     [
       1,
@@ -53,12 +58,12 @@
     [
       1,
       "4000_fees",
-      -9873227501
+      -8720929650
     ],
     [
       1,
       "4100_success_fees",
-      -345755164
+      -294233741
     ],
     [
       1,
@@ -98,12 +103,17 @@
     [
       1,
       "6700_write_offs",
-      2710889
+      957052
+    ],
+    [
+      1,
+      "6800_interest",
+      955
     ],
     [
       1,
       "6900_general_admin",
-      357088766
+      342063280
     ],
     [
       101,
@@ -3639,14 +3649,14 @@
       2
     ]
   ],
-  "matters": "a24de7d4e96b9698ca731b3feaa74e228bfb87e672e1165957997bc44b2bf0d8",
+  "matters": "4e53faef59c5df79c3fc35dcee1e830c28cb0547d2566ab03ac0117e86e5c10a",
   "names": [
     "James Jackson",
     "Michael Garcia",
     "Megan Brown",
     "Hannah Allen"
   ],
-  "people": "6ae6eaf17a86a319fa64baf726ebb2692e503a1f96f99364e3035aebf579291d",
-  "relationships": "be7086c5e8f7824d6d81435c60565ed82a6e55d8767db1c426fdde4a81bc7961",
-  "sha256": "2e43954396f29455fc206854f3f8e6893f59fac5e1fe340de955b4122b43f513"
+  "people": "7965256cd9abf31bce47747cc31b59026f22c6fdcc4ec7f451c055e20aafdac4",
+  "relationships": "89f2244f73281b3f7729f9515e56d1b7e3f8fdbeeba1c51b13a6b90f3610ae9c",
+  "sha256": "8143c4178dec097ad293b40db7d73b5bbd0a1b637034002526ae463df5cb88d7"
 }

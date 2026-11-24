@@ -788,8 +788,15 @@ class CardBalance(_Strict):
     """PT-M7b: a new firm's rate card by practice, a share of the practices' 2005 cards."""
 
     start_bp: int = Field(gt=0, le=10000)  # a new firm's share of the top card in each practice
-    # PT-M16: the target's curve is reputation.card (full_share, curve, top_quantile)
+    # PT-M16: the target's curve is reputation.card (curve, top_quantile)
     step_bp: int = Field(gt=0)  # most a practice's share moves toward its target each January
+    # PT-M7c (Reece, 2026-11-23): client tiers. The practice's share above is what large
+    # clients pay; mid-market clients pay at most mid_max_bp; the founders' book clients keep
+    # the founders' rates (book_bp).
+    mid_max_bp: int = Field(gt=0, le=10000)
+    book_bp: int = Field(gt=0, le=10000)
+    book_months: int = Field(ge=0)  # months from turn 0 the book keeps the founders' rates
+    book_fade_months: int = Field(ge=0)  # then months over which it fades to the tier's card
 
 
 class RatesBalance(_Strict):

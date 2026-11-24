@@ -14,8 +14,8 @@ with the market, negative for one above it.
 PT-M7b: a new firm's **card by practice**. The firm starts each practice at `rates.card.start_bp`
 of the top card (practices.yaml's 2005 cards; times the difficulty's `card_mult_bp`) and each
 January moves at most `step_bp` toward its target, which rises with its reputation in the
-practice (PT-M16: `reputation.formulas.card_progress`, the firm's reputation over
-`reputation.card.full_share` of the market's top-decile reputation in the practice):
+practice (PT-M16: `reputation.formulas.card_progress`; PT-M7c: the firm's percentile among all
+firms in the practice over `reputation.card.top_quantile`):
 start + (1 - start) x progress^curve, so only a firm near the top of the market's reputation
 bills at the top card. A practice's effective index is the firm's rate index times
 its share: every hour's standard value, blended rates and new matters' expected fees use it, and
@@ -24,7 +24,7 @@ the price term reads it against the market's index. Rival firms keep their own r
 
 from __future__ import annotations
 
-from dataclasses import replace
+from dataclasses import dataclass, replace
 
 from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance, GameData
@@ -110,6 +110,89 @@ def card_moved(
         target = card_target_bp(card_progress(state, firm.id, key, balance), start, balance)
         out.append((key, bp + max(-step, min(step, target - bp))))
     return tuple(out)
+
+
+@dataclass(frozen=True, slots=True)
+class ClientCards:
+    """PT-M7c: one firm's card by client for a month, the book clients and tiers looked up
+    once (the staffing rule asks for every hours record)."""
+
+    rate_index: float
+    cards: dict[str, int]  # practice -> the practice's share (what large clients pay)
+    book: frozenset[int]  # the founders' book clients, while they keep the founders' rates
+    large: frozenset[int]
+    mid_max_bp: int
+    book_bp: int
+    full: bool = False  # a save from before PT-M7b: the full card for everyone
+    fade: float = 0.0  # 0-1: how far the book's rates have fallen to their tiers' cards
+
+    def tier_bp(self, practice: str, client_id: int) -> int:
+        bp = self.cards.get(practice, BP_DENOMINATOR)
+        return bp if client_id in self.large else min(bp, self.mid_max_bp)
+
+    def bp(self, practice: str, client_id: int) -> int:
+        if self.full:
+            return BP_DENOMINATOR
+        tier = self.tier_bp(practice, client_id)
+        if client_id in self.book:
+            return round(self.book_bp + (tier - self.book_bp) * self.fade)
+        return tier
+
+    def __call__(self, practice: str, client_id: int) -> float:
+        """The index the client's work in the practice bills at."""
+        bp = self.bp(practice, client_id)
+        return self.rate_index if bp == BP_DENOMINATOR else self.rate_index * bp / BP_DENOMINATOR
+
+    def reference(self, client_id: int) -> float:
+        """What the market charges the client's tier, as a share of the top card (the price
+        term's reference): the founders' rates for their book, the full card for large
+        clients, the mid-market cap for the rest."""
+        if self.full:
+            return 1.0
+        tier = 1.0 if client_id in self.large else self.mid_max_bp / BP_DENOMINATOR
+        if client_id in self.book:
+            book = self.book_bp / BP_DENOMINATOR
+            return book + (tier - book) * self.fade
+        return tier
+
+
+def client_indexes(state: GameState, firm: FirmState, balance: Balance) -> ClientCards:
+    """PT-M7c: the firm's `ClientCards` this month."""
+    from ptk.sim.matters.setup import SETUP_TURN
+
+    cfg = balance.rates.card
+    book = (
+        frozenset(
+            r.client_id
+            for r in state.market.relationships
+            if r.firm_id == firm.id and r.since_turn == SETUP_TURN
+        )
+        if firm.id == state.player.id and state.turn < cfg.book_months + cfg.book_fade_months
+        else frozenset()
+    )
+    fade = 0.0
+    if state.turn >= cfg.book_months and cfg.book_fade_months > 0:
+        fade = min(1.0, (state.turn - cfg.book_months + 1) / (cfg.book_fade_months + 1))
+    return ClientCards(
+        rate_index=firm.rate_index,
+        cards=dict(firm.rate_card),
+        book=book,
+        large=frozenset(c.id for c in state.market.clients if c.size_class == "large"),
+        mid_max_bp=cfg.mid_max_bp,
+        book_bp=cfg.book_bp,
+        full=not firm.rate_card,
+        fade=fade,
+    )
+
+
+def client_price_term(
+    state: GameState, firm_id: int, practice: str, client_id: int, data: GameData, balance: Balance
+) -> float:
+    """PT-M7c: the appeal's price term for one client (spec 7.1): 1 - what the firm charges it
+    / what the market charges its tier."""
+    market = market_index(state.turn, state.save_meta.start_ym, data, balance)
+    cards = client_indexes(state, state.firm(firm_id), balance)
+    return 1.0 - cards(practice, client_id) / (market * cards.reference(client_id))
 
 
 def price_term(

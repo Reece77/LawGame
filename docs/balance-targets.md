@@ -18,9 +18,9 @@
 | --- | --- | --- | --- | --- |
 | **do-nothing** | founders only | flow work only, no BD | no revolver use | no votes |
 | **boutique** | grow to 25 lawyers, leverage ≤ 2 | two practices, high rates, premium clients | conservative | pure lockstep; admit one partner every two years |
-| **steady** | grow while utilisation ≥ 80%; campus class each year | add a practice at each 30 lawyers; cross-sell | revolver ≤ 1 × monthly fees | modified lockstep; admit by business case |
+| **steady** | grow while utilisation ≥ 80%; campus class each year; PT-M7c: lays off associates while utilisation stays below 70% | add a practice at each 30 lawyers; cross-sell | revolver ≤ 1 × monthly fees | modified lockstep; admit by business case |
 | **lateral rocket** | lateral partners whenever a book of $2M+ is available, with guarantees | follow laterals' books | revolver to its covenant limit | eat what you kill |
-| **pyramid** | leverage 5+, utilisation targets 2,100 hours (PT-M7b: an hours policy of 2,300); PT-M10: lays off associates while utilisation stays below 75% | volume work, fixed fees | moderate | two-tier; few equity admissions |
+| **pyramid** | leverage 5+, utilisation targets 2,100 hours (PT-M7b: an hours policy of 2,300); PT-M10: lays off associates while utilisation stays below 75%; PT-M7c: pays 80% of the scale | volume work, fixed fees | moderate | two-tier; few equity admissions |
 
 All strategies staff named matters by the default rule, bill monthly, accept the first settlement offer above the expected value and never de-equitise (except pyramid).
 
@@ -57,6 +57,10 @@ PT-M7b (2026-11-21) removed T5 (standard and hard), T9 (the rocket and the heede
 - **T8 restructuring** is measured only on firms with at least 10 lawyers in December 2008 (Measures).
 - **T9 heeded:** the heeded rocket asks the CFO's forecast before a guaranteed lateral and takes none until six months of trend show headroom (Measures).
 
+**Reece's decisions on PT-M7c's open items (2026-11-24):** steady keeps its layoff rule and T6 counts departures other than layoffs (layoffs print as `T6.layoffs`; band unchanged); steady-automated takes the same layoff rule; T3 (lawyers and revenue) and T4 steady are known misses owned by PT-M18 (growth from PT-M12 and PT-M13); the pyramid's 80% pay and the book's 24-month hold and 60-month fade are approved. T1 and T4 pyramid pass after the client tiers and their rows are removed.
+
+**PT-M7c (2026-11-23), the firm economics audit** (`docs/tasks/PT-M7c-firm-economics.md`, benchmarks in `docs/research/firm-economics.md`): a partner admitted in December now keeps a budget through December's allocation (homegrown equity partners had been poached within a year, holding leverage at 5.7 lawyers per equity partner). T2 passes on seeds 1-10 (steady 6, pyramid 4) and its row is removed; T3.lawyers (46; seeds 11-40 83.5), T4.steady ($2.72M) and T4.pyramid ($1.65M) keep their bounds, owned by Reece's decision on the rate card (the brief's decision 5: RPL is 83% above the Second Hundred's, from the rate).
+
 ## Measures (PT-M7)
 
 How `ptk/balance/report.py` reads each target (`make balance`; `tools/balance_runner.py --runs` prints one line per run). Year 1 is 2005, year 5 2009, year 11 2015; a run is 132 turns of `biglaw_spinout` over the pure sim, critical events answered with their first choice, events written by `MockLLMAdapter`.
@@ -68,7 +72,7 @@ How `ptk/balance/report.py` reads each target (`make balance`; `tools/balance_ru
 | T3 | steady's lawyers on the books in December 2015 and its 2015 revenue, medians over seeds |
 | T4 | PEP (trailing 12 months) in December 2015, a dissolved firm counting 0, medians |
 | T5 | steady's share of seeds dissolved by December 2015 at each difficulty |
-| T6 | attrition: associates who left in a year / the year's average associates, for each full year 2006-2015 with two or more associates, median over years and the four active strategies; partners: steady's September 2006 class (the first class a January 2005 firm can hire) made equity partner by December 2015 (track 8: eligible from December 2014) |
+| T6 | attrition (**Reece, 2026-11-24:** departures other than layoffs; layoffs print as their own line, `T6.layoffs`, pooled layoffs over associate-years 2006-2015; the band is unchanged at 15-25%): associates who left in a year / the year's average associates, for each full year 2006-2015 with two or more associates, median over years and the four active strategies; partners: steady's September 2006 class (the first class a January 2005 firm can hire) made equity partner by December 2015 (track 8: eligible from December 2014) |
 | T7 | utilisation: monthly, 2006-2015; realisation, collection and lockup: December's trailing-12-month values; medians over the five strategies' standard runs |
 | T8 | 2009's revenue over 2008's: "corporate-heavy" = M&A, PE, capital markets and banking at least half of 2008's revenue; "restructuring" = restructuring above 20% of 2009's, **on firms with at least 10 lawyers in December 2008** (Reece, 2026-11-22); every standard run that qualifies (the `restructuring` variant, steady with a restructuring lateral from 2005, makes sure some do). Corporate-heavy's −9% (PT-M7b) is accepted as noise |
 | T9 | lateral rocket's dissolutions by December 2015; the `lateral-rocket-heeded` variant: when the CFO warns (or a covenant breaks), it stops new laterals, suspends draws, calls $1M of capital and repays the revolver from spare cash; and (Reece, 2026-11-22) before any guaranteed lateral it asks the CFO's forecast (the Finance screen's): none until six months of trend (`forecast_window` + 1 month ends) show headroom on every covenant now and for `forecast_months` |

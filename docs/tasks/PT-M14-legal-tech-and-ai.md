@@ -77,9 +77,27 @@ Engineering and tuning decisions the spec, ADR PT-0011 and the brief left open (
 17. **Criterion 4** (learning, the 2030 cohort: juniors in years 1-3 present all year, from `ai-hourly`'s January 2030, growth in CA over 2030 with AI off / AI without training / AI with training, share of the loss restored), run 4: seed 1 3.118 / 2.348 / 3.038 (0.90); 4 5.396 / 3.936 / 5.327 (0.95); 5 2.907 / 2.031 / 2.796 (0.87); 6 4.233 / 2.971 / 4.093 (0.89); 7 4.518 / 3.535 / 4.501 (0.98); 8 3.531 / 2.767 / 3.464 (0.91); 10 3.490 / 2.544 / 3.421 (0.93); seed 2's cohort of 3 lost nothing (none on exposed work), seeds 3 and 9 dissolved. Training restores 0.87-0.98 of the loss (at least half: met).
 18. **Criterion 5**: with PT-M14's two new fields left out, the state cache's nine runs (January 2005 to December 2015) are identical to the previous fixture month by month: T1-T12 to 2015 cannot have moved. T12 at December 2025: `make check-timing` (see the final report).
 
-### Question for Reece (criterion 3)
+### Reece's decision on criterion 3 (via the product manager, 2026-11-23) and the final readings
 
-Fixed fees beat hourly only where the firm's teams finish matters near their base hours. A product's price is the matter's expected fees × the market's efficiency. Hourly bills, meanwhile, are written up to the expected fees whatever the team's skill. So a firm whose teams overrun (rework, a strict judge, unfamiliar juniors) loses on products. In the game, nothing yet stops a player pricing a product above the market's cost: clients accept any price in the 60-150% band. Proposed default: price acceptance, where a product above 100% of the market's cost is taken by a falling share of clients (100% at 100, 0 at 150) and the rest stay on hourly terms, with the `ai-fixed` script pricing at 110%. The alternative is to accept 4 of 10 as the model's honest reading and move criterion 3 to a later milestone (PT-M18's balance).
+**Decision:** price acceptance. A product above 100% of the market's cost is taken by a share of clients falling linearly from all at 100% to none at 150% (`tech.products.accept_full_bp` 10000, `accept_none_bp` 15000; billing's terms draw u2, which a product's price does not use, decides each client); the rest keep the terms they would have had. The `ai-fixed` script prices at 110% (80% take-up). Read on seeds 1-10 and 11-40; if neither reaches 7 of 10 (or the same share), a known-miss row owned by PT-M18 records both readings (authorised by the product manager).
+
+19. **Run 5** (after merging main with PT-M11, price acceptance), seeds 1-10, `tools/tech_readings.py`:
+
+| seed | never PEP 2026-30 ($M) / realisation / RFPs won-lost from 2023 | ai-hourly | ai-fixed (products) | fixed > hourly |
+|---|---|---|---|---|
+| 1 | 40.02 / 69.1% / 7-160 | 25.78 / 109.2% / 2-17 (the firm shrank to 9 lawyers, stage 2) | 25.78 (0) | tie |
+| 2 | 39.27 / 69.8% / 6-161 | 40.04 / 73.3% / 14-146 | 38.70 / 75.3% (10) | no |
+| 3 | dissolved before 2016 (steady) | — | — | — |
+| 4 | 19.81 / 116.1% / 2-18 (shrank to 5 lawyers) | 50.25 / 82.5% / 5-168 | 50.25 (0: stage 2) | tie |
+| 5 | 45.76 / 71.6% / 5-159 | 43.41 / 81.3% / 21-145 | 44.67 / 98.3% (10) | yes |
+| 6 | 40.62 / 71.3% / 2-157 | 41.21 / 76.3% / 18-155 | 48.51 / 101.7% (10) | yes |
+| 7 | 41.84 / 70.9% / 4-161 | 35.02 / 79.5% / 21-146 | 43.78 / 100.7% (10) | yes |
+| 8 | 39.90 / 71.8% / 14-154 | 43.87 / 81.9% / 17-143 | 66.57 / 114.3% (10) | yes |
+| 9 | dissolved before 2016 (steady) | — | — | — |
+| 10 | 33.09 / 70.9% / 3-163 | 37.53 / 86.1% / 11-152 | 36.87 / 86.0% (10) | no |
+
+    Fixed beats hourly on **4 of 10** (4 of the 6 seeds with products; the two losses are within 2-3%). The never-adopter's realisation is 69-72% on every seed it survives at size, against 73-86% for adopters, and it wins 2-14 RFPs from 2023 against 5-21. Criterion 2 is unchanged (51.1-55.8%); criterion 4: training restores 0.95-1.04 of the loss (seeds 2, 4-8, 10).
+20. **Seeds 11-40** (criterion 3 only: `ai-fixed` forked from `ai-hourly` at the first month the firm could launch a product; the scripts are identical until then): READINGS_11_40
 
 ## Follow-ups
 

@@ -196,11 +196,28 @@ def main() -> None:
     parser.add_argument("--seeds", default="1-10")
     parser.add_argument("--jobs", type=int, default=4)
     parser.add_argument("--criterion3", action="store_true", help="ai-hourly against ai-fixed only")
+    parser.add_argument("--out", default="", help="criterion 3: a JSON-lines file of seeds read")
     args = parser.parse_args()
     seeds = _seeds(args.seeds)
     if args.criterion3:
+        import json
+        from dataclasses import asdict
+
+        done: dict[int, tuple[Branch, Branch]] = {}
+        out = Path(args.out) if args.out else None
+        if out is not None and out.exists():  # resume: seeds already read are kept
+            for line in out.read_text().splitlines():
+                rec = json.loads(line)
+                done[rec["seed"]] = (Branch(**rec["hourly"]), Branch(**rec["fixed"]))
+        todo = [x for x in seeds if x not in done]
         with ProcessPoolExecutor(args.jobs) as pool:
-            rows = sorted(pool.map(run_c3, seeds))
+            for seed, h, f in pool.map(run_c3, todo):
+                done[seed] = (h, f)
+                if out is not None:
+                    with out.open("a") as fh:
+                        rec = {"seed": seed, "hourly": asdict(h), "fixed": asdict(f)}
+                        fh.write(json.dumps(rec) + "\n")
+        rows = sorted((x, *done[x]) for x in seeds)
         print("Criterion 3: PEP 2026-2030 (sum of December PEP, $M), ai-hourly against ai-fixed")
         print("seed | ai-hourly PEP real lawyers | ai-fixed PEP real lawyers products | fixed>hourly")
         wins = 0

@@ -3,7 +3,7 @@
     [
       1,
       "1000_cash",
-      290617805
+      239639677
     ],
     [
       1,
@@ -18,12 +18,12 @@
     [
       1,
       "1200_receivables",
-      65796112
+      47085710
     ],
     [
       1,
       "1210_bad_debt_provision",
-      -956731
+      -679220
     ],
     [
       1,
@@ -38,17 +38,17 @@
     [
       1,
       "2700_partner_current_accounts",
-      -148076312
+      -99302260
     ],
     [
       1,
       "3000_partners_capital",
-      -142541493
+      -140337417
     ],
     [
       1,
       "3100_undistributed_profit",
-      8356866678
+      7759002908
     ],
     [
       1,
@@ -58,7 +58,7 @@
     [
       1,
       "4000_fees",
-      -9805046426
+      -9186015497
     ],
     [
       1,
@@ -108,17 +108,17 @@
     [
       1,
       "6700_write_offs",
-      5526430
+      5248919
     ],
     [
       1,
       "6800_interest",
-      273349
+      961529
     ],
     [
       1,
       "6900_general_admin",
-      396787225
+      393642288
     ],
     [
       101,
@@ -3614,7 +3614,7 @@
       6
     ]
   ],
-  "matters": "ebef05954c1dfc82a23fe166eb3a928df7017436c8b1c20c38cc6c458387557d",
+  "matters": "44be31711aa22bf206d03192538e506c8a51f59df4f99697309aae9103aae803",
   "names": [
     "Sarah Williams",
     "Kevin Stewart",
@@ -3622,6 +3622,6 @@
     "Logan Robinson"
   ],
   "people": "e79bbb9820a88e0a1c25c90b79fa7858ea617d123eafc32f42c640e827023fc2",
-  "relationships": "0fd59dd5067e142c8835245e85fe59feb9de230515a87ba7014927ee1648a678",
-  "sha256": "45944c763a9f20e2891e48aac5be0accca73ad9313cd8c41ae851d1855219005"
+  "relationships": "57ecb95fb4736b3f8d5c6cc7a1c834f578ba49b0eb9a7b73ed7e09af7303cb59",
+  "sha256": "ec054d655ac458404b9747793f8bd0b92042da723753a11512aaec786f9eb076"
 }

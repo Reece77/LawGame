@@ -24,6 +24,7 @@ from sqlalchemy import select
 
 from ptk import loader
 from ptk.api.finance import MatterMoneyOut, matter_money_view
+from ptk.api.tech import practice_ai_cut_bp
 from ptk.config import get_settings
 from ptk.db import saves
 from ptk.db.models import InboxItemRow
@@ -159,6 +160,15 @@ class PracticeScreenOut(BaseModel):
     reputation_top: int  # the market's top-decile reputation in the practice
     band: int | None  # the latest October's directory band (None: not ranked)
     reputation_causes: list[ReputationCauseOut]  # its latest changes, newest first
+    ai_cut_bp: int = 0  # PT-M14: clients' AI cut on the practice's hourly bills now
+    ai_products: int = 0  # PT-M14: the firm's active fixed-fee products in the practice
+
+
+def _products_in(state: GameState, practice: str) -> int:
+    firm = state.tech.firm(state.player.id)
+    return (
+        0 if firm is None else sum(1 for x in firm.products if x.active and x.practice == practice)
+    )
 
 
 class ExplainItemOut(BaseModel):
@@ -371,6 +381,8 @@ def practices_screen(state: GameState, data: GameData, balance: Balance) -> list
                     for c in reversed(state.standing.reputation.causes)
                     if c.practice in (p.key, None)
                 ][:CAUSES_SHOWN],
+                ai_cut_bp=practice_ai_cut_bp(state, p.key, data, balance),  # PT-M14
+                ai_products=_products_in(state, p.key),
             )
         )
     return out

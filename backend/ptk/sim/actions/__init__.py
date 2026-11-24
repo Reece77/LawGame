@@ -6,7 +6,7 @@ pattern; changed: hiring actions (PT-M1b), client and matter actions (PT-M3a), b
 (PT-M3b), the answer to an event (PT-M6), rival-firm actions (PT-M5) and the founder's life
 (PT-M17), the press and the directory submission (PT-M16); later milestones
 (PT-M3b), the answer to an event (PT-M6), rival-firm actions (PT-M5), the founder's life
-(PT-M17) and automation (PT-M9); later milestones
+(PT-M17), automation (PT-M9) and technology (PT-M14); later milestones
 add theirs here.
 
 `apply_action` is pure: it takes the state and returns the new state, any ledger entries and
@@ -63,6 +63,7 @@ from ptk.sim.press.actions import STANDING_ACTION_TYPES, StandingAction, apply_s
 from ptk.sim.rivals.actions import RIVAL_ACTION_TYPES, RivalAction, apply_rival_action
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.tech.actions import TECH_ACTION_TYPES, TechAction, apply_tech_action
 
 type Action = (
     HiringAction
@@ -76,6 +77,7 @@ type Action = (
     | FounderAction
     | StandingAction
     | AutomationAction
+    | TechAction
     | GeoAction
 )
 
@@ -99,6 +101,7 @@ ACTION_TYPES: dict[str, type[Any]] = {
     **FOUNDER_ACTION_TYPES,  # PT-M17
     **STANDING_ACTION_TYPES,  # PT-M16
     **AUTOMATION_ACTION_TYPES,  # PT-M9
+    **TECH_ACTION_TYPES,  # PT-M14
     **GEO_ACTION_TYPES,  # PT-M11
 }
 
@@ -130,6 +133,8 @@ def apply_action(
             ledger_balances=ledger_balances,
         )
         return Outcome(auto.state, auto.entries, auto.log)
+    if type(action) in TECH_ACTION_TYPES.values():  # PT-M14
+        return apply_tech_action(state, action, draws, rng, data, balance)  # type: ignore[arg-type]
     if type(action) in GEO_ACTION_TYPES.values():  # PT-M11: offices, admissions, trainees
         return apply_geo_action(
             state,

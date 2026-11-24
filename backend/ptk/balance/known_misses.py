@@ -72,6 +72,15 @@ KNOWN_MISSES: Final[tuple[KnownMiss, ...]] = (
         "the row moves to PT-M18 (the product manager, 2026-11-22, PR #22)",
     ),
     KnownMiss(
+        target="PT-M14.fixed_fees",  # ai-fixed earns more PEP 2026-2030 than ai-hourly, 7 of 10
+        owner="PT-M18",
+        # score: minus the seeds of 10 where ai-fixed wins; known while at least 3 of 10
+        worse_than=-3.0,
+        reason="4/10 on seeds 1-10 (4 of the 6 with products) and 9/30 on seeds 11-40 (9 of "
+        "the 16 with products) with price acceptance at 110% (Reece's decision, 2026-11-23); "
+        "the product manager authorised the row (tools/tech_readings.py; PT-M14's brief)",
+    ),
+    KnownMiss(
         target="T8.corporate",  # corporate-heavy firms' 2009 revenue -30% to -10% on 2008
         owner="accepted (Reece, 2026-11-22)",
         # score: the median change; known while it is at most -5% (a fall within noise of -10%)

@@ -47,6 +47,7 @@ from typing import Final
 
 from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import PARTNER_LEVELS, Balance, GameData, KindDef
+from ptk.sim.interfaces import NO_TECH_HOURS, TechHoursView, tech_hours
 from ptk.sim.macro import shock_share
 from ptk.sim.matters import formulas as fx
 from ptk.sim.matters.models import (
@@ -95,6 +96,7 @@ def fee_earners(
     """A firm's lawyers and paralegals on its books, by person id."""
     staff = set(state.staff_ids(firm_id))
     assessing = assessment_tenths(state.market, firm_id, state.turn, balance)
+    training = tech_hours(state, firm_id, data, balance).training_tenths  # PT-M14
     out = []
     for person in state.people:
         if person.id not in staff:
@@ -103,8 +105,14 @@ def fee_earners(
         if level is None:
             continue
         other = (
-            balance.matters.partner_other_hours * fx.TENTHS if person.level in PARTNER_LEVELS else 0
-        ) + assessing.get(person.id, 0)
+            (
+                balance.matters.partner_other_hours * fx.TENTHS
+                if person.level in PARTNER_LEVELS
+                else 0
+            )
+            + assessing.get(person.id, 0)
+            + training.get(person.id, 0)
+        )
         out.append(
             FeeEarner(
                 person=person,
@@ -130,21 +138,28 @@ def assessment_tenths(
 
 
 def expected_output(
-    person: Person, tasks: Mapping[str, float], practice: str, data: GameData, balance: Balance
+    person: Person,
+    tasks: Mapping[str, float],
+    practice: str,
+    data: GameData,
+    balance: Balance,
+    hours_factor: float = 1.0,
 ) -> float:
     """PT-M7a: output an hour the default rule expects of a person on a task mix: effective
     skill / 10 x the strain factor, held to staffing.output_floor-output_cap. PT-M11 (T12):
     memoised on the identity of the (immutable) person, task mix, data and balance, so a month
-    that staffs many matters asks once per person and mix."""
+    that staffs many matters asks once per person and mix. PT-M14: divided by the firm's hours
+    factor on the mix (`interfaces.tech_hours`: AI's tasks take fewer hours, so an hour does
+    more of the matter)."""
     key = (id(person), id(tasks), practice, id(data), id(balance))
     hit = _OUTPUT.get(key)
     if hit is not None and hit[0] is person and hit[1] is tasks:
-        return hit[2]
+        return hit[2] / hours_factor
     value = _expected_output(person, tasks, practice, data, balance)
     if len(_OUTPUT) >= _OUTPUT_KEEP:
         _OUTPUT.clear()
     _OUTPUT[key] = (person, tasks, value)
-    return value
+    return value / hours_factor
 
 
 _OUTPUT: dict[tuple[int, int, str, int, int], tuple[Person, Mapping[str, float], float]] = {}
@@ -210,6 +225,7 @@ def default_team(
     balance: Balance,
     founder_id: int | None,
     policy_hours: int | None = None,
+    tech: TechHoursView = NO_TECH_HOURS,
     lead_ok: Callable[[Person], bool] | None = None,
 ) -> tuple[int | None, tuple[TeamMember, ...]]:
     """The default staffing rule: (lead id, team) for a matter (module docstring). Wants are
@@ -230,10 +246,13 @@ def default_team(
     pool = [e for e in earners if e.home == matter.practice]
     by_id = {e.id: e for e in earners}
     factors: dict[int, float] = {}
+    hours_factor = tech.factor(tasks)  # PT-M14
 
     def factor(e: FeeEarner) -> float:
         if e.id not in factors:
-            factors[e.id] = expected_output(e.person, tasks, matter.practice, data, balance)
+            factors[e.id] = expected_output(
+                e.person, tasks, matter.practice, data, balance, hours_factor
+            )
         return factors[e.id]
 
     def best(cands: Sequence[FeeEarner]) -> FeeEarner | None:
@@ -341,6 +360,7 @@ def staff_matter(
         balance,
         state.founder_of(matter.firm_id),
         state.firm(matter.firm_id).billable_target_hours,  # PT-M7b: the hours policy
+        tech_hours(state, matter.firm_id, data, balance),  # PT-M14
         _lead_rule(state, matter, data),  # PT-M11: bar admissions
     )
     return replace(matter, lead_id=lead, team=team)
@@ -403,6 +423,7 @@ def _record(
     data: GameData,
     balance: Balance,
     rate_index: float = 1.0,
+    tech: TechHoursView = NO_TECH_HOURS,
 ) -> HoursRecord:
     if client_id == PRO_BONO_CLIENT_ID:  # PT-M7a (spec 7.8): no value; real responsibility
         return HoursRecord(
@@ -415,10 +436,10 @@ def _record(
             substantive_tenths=tenths,
             value_cents=0,
         )
-    sub = fx.substantive_share(tasks, earner.level, data, balance.matters.substantive_window)
-    rate = indexed_rate(
-        fx.rate_cents(data.practice(practice), earner.person.level, data), rate_index
-    )
+    sub, mine = _shares(tasks, earner.level, data, balance.matters.substantive_window)
+    if not tech.idle:  # PT-M14 (ADR PT-0006 4): hours AI removes were learning hours
+        sub *= tech.learning(mine)
+    rate = indexed_rate(_rate(practice, earner.person.level, data), rate_index)
     return HoursRecord(
         turn=turn,
         person_id=earner.id,
@@ -429,6 +450,41 @@ def _record(
         substantive_tenths=round(tenths * sub),
         value_cents=round_half_even(tenths * rate, fx.TENTHS),
     )
+
+
+# PT-M14 (T12): a record's substantive share, task split and card rate depend only on the
+# (immutable) task mix, the level and the data, so they are memoised on their identity (a
+# month records about a thousand hours records over a handful of mixes); identical results.
+_SHARES: dict[tuple[int, int, int, int], tuple[object, object, float, Mapping[str, float]]] = {}
+_RATES: dict[tuple[str, str, int], tuple[object, int]] = {}
+_MEMO_KEEP = 4096  # tunable-exempt: memoised entries (a cache, not a rule)
+
+
+def _shares(
+    tasks: Mapping[str, float], level: int, data: GameData, window: int
+) -> tuple[float, Mapping[str, float]]:
+    key = (id(tasks), level, id(data), window)
+    hit = _SHARES.get(key)
+    if hit is not None and hit[0] is tasks and hit[1] is data:
+        return hit[2], hit[3]
+    sub = fx.substantive_share(tasks, level, data, window)
+    mine = fx.person_tasks(tasks, level, data)
+    if len(_SHARES) >= _MEMO_KEEP:
+        _SHARES.clear()
+    _SHARES[key] = (tasks, data, sub, mine)
+    return sub, mine
+
+
+def _rate(practice: str, level: str, data: GameData) -> int:
+    key = (practice, level, id(data))
+    hit = _RATES.get(key)
+    if hit is not None and hit[0] is data:
+        return hit[1]
+    rate = fx.rate_cents(data.practice(practice), level, data)
+    if len(_RATES) >= _MEMO_KEEP:
+        _RATES.clear()
+    _RATES[key] = (data, rate)
+    return rate
 
 
 def credit_hours(state: GameState, firm_id: int, balance: Balance) -> int:
@@ -516,6 +572,7 @@ def month_hours(
     by_id = {e.id: e for e in earners}
     cap = {e.id: e.capacity for e in earners}
     matters = [m for m in state.market.open_matters(firm_id) if m.team]
+    tech = tech_hours(state, firm_id, data, balance)  # PT-M14: hours on each task x efficiency
     records: list[HoursRecord] = []
     # PT-M11: each client's work is its city's office's, at the city's card; flow work is
     # served by that office's people (one group, everyone, without other offices: v1)
@@ -528,9 +585,10 @@ def month_hours(
         plan = {tm.person_id: tm.planned_tenths for tm in m.team if tm.person_id in by_id}
         tasks = current_tasks(m, kind)
         planned = sum(plan.values())
+        hf = tech.factor(tasks)
         f_team = (
             sum(
-                t * expected_output(by_id[pid].person, tasks, m.practice, data, balance)
+                t * expected_output(by_id[pid].person, tasks, m.practice, data, balance, hf)
                 for pid, t in plan.items()
             )
             / planned
@@ -573,6 +631,7 @@ def month_hours(
                 data,
                 balance,
                 index[m.practice] * rate_f(m.client_id),
+                tech,
             )
         )
         used[pid] += t
@@ -584,6 +643,9 @@ def month_hours(
     all_t: dict[int, float] = {}
     flow_tasks = data.market.flow_tasks
     min_fam = balance.matters.flow_min_familiarity
+    flow_factor = tech.factor(flow_tasks)  # PT-M14: flow's base hours x efficiency
+    if flow_factor != 1.0:
+        flow_tenths = {k: round(t * flow_factor) for k, t in flow_tenths.items()}
     for practice, (group, members) in ((p, g) for p in data.practice_keys for g in groups):
         demands = {
             cid: t
@@ -647,6 +709,7 @@ def month_hours(
                             data,
                             balance,
                             index[practice] * rate_f(cid),
+                            tech,
                         )
                     )
     for cid, wanted_t in all_t.items():  # (client, "") -> its unserved share of all its flow
@@ -685,7 +748,8 @@ def month_hours(
         work[e.id] = WorkMonth(
             person_id=e.id,
             practice_tenths=tuple((p, t) for p, t in by_practice.items() if t > 0),
-            substantive_tenths=sum(r.substantive_tenths for r in mine),
+            substantive_tenths=sum(r.substantive_tenths for r in mine)
+            + tech.training_tenths.get(e.id, 0),  # PT-M14: training is learning
             other_tenths=e.other,
             pro_bono_tenths=pb,
             credited_tenths=credited,

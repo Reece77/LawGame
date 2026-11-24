@@ -18,6 +18,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
 from ptk import loader
+from ptk.api.tech import matter_ai_fields
 from ptk.config import get_settings
 from ptk.db import saves
 from ptk.sim.calendar import format_turn, turn_to_ym
@@ -196,6 +197,12 @@ class MatterOut(MatterRowOut):
     # PT-M7a: early case assessment (spec 7.6): the revealed range in words, never the merits
     assessed_merits: str | None = None
     can_assess: bool = False
+    # PT-M14 (spec 13): AI on this matter: the current phase's hours per 100 base hours, the
+    # kind's share of hours on exposed tasks, clients' cut on its hourly bills, a product
+    ai_hours_pct: int = 100
+    ai_exposed_pct: int = 0
+    ai_client_cut_bp: int = 0
+    ai_product: bool = False
 
 
 class ConflictChecksOut(BaseModel):
@@ -496,6 +503,7 @@ def matter_view(state: GameState, matter_id: int, data: GameData, balance: Balan
             "waiver": m.waiver,
             "opposing_counsel": opposing_counsel(state, m.id)[0],
             "opposing_firm_id": opposing_counsel(state, m.id)[1],
+            **matter_ai_fields(state, m, data, balance),  # PT-M14
         }
     )
 

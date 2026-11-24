@@ -77,3 +77,5 @@ How `ptk/balance/report.py` reads each target (`make balance`; `tools/balance_ru
 | T12 | printed: the steady runs' median turn in 2015 (pure sim, on the runner's machine with its workers sharing cores); the gate is `make check-timing`'s test (PT-M5's, run alone, CLAUDE.md §9 rule 6), timing 2025's turns from PT-M10 |
 | T8.2020 | `steady-30y` runs with M&A, PE, capital markets and banking at least half of 2019's revenue: the median of 2020 Q2's revenue over Q1's; recovered when most of them have Q4 2021's revenue at least Q1 2020's (PT-M10) |
 | 30y | printed for information: `steady-30y` at December 2034 (lawyers, revenue, PEP medians, dissolved); PT-M18 sets the 30-year targets |
+
+- **PT-M14 criterion 3 (fixed fees against hourly, 2026-2030 PEP):** a known miss owned by PT-M18 (row `PT-M14.fixed_fees`, authorised by the product manager on Reece's decision of 2026-11-23): 4 of 10 on seeds 1-10, 9 of 30 on seeds 11-40 (`tools/tech_readings.py --criterion3`).

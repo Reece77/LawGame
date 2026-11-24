@@ -327,3 +327,12 @@ class SuccessionError(SimError):
     """A succession rule forbids the action (who may succeed, when)."""
 
     code = "succession"
+
+
+# --- PT-M14: legal technology and AI -----------------------------------------------------------
+
+
+class TechActionError(SimError):
+    """A technology action a rule forbids (an era not begun, a product before stage 3)."""
+
+    code = "tech_action"

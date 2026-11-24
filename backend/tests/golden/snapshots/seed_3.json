@@ -3,47 +3,47 @@
     [
       1,
       "1000_cash",
-      364901861
+      240169543
     ],
     [
       1,
       "1100_unbilled_wip",
-      43879071
+      41146978
     ],
     [
       1,
       "1110_wip_provision",
-      -7159473
+      -4587921
     ],
     [
       1,
       "1200_receivables",
-      130857265
+      48400614
     ],
     [
       1,
       "1210_bad_debt_provision",
-      -1335977
+      -484007
     ],
     [
       1,
       "2200_deferred_fees",
-      -21156470
+      0
     ],
     [
       1,
       "2700_partner_current_accounts",
-      -185652741
+      -76952879
     ],
     [
       1,
       "3000_partners_capital",
-      -179249120
+      -163216664
     ],
     [
       1,
       "3100_undistributed_profit",
-      9235943710
+      8651073399
     ],
     [
       1,
@@ -53,7 +53,7 @@
     [
       1,
       "4000_fees",
-      -10520564583
+      -9873227501
     ],
     [
       1,
@@ -98,12 +98,12 @@
     [
       1,
       "6700_write_offs",
-      3562859
+      2710889
     ],
     [
       1,
       "6900_general_admin",
-      358094815
+      357088766
     ],
     [
       101,
@@ -3632,14 +3632,14 @@
     ],
     [
       "open",
-      11
+      2
     ],
     [
       "won",
       2
     ]
   ],
-  "matters": "c5b067cfbddafcce8389c368719896ce10faf4f437d996cb64180e2b81565c70",
+  "matters": "a24de7d4e96b9698ca731b3feaa74e228bfb87e672e1165957997bc44b2bf0d8",
   "names": [
     "James Jackson",
     "Michael Garcia",
@@ -3647,6 +3647,6 @@
     "Hannah Allen"
   ],
   "people": "6ae6eaf17a86a319fa64baf726ebb2692e503a1f96f99364e3035aebf579291d",
-  "relationships": "e3a283d57a5206965fc2a10e2042676b00ef21bfb268bfa938e723ed87982173",
-  "sha256": "32d1b4b4c620ad28b8caf1c4a5f9b551adfea1f3d84f1d9a38d89ef093314b59"
+  "relationships": "be7086c5e8f7824d6d81435c60565ed82a6e55d8767db1c426fdde4a81bc7961",
+  "sha256": "2e43954396f29455fc206854f3f8e6893f59fac5e1fe340de955b4122b43f513"
 }

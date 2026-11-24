@@ -1,0 +1,116 @@
+# Legal technology eras (PT-M14; spec 13; ADR PT-0011 2). Source: docs/research/legal-tech.md
+# (s1 milestones, s2 adoption, s3 savings, s7 costs, s8 proposals). Tags: [S] seen, [D] derived,
+# [A] approximate (as the dossier's).
+#
+# Each era:
+#   start: the first month a firm can adopt it (s1).
+#   tasks: the era's strength on each task at strength 1.0, 0-1. The engine's efficiency is
+#     1 - exposure x strength x adoption (practices.yaml ai_exposure), so a task's weight here is
+#     the dossier s8's "share of hours removed" / (the task's exposure x the era's 2025
+#     strength) [D], capped at 1.
+#   strength: the era's strength over time, 0-1, dated to December 2025 (linear between points).
+#   strength_seeded: after December 2025, linear from December 2025's value to U(lo, hi) at `by`
+#     (stream tech_seed, 110: each save its own world; ADR PT-0002 2).
+#   market: the large-firm market's average adoption, 0-1 (s8's adoption table) [D/A], then
+#     market_seeded as strength_seeded.
+#   platform_cents: a one-off platform cost (capex to 1500, amortised to 6100) [A: no published
+#     platform prices; s7]. subscription_cents: per lawyer a month at full coverage (6100).
+history_end: [2025, 12]
+sources:
+  dossier: docs/research/legal-tech.md
+eras:
+  - key: ediscovery
+    label: E-discovery platforms
+    start: [2005, 1]
+    tasks: { review: 0.11, diligence: 0.07, management: 0.17 } # [D] s8 0.10/0.9, 0.05/0.7, 0.05/0.3
+    strength:
+      - { ym: [2005, 1], value: 0.5, src: "[A] s1: platforms before the December 2006 FRCP amendments" }
+      - { ym: [2007, 1], value: 1.0, src: "[S] s1: FRCP e-discovery amendments, 1 Dec 2006" }
+    market:
+      - { ym: [2005, 1], value: 0.30, src: "[A] s8 (no adoption survey found)" }
+      - { ym: [2007, 1], value: 0.65, src: "[A] s8" }
+      - { ym: [2010, 1], value: 0.90, src: "[A] s8" }
+      - { ym: [2012, 1], value: 0.95, src: "[A] s8" }
+    platform_cents: 10000000 # $100k [A]
+    subscription_cents: 15000 # $150 a lawyer a month [A]
+  - key: offshore
+    label: Offshore review and legal process outsourcing
+    start: [2008, 1]
+    tasks: { review: 0.22, diligence: 0.14, drafting: 0.10 } # [D] s8 0.20/0.9, 0.10/0.7, 0.05/0.5
+    strength:
+      - { ym: [2008, 1], value: 0.5, src: "[A] s1: LPOs from 2008" }
+      - { ym: [2010, 11], value: 1.0, src: "[S] s1: Thomson Reuters buys Pangea3, 18 Nov 2010" }
+    market:
+      - { ym: [2008, 1], value: 0.05, src: "[A] s8" }
+      - { ym: [2010, 1], value: 0.15, src: "[A] s8" }
+      - { ym: [2012, 1], value: 0.20, src: "[D] s8" }
+      - { ym: [2017, 1], value: 0.25, src: "[D] s8" }
+      - { ym: [2025, 1], value: 0.27, src: "[S] s8: TR, 27% run or partner with ALSPs" }
+    platform_cents: 0 # outsourcing: vendor fees only
+    subscription_cents: 20000 # $200 a lawyer a month [A]
+  - key: tar
+    label: Technology-assisted review
+    start: [2012, 2]
+    tasks: { review: 0.44, diligence: 0.14 } # [D] s8 0.40/0.9 (spec 30-50%), 0.10/0.7
+    strength:
+      - { ym: [2012, 2], value: 0.3, src: "[S] s1: Da Silva Moore v. Publicis, 24 Feb 2012" }
+      - { ym: [2015, 3], value: 0.7, src: "[S] s1: Rio Tinto v. Vale, 2 Mar 2015" }
+      - { ym: [2016, 2], value: 1.0, src: "[S] s1: Pyrrho (England), Feb 2016" }
+    market:
+      - { ym: [2012, 2], value: 0.02, src: "[A] s8: RAND 2012 found none in its sample" }
+      - { ym: [2016, 1], value: 0.16, src: "[D] s8" }
+      - { ym: [2018, 1], value: 0.21, src: "[S] s8: ABA 2018, firms of 100+" }
+      - { ym: [2023, 1], value: 0.30, src: "[A] s8: plateau" }
+    market_seeded: { by: [2030, 12], lo: 0.35, hi: 0.50 }
+    platform_cents: 15000000 # $150k [A]
+    subscription_cents: 15000 # $150 [A]
+  - key: contract_analysis
+    label: Contract analysis tools
+    start: [2016, 1]
+    tasks: { review: 0.06, diligence: 0.43, drafting: 0.10 } # [D] s8 0.05/0.9, 0.30/0.7, 0.05/0.5
+    strength:
+      - { ym: [2016, 1], value: 0.3, src: "[S] s1: Kira (2011) and Luminance (Sep 2016)" }
+      - { ym: [2018, 2], value: 0.7, src: "[S] s1/s3: LawGeex study, Feb 2018" }
+      - { ym: [2020, 1], value: 1.0, src: "[A]" }
+    market:
+      - { ym: [2016, 1], value: 0.05, src: "[A] s8" }
+      - { ym: [2018, 1], value: 0.10, src: "[A] s8" }
+      - { ym: [2022, 1], value: 0.18, src: "[A] s8" }
+      - { ym: [2025, 1], value: 0.24, src: "[A] s8" }
+    market_seeded: { by: [2030, 12], lo: 0.30, hi: 0.45 }
+    platform_cents: 10000000 # $100k [A]
+    subscription_cents: 30000 # $300 [A]
+  - key: genai
+    label: Generative AI
+    start: [2022, 12]
+    # [D] s8's 2025 savings over exposure x 0.45: review 0.20, diligence 0.20, research 0.22,
+    # drafting 0.22, negotiation 0.05, advocacy 0.10, advice 0.10, management 0.05 (capped at 1)
+    tasks: { review: 0.49, diligence: 0.63, research: 0.70, drafting: 0.98, negotiation: 1.0, advocacy: 1.0, advice: 0.74, management: 0.37 }
+    strength:
+      - { ym: [2022, 12], value: 0.05, src: "[S] s1: ChatGPT, 30 Nov 2022" }
+      - { ym: [2023, 12], value: 0.20, src: "[S] s1: Harvey at A&O (Feb) and PwC (Mar); Lexis+ AI (Oct); Copilot (Nov 2023)" }
+      - { ym: [2024, 12], value: 0.35, src: "[D] s3: GPT-4 studies, 12-32% faster on drafting and research" }
+      - { ym: [2025, 12], value: 0.45, src: "[D] s8: 2025's savings; spec: 0.5 by 2026" }
+    strength_seeded: { by: [2030, 12], lo: 0.65, hi: 0.85 } # [A] spec 13: seeded after 2026
+    market:
+      - { ym: [2022, 12], value: 0.01, src: "[S] s8" }
+      - { ym: [2023, 12], value: 0.08, src: "[D] s8: ABA 100+ 16% any use x 0.5 depth (TR 2025: 26% active)" }
+      - { ym: [2024, 12], value: 0.25, src: "[D] s8: 0.55 any use x ~0.45 depth" }
+      - { ym: [2025, 12], value: 0.40, src: "[D] s8: 0.85 any use (Clio large 87%) x ~0.47 depth" }
+    market_seeded: { by: [2030, 12], lo: 0.70, hi: 0.90 }
+    platform_cents: 25000000 # $250k [A]: integration and security review
+    subscription_cents: 100000 # $1,000 a lawyer a month [S, secondary] s7: Harvey ~$1,000-1,200
+  - key: agentic
+    label: Agentic tools
+    start: [2025, 1]
+    tasks: { review: 0.3, diligence: 0.4, research: 0.4, drafting: 0.3, management: 1.0, negotiation: 0.5, advice: 0.5 } # spec 13: management, negotiation and advice partly [A]
+    strength:
+      - { ym: [2025, 1], value: 0.02, src: "[S, secondary] s1: agentic releases mid-2025" }
+      - { ym: [2025, 12], value: 0.07, src: "[A] s8: ~0.05 on each task by end 2025" }
+    strength_seeded: { by: [2032, 12], lo: 0.60, hi: 0.80 } # spec 13
+    market:
+      - { ym: [2025, 1], value: 0.0, src: "[A]" }
+      - { ym: [2025, 12], value: 0.05, src: "[A] s8: 0.10 any use x 0.5 depth" }
+    market_seeded: { by: [2032, 12], lo: 0.50, hi: 0.80 }
+    platform_cents: 50000000 # $500k [A]
+    subscription_cents: 150000 # $1,500 [A]

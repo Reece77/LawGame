@@ -36,7 +36,7 @@ import numpy as np
 from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import InvalidActionError
-from ptk.sim.interfaces import seat_effect
+from ptk.sim.interfaces import seat_effect, tech_rfp_gap
 from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.matters.models import Client, Relationship
 from ptk.sim.rivals import streams
@@ -44,7 +44,12 @@ from ptk.sim.rivals.models import PLAYER_PANEL_KEY, Pitch, Rfp, RfpKind, RivalsS
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
 
-CLAIMS: Final = ("references", "track_record", "continuity")  # tunable-exempt: claim keys
+CLAIMS: Final = (  # tunable-exempt: claim keys
+    "references",
+    "track_record",
+    "continuity",
+    "ai_efficiency",  # PT-M14: from tech.clients.rfp_from_year, AI at or above the market's
+)
 OPEN_KEY, AWARD_KEY = 0, 1  # tunable-exempt: rfp stream key tags
 PANEL_PRACTICES = 3  # tunable-exempt: a panel review covers the client's top three practices
 MONTHS = 12  # tunable-exempt
@@ -195,7 +200,14 @@ def pitch_quality(state: GameState, team: tuple[int, ...], practices: tuple[str,
     return sum(values) / len(values)
 
 
-def substantiated(state: GameState, rfp: Rfp, claim: str, team: tuple[int, ...]) -> bool:
+def substantiated(
+    state: GameState,
+    rfp: Rfp,
+    claim: str,
+    team: tuple[int, ...],
+    data: GameData | None = None,
+    balance: Balance | None = None,
+) -> bool:
     client = state.market.client(rfp.client_id)
     firm = state.player.id
     closed = [m for m in state.market.matters if m.firm_id == firm and m.status == "closed"]
@@ -207,6 +219,9 @@ def substantiated(state: GameState, rfp: Rfp, claim: str, team: tuple[int, ...])
     if claim == "continuity":
         rel = state.market.relationship(client.id, firm)
         return rel is not None and bool(team) and rel.partner_id == team[0]
+    if claim == "ai_efficiency" and balance is not None and data is not None:  # PT-M14
+        gap = tech_rfp_gap(state, firm, data, balance)
+        return gap is not None and gap >= 0
     return False
 
 
@@ -258,7 +273,12 @@ def player_score(state: GameState, rfp: Rfp, data: GameData, balance: Balance) -
         )
         score += rb.w_pitch * (quality - 10.0)  # tunable-exempt: the 1-20 midpoint
         for claim in rfp.pitch.claims:
-            score += rb.w_claim if substantiated(state, rfp, claim, rfp.pitch.team) else -rb.w_claim
+            good = substantiated(state, rfp, claim, rfp.pitch.team, data, balance)
+            score += rb.w_claim if good else -rb.w_claim
+    # PT-M14 (spec 13, ADR PT-0011 4): from 2023 RFPs ask for AI and efficiency
+    gap = tech_rfp_gap(state, state.player.id, data, balance)
+    if gap is not None:
+        score += balance.tech.clients.w_rfp * gap
     return score
 
 

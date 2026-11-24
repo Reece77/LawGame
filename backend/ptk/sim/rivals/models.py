@@ -277,7 +277,17 @@ class RivalsState:
         return None
 
     def members_of(self, firm_id: int) -> tuple[Member, ...]:
-        return tuple(m for m in self.members if m.firm_id == firm_id)
+        """PT-M14 (T12): grouped once per (immutable) members tuple; identical results."""
+        hit = _MEMBERS_BY_FIRM.get(id(self.members))
+        if hit is None or hit[0] is not self.members:
+            groups: dict[int, list[Member]] = {}
+            for m in self.members:
+                groups.setdefault(m.firm_id, []).append(m)
+            hit = (self.members, {k: tuple(v) for k, v in groups.items()})
+            if len(_MEMBERS_BY_FIRM) >= _KEEP:
+                _MEMBERS_BY_FIRM.clear()
+            _MEMBERS_BY_FIRM[id(self.members)] = hit
+        return hit[1].get(firm_id, ())
 
     def rfp(self, rfp_id: int) -> Rfp | None:
         return next((r for r in self.rfps if r.id == rfp_id), None)
@@ -287,7 +297,19 @@ class RivalsState:
 
     @property
     def active(self) -> tuple[RivalFirm, ...]:
-        return tuple(f for f in self.firms if f.active)
+        """PT-M14 (T12): filtered once per (immutable) firms tuple; identical results."""
+        hit = _ACTIVE.get(id(self.firms))
+        if hit is not None and hit[0] is self.firms:
+            return hit[1]
+        out = tuple(f for f in self.firms if f.active)
+        if len(_ACTIVE) >= _KEEP:
+            _ACTIVE.clear()
+        _ACTIVE[id(self.firms)] = (self.firms, out)
+        return out
 
+
+_ACTIVE: dict[int, tuple[tuple[RivalFirm, ...], tuple[RivalFirm, ...]]] = {}
+_MEMBERS_BY_FIRM: dict[int, tuple[tuple[Member, ...], dict[int, tuple[Member, ...]]]] = {}
+_KEEP = 64  # tunable-exempt: memoised tuples (a cache, not a rule)
 
 EMPTY_RIVALS = RivalsState()

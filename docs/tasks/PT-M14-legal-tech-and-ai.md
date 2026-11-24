@@ -28,7 +28,7 @@
 - [ ] (known miss `PT-M14.fixed_fees`, PT-M18: 4/10 and 9/30; the never-adopter's losses: met) A firm that adopts early and moves exposed work to fixed fees earns more PEP in 2026-2030 than one that adopts and stays hourly, on at least 7 of 10 seeds; one that never adopts loses realisation and RFPs (printed).
 - [x] Juniors' growth falls without training when AI removes their review hours, and training restores at least half of it (printed).
 - [x] T1-T12 to 2015 unchanged (eras before 2016 are weak); T12 holds at December 2025.
-- [ ] `make check`, `make e2e` and the nightly run green; `Milestone-Tag: pt-m14-done`.
+- [x] `make check` and `make e2e` green; the nightly run green but for PT-M9's guard, which fails identically on `main` (decision 23, rule 3); `Milestone-Tag: pt-m14-done`.
 
 ## Manual check (Reece)
 
@@ -78,6 +78,15 @@ Engineering and tuning decisions the spec, ADR PT-0011 and the brief left open (
 18. **Criterion 5**: with PT-M14's two new fields left out, the state cache's nine runs (January 2005 to December 2015) are identical to the previous fixture month by month: T1-T12 to 2015 cannot have moved. T12 at December 2025: `make check-timing` (see the final report).
 
 22. **T12 (rule 6).** CI's static job read T12 with two offices at 267 and 261 ms on two pushes (the pushes in between passed). Run alone on this machine, alternating with `main` in a separate worktree (ms, median December 2025 turn): main 170 / 158 / 166, PT-M14 163 / 150 / 161 (idle); after the memo below, main 234 / 198 / 192 / 222 / 185 / 195 / 205, PT-M14 199 / 225 / 209 / 211 / 198 / 198 / 202 (a busier machine). PT-M14 costs no measurable time; the test sits near its budget on CI runners on `main` too. Made proportional anyway, with identical results (state cache and golden unchanged): billing's kind task mix, and each hours record's substantive share, task split and card rate, are memoised on the task mix's identity. CI still read 258 ms, so `org.rules.has_mentor_teammate` (each person's morale and growth scanned their whole unit, through the linear `state.person`) now counts each unit's mentors once per view and people tuple (rule 8: PT-M11 has merged; identical results: the state cache's nine runs, golden and the org tests). After it, alternating with `main`: main 201 / 202 / 206 / 202, PT-M14 186 / 178 / 188 / 205 ms.
+
+23. **The nightly run** (dispatched on the branch, rule 7): `make balance` green; `make nightly` red on one test, PT-M9's `test_steady_automated_is_within_20_percent_of_steady`, which **fails identically on a clean `main`** (rule 3; run alone in a worktree of `main` at 9e5fcaf, PT-M11's merge):
+
+| tree | steady 2015 revenue | steady-automated | gap | PEP steady / automated |
+|---|---|---|---|---|
+| main 9e5fcaf | $70.21M | $45.72M | -34.9% | $4.37M / $3.33M |
+| PT-M14 967c4f3 | $70.21M | $45.72M | -34.9% | $4.37M / $3.33M |
+
+    It is PT-M11's recorded reading (its brief: seed variance under rule 4, seeds 11-40 within the band, not in `known_misses.py`); PT-M14 cannot move it (nothing changes before 2016: the state cache). Recorded, not added to `known_misses.py`; the fix belongs to the balance milestone running (PT-M7c owns `ptk/balance/`) or PT-M18.
 
 ### Reece's decision on criterion 3 (via the product manager, 2026-11-23) and the final readings
 

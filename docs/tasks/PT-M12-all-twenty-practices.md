@@ -1,0 +1,50 @@
+# PT-M12: All twenty practices
+
+**Goal:** the market has all twenty practices of spec §6, not v1's ten. International arbitration, tax, antitrust, financial regulation, healthcare and life sciences, energy and infrastructure, technology and privacy, private client, insurance and plaintiff mass torts each have their own demand driver and cycle, matter kinds, billing mix, rates, leverage and conflict density. Clients' wallets, rivals' practice mixes and cross-selling cover every pair. Plaintiff work runs on contingency, and from about 2010 litigation funders can carry its WIP. The firm can enter a new practice by a lateral hire or a team, and a specialist firm in a counter-cyclical or regulatory niche is a real way to play.
+
+**Spec:** §6 (the table and demand), §7.1 (wallets), §7.2 (cross-selling), §7.7 (contingency, retainers, success fees), §14 (eras' policy events: Dodd-Frank 2010, the 2017 tax reform, GDPR 2018) · **ADRs:** PT-0004 (two tiers), PT-0008 (rivals at real scale, pinned), PT-0009 (conflicts), PT-0012, PT-0014 (macro history), PT-0015 (the seeded world) · **Depends on:** PT-M7c (`pt-m7c-done`); inherits the known misses T3 lawyers, T3 revenue and T4 steady (owner PT-M18) · **Lane:** A (beside PT-M13 in lane B and PT-M15 in lane C)
+
+## Lane
+
+- **Owns:** `practices.yaml` (the ten new practices and every pair's `cross_sell`), the new driver series in `macro_history.yaml` and their seeded paths in `macro_seed` (PT-M10's files: its ownership has lapsed), each city's practice mix in `cities.yaml` for the new practices, clients' wallets for the new practices in `clients.yaml` and the client generator, rivals' practice mixes in `firms.yaml` and notables for the new practices in `notables.yaml`, matter kinds and forums for the new practices, contingency and litigation funding in `ptk/sim/billing/`, entering a practice (`ptk/sim/org/`), `ptk/balance/` (lane A's from PT-M7c: strategies, known misses and re-reads for every lane), the Practices screen, RNG ids **120-129**.
+- **Must not edit:** `ptk/sim/mergers/` and the merger vote (PT-M13); `ptk/sim/risk/`, claims, insurance, discipline and billing audits (PT-M15). Billing disputes and audits are PT-M15's part of `ptk/sim/billing/`; funding is yours.
+- **Shared files:** keep both sides; re-chain migrations if another lane merged first. Other lanes register strategies in their own module with one line in `ptk/balance/strategies.py` and ask you for re-reads; a known-miss row needs Reece or the product manager.
+
+## Out of scope
+
+The firm running its own litigation-funding arm, or outside capital (v3, spec §18); ALSPs and the Big Four as rivals (v3); new offices or regions (PT-M11 has them); malpractice claims from the new practices' errors (PT-M15 reads the errors this milestone records).
+
+## Sub-tasks (commit after each)
+
+1. **Research dossier** `docs/research/practices-v2.md` (sources, S/D/A, as v1's `v1-market.md`): for each of the ten new practices, the US large-firm market in 2005 (demand by practice, with the total market checked against v1's ten), partner and associate rates in New York, leverage, margin, realisation and collection norms, the matter kind mix, the billing model mix (retainers in private client, success fees in arbitration, contingency in mass torts), seasonality, conflict density, its driver series to 2025 with dated policy events (Sarbanes-Oxley's tail, Dodd-Frank in July 2010, the Affordable Care Act in 2010, the 2017 Tax Cuts and Jobs Act, GDPR in May 2018 and the CCPA in 2020, the shale boom and the 2014-16 oil crash, the Inflation Reduction Act in 2022, catastrophe years for insurance), London's share for each, and which rivals were strong in each (Chambers bands by practice, as PT-M5's dossier did). Plaintiff mass torts: contingency shares, case durations, settlement sizes and the litigation-funding market from about 2010.
+2. **Data** (`practices.yaml`): the ten new practices with spec §6's columns and every key the ten v1 practices carry, values from the dossier with their markers; `cross_sell` affinities for every pair of the twenty (symmetric where the dossier gives no reason otherwise). **Test:** a practice the firm and the market never touch changes nothing (seed 1's goldens before the new practices draw any demand are unchanged until the first month they are drawn; regenerate them once with the reason in CHANGELOG).
+3. **Demand drivers:** new series in `macro_history.yaml` (to 2025 from the dossier) and their seeded paths to 2034 (`macro_seed`, PT-0015), with each practice's `beta`: arbitration rising, tax spiking with reform, antitrust following M&A with policy, financial regulation surging after 2010, privacy rising after 2018, energy on long cycles, private client on wealth, insurance on catastrophe and claims cycles, mass torts lumpy. **Test:** 2009 demand against 2008 falls for the pro-cyclical new practices and rises for the counter-cyclical ones, and Dodd-Frank, the 2017 reform and GDPR show in their practices' demand within a year (seeds 1-10).
+4. **Clients and wallets:** real clients' wallets in the new practices (their sectors drive them: banks in financial regulation, insurers in insurance, energy companies in energy); generated clients get them from their sector and size; individuals are pooled flow demand for private client and mass torts by region (spec §7.1). London clients get the new practices by `cities.yaml`'s mix.
+5. **Rivals:** each real rival's practice mix covers the twenty from the dossier, so that T11 (rivals' revenue pinned within ±15% to 2025) still holds with demand split over more practices. Rival practice specialists (an arbitration boutique, a private client firm, a plaintiff firm) where the dossier names them.
+6. **Contingency and funding** (spec §7.7): plaintiff matters carry years of WIP with no bill and pay a share of the recovery (25-40%); from 2010 a litigation funder may fund a case's WIP for a share of the recovery (non-recourse: a loss costs the firm nothing more; a win pays the funder first). Accounts are your decision (an ADR if you add a liability account); client money from a recovery passes through the client book (`C` accounts) before the firm's fee.
+7. **Entering a practice:** a firm opens a practice with a lateral partner (PT-M4's laterals), a lateral team or by a partner retraining (slow familiarity, PT-0006); a new practice group follows PT-M2's rules. The scenario's starting practices are unchanged.
+8. **Strategies and readings:** register a specialist strategy (a counter-cyclical or regulatory niche: your choice from the dossier, for example restructuring and financial regulation) and a full-service strategy that enters a new practice each year from 2008; read T1-T12 with all twenty practices on seeds 1-10 and 11-40.
+9. **Screens:** the Practices screen shows twenty (filters for driver and cycle, the firm's position in each, an Enter practice action); the Matter screen shows contingency and funding terms; e2e: enter international arbitration with a lateral partner and fund a mass-tort case.
+
+## Acceptance criteria
+
+- [ ] All twenty practices load with every value cited or marked; the 2005 total of D0 over the twenty is within ±15% of the dossier's US large-firm market (test).
+- [ ] Counter-cyclical and policy-driven practices move as the dossier says (sub-task 3's test, seeds 1-10).
+- [ ] T11 holds with twenty practices (seeds 1-10), and T11.2025.
+- [ ] A contingency case's WIP posts no fee until its recovery; a funded case's loss costs the firm only its unfunded WIP; the books and the client book reconcile (property test).
+- [ ] The specialist strategy is viable: it survives on at least 7 of 10 seeds and its 2009 PEP falls less than steady's (printed); T2 still holds with it in the field (no strategy best on more than 6 of 10).
+- [ ] T1-T12 re-read on seeds 1-10 and 11-40 with before and after values; no new miss without a row authorised by Reece or the product manager. Print T3 lawyers and revenue for the full-service strategy against steady (T3's growth is expected partly from here).
+- [ ] T12 (≤ 250 ms) holds at December 2025 with twenty practices.
+- [ ] `make check`, `make e2e` and the nightly run green; `Milestone-Tag: pt-m12-done`.
+
+## Manual check (Reece)
+
+From `pt-2008`, hire a lateral restructuring partner into a new financial regulation practice in 2009 and play to 2012.
+
+## Decisions made
+
+(The session records its decisions here.)
+
+## Follow-ups
+
+(The session records follow-ups here.)

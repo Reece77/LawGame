@@ -56,3 +56,13 @@ RNG ids by lane: PT-M9 60-64, PT-M10 65-69, PT-M16 70-79.
 | [PT-M14-legal-tech-and-ai.md](PT-M14-legal-tech-and-ai.md) | Legal technology and AI | PT-M10 |
 
 RNG ids by lane: PT-M7c 80-84, PT-M11 100-109, PT-M14 110-119 (99 stays tests-only).
+
+## v2, fourth wave (2026-11-24)
+
+| Brief | Milestone | Depends on |
+| --- | --- | --- |
+| [PT-M12-all-twenty-practices.md](PT-M12-all-twenty-practices.md) | All twenty practices, contingency and litigation funding | PT-M7c |
+| [PT-M13-mergers-and-the-verein.md](PT-M13-mergers-and-the-verein.md) | Mergers and the verein | PT-M7c (uses PT-M11's offices) |
+| [PT-M15-risk-and-ethics.md](PT-M15-risk-and-ethics.md) | Malpractice, insurance, discipline, trust accounts, billing audits | PT-M7c |
+
+Lanes: PT-M12 A (owns `ptk/balance/` and re-reads for every lane), PT-M13 B, PT-M15 C. RNG ids by lane: PT-M12 120-129, PT-M13 130-139, PT-M15 140-149. ADRs reserved: PT-0016 (PT-M13), PT-0017 (PT-M15). PT-M18 (v2 balance) follows all three.

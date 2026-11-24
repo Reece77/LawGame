@@ -48,6 +48,7 @@ from ptk.sim.rivals.models import RivalMove
 from ptk.sim.rng import RngFactory
 from ptk.sim.snapshot import TurnSnapshot
 from ptk.sim.state import GameState
+from ptk.sim.tech import adoption as tech_adoption
 
 
 @dataclass(frozen=True, slots=True)
@@ -161,8 +162,10 @@ def delegate_and_rival_decisions(ctx: TurnContext) -> TurnContext:
 
 
 def knowledge_progress(ctx: TurnContext) -> TurnContext:
-    """3. Knowledge and AI adoption (v2)."""
-    return ctx
+    """3. Knowledge and AI adoption (PT-M14): subscriptions, platform amortisation and the
+    training programme post to 6100; each era's adoption moves toward its target."""
+    state, entries, logs = tech_adoption.month(ctx.state, ctx.data, ctx.balance)
+    return replace(ctx, state=state).post(*entries).log(*logs)
 
 
 def intake_and_staffing(ctx: TurnContext) -> TurnContext:

@@ -26,6 +26,7 @@ from ptk.sim.partnership.models import EMPTY_PARTNERSHIP, PartnershipState
 from ptk.sim.people.models import Employment, Person, RevealState
 from ptk.sim.reputation.models import EMPTY_STANDING, StandingState
 from ptk.sim.rivals.models import EMPTY_RIVALS, RIVAL_PERSON_BASE, RivalsState
+from ptk.sim.tech.models import EMPTY_TECH, TechState
 
 # ADR PT-0007 section 4: a game ends when the campaign completes or the firm dissolves.
 # Ironman (ADR PT-0007 3): losing the MP election is final.
@@ -93,6 +94,7 @@ class GameState:
     family: FamilyState = EMPTY_FAMILY  # the player's own family (PT-M17)
     standing: StandingState = EMPTY_STANDING  # reputation, press and rankings (PT-M16)
     automation: AutomationState = EMPTY_AUTOMATION  # areas, owners, proposals (PT-M9)
+    tech: TechState = EMPTY_TECH  # adoption, training, products (PT-M14)
     geo: GeoState = EMPTY_GEO  # offices, admissions, the UK path (PT-M11)
 
     @property

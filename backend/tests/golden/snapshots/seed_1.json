@@ -3,27 +3,27 @@
     [
       1,
       "1000_cash",
-      129963307
+      226178186
     ],
     [
       1,
       "1100_unbilled_wip",
-      87128629
+      81700118
     ],
     [
       1,
       "1110_wip_provision",
-      -38932594
+      -6090928
     ],
     [
       1,
       "1200_receivables",
-      21485926
+      34783013
     ],
     [
       1,
       "1210_bad_debt_provision",
-      -214860
+      -347831
     ],
     [
       1,
@@ -38,17 +38,17 @@
     [
       1,
       "2700_partner_current_accounts",
-      -56787527
+      -90921978
     ],
     [
       1,
       "3000_partners_capital",
-      -73175780
+      -135256208
     ],
     [
       1,
       "3100_undistributed_profit",
-      5245359365
+      7887081246
     ],
     [
       1,
@@ -58,12 +58,12 @@
     [
       1,
       "4000_fees",
-      -6475742818
+      -9025825519
     ],
     [
       1,
       "4100_success_fees",
-      -25836373
+      -225444466
     ],
     [
       1,
@@ -103,17 +103,17 @@
     [
       1,
       "6700_write_offs",
-      3712470
+      23302446
     ],
     [
       1,
       "6800_interest",
-      239608
+      1692
     ],
     [
       1,
       "6900_general_admin",
-      329243139
+      377282721
     ],
     [
       101,
@@ -3599,16 +3599,12 @@
       21
     ],
     [
-      "collapsed",
-      1
-    ],
-    [
       "done",
-      14
+      16
     ],
     [
       "lost",
-      4
+      5
     ],
     [
       "open",
@@ -3616,17 +3612,17 @@
     ],
     [
       "won",
-      3
+      2
     ]
   ],
-  "matters": "8a4ef1fdf0e63d31506d247189f7ec8a139ff2fa3700b96ff082eda2f97b1b92",
+  "matters": "fcc8b95423a29b5558f0545894f6889f340d8b1fdbfc6d37516aaa41286c7720",
   "names": [
     "Jennifer King",
     "Kevin Carter",
     "Ashley Cook",
     "Whitney Brown"
   ],
-  "people": "c4f28f9a537e39ef34e09a1f87419863150f31b65ff1f607cb3918ec7ae31dd6",
-  "relationships": "651ce01a050b36cb14ac82a51346c4dda9ea7c150ab7c94acf6d1aee6ed2b103",
-  "sha256": "5c649b21b7746f9746f485c80262382ab0825316f9fc95a5cb2324a0008d66f5"
+  "people": "cb16c26ff001f94aff6d581336ff88afe558ef45282c4c9d3db6bbb7fb4e90a0",
+  "relationships": "6c746a3e54001c5ad814edb850d5fa25923aac2a63da0e18f2ae7ec99724a386",
+  "sha256": "314855bc6a812eae561ba388334aaea3f06cc3d89386a8cbffdd34b49b152e6e"
 }

@@ -66,7 +66,7 @@ class Month:
     lawyers: int  # fee earners on the books (lawyers, partners included)
     associates: int
     equity_partners: int
-    associates_left: int  # associates on last month's books who are gone this month
+    associates_left: int  # associates on last month's books who are gone this month (layoffs too)
     burnouts: int  # associates whose burnout began this month
     utilisation_bp: int | None
     realisation_bp: int | None
@@ -77,6 +77,7 @@ class Month:
     seconds: float  # the turn's wall-clock time (T12; never read by the sim)
     practice_revenue: tuple[tuple[str, int], ...] = ()  # the month's income by practice
     founder_comp_cents: int = 0  # December: the player's partner's allocation for the year (T2)
+    associates_laid_off: int = 0  # PT-M7c: of associates_left, those the firm laid off (T6)
 
 
 @dataclass(slots=True)
@@ -196,7 +197,9 @@ class Game:
         staff = self.lawyers()
         associates = frozenset(p.id for p in staff if is_associate(p.level))
         still = set(self.state.staff_ids(PLAYER))
-        left = sum(1 for pid in self._associates if pid not in still)
+        gone = [pid for pid in self._associates if pid not in still]
+        left = len(gone)
+        laid_off = sum(1 for pid in gone if _laid_off(self.state, pid))
         burnouts = sum(
             1
             for p in staff
@@ -240,12 +243,19 @@ class Game:
                 seconds=seconds,
                 practice_revenue=tuple(sorted(by_practice.items())),
                 founder_comp_cents=founder_comp,
+                associates_laid_off=laid_off,
             )
         )
 
     def templates(self) -> list[str]:
         """The last turn's log kinds (inbox template ids)."""
         return [i.kind for i in self.logs]
+
+
+def _laid_off(state: GameState, person_id: int) -> bool:
+    """PT-M7c: the person's last employment at the player's firm ended in a layoff."""
+    ends = [e for e in state.employments if e.person_id == person_id and e.firm_id == PLAYER]
+    return bool(ends) and ends[-1].end_reason == "fired"
 
 
 def start_game(

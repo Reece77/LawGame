@@ -112,6 +112,17 @@ const columns = helper.columns([
         </span>
       ),
   }),
+  helper.accessor('ai_cut_bp', {
+    // PT-M14 (spec 13): what clients cut from hourly bills for AI-able hours, and products
+    header: 'AI cut (products)',
+    sortFn: 'basic',
+    cell: ({ row }) => (
+      <span className="tst-num" data-testid="practice-ai-cut">
+        {formatBpShort(row.original.ai_cut_bp ?? 0)}{' '}
+        <span className="tst-muted">({row.original.ai_products ?? 0})</span>
+      </span>
+    ),
+  }),
   helper.accessor((r) => r.leverage ?? -1, {
     id: 'leverage',
     header: 'Leverage (norm)',

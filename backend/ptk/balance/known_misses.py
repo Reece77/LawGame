@@ -32,40 +32,44 @@ KNOWN_MISSES: Final[tuple[KnownMiss, ...]] = (
     # sub-task 0): T2 moves to PT-M18; T3 lawyers and T4 steady to PT-M16 (reputation that
     # gates the card); T8 corporate's -9% is accepted as noise. PT-M10's readings are in its
     # brief's "Decisions made". PT-M7c (2026-11-23) removes T2 (steady 6, pyramid 4 on seeds 1-10)
-    # and takes over T3.lawyers, T4.steady and T4.pyramid with its readings.
+    # and takes over T3.lawyers, T4.steady and T4.pyramid with its readings. Reece (2026-11-24,
+    # after the client tiers): T1 (10/10) and T4.pyramid ($0.98M) pass and their rows go;
+    # T3.lawyers, T3.revenue and T4.steady are PT-M18's with PT-M7c's readings.
     KnownMiss(
         target="T3.lawyers",  # steady 100-250 lawyers in December 2015
-        owner="Reece (PT-M7c decision 5)",
+        owner="PT-M18",
         # score: minus the median lawyers; known while at least 45
         worse_than=-45.0,
-        reason="46.0 on PT-M7c seeds 1-10 (main 55.0); seeds 11-40 83.5 (main 56): steady's "
-        "30% a year is already faster than real young firms (docs/research/firm-economics.md); "
-        "the band and the rate card are Reece's (PT-M7c's brief, decision 5)",
+        reason="60.0 on PT-M7c's client tiers (before the tiers 46.0, main 60.0); seeds 11-40 "
+        "71.5 (before 72.5): growth to 100-250 is expected from PT-M12 (practices) and PT-M13 "
+        "(mergers) (Reece, 2026-11-24)",
+    ),
+    KnownMiss(
+        target="T3.revenue",  # steady $60-150M revenue in 2015
+        owner="PT-M18",
+        # score: minus the median revenue in $M; known while at least $40M (a new row, PT-M7c)
+        worse_than=-40.0,
+        reason="$47.21M on PT-M7c's client tiers (before the tiers $44.39M, main $70.21M); "
+        "seeds 11-40 $63.3M (before $84.9M): client tiers lower RPL to $882k; growth expected "
+        "from PT-M12 and PT-M13 (Reece, 2026-11-24)",
     ),
     KnownMiss(
         target="T4.steady",  # steady PEP $0.5-1.2M in 2015
-        owner="Reece (PT-M7c decision 5)",
+        owner="PT-M18",
         # score: median PEP in $M; known while at most $5.0M
         worse_than=5.0,
-        reason="$2.72M on PT-M7c (main $3.39M; seeds 11-40 $3.01M, main $3.90M): leverage fixed "
-        "(a December admission keeps its budget); RPL +83% on the Second Hundred is the rate "
-        "card, a design question for Reece (PT-M7c's brief, decision 5)",
+        reason="$1.31M on PT-M7c's client tiers (before the tiers $2.72M, main $4.37M); seeds "
+        "11-40 $1.65M (before $3.09M): steady's large clients at a top-decile card "
+        "(Reece, 2026-11-24)",
     ),
     KnownMiss(
-        target="T1",  # do-nothing fails on at least 9 of 10 seeds
+        target="PT-M14.fixed_fees",  # ai-fixed earns more PEP 2026-2030 than ai-hourly, 7 of 10
         owner="PT-M18",
-        # score: minus the seeds where do-nothing fails; known while at least 8 of 10 fail
-        worse_than=-8.0,
-        reason="8/10 on PT-M16 (main 9/10): seed variance, rule 4 (the product manager, "
-        "2026-11-22, PR #22): seeds 11-40 main 26/30, PT-M16 28/30; all 40 main 35/40, "
-        "PT-M16 36/40",
-    ),
-    KnownMiss(
-        target="T4.pyramid",  # pyramid PEP $0.7-1.6M in 2015
-        owner="Reece (PT-M7c decision 5)",
-        worse_than=3.5,  # score: median PEP in $M; known while at most $3.5M
-        reason="$1.65M on PT-M7c (main $2.36M; seeds 11-40 $2.07M, main $3.46M): $0.05M above "
-        "its band after the admission fix; the rest is the rate card (PT-M7c's brief, decision 5)",
+        # score: minus the seeds of 10 where ai-fixed wins; known while at least 3 of 10
+        worse_than=-3.0,
+        reason="4/10 on seeds 1-10 (4 of the 6 with products) and 9/30 on seeds 11-40 (9 of "
+        "the 16 with products) with price acceptance at 110% (Reece's decision, 2026-11-23); "
+        "the product manager authorised the row (tools/tech_readings.py; PT-M14's brief)",
     ),
     KnownMiss(
         target="T8.corporate",  # corporate-heavy firms' 2009 revenue -30% to -10% on 2008

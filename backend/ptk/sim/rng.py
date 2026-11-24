@@ -77,6 +77,9 @@ STREAM_IDS: Final = MappingProxyType(
         # PT-M10 (lane A, ids 65-69): the seeded world after history (ptk.sim.macro_seed)
         "macro_seed": 65,  # (index_number,): an index's 2026-2034 path; (len(SERIES),) recessions
         "scale_seed": 66,  # (0,) the seeded rate rises; (1,) the salary scale's seeded steps
+        # PT-M14 (lane C, ids 110-119): legal technology and AI (ptk.sim.tech)
+        "tech_seed": 110,  # (era_index, 0) its strength's 2026+ target; (era_index, 1) the market's
+        "tech_vote": 111,  # (era_index,): a rollout vote on an era this month, each partner's noise
         "misc": 99,  # tests only
     }
 )

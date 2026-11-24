@@ -3,47 +3,47 @@
     [
       1,
       "1000_cash",
-      353666943
+      240169543
     ],
     [
       1,
       "1100_unbilled_wip",
-      42195579
+      41146978
     ],
     [
       1,
       "1110_wip_provision",
-      -6884769
+      -4587921
     ],
     [
       1,
       "1200_receivables",
-      125836842
+      48400614
     ],
     [
       1,
       "1210_bad_debt_provision",
-      -1284718
+      -484007
     ],
     [
       1,
       "2200_deferred_fees",
-      -20344808
+      0
     ],
     [
       1,
       "2700_partner_current_accounts",
-      -177262819
+      -76952879
     ],
     [
       1,
       "3000_partners_capital",
-      -176404124
+      -163216664
     ],
     [
       1,
       "3100_undistributed_profit",
-      8008629530
+      8651073399
     ],
     [
       1,
@@ -53,12 +53,12 @@
     [
       1,
       "4000_fees",
-      -9323120107
+      -9873227501
     ],
     [
       1,
       "4100_success_fees",
-      -294233741
+      -345755164
     ],
     [
       1,
@@ -98,12 +98,12 @@
     [
       1,
       "6700_write_offs",
-      1776501
+      2710889
     ],
     [
       1,
       "6900_general_admin",
-      343795744
+      357088766
     ],
     [
       101,
@@ -3632,21 +3632,21 @@
     ],
     [
       "open",
-      11
+      2
     ],
     [
       "won",
       2
     ]
   ],
-  "matters": "e233ae163cd7b186fdabdcb41fc4473f1fa3836015982d56ef0e6788f1651267",
+  "matters": "a24de7d4e96b9698ca731b3feaa74e228bfb87e672e1165957997bc44b2bf0d8",
   "names": [
     "James Jackson",
     "Michael Garcia",
     "Megan Brown",
     "Hannah Allen"
   ],
-  "people": "e8b7c3de09f2f20a2a0165da37d025c47981d7d57dc19d05452fadc011bda077",
-  "relationships": "7097d970bbbdc5c295a4cb044a7b392aacb8491d49f2e5ebe2b413ffdf9fbf59",
-  "sha256": "172b6515c9030e634d3abd1e88515c1a65ec97f3af04aeb69153137e26d38226"
+  "people": "6ae6eaf17a86a319fa64baf726ebb2692e503a1f96f99364e3035aebf579291d",
+  "relationships": "be7086c5e8f7824d6d81435c60565ed82a6e55d8767db1c426fdde4a81bc7961",
+  "sha256": "2e43954396f29455fc206854f3f8e6893f59fac5e1fe340de955b4122b43f513"
 }

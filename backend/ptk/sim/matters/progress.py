@@ -30,7 +30,7 @@ from typing import Final
 
 from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance, GameData, KindDef
-from ptk.sim.interfaces import seat_effect
+from ptk.sim.interfaces import seat_effect, tech_hours
 from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.macro import docket_slowed, driver_shortfall
 from ptk.sim.matters import formulas as fx
@@ -111,6 +111,7 @@ def team_month(
     leads: Mapping[int, int],
     data: GameData,
     balance: Balance,
+    hours_factor: float = 1.0,
 ) -> TeamMonth:
     kind = data.market.kinds[matter.kind]
     phase = kind.phases[min(matter.phase_index, len(kind.phases) - 1)]
@@ -122,7 +123,8 @@ def team_month(
         person = people[r.person_id]
         h = r.tenths / fx.TENTHS
         eff = fx.effective_skill(person, phase.tasks, matter.practice, data, balance)
-        out = h * eff / 10.0 * fx.strain_output(person.strain, balance) * sup
+        # PT-M14: AI's tasks take hours_factor of their base hours, so an hour does more
+        out = h * eff / 10.0 * fx.strain_output(person.strain, balance) * sup / hours_factor
         if judge is not None and phase.key in PROCEDURE_PHASES:
             cfg = balance.judges
             seen = appearances.get((person.id, judge.id), 0) / fx.TENTHS
@@ -294,7 +296,11 @@ def matter_month(
     judge = market.judge(matter.judge_id) if matter.judge_id is not None else None
     people = {p.id: p for p in state.people}
     appearances = {(a.person_id, a.judge_id): a.tenths for a in market.appearances}
-    team = team_month(matter, records, people, judge, appearances, turn, leads, data, balance)
+    phase_tasks = kind.phases[min(matter.phase_index, len(kind.phases) - 1)].tasks
+    hours_factor = tech_hours(state, matter.firm_id, data, balance).factor(phase_tasks)
+    team = team_month(
+        matter, records, people, judge, appearances, turn, leads, data, balance, hours_factor
+    )
     phase_key = kind.phases[min(matter.phase_index, len(kind.phases) - 1)].key
     worked = sum(r.tenths for r in records)
     matter = replace(
@@ -310,7 +316,7 @@ def matter_month(
     ):
         matter = replace(matter, planned_months=matter.planned_months + 1)
     # pace and deadlines
-    pace = matter.hours_needed_tenths / max(1, matter.planned_months)
+    pace = matter.hours_needed_tenths / max(1, matter.planned_months) * hours_factor  # PT-M14
     if worked < balance.progress.under_pace * pace:
         matter = replace(matter, under_months=matter.under_months + 1)
         if (

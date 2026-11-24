@@ -3,27 +3,27 @@
     [
       1,
       "1000_cash",
-      217961315
+      239639677
     ],
     [
       1,
       "1100_unbilled_wip",
-      23761918
+      39234770
     ],
     [
       1,
       "1110_wip_provision",
-      -7495044
+      -12375527
     ],
     [
       1,
       "1200_receivables",
-      36792687
+      47085710
     ],
     [
       1,
       "1210_bad_debt_provision",
-      -367927
+      -679220
     ],
     [
       1,
@@ -38,17 +38,17 @@
     [
       1,
       "2700_partner_current_accounts",
-      -81757766
+      -99302260
     ],
     [
       1,
       "3000_partners_capital",
-      -136203549
+      -140337417
     ],
     [
       1,
       "3100_undistributed_profit",
-      6791158525
+      7759002908
     ],
     [
       1,
@@ -58,17 +58,17 @@
     [
       1,
       "4000_fees",
-      -8198332842
+      -9186015497
     ],
     [
       1,
       "4100_success_fees",
-      -298983493
+      -322209578
     ],
     [
       1,
       "5000_associate_salaries",
-      271809416
+      270218966
     ],
     [
       1,
@@ -83,7 +83,7 @@
     [
       1,
       "5200_benefits",
-      67952342
+      67554732
     ],
     [
       1,
@@ -108,17 +108,17 @@
     [
       1,
       "6700_write_offs",
-      5984257
+      5248919
     ],
     [
       1,
       "6800_interest",
-      793527
+      961529
     ],
     [
       1,
       "6900_general_admin",
-      368596634
+      393642288
     ],
     [
       101,
@@ -3591,11 +3591,11 @@
   "matter_outcomes": [
     [
       "closed",
-      35
+      36
     ],
     [
       "collapsed",
-      4
+      3
     ],
     [
       "done",
@@ -3614,14 +3614,14 @@
       6
     ]
   ],
-  "matters": "f68f888aa0c7bad317e527e4f93abaac6d8c05fdb39c55e8e2ca3becfd77ee44",
+  "matters": "44be31711aa22bf206d03192538e506c8a51f59df4f99697309aae9103aae803",
   "names": [
     "Sarah Williams",
     "Kevin Stewart",
     "Luis Allen",
     "Logan Robinson"
   ],
-  "people": "16eeec08ae01818124b930736c63d3eb7ff0335a5a922da0bfffb2b0164f5c01",
-  "relationships": "4794e9926264dfee2c3e8ab02bdcd397de3b709cf9d96da554cb26fe62937270",
-  "sha256": "e10151c75769e2dbf364ab0b3c04be1f0b987968ebbac232bd6195460c03c9f9"
+  "people": "e79bbb9820a88e0a1c25c90b79fa7858ea617d123eafc32f42c640e827023fc2",
+  "relationships": "57ecb95fb4736b3f8d5c6cc7a1c834f578ba49b0eb9a7b73ed7e09af7303cb59",
+  "sha256": "ec054d655ac458404b9747793f8bd0b92042da723753a11512aaec786f9eb076"
 }

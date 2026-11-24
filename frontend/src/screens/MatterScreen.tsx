@@ -161,6 +161,14 @@ export function MatterScreen() {
           </Group>
         </Alert>
       )}
+      <Text size="sm" c="dimmed" data-testid="matter-ai">
+        {/* PT-M14 (spec 13): AI on this matter, all the API's numbers */}
+        AI: this phase takes <span className="tst-num">{m.ai_hours_pct}%</span> of its base hours ·{' '}
+        <span className="tst-num">{m.ai_exposed_pct}%</span> of the work is AI-exposed · clients cut{' '}
+        <span className="tst-num">{((m.ai_client_cut_bp ?? 0) / 100).toFixed(1)}%</span> of hourly
+        bills
+        {m.ai_product && ' · priced by a fixed-fee product'}
+      </Text>
       <PhaseTimeline m={m} />
       {board.data && (
         <StaffingBoardPanel

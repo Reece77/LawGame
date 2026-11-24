@@ -201,6 +201,10 @@ Seeds 11-40 (before -> after): steady lawyers 72.5 -> 71.5, revenue $84.9M -> $6
     - **T3 and T4 steady** as decision 17 (known-miss rows, bounds unchanged).
     **Proposed:** accept the layoff rule and T6's band reading 15-30% for years with a crisis, or keep steady without layoffs and T5 at 40 / 30 / 70%; the PT-M9 guard follows whichever you choose.
 
+### Reece's decisions on the open items (via the product manager, 2026-11-24)
+
+20. **Applied:** (1) steady keeps its layoff rule; T6 counts departures other than layoffs (`Month.associates_laid_off`, an associate whose employment at the firm ended `fired`, the layoff action's reason), and layoffs print as `T6.layoffs` (pooled layoffs over associate-years, 2006-2015, by strategy); band unchanged; recorded in `docs/balance-targets.md` (Measures, T6). (2) `steady_automated` lays off by steady's rule (the managing partner's own call, as its comp system is). (3) T8.2020 read on seeds 11-40 (decision 21). (4) T3 lawyers, T3 revenue (a new row: `T3.revenue` gains a score, minus the median in $M, known while at least $40M) and T4 steady are known misses owned by PT-M18, bounds unchanged; T1 (10/10) and T4 pyramid ($0.98M) pass after the tiers and their rows are removed. (5) The pyramid's 80% pay and the book's 24 + 60 months are approved. Merged main (PT-M14): `staffing.py` keeps both the client's card and PT-M14's tech factor; PT-M7b's `test_hours_are_valued_on_the_practice_card` expects the hours-weighted share of the card the month's clients pay (Reece's authorised change of premise; CHANGELOG).
+
 ## Follow-ups
 
 - Reece's decision on the rate card (decision 5); then T3 lawyers through hiring plans sized to the need (decision 4).

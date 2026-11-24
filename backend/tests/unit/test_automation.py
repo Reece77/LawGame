@@ -35,6 +35,7 @@ from ptk.sim.partnership.actions import (
 )
 from ptk.sim.rivals.actions import ApproachRival
 from ptk.sim.rng import RngFactory
+from ptk.sim.tech.actions import InvestInEra
 from tests.automation_support import auto_run, automate_all, give, refill
 from tests.seats_support import funded, led_firm, mp, run, steady
 
@@ -68,7 +69,7 @@ def test_every_area_of_spec_9_4_exists_with_an_owner_seat(balance: Balance, data
         if a.who == "seat":
             assert a.seat is not None
             data.seat(a.seat)  # a seats.yaml seat
-    assert not balance.automation.areas["knowledge"].available  # PT-M14
+    assert balance.automation.areas["knowledge"].available  # PT-M14 built it
 
 
 def test_a_vacant_seat_cannot_be_automated(led, data: GameData) -> None:  # type: ignore[no-untyped-def]
@@ -229,6 +230,7 @@ def _one_off_actions(state, data, b):  # type: ignore[no-untyped-def]
             ProposeExcoTerm(actor, True),
         ],
         "a salary-scale change above the market": [SetPayPolicy(actor, "lead", 11_000)],
+        "any AI platform above the limit": [InvestInEra(actor, "ediscovery", 10_000)],  # PT-M14
         "taking on a matter adverse to a key client with a waiver": [SeekWaiver(actor, held.id)],
     }
 

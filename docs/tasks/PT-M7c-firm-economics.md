@@ -116,6 +116,91 @@ Seeds 11-40: steady lawyers 56 -> 83.5, steady PEP $3.90M -> $3.01M, boutique $1
 
 On 30 seeds the branch is closer to steady than main; on seeds 1-10 steady's own median falls (seeds 1, 4 and 7 take small paths, decision 6). Not added to `known_misses.py` (rule 3) and the test is unchanged: **for Reece or the product manager** (the guard's owner is PT-M18's balance pass by PT-M16's precedent for PT-M8's guard).
 
+### Client-tier pricing (Reece's decision on the rate card, via the product manager, 2026-11-23)
+
+Reece: (1) client tiers: mid-market clients pay at most 55-60% of the top card, only large clients pay the top card, and only to a firm in the practice's top decile; (2) the card's reputation curve reads the firm's percentile among all firms in the practice and region; (3) the founders' book clients keep the founders' rates so the first two years survive. PT-M16 has merged, so its reputation and card code is lane A's to change. "Before" below is the branch after merging PT-M11 (`8bd506e`: the admission fix, no tiers); "after" is `46fdb24`.
+
+11. **The mechanism** (`ptk/sim/matters/rates.py` `ClientCards`, `client_indexes`): a client's share of a practice's top card is: the founders' book clients (on the panel since the setup, `since_turn` 0; no schema change) `rates.card.book_bp` 9850; large clients (`size_class` large) the practice's card (`firm.rate_card`, from `start_bp` moving at most `step_bp` a January toward `start + (1 - start) x min(1, percentile / top_quantile)^curve`, so the full card only at the top decile); mid-market clients the practice's card capped at `mid_max_bp`. Hours' standard value (the staffing rule), new matters' expected fees (intake), blended engagements (billing) and RFP matters read it. The appeal's price term is `1 - the client's index / (the market's index x the tier's reference)`, the reference being the mid cap for mid-market clients, the full card for large ones and the founders' rates for the book, so a firm priced at its tier is priced as its market is. `reputation.formulas.percentile`: the share of the other seeded firms in the practice and region below the firm's reputation (ties half); `card_progress` = min(1, percentile / 0.9); `reputation.card.full_share` removed. Unit and Hypothesis tests: `tests/unit/test_client_tiers.py`; PT-M3b's WIP property test reads the client's card (the identity it checks is unchanged).
+12. **The book's rates are time-limited** (my reading of "so the first two years survive"): `book_months` 24, then the book's share falls linearly to its tier's card over `book_fade_months` 60 (to January 2012). Permanent founders' rates left the founders' clients 40% of steady's 2015 work at 98.5% of the top card; a cliff at month 24 (tried: book 24, fade 0) cut 2007's profit below zero, zero allocations sent every partner's flight to its cap (seed 3: three of five equity partners left in 2008, their clients followed) and steady dissolved on 7 of 10.
+13. **Keys and tuning** (seeds 1-10, T3's and T4's measures, a dissolved firm's PEP $0):
+
+| Run | Steady lawyers / revenue | Steady PEP | Boutique PEP | Pyramid PEP | Steady dissolved (std) |
+| --- | --- | --- | --- | --- | --- |
+| before (no tiers) | 46 / $46.6M | $2.40M | $2.17M | $1.59M | 3 |
+| A: tiers, start 9850, step 50, permanent book | 29.5 / $20.8M | $1.56M | $2.14M | $1.79M | 4 |
+| B: start 7000, step 400, book 24 months, cliff | 23.5 / $9.8M | $0 | $1.26M | $0.76M | 7 |
+| C: B with a 36-month fade | 24.5 / $8.6M | $0 | $1.31M | $0.56M | 7 |
+| D: start 8000, step 400, mid 6000, fade 60 | 47 / $29.1M | $1.22M | $1.79M | $0.83M | 3 |
+| D, the nightly (T5 easy / standard / hard) | 47 / $29.08M | $1.22M | $1.79M | $1.32M (pyramid at 80% pay) | 40% / 30% / 70% |
+| D + steady's layoff rule (decision 14), curve 2 | 55 / $43.9M | $1.66M | - | - | 0 / 2 / 5 of 10 |
+| ... curve 3 (**final**) | 60 / $47.2M | $1.31M | $1.49M | $0.98M | 0 / 2 / 5 of 10 |
+| ... curve 3, start 7500 | 43.5 / $32.0M | $1.25M | - | - | 0 / 1 / 5 |
+| ... curve 4 | 59 / $49.9M | $1.30M | - | - | 0 / 2 / 6 |
+| D, start 7500 (no layoff) | 63 / $49.7M | $1.53M | - | - | 2 (11-40: 8 of 30) |
+
+Final keys: `rates.card` start_bp 9850 -> 8000, step_bp 50 -> 400, mid_max_bp 6000 (Reece's 55-60%, the top), book_bp 9850, book_months 24, book_fade_months 60; `reputation.card` curve 2 -> 3, full_share removed, top_quantile 0.9.
+14. **Two script rules (CLAUDE.md 9 rule 2), for Reece's review:** the **pyramid pays 80% of the scale** (`PYRAMID_PAY_BP`): billing mid-market clients below the market's rates at the full New York scale it dissolved on 13 of seeds 11-40 (at 80%: 6, median PEP $0.94M); mid-size firms pay 65-72% of the scale (dossier s5). **Steady lays off associates while utilisation stays below 70%** (`STEADY_LAYOFF_*`: three months below 70%, back toward 80%, at most 10% of associates a month; the pyramid's PT-M10 rule, more patient): with the tiers every easy-difficulty steady death came in 2009 (a loss year zeroes the partners' allocations and flight takes them), T5 read 40% / 30% / 70%; with the rule 0% / 20% / 50% (main 10% / 20% / 50%).
+15. **Guards:** PT-M4's exodus guard heeded 1 of 10 dissolved, ignored 5 of 10 (main 1 and 3+); T5 easy 0% (band 0-10), standard 20% (5-20), hard 50% (20-45; main 50%, printed, not a gate) on seeds 1-10 (`/tmp` reading, the nightly below confirms).
+16. **The decomposition, before and after the tiers** (seeds 1-10, medians of the surviving runs; "Founders' clients %" is the share of the year's worked value from the setup's book clients, who by 2015 pay their tier's card; large and mid as the other shares):
+
+| Run | Dissolved | Lawyers | Revenue $M | PEP $k | RPL $k | Margin | Lawyers/EP | EP share | Hours | Rate $ | Realis. | Collect. | Lawyer pay/L $k | Other costs/L $k | Hires/yr | Leavers/yr | Admits/yr | Share of NY demand | Founders' clients % | Large % | Mid % |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| steady (before tiers) | 3/10 | 68 | 83 | 2852 | 1235 | 59% | 4.23 | 24% | 1936 | 802 | 82% | 97% | 223 | 245 | 21 | 14 | 2.0 | 0.6% | - | - | - |
+| boutique (before tiers) | 1/10 | 8 | 9 | 2199 | 1322 | 64% | 2.79 | 36% | 2007 | 800 | 90% | 97% | 124 | 282 | 1 | 1 | 0.0 | 0.1% | - | - | - |
+| pyramid (before tiers) | 0/10 | 32 | 24 | 1595 | 992 | 50% | 3.06 | 33% | 1721 | 654 | 86% | 96% | 225 | 234 | 7 | 6 | 1.0 | 0.2% | - | - | - |
+| steady (after tiers) | 2/10 | 78 | 65 | 1593 | 882 | 41% | 4.28 | 23% | 1945 | 627 | 82% | 96% | 236 | 256 | 27 | 21 | 2.2 | 0.5% | 10% | 34% | 30% |
+| boutique (after tiers) | 0/10 | 6 | 6 | 1494 | 1114 | 58% | 2.46 | 41% | 1942 | 714 | 84% | 97% | 127 | 324 | 1 | 1 | 0.0 | 0.0% | 24% | 76% | 0% |
+| pyramid (after tiers) | 1/10 | 28 | 19 | 1061 | 868 | 49% | 2.68 | 37% | 1913 | 552 | 83% | 97% | 170 | 206 | 7 | 6 | 0.8 | 0.1% | 54% | 41% | 0% |
+
+| **Benchmark** (Second Hundred, 2015) | | 100-250 (T3) | 60-150 (T3) | 737 | 649 | ~36% | ~3.4 | ~29% | ~1,750 | ~440 (partners 650) | ~84% collected | | | ~270 | | | | | | | | |
+
+**What moved:** steady's RPL $1,235k -> $882k (rate $802 -> $627, -22%), margin 59% -> 41%, leverage unchanged (4.2-4.3): PEP $2.85M -> $1.59M among survivors. **What is still off:** RPL is 36% above the Second Hundred because 34% of steady's work is for large clients and its practices reach the top decile (and the full card) within the decade; mid-market clients are 30%. Margin 41% against 36%. Growth: 78 lawyers among survivors (60 with the dissolved), revenue $47.2M median.
+
+17. **Seed tables** (T3's and T4's measures, seeds 1-10, before and after the tiers):
+
+| Seed | Steady lawyers before | after | Steady revenue before | after | Steady PEP before | after | Boutique PEP before | after | Pyramid PEP before | after |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 21 (d) | 82 | $4.7M | $81.3M | $0.00M | $1.84M | $1.31M | $1.48M | $1.66M | $1.54M |
+| 2 | 15 (d) | 46 | $0.5M | $37.2M | $0.00M | $1.76M | $2.80M | $2.43M | $1.84M | $0.00M |
+| 3 | 68 | 74 | $83.3M | $57.2M | $2.51M | $1.20M | $2.59M | $1.45M | $1.66M | $0.90M |
+| 4 | 19 | 12 (d) | $24.1M | $5.2M | $2.29M | $0.00M | $0.00M | $1.51M | $1.43M | $1.06M |
+| 5 | 119 | 98 | $139.3M | $96.7M | $3.37M | $2.00M | $2.29M | $0.70M | $1.41M | $1.35M |
+| 6 | 82 | 95 | $98.1M | $99.8M | $3.39M | $3.15M | $1.94M | $0.92M | $2.20M | $2.86M |
+| 7 | 26 | 21 | $18.4M | $14.8M | $0.83M | $0.59M | $2.20M | $2.27M | $1.53M | $0.70M |
+| 8 | 76 | 90 | $85.2M | $72.1M | $2.85M | $1.42M | $1.53M | $0.98M | $1.06M | $0.45M |
+| 9 | 21 (d) | 10 (d) | $7.1M | $3.5M | $0.00M | $0.00M | $2.42M | $1.81M | $1.70M | $1.63M |
+| 10 | 66 | 37 | $69.2M | $30.0M | $3.05M | $0.46M | $2.15M | $1.55M | $1.03M | $0.80M |
+| **Median** | 46.0 | 60.0 | $46.6M | $47.2M | $2.40M | $1.31M | $2.17M | $1.49M | $1.59M | $0.98M |
+
+Seeds 11-40 (before -> after): steady lawyers 72.5 -> 71.5, revenue $84.9M -> $63.3M, PEP $3.09M -> $1.65M, dissolved 3 -> 2 of 30; boutique PEP $1.85M -> $1.30M (dissolved 4 -> 6); pyramid $2.22M -> $1.18M (1 -> 4).
+
+**For Reece (T3 and T4 steady still miss):** T4 steady $1.31M on seeds 1-10 ($0.11M above its band; 11-40 $1.65M): what remains is steady's large clients at a top-decile card, which decision 1 of Reece's rule intends. T3: 60 lawyers and $47.2M (11-40: 71.5 and $63.3M); steady's growth (30% a year among survivors) is already above the dossier's young firms. Proposed: keep the rows as known misses with these readings (their bounds unchanged), or a T4 steady band of $0.5-1.6M (the Am Law 100's $1.61M at the top) and T3 50-150 lawyers.
+
+18. **T1-T12 after the tiers** (`make balance` in the nightly on `46fdb24`, run 45299253405, seeds 1-10; "main" is PT-M11's last nightly, run 45129354271):
+
+| Target | Band | main (PT-M11) | before tiers (PT-M7c, `bbac756`) | after tiers |
+| --- | --- | --- | --- | --- |
+| T1 | >= 9/10 | known miss | 8/10 | **10/10 ok** |
+| T2 | <= 6/10 | known miss | steady 6, pyramid 4 | steady 5, pyramid 4, boutique 1 ok |
+| T3 lawyers / revenue | 100-250 / $60-150M | 60 / $70.21M | 46 / $44.39M | 60 / $47.21M (miss) |
+| T4 steady / boutique / pyramid | $0.5-1.2 / 1.0-2.5 / 0.7-1.6M | $4.37M / $2.17M / $2.08M | $2.72M / $2.27M / $1.65M | **$1.31M** / $1.49M ok / **$0.98M ok** |
+| T5 easy / standard / hard | 0-10 / 5-20 / 20-45% | 10 / 20 / 50% | 10 / 20 / 50% | 0 / 20 / 50% |
+| T6 attrition / partners | 15-25% / 8-15% | 24.2% / 0.0% | 23.0% / 6.2% | **27.3% (new miss)** / 7.1% |
+| T7 | in bands | ok | ok | ok (84.9 / 96.4 / 84.4 / 125) |
+| T8 corporate / restructuring | -30 to -10% / -5 to +20% | -5.5% / -16.6% | -5.9% / -17.5% | **-14.4% ok** / -17.2% |
+| T9 rocket / heeded | 3-6 / <= 1 | 2 / 2 | 2 / 2 | **5 ok** / 2 |
+| T10 | >= 2x / <= 5% | ok | ok | 12.79x / 0.6% ok |
+| T11 / T11.2025 | gates | ok | ok | ok (6.9%, 0, 9 / 7.1%, 0, 8) |
+| T12 (runner; the gate is check-timing) | <= 250 ms | 1033 ms | 845 ms | 998 ms |
+| T8.2020 | -30 to -10% | -11.2%, 6/8 | -22.1%, 8/8 | **-8.8% (new miss)**, 8/8 |
+
+19. **What still misses, for Reece:**
+    - **T6 attrition 27.3%** (main 24.2%): steady's layoff rule (decision 14) counts in "associates who left": steady's own attrition 34.6% with it, 25.0% without (and without it T5 reads 40 / 30 / 70%). Tried: below 60% to 75% at 5% a month (T6 24.5%, T5 40 / 30 / 70%); 65/75/10 and 70/75/10 (T6 27.3%, T5 0-20-50/60); layoffs only below a 15% or 5% trailing margin (steady's attrition 27.4% / 25.8%, T5 hard 70%); the pyramid at 90% or 100% pay (T6 26.9% / 27.3%). T5 and T6 pull against each other through the layoffs: a firm thin enough to bill Second Hundred rates needs to shed associates in 2009, and the measure counts them.
+    - **T8.2020 -8.8%** against -10% (main -11.2%): steady-30y's corporate-heavy firms fall less in 2020 Q2 (smaller, with mid-market work).
+    - **PT-M9's guard** (`test_steady_automated_is_within_20_percent_of_steady`): automated steady $13.48M against steady $47.21M (-71%): `steady_automated` (PT-M9's script) has no layoff rule, so it no longer tracks steady; a rule-2 fix (giving it the same rule) is mine to make if you keep the layoff rule.
+    - **T3 and T4 steady** as decision 17 (known-miss rows, bounds unchanged).
+    **Proposed:** accept the layoff rule and T6's band reading 15-30% for years with a crisis, or keep steady without layoffs and T5 at 40 / 30 / 70%; the PT-M9 guard follows whichever you choose.
+
 ## Follow-ups
 
 - Reece's decision on the rate card (decision 5); then T3 lawyers through hiring plans sized to the need (decision 4).

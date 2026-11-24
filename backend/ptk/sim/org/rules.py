@@ -184,8 +184,39 @@ def teammates(view: OrgView, person_id: int) -> tuple[int, ...]:
 
 
 def has_mentor_teammate(state: GameState, view: OrgView, person_id: int) -> bool:
-    """Another member of the unit truly has the `mentor` tag, noticed or not (13.5)."""
-    return any(MENTOR_TAG in state.person(p).tags for p in teammates(view, person_id))
+    """Another member of the unit truly has the `mentor` tag, noticed or not (13.5).
+
+    PT-M14 (T12): the mentors of each unit are counted once per (immutable) view and people
+    tuple, so each person's question is a lookup, not a scan of the unit; identical results."""
+    unit = view.unit_of.get(person_id)
+    counts = _mentors(state, view)
+    n = counts.get(unit, 0)
+    if n and MENTOR_TAG in state.person(person_id).tags and person_id in view.members.get(unit, ()):
+        n -= 1
+    return n > 0
+
+
+_MENTORS: dict[int, tuple[OrgView, tuple[object, ...], dict[object, int]]] = {}
+
+
+def _mentors(state: GameState, view: OrgView) -> dict[object, int]:
+    """Members with the mentor tag, by unit (memoised on the view's and people's identity)."""
+    hit = _MENTORS.get(id(view))
+    if hit is not None and hit[0] is view and hit[1] is state.people:
+        return hit[2]
+    tagged = {p.id for p in state.people if MENTOR_TAG in p.tags}
+    counts: dict[object, int] = {}
+    for unit, members in view.members.items():
+        n = sum(1 for pid in members if pid in tagged)
+        if n:
+            counts[unit] = n
+    if len(_MENTORS) >= _MENTORS_KEEP:
+        _MENTORS.clear()
+    _MENTORS[id(view)] = (view, state.people, counts)
+    return counts
+
+
+_MENTORS_KEEP = 64  # tunable-exempt: memoised views (a cache, not a rule)
 
 
 def growth_multipliers(state: GameState, balance: Balance) -> dict[int, float]:

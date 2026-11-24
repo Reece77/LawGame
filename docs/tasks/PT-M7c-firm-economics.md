@@ -218,6 +218,8 @@ Seeds 11-40 (before -> after): steady lawyers 72.5 -> 71.5, revenue $84.9M -> $6
 
 23. **Final nightly** (run 45428306269 on `1cd16d7`, after merging PT-M14; seeds 1-10): `make balance` green: T1 10/10, T2 steady 5 / pyramid 4 / boutique 1, T3 60 lawyers and $47.21M (known, PT-M18), T4 steady $1.31M (known, PT-M18), boutique $1.49M, pyramid $0.98M, T5 0 / 20 / 50%, **T6 attrition 21.8%** (layoffs apart; `T6.layoffs` 6.0%: pyramid 128, steady 128, boutique and rocket 0), T6 partners 7.1%, T7 84.9 / 96.4 / 84.4 / 125, T8 corporate -14.4%, restructuring -17.2%, T9 5 / 2, T10 12.79x / 0.6%, T11 6.9%, 0, 9 and 7.1%, 0, 8, T8.2020 -5.3% (8 of 8 back; seeds 11-40 -11.2%, in band: seed variance, decision 21), T12 717 ms on the runner (the gate, `check-timing` in `check`, is green). `make nightly` red on PT-M9's guard alone (PEP gap +31.0%; decision 22, rule 3, fails on a clean `main` too). `check` and `e2e` green on the same commit.
 
+24. **PT-M9's guard is a strict xfail owned by PT-M18** (the product manager's decision, Reece, 2026-11-24), naming the readings of decision 22 and the cause; the assertion is unchanged.
+
 ## Follow-ups
 
 - Reece's decision on the rate card (decision 5); then T3 lawyers through hiring plans sized to the need (decision 4).

@@ -436,12 +436,10 @@ def _record(
             substantive_tenths=tenths,
             value_cents=0,
         )
-    sub = fx.substantive_share(tasks, earner.level, data, balance.matters.substantive_window)
+    sub, mine = _shares(tasks, earner.level, data, balance.matters.substantive_window)
     if not tech.idle:  # PT-M14 (ADR PT-0006 4): hours AI removes were learning hours
-        sub *= tech.learning(fx.person_tasks(tasks, earner.level, data))
-    rate = indexed_rate(
-        fx.rate_cents(data.practice(practice), earner.person.level, data), rate_index
-    )
+        sub *= tech.learning(mine)
+    rate = indexed_rate(_rate(practice, earner.person.level, data), rate_index)
     return HoursRecord(
         turn=turn,
         person_id=earner.id,
@@ -452,6 +450,41 @@ def _record(
         substantive_tenths=round(tenths * sub),
         value_cents=round_half_even(tenths * rate, fx.TENTHS),
     )
+
+
+# PT-M14 (T12): a record's substantive share, task split and card rate depend only on the
+# (immutable) task mix, the level and the data, so they are memoised on their identity (a
+# month records about a thousand hours records over a handful of mixes); identical results.
+_SHARES: dict[tuple[int, int, int, int], tuple[object, object, float, Mapping[str, float]]] = {}
+_RATES: dict[tuple[str, str, int], tuple[object, int]] = {}
+_MEMO_KEEP = 4096  # tunable-exempt: memoised entries (a cache, not a rule)
+
+
+def _shares(
+    tasks: Mapping[str, float], level: int, data: GameData, window: int
+) -> tuple[float, Mapping[str, float]]:
+    key = (id(tasks), level, id(data), window)
+    hit = _SHARES.get(key)
+    if hit is not None and hit[0] is tasks and hit[1] is data:
+        return hit[2], hit[3]
+    sub = fx.substantive_share(tasks, level, data, window)
+    mine = fx.person_tasks(tasks, level, data)
+    if len(_SHARES) >= _MEMO_KEEP:
+        _SHARES.clear()
+    _SHARES[key] = (tasks, data, sub, mine)
+    return sub, mine
+
+
+def _rate(practice: str, level: str, data: GameData) -> int:
+    key = (practice, level, id(data))
+    hit = _RATES.get(key)
+    if hit is not None and hit[0] is data:
+        return hit[1]
+    rate = fx.rate_cents(data.practice(practice), level, data)
+    if len(_RATES) >= _MEMO_KEEP:
+        _RATES.clear()
+    _RATES[key] = (data, rate)
+    return rate
 
 
 def credit_hours(state: GameState, firm_id: int, balance: Balance) -> int:

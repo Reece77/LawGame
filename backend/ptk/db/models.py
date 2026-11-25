@@ -651,3 +651,11 @@ class GeoRow(Base):
     __tablename__ = "geo"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)  # always 1
     data_json: Mapped[str] = mapped_column(Text)
+
+
+class MergersRow(Base):
+    """PT-M13: the one row holding the mergers state as JSON (ptk.db.mergers_io)."""
+
+    __tablename__ = "mergers"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)  # always 1
+    data_json: Mapped[str] = mapped_column(Text)

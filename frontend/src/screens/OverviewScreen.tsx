@@ -3,6 +3,8 @@ import { useParams } from 'react-router';
 import { Guidance } from '../components/Guidance';
 import { useGame, usePayroll, useTexts } from '../lib/api';
 import { formatMoney } from '../lib/format';
+import { useMergers } from '../lib/mergersApi';
+import { ExitCard, VereinCard } from './MergersScreen';
 
 export function OverviewScreen() {
   const { slug = '' } = useParams();
@@ -10,6 +12,7 @@ export function OverviewScreen() {
   const payroll = usePayroll(slug);
   const news = useTexts(slug, 'headlines');
   const latest = news.data?.[0];
+  const mergers = useMergers(slug); // PT-M13: the firm's verein, or the exit
   if (!game.data) return <Text c="dimmed">Loading…</Text>;
   const g = game.data;
   return (
@@ -36,6 +39,12 @@ export function OverviewScreen() {
           </Text>
         </Card>
       </Group>
+      {mergers.data && (mergers.data.verein || mergers.data.exit) && (
+        <Group mt="md" align="stretch" maw={760}>
+          <ExitCard m={mergers.data} />
+          <VereinCard m={mergers.data} />
+        </Group>
+      )}
       <Guidance slug={slug} />
       {latest && (
         <Card withBorder mt="md" maw={560} data-testid="legal-news">

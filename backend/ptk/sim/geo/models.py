@@ -15,7 +15,7 @@ from dataclasses import dataclass, replace
 from typing import Literal
 
 type OfficeStatus = Literal["open", "closed"]
-type OpenHow = Literal["organic", "lateral_group", "team_lift"]
+type OpenHow = Literal["organic", "lateral_group", "team_lift", "merger"]  # PT-M13: assumed
 type AdmissionHow = Literal["home", "exam", "motion", "qualified", "rfl", "hire"]
 type ExamKind = Literal["exam", "motion"]
 

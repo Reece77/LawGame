@@ -419,7 +419,11 @@ def _open_matter(
             practice.key, client.id
         ),  # PT-M7b: fees on the practice's card; PT-M7c: the client's tier
     )
-    index = conflict_index(state.market, state.player.id, state.turn, balance)
+    from ptk.sim.mergers.verein import verein_clients
+
+    index = conflict_index(
+        state.market, state.player.id, state.turn, balance, verein_clients(state, state.player.id)
+    )
     state, _logs = open_checked(
         state, matter, index, data, balance, key_clients(state.market, state.player.id, balance)
     )

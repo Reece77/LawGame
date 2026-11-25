@@ -18,6 +18,7 @@ from ptk.api.history import make_history_router
 from ptk.api.leadership import make_leadership_router
 from ptk.api.market import make_market_router
 from ptk.api.matters import make_matters_router
+from ptk.api.mergers import make_mergers_router
 from ptk.api.offices import make_offices_router
 from ptk.api.org import make_org_router
 from ptk.api.partnership import make_partnership_router
@@ -175,7 +176,7 @@ class GameOut(BaseModel):
     turn: int
     date_label: str
     cash_cents: int
-    game_state: Literal["active", "campaign_complete", "dissolved", "election_lost"]
+    game_state: Literal["active", "campaign_complete", "dissolved", "election_lost", "exit"]
     turns_in_campaign: int
     blocking_event_id: int | None  # PT-M6: a critical event to answer before Continue
 
@@ -282,17 +283,18 @@ def create_app() -> FastAPI:
         responses=errors,
         operation_id="createPracticeSave",
     )
-    def create_practice(key: str) -> GameOut:
+    def create_practice(key: str, slug: str | None = None) -> GameOut:
         """PT-M7: create a practice save (pt-2008: a 60-lawyer firm in June 2008); 404 for an
-        unknown key, 409 if a save of that name exists."""
+        unknown key, 409 if a save of that name exists. PT-M13: `slug` names the copy (the
+        key by default), so tests can play their own."""
         from ptk.practice import PRACTICE_SAVES, create_practice_save
 
         if key not in PRACTICE_SAVES:
             raise NotFoundError(f"no practice save {key!r}")
         create_practice_save(
-            get_settings().resolved_save_dir(), key, loader.game_data(), loader.balance()
+            get_settings().resolved_save_dir(), key, loader.game_data(), loader.balance(), slug
         )
-        return _game(key)
+        return _game(slug or key)
 
     @app.post(
         "/api/saves/{slug}/advance",
@@ -348,6 +350,7 @@ def create_app() -> FastAPI:
     app.include_router(make_standing_router(errors))  # PT-M16
     app.include_router(make_tech_router(errors))  # PT-M14
     app.include_router(make_offices_router(errors))  # PT-M11
+    app.include_router(make_mergers_router(errors))  # PT-M13
     return app
 
 

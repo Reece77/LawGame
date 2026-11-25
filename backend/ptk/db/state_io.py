@@ -17,6 +17,7 @@ from ptk.db.geo_io import load_geo, write_geo
 from ptk.db.inbox import inbox_rows
 from ptk.db.leadership_io import load_leadership, write_leadership
 from ptk.db.market_io import insert_market, load_market, write_market
+from ptk.db.mergers_io import load_mergers, write_mergers
 from ptk.db.models import (
     CandidateRow,
     EmploymentRow,
@@ -115,6 +116,7 @@ def insert_new(session: Session, state: GameState, entries: tuple[LedgerEntry, .
     write_leadership(session, state.leadership)  # PT-M8
     write_automation(session, state.automation)  # PT-M9
     write_geo(session, state.geo)  # PT-M11
+    write_mergers(session, state.mergers)  # PT-M13
     write_events(session, state.events)
     write_entries(session, entries)
     write_founder_life(session, state.founder_life, state.family)  # PT-M17
@@ -193,6 +195,7 @@ def load_state(session: Session) -> GameState:
         automation=load_automation(session),  # PT-M9
         tech=load_tech(session),  # PT-M14
         geo=load_geo(session),  # PT-M11
+        mergers=load_mergers(session),  # PT-M13
         events=load_events(session),
         searches=tuple(
             _search(r) for r in session.scalars(select(SearchRow).order_by(SearchRow.id))
@@ -558,6 +561,7 @@ def write_turn(
     write_leadership(session, new_state.leadership)  # PT-M8
     write_automation(session, new_state.automation)  # PT-M9
     write_geo(session, new_state.geo)  # PT-M11
+    write_mergers(session, new_state.mergers)  # PT-M13
     write_founder_life(session, new_state.founder_life, new_state.family)  # PT-M17
     write_standing(session, new_state.standing, new_state.turn - 1)  # PT-M16
     write_tech(session, new_state.tech)  # PT-M14

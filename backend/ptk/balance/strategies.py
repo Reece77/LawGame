@@ -284,5 +284,6 @@ VARIANTS: Final[dict[str, Script]] = {
     "steady-automated": steady_automated,  # PT-M9 (ptk/balance/automated.py)
     **TECH_VARIANTS,  # PT-M14: ai-hourly, ai-fixed, never (ptk/balance/tech.py)
     **__import__("ptk.balance.offices").balance.offices.OFFICE_VARIANTS,  # PT-M11 (offices.py)
+    **__import__("ptk.balance.mergers").balance.mergers.MERGER_VARIANTS,  # PT-M13 (mergers.py)
 }
 PLAYABLE: Final[dict[str, Script]] = {**STRATEGIES, **VARIANTS}

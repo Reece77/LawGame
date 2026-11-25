@@ -17,6 +17,7 @@ from ptk.sim.founder.config import FamilyBalance, FounderLifeBalance, Succession
 from ptk.sim.geo.data import GeoBalance, GeoData
 from ptk.sim.macro_data import SERIES as MACRO_SERIES
 from ptk.sim.macro_data import MacroBalance, MacroData
+from ptk.sim.mergers.config import MergersBalance
 from ptk.sim.org.seat_data import AuthorityBalance, PitchesBalance, SeatDef, SeatsBalance, SeatsData
 from ptk.sim.press.config import PressBalance
 from ptk.sim.rankings.config import RankingsBalance
@@ -432,6 +433,10 @@ ENERGY_ACTIONS: Final = (
     "close_office",  # close an office (a one-off)
     "bar_admission",  # sit a bar exam, apply on motion or register as a foreign lawyer
     "training_contracts",  # offer a year's training contracts (spec 5.7)
+    # PT-M13
+    "merger_approach",  # approach a firm about a merger or a verein (spec 8.8)
+    "merger_diligence",  # a level of due diligence (TST 28.2)
+    "merger_terms",  # put terms, or answer a counter (spec 8.8)
 )
 LATERAL_CHANNELS: Final = ("referral", "job_post", "recruiter")
 
@@ -1275,6 +1280,7 @@ class Balance(_Strict):
     automation: AutomationBalance  # PT-M9 (ptk.sim.automation.config)
     tech: TechBalance  # PT-M14 (ptk.sim.tech.config)
     geo: GeoBalance  # PT-M11 (ptk.sim.geo.data): offices and the UK path
+    mergers: MergersBalance  # PT-M13 (ptk.sim.mergers.config): mergers and the verein
 
 
 # --- People seed data (PT-M1a) ------------------------------------------------------------

@@ -65,6 +65,14 @@
 | `office_team` | 102 | `(office_id, n)` | An opened office's n-th lifted or lateral person (their making, book, portability and clients' follow draws); n = 0 an organic start's introductions (one call site, `ptk.sim.geo.actions.team_stream`) | PT-M11 |
 | `city_demand` | 103 | `(city_index, practice_index)` | An office city's monthly demand noise (`ptk.sim.geo.markets.city_demand`) | PT-M11 |
 | `trainees` | 104 | `(contract_id, n)` | A training contract's n-th trainee: their seats, then their making (`ptk.sim.geo.uk.trainees_join`) | PT-M11 |
+| `merger_target` | 130 | `(*rival_key,)` at turn 0 | A firm's fixed hidden values for mergers: annuity share, lease years left, the diligence ranges' offsets (`ptk.sim.mergers.streams`; lane B's range 130-139, ADR PT-0016) | PT-M13 |
+| `merger_book` | 131 | `(deal_id,)` | A deal's client book, drawn when talks open | PT-M13 |
+| `merger_answer` | 132 | `(deal_id, round)` | The other firm's answer: round 0 whether it talks, then each partner's noise on the terms | PT-M13 |
+| `merger_clear` | 133 | `(deal_id,)` | Conflicts clearance's waiver draws, one per conflict in order | PT-M13 |
+| `merger_people` | 134 | `(deal_id, n)` | The n-th lawyer of the other firm's pools made at closing | PT-M13 |
+| `integration` | 135 | `(deal_id, client_id)` | A book client's monthly balk at the merged rate card | PT-M13 |
+| `rival_merger` | 136 | `(0,)` a rival's approach to the player; `(1,)` a quarter's free-play merger from 2026 | Rivals' merger decisions | PT-M13 |
+| `verein` | 137 | `(verein_id, member_firm_id)` | A member's quarterly referral | PT-M13 |
 
 ## Consequences
 

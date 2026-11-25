@@ -40,6 +40,7 @@ All strategies staff named matters by the default rule, bill monthly, accept the
 | T10 | **Strain matters:** pyramid's associates burn out at least twice as often as steady's; steady's at most 5% a year | band |
 | T11 | **Rivals hold history:** each pinned rival's revenue within ±15% of its path in December 2009, 2015, 2020 and 2025 (PT-M10); the top 10 by revenue in 2015 (and in 2025 on the long runs) contains at least 8 of history's | pass/fail |
 | T12 | **Turn time:** median turn ≤ 250 ms at December 2025 (PT-M10; PT-M5: 2015) on the steady save | pass/fail |
+| T13 | **Integration costs partners (PT-M13, proposed for the product manager's approval):** of the combined equity partnership at closing, 10-20% gone within 24 months (every exit), median over the `merger` strategy's mergers on seeds 1-10 (docs/research/law-firm-mergers.md s4: A&O Shearman ~17% in 17 months with a planned cut; ~4% before go-live; 8-12% background turnover) | band |
 | T8.2020 | **The pandemic bites (PT-M10):** a corporate-heavy firm's April-June 2020 revenue falls 10-30% against January-March, recovering by Q4 2021 | band |
 
 ## Known misses
@@ -80,6 +81,7 @@ How `ptk/balance/report.py` reads each target (`make balance`; `tools/balance_ru
 | T11 | PT-M5's measure (`tests/balance/test_pt_m5.py`), read from the steady runs' rivals at 2009 and 2015 (top 10 at 2015), and (PT-M10) from `steady-30y`'s rivals, steady played to December 2034, at 2009, 2015, 2020 and 2025 (top 10 at 2025): row `T11.2025` |
 | T12 | printed: the steady runs' median turn in 2015 (pure sim, on the runner's machine with its workers sharing cores); the gate is `make check-timing`'s test (PT-M5's, run alone, CLAUDE.md §9 rule 6), timing 2025's turns from PT-M10 |
 | T8.2020 | `steady-30y` runs with M&A, PE, capital markets and banking at least half of 2019's revenue: the median of 2020 Q2's revenue over Q1's; recovered when most of them have Q4 2021's revenue at least Q1 2020's (PT-M10) |
+| T13 | `tests/balance/test_pt_m13.py` (nightly): `mergers.integration.partners_lost_share` over each `merger` run's integration (`lost_partners` / the partnership at closing, within 24 months), median; seeds 11-40 printed beside steady |
 | 30y | printed for information: `steady-30y` at December 2034 (lawyers, revenue, PEP medians, dissolved); PT-M18 sets the 30-year targets |
 
 - **PT-M14 criterion 3 (fixed fees against hourly, 2026-2030 PEP):** a known miss owned by PT-M18 (row `PT-M14.fixed_fees`, authorised by the product manager on Reece's decision of 2026-11-23): 4 of 10 on seeds 1-10, 9 of 30 on seeds 11-40 (`tools/tech_readings.py --criterion3`).

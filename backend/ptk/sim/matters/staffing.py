@@ -693,8 +693,9 @@ def month_hours(
         # each person's flow hours split over the practice's clients by demand
         if done <= 0:
             continue
+        weights = {cid: float(t) for cid, t in demands.items()}
+        card = {cid: index(practice, cid) * rate_f(cid) for cid in demands}  # PT-M13 (T12)
         for pid in sorted(served):
-            weights = {cid: float(t) for cid, t in demands.items()}
             for cid, t in sorted(_split(served[pid], weights).items()):
                 if t > 0:
                     records.append(
@@ -708,7 +709,7 @@ def month_hours(
                             flow_tasks,
                             data,
                             balance,
-                            index(practice, cid) * rate_f(cid),
+                            card[cid],
                             tech,
                         )
                     )

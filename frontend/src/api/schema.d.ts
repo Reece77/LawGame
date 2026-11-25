@@ -64,7 +64,8 @@ export interface paths {
         /**
          * Create Practice
          * @description PT-M7: create a practice save (pt-2008: a 60-lawyer firm in June 2008); 404 for an
-         *     unknown key, 409 if a save of that name exists.
+         *     unknown key, 409 if a save of that name exists. PT-M13: `slug` names the copy (the
+         *     key by default), so tests can play their own.
          */
         post: operations["createPracticeSave"];
         delete?: never;
@@ -2353,6 +2354,108 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/saves/{slug}/mergers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Mergers */
+        get: operations["getMergers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/mergers/approach": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approach */
+        post: operations["approachFirm"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/mergers/{deal_id}/answer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Answer */
+        post: operations["answerApproach"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/mergers/{deal_id}/diligence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Diligence */
+        post: operations["commissionDiligence"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/mergers/{deal_id}/terms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Put Terms */
+        post: operations["putTerms"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/mergers/{deal_id}/walk-away": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Walk Away */
+        post: operations["walkAway"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3543,7 +3646,7 @@ export interface components {
              * Game State
              * @enum {string}
              */
-            game_state: "active" | "campaign_complete" | "dissolved" | "election_lost";
+            game_state: "active" | "campaign_complete" | "dissolved" | "election_lost" | "exit";
             /** Turns In Campaign */
             turns_in_campaign: number;
             /** Blocking Event Id */
@@ -4222,6 +4325,282 @@ export interface components {
             child_id: number;
             /** On */
             on: boolean;
+        };
+        /** MergerAnswerIn */
+        MergerAnswerIn: {
+            /** Accept */
+            accept: boolean;
+        };
+        /** MergerApproachIn */
+        MergerApproachIn: {
+            /** Rival Key */
+            rival_key: string;
+            /**
+             * Form
+             * @default merger
+             * @enum {string}
+             */
+            form?: "merger" | "verein";
+        };
+        /** MergerConflictOut */
+        MergerConflictOut: {
+            /** Our Client */
+            our_client: string;
+            /** Their Client */
+            their_client: string;
+            /** Matter Id */
+            matter_id: number | null;
+            /** Outcome */
+            outcome: string;
+        };
+        /** MergerDealOut */
+        MergerDealOut: {
+            /** Id */
+            id: number;
+            /** Firm Key */
+            firm_key: string;
+            /** Firm */
+            firm: string;
+            /** Form */
+            form: string;
+            /** Initiator */
+            initiator: string;
+            /** Stage */
+            stage: string;
+            /** Opened */
+            opened: string;
+            /** Leaked */
+            leaked: boolean;
+            /** Absorbed */
+            absorbed: boolean;
+            /** Diligence Running */
+            diligence_running: boolean;
+            /** Diligence Fees Cents */
+            diligence_fees_cents: number;
+            reveal: components["schemas"]["MergerRevealOut"] | null;
+            terms: components["schemas"]["MergerTermsOut"] | null;
+            /** Counter Share Pct */
+            counter_share_pct: number | null;
+            /** Their Yes Pct */
+            their_yes_pct: number | null;
+            prediction: components["schemas"]["MergerPredictionOut"] | null;
+            /** Conflicts */
+            conflicts: components["schemas"]["MergerConflictOut"][];
+            /** Ended */
+            ended: string | null;
+            /** Ended Reason */
+            ended_reason: string;
+        };
+        /** MergerExitOut */
+        MergerExitOut: {
+            /** Turn */
+            turn: string;
+            /** Firm */
+            firm: string;
+            /** Capital Cents */
+            capital_cents: number;
+            /** Earnings Cents */
+            earnings_cents: number;
+            /** Rank */
+            rank: number;
+            /** Revenue Cents */
+            revenue_cents: number;
+        };
+        /** MergerIntegrationOut */
+        MergerIntegrationOut: {
+            /** Deal Id */
+            deal_id: number;
+            /** Firm */
+            firm: string;
+            /** Closed */
+            closed: string;
+            /** Until */
+            until: string;
+            /** Months Left */
+            months_left: number;
+            /** Clash Pct */
+            clash_pct: number;
+            /** Lawyers At Closing */
+            lawyers_at_closing: number;
+            /** Partners At Closing */
+            partners_at_closing: number;
+            /** Partners Lost */
+            partners_lost: number;
+            /** Partners Lost Pct */
+            partners_lost_pct: number;
+            /** Clients Lost */
+            clients_lost: number;
+            /** Card Rise Pct */
+            card_rise_pct: number;
+            /** Surrender Cents */
+            surrender_cents: number;
+        };
+        /** MergerPredictionOut */
+        MergerPredictionOut: {
+            /** Yes Lo */
+            yes_lo: number;
+            /** Yes Hi */
+            yes_hi: number;
+            /** Total */
+            total: number;
+            /** Needed */
+            needed: number;
+        };
+        /** MergerRangeOut */
+        MergerRangeOut: {
+            /** Lo */
+            lo: number;
+            /** Hi */
+            hi: number;
+        };
+        /** MergerRevealOut */
+        MergerRevealOut: {
+            /** Level */
+            level: number;
+            /** Max Level */
+            max_level: number;
+            /** Exact */
+            exact: boolean;
+            /** Revenue Cents */
+            revenue_cents: number;
+            /** Profit Cents */
+            profit_cents: number;
+            /** Pep Cents */
+            pep_cents: number;
+            /** Lawyers */
+            lawyers: number;
+            /** Equity Partners */
+            equity_partners: number;
+            /** Wip Cents */
+            wip_cents: number | null;
+            /** Receivables Cents */
+            receivables_cents: number | null;
+            /** Cash Cents */
+            cash_cents: number | null;
+            /** Revolver Cents */
+            revolver_cents: number | null;
+            partner_ability: components["schemas"]["MergerRangeOut"];
+            annuities_cents: components["schemas"]["MergerRangeOut"];
+            leases_cents: components["schemas"]["MergerRangeOut"];
+            conflicts: components["schemas"]["MergerRangeOut"];
+            /** Book Clients */
+            book_clients: number;
+            /** Next Fee Cents */
+            next_fee_cents: number;
+        };
+        /** MergerTargetOut */
+        MergerTargetOut: {
+            /** Key */
+            key: string;
+            /** Name */
+            name: string;
+            /** Kind */
+            kind: string;
+            /** City */
+            city: string;
+            /** Region */
+            region: string;
+            /** Lawyers */
+            lawyers: number;
+            /** Equity Partners */
+            equity_partners: number;
+            /** Revenue Cents */
+            revenue_cents: number;
+            /** Pep Cents */
+            pep_cents: number;
+            /** Practices */
+            practices: string[];
+            /** Complement Pct */
+            complement_pct: number;
+            /** New City */
+            new_city: boolean;
+            /** Rate Pct */
+            rate_pct: number;
+            /** Pep Pct */
+            pep_pct: number;
+            /** Clash Pct */
+            clash_pct: number;
+            /** Fair Share Pct */
+            fair_share_pct: number;
+            /** Integrable */
+            integrable: boolean;
+            /** Reason */
+            reason: string;
+            /** Merger Blocked */
+            merger_blocked: string;
+            /** Verein Blocked */
+            verein_blocked: string;
+        };
+        /** MergerTermsIn */
+        MergerTermsIn: {
+            /**
+             * Our Share Bp
+             * @default 5000
+             */
+            our_share_bp?: number;
+            /**
+             * Name
+             * @default ours
+             * @enum {string}
+             */
+            name?: "ours" | "theirs" | "combined";
+            /**
+             * Mp
+             * @default ours
+             * @enum {string}
+             */
+            mp?: "ours" | "theirs";
+            /**
+             * Comp System
+             * @default modified_lockstep
+             */
+            comp_system?: string;
+            /**
+             * Rates
+             * @default ours
+             * @enum {string}
+             */
+            rates?: "ours" | "theirs" | "higher" | "blend";
+        };
+        /** MergerTermsOut */
+        MergerTermsOut: {
+            /** Our Share Pct */
+            our_share_pct: number;
+            /** Name */
+            name: string;
+            /** Mp */
+            mp: string;
+            /** Comp System */
+            comp_system: string;
+            /** Rates */
+            rates: string;
+        };
+        /** MergersOut */
+        MergersOut: {
+            /** Targets */
+            targets: components["schemas"]["MergerTargetOut"][];
+            /** Deals */
+            deals: components["schemas"]["MergerDealOut"][];
+            /** Integrations */
+            integrations: components["schemas"]["MergerIntegrationOut"][];
+            verein: components["schemas"]["VereinOut"] | null;
+            exit: components["schemas"]["MergerExitOut"] | null;
+            /** Is Mp */
+            is_mp: boolean;
+            /** Energy */
+            energy: number;
+            /** Costs */
+            costs: {
+                [key: string]: number;
+            };
+            /** Absorbed Below Pct */
+            absorbed_below_pct: number;
+            /** Vote Pct */
+            vote_pct: number;
+            /** Max Lawyers */
+            max_lawyers: number;
+            /** Comp Systems */
+            comp_systems: string[];
         };
         /** MetaOut */
         MetaOut: {
@@ -6346,6 +6725,32 @@ export interface components {
             /** Context */
             ctx?: Record<string, never>;
         };
+        /** VereinMemberOut */
+        VereinMemberOut: {
+            /** Key */
+            key: string;
+            /** Name */
+            name: string;
+            /** City */
+            city: string;
+            /** Joined */
+            joined: string;
+            /** Lawyers */
+            lawyers: number;
+            /** Revenue Cents */
+            revenue_cents: number;
+        };
+        /** VereinOut */
+        VereinOut: {
+            /** Name */
+            name: string;
+            /** Formed */
+            formed: string;
+            /** Members */
+            members: components["schemas"]["VereinMemberOut"][];
+            /** Costs Cents */
+            costs_cents: number;
+        };
         /** VoteOut */
         VoteOut: {
             /** Vote Id */
@@ -6684,7 +7089,9 @@ export interface operations {
     };
     createPracticeSave: {
         parameters: {
-            query?: never;
+            query?: {
+                slug?: string | null;
+            };
             header?: never;
             path: {
                 key: string;
@@ -14973,6 +15380,370 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OfficesOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getMergers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MergersOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    approachFirm: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MergerApproachIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MergersOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    answerApproach: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                deal_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MergerAnswerIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MergersOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    commissionDiligence: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                deal_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MergersOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    putTerms: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                deal_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MergerTermsIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MergersOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    walkAway: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                deal_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MergersOut"];
                 };
             };
             /** @description Bad Request */

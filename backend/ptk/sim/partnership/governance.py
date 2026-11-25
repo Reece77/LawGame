@@ -133,6 +133,9 @@ def threshold_for(fp: FirmPartnership, kind: str, params: dict[str, Param]) -> i
         return a.capital_call_bp
     if kind == "deequity":
         return a.deequity_bp
+    if kind == "merger":  # PT-M13: mergers.vote_bp, carried on the vote (spec 8.8)
+        value = params.get("threshold_bp")
+        return value if isinstance(value, int) else a.terms_bp
     return a.admission_bp  # election: a simple majority
 
 
@@ -260,6 +263,12 @@ def base_utility(
         median = statistics.median(shares.values()) if shares else 0.0
         target = shares.get(vote.subject_id, 0.0)
         u += cfg.deequity_weight * (median - target) / max(median, 1e-9)
+    elif vote.kind == "merger":  # PT-M13: the expected PEP change and the terms
+        from ptk.sim.mergers.terms import our_utility
+
+        deal = state.mergers.deal(int(vote.param("deal_id") or 0))
+        if deal is not None:
+            u += our_utility(state, deal, data, balance)
     elif vote.kind == "election":
         u = cfg.election_weight * (p.confidence - 50) / 50
         if p.lobbied_turn == state.turn:
@@ -389,6 +398,10 @@ def vote_title(state: GameState, vote: Vote) -> str:
         return "a capital call"
     if vote.kind == "deequity":
         return f"de-equitise {who} ({vote.param('mode')})"
+    if vote.kind == "merger":
+        from ptk.sim.mergers.views import deal_title
+
+        return deal_title(state, int(vote.param("deal_id") or 0))
     return f"managing partner: the MP against {who}"
 
 

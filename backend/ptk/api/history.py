@@ -40,6 +40,9 @@ TIMELINE: Final = (
     "covenant_breach",
     "revolver_called",
     "firm_dissolved",
+    "merger_closed",  # PT-M13
+    "verein_joined",
+    "merger_exit",
 )
 EVENT_WORDS: Final = {
     "merger": "merges with",

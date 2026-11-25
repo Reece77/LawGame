@@ -18,6 +18,7 @@ from ptk.api.history import make_history_router
 from ptk.api.leadership import make_leadership_router
 from ptk.api.market import make_market_router
 from ptk.api.matters import make_matters_router
+from ptk.api.mergers import make_mergers_router
 from ptk.api.offices import make_offices_router
 from ptk.api.org import make_org_router
 from ptk.api.partnership import make_partnership_router
@@ -175,7 +176,7 @@ class GameOut(BaseModel):
     turn: int
     date_label: str
     cash_cents: int
-    game_state: Literal["active", "campaign_complete", "dissolved", "election_lost"]
+    game_state: Literal["active", "campaign_complete", "dissolved", "election_lost", "exit"]
     turns_in_campaign: int
     blocking_event_id: int | None  # PT-M6: a critical event to answer before Continue
 
@@ -348,6 +349,7 @@ def create_app() -> FastAPI:
     app.include_router(make_standing_router(errors))  # PT-M16
     app.include_router(make_tech_router(errors))  # PT-M14
     app.include_router(make_offices_router(errors))  # PT-M11
+    app.include_router(make_mergers_router(errors))  # PT-M13
     return app
 
 

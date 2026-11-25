@@ -51,7 +51,7 @@ from ptk.sim.interfaces import (
     NO_TECH_HOURS,
     TechHoursView,
     lax_supervision_hours,
-    suspended,
+    suspended_ids,
     tech_hours,
 )
 from ptk.sim.macro import shock_share
@@ -104,6 +104,7 @@ def fee_earners(
     assessing = assessment_tenths(state.market, firm_id, state.turn, balance)
     training = tech_hours(state, firm_id, data, balance).training_tenths  # PT-M14
     lax_hours = lax_supervision_hours(state, firm_id, balance)  # PT-M15
+    off = suspended_ids(state) if state.risk.cases else frozenset()  # PT-M15: suspended
     out = []
     for person in state.people:
         if person.id not in staff:
@@ -121,7 +122,7 @@ def fee_earners(
             + training.get(person.id, 0)
         )
         capacity = round(monthly_capacity_tenths(person, balance))
-        if suspended(state, person.id):  # PT-M15: a suspended lawyer does no billable work
+        if person.id in off:  # PT-M15: a suspended lawyer does no billable work
             other = capacity
         out.append(
             FeeEarner(

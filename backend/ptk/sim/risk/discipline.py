@@ -67,17 +67,25 @@ def jurisdiction(state: GameState, person: Person, data: GameData) -> str:
     return office_jurisdiction(state, firm, person_office_id(state, firm, person), data)
 
 
-def chance_mult(state: GameState, person: Person, balance: Balance, data: GameData) -> float:
-    """The person's multiplier on every cause's chance (engine-only)."""
+def firm_mult(state: GameState, balance: Balance, data: GameData) -> float:
+    """The firm's term on every cause's chance: lax supervision and the GC (engine-only)."""
+    d = balance.risk.discipline
+    m = d.lax_mult if lax(state, state.player.id) else 1.0
+    return m * fx.gc_mult(gc_effect(state, state.player.id, balance, data), d.gc_bp)
+
+
+def chance_mult(
+    state: GameState, person: Person, balance: Balance, data: GameData, firm: float | None = None
+) -> float:
+    """The person's multiplier on every cause's chance (engine-only); `firm` is
+    `firm_mult`'s, computed once a month by the caller."""
     d = balance.risk.discipline
     m = fx.integrity_mult(person.personality["integrity"], d.integrity_slope)
     if "rule_bender" in person.tags:
         m *= d.rule_bender_mult
     if "cowboy" in person.tags:
         m *= d.cowboy_mult
-    if lax(state, state.player.id):
-        m *= d.lax_mult
-    return m * fx.gc_mult(gc_effect(state, state.player.id, balance, data), d.gc_bp)
+    return m * (firm_mult(state, balance, data) if firm is None else firm)
 
 
 def open_case(
@@ -176,12 +184,13 @@ def new_cases(
         if u < min(1.0, p):
             state = open_case(state, pid, cause, gen, books, balance, data, matter_id)
     court = _litigators(state)
+    firm = firm_mult(state, balance, data)
     for person in lawyers(state, books.firm_id, data):
         u = float(gen.random())
         if person.real:
             continue
         base = d.causes.neglect + (d.causes.court if person.id in court else 0)
-        p = base / fx.BP * chance_mult(state, person, balance, data)
+        p = base / fx.BP * chance_mult(state, person, balance, data, firm)
         if u < p:
             drawn: CaseCause = (
                 "court"

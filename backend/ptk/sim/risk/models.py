@@ -251,6 +251,15 @@ class RiskState:
     def inquiry(self, inquiry_id: int) -> Inquiry | None:
         return next((i for i in self.inquiries if i.id == inquiry_id), None)
 
+    def suspended_ids(self, turn: int) -> frozenset[int]:
+        return frozenset(
+            c.person_id
+            for c in self.cases
+            if c.suspended_until is not None
+            and c.closed_turn is not None
+            and c.closed_turn <= turn < c.suspended_until
+        )
+
     def suspended(self, person_id: int, turn: int) -> bool:
         return any(
             c.person_id == person_id

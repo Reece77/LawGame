@@ -1492,9 +1492,13 @@ def tech_rfp_gap(state: GameState, firm_id: int, data: GameData, balance: Balanc
 # --- PT-M15 (risk): what other systems read of a lawyer's discipline and the firm's policy --
 
 
+def suspended_ids(state: GameState) -> frozenset[int]:
+    """Lawyers suspended by the bar this month (spec 11.4): on the books, no billable work."""
+    return state.risk.suspended_ids(state.turn)
+
+
 def suspended(state: GameState, person_id: int) -> bool:
-    """A lawyer suspended by the bar this month (spec 11.4): on the books, no billable work."""
-    return state.risk.suspended(person_id, state.turn)
+    return person_id in suspended_ids(state)
 
 
 def lax_supervision_hours(state: GameState, firm_id: int, balance: Balance) -> int:

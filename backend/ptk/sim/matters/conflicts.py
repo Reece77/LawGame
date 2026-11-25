@@ -29,9 +29,17 @@ class ConflictIndex:
     advance_waivers: frozenset[int]
 
 
-def conflict_index(market: MarketState, firm_id: int, turn: int, balance: Balance) -> ConflictIndex:
+def conflict_index(
+    market: MarketState,
+    firm_id: int,
+    turn: int,
+    balance: Balance,
+    shared: frozenset[int] = frozenset(),
+) -> ConflictIndex:
+    """`shared` (PT-M13): clients of the firm's verein members, checked as its own (ADR
+    PT-0016 5)."""
     cfg = balance.conflicts
-    current, former, waivers = set(), set(), set()
+    current, former, waivers = set(shared), set(), set()
     for rel in market.relationships:
         if rel.firm_id != firm_id or rel.last_instructed_turn is None:
             continue

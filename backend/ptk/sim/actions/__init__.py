@@ -52,6 +52,7 @@ from ptk.sim.hiring.actions import (
 from ptk.sim.ledger import LedgerBalances
 from ptk.sim.macro_seed import world_data
 from ptk.sim.matters.actions import MATTER_ACTION_TYPES, MatterAction, apply_matter_action
+from ptk.sim.mergers.actions import MERGER_ACTION_TYPES, MergerAction, apply_merger_action
 from ptk.sim.org.pitches import AnswerPitch, answer_pitch
 from ptk.sim.org.practices import ENTER_ACTION_TYPES, EnterPractice, enter_practice
 from ptk.sim.org.seats import SEAT_ACTION_TYPES, SeatAction, apply_seat_action
@@ -81,6 +82,7 @@ type Action = (
     | TechAction
     | GeoAction
     | EnterPractice
+    | MergerAction
 )
 
 ACTION_TYPES: dict[str, type[Any]] = {
@@ -106,6 +108,7 @@ ACTION_TYPES: dict[str, type[Any]] = {
     **TECH_ACTION_TYPES,  # PT-M14
     **GEO_ACTION_TYPES,  # PT-M11
     **ENTER_ACTION_TYPES,  # PT-M12
+    **MERGER_ACTION_TYPES,  # PT-M13
 }
 
 
@@ -149,6 +152,8 @@ def apply_action(
             data,
             ledger_balances,
         )
+    if type(action) in MERGER_ACTION_TYPES.values():  # PT-M13: mergers and the verein
+        return apply_merger_action(state, action, rng, balance, data)  # type: ignore[arg-type]
     if isinstance(action, ChooseEvent):
         return apply_event_action(state, action, balance, data)
     if isinstance(action, AnswerPitch):  # PT-M8

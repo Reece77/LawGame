@@ -11,6 +11,7 @@ import { MainMenu } from './screens/MainMenu';
 import { MarketScreen } from './screens/MarketScreen';
 import { MatterScreen } from './screens/MatterScreen';
 import { MattersScreen } from './screens/MattersScreen';
+import { MergersScreen } from './screens/MergersScreen';
 import { NewGameScreen } from './screens/NewGameScreen';
 import { OrgScreen } from './screens/OrgScreen';
 import { HistoryScreen } from './screens/HistoryScreen';
@@ -54,6 +55,7 @@ export default function App() {
           <Route path="market/rivals/:firmId" element={<RivalScreen />} />
           <Route path="rankings" element={<RankingsScreen />} />
           <Route path="offices" element={<OfficesScreen />} />
+          <Route path="mergers" element={<MergersScreen />} />
           <Route path="press" element={<PressScreen />} />
           <Route path="partnership" element={<PartnershipScreen />} />
           <Route path="history" element={<HistoryScreen />} />

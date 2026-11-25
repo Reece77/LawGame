@@ -83,6 +83,15 @@ STREAM_IDS: Final = MappingProxyType(
         # PT-M12 (lane A, ids 120-129): the twenty practices
         "funding": 120,  # (matter_id,): a funder's terms for a contingency case, at its opening
         "practice_team": 121,  # (practice_index, n): a team entering a practice, its n-th person
+        # PT-M13 (lane B, ids 130-139): mergers and the verein (ptk.sim.mergers; ADR PT-0016)
+        "merger_target": 130,  # (*rival_key,) at turn 0: a firm's fixed hidden values
+        "merger_book": 131,  # (deal_id,): a deal's client book, drawn when talks open
+        "merger_answer": 132,  # (deal_id, round): the other side's answer, each partner's noise
+        "merger_clear": 133,  # (deal_id,): clearance's waiver draws, in conflict order
+        "merger_people": 134,  # (deal_id, n): the n-th materialised lawyer at closing
+        "integration": 135,  # (deal_id, client_id): a book client's balk at the merged card
+        "rival_merger": 136,  # (0,) a month's approach to the player; (1,) a free-play merger
+        "verein": 137,  # (verein_id, member_firm_id): a member's quarterly introduction
         "misc": 99,  # tests only
     }
 )

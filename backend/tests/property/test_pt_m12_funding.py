@@ -32,6 +32,7 @@ from ptk.sim.ledger import (
     WIP,
     apply_entries,
 )
+from ptk.sim.money import pct_of
 from ptk.sim.rng import RngFactory
 from tests.billing_support import Played
 from tests.matters_support import grown_firm
@@ -242,7 +243,7 @@ def test_a_funded_loss_costs_only_the_unfunded_wip_and_a_win_pays_the_funder_fir
     fee = done.billed_cents - w.billed_cents
     assert fee > 0
     adv = w.advances_cents + advance_cents(done.standard_cents - w.standard_cents, w.funded_bp)
-    due = min(fee, adv * w.funder_return_bp // 10_000)
+    due = min(fee, pct_of(adv, w.funder_return_bp))  # the engine rounds half to even
     repaid = _funding_lines(result.ledger_entries, FUNDER_ADVANCES)
     cost = _funding_lines(result.ledger_entries, FUNDING_COSTS)
     assert repaid + cost == due and repaid <= adv  # paid first, from the fee, capped at it

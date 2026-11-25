@@ -254,6 +254,9 @@ def intake(
     keys = data.practice_keys
     reps = {p: firm_reputation(state, firm_id, p, balance) for p in keys}
     appeals = dict(state.rivals.appeals) or None  # PT-M5: rival firms' live appeal
+    from ptk.sim.mergers.verein import verein_clients
+
+    shared = verein_clients(state, firm_id)  # PT-M13: conflicts across the verein
     flow_fees: dict[tuple[int, str], float] = {}
     logs: list[LogItem] = []
     named_min = balance.matters.named_min_cents
@@ -320,7 +323,7 @@ def intake(
                         tiers(p, client.id) * rate_f,
                         region,
                     )
-                    index = conflict_index(state.market, firm_id, turn, balance)
+                    index = conflict_index(state.market, firm_id, turn, balance, shared)
                     state, items = open_checked(state, matter, index, data, balance, key)
                     logs.extend(items)
             flow *= diary[p]
@@ -350,16 +353,21 @@ def local_terms(
     """PT-M11: a city's (demand, reach penalty, rate factor, region) for its clients' work."""
     from ptk.sim.geo.cities import office_in
     from ptk.sim.geo.formulas import rate_factor
+    from ptk.sim.mergers.verein import member_city_counts
     from ptk.sim.org.seats import effect as seat_effect
 
     zeros = tuple(0 for _ in data.practices)
     cache: dict[str, LocalTerms] = {}
+    member_cities = member_city_counts(state, firm_id, data)
 
     def terms(city: str) -> LocalTerms:
         if city not in cache:
             cdef = data.geo.city(city)
             office = office_in(state, firm_id, city)
-            if office is None:
+            members = member_cities.get(city, 0)  # PT-M13: a verein member's city
+            if office is None and members:
+                reach = -balance.mergers.verein.appeal_share * members
+            elif office is None:
                 reach = balance.geo.reach_penalty
             else:  # spec 9.1: the office managing partner's local business development
                 e = seat_effect(state, firm_id, OMP, balance, data, office.id)

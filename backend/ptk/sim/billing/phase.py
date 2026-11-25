@@ -718,35 +718,57 @@ class _Run:
     # --- 4. WIP -----------------------------------------------------------------------------
 
     def post_wip(self) -> None:
+        # PT-M13 (T12): the month's records are summed per ledger line, engagement and flow
+        # account first (integer sums, keys in first-seen order), then posted once each;
+        # identical results to posting record by record
+        wip: dict[tuple[str, int | None], int] = {}
+        to_eng: dict[int, list[int]] = {}
+        to_flow: dict[tuple[int, str], list[int]] = {}
+        worked = billable = 0
+        seen = False
         for r in month_hours(self.state, self.firm_id):
             if r.value_cents == 0 and r.tenths == 0:
                 continue
+            seen = True
+            worked += r.value_cents
+            billable += r.tenths
             e = self.eng.get(r.matter_id) if r.matter_id is not None else None
-            office = self.office(r.client_id)
-            if e is not None and e.model == "contingency":
+            if e is None or e.model != "contingency":
                 # PT-M12 (ADR PT-0018): a contingency case's WIP posts no fee until its
-                # recovery; a funder advances its share of the month's WIP (2800)
-                advance = funding.advance_cents(r.value_cents, e.funded_bp)
-                self.books.move(bk.FUNDING, CASH, FUNDER_ADVANCES, advance, r.practice, office)
-                e = replace(e, advances_cents=e.advances_cents + advance)
-            else:
-                self.books.move(bk.WIP_POSTED, WIP, FEES, r.value_cents, r.practice, office)
-            self.add("worked_cents", r.value_cents)
-            self.add("billable_tenths", r.tenths)
+                # recovery (its funder's advance is posted per case below)
+                line = (r.practice, self.office(r.client_id))
+                wip[line] = wip.get(line, 0) + r.value_cents
             if e is not None:
-                self.eng[e.matter_id] = replace(
-                    e,
-                    wip_cents=e.wip_cents + r.value_cents,
-                    wip_tenths=e.wip_tenths + r.tenths,
-                    standard_cents=e.standard_cents + r.value_cents,
-                )
-                continue
-            key = (r.client_id, r.practice)
+                acc = to_eng.setdefault(e.matter_id, [0, 0])
+            else:
+                acc = to_flow.setdefault((r.client_id, r.practice), [0, 0])
+            acc[0] += r.value_cents
+            acc[1] += r.tenths
+        for (practice, office), cents in wip.items():
+            self.books.move(bk.WIP_POSTED, WIP, FEES, cents, practice, office)
+        if seen:
+            self.add("worked_cents", worked)
+            self.add("billable_tenths", billable)
+        for mid, (cents, tenths) in to_eng.items():
+            e = self.eng[mid]
+            if e.model == "contingency":
+                # a funder advances its share of the case's month of WIP (2800)
+                advance = funding.advance_cents(cents, e.funded_bp)
+                office = self.office(e.client_id)
+                self.books.move(bk.FUNDING, CASH, FUNDER_ADVANCES, advance, e.practice, office)
+                e = replace(e, advances_cents=e.advances_cents + advance)
+            self.eng[mid] = replace(
+                e,
+                wip_cents=e.wip_cents + cents,
+                wip_tenths=e.wip_tenths + tenths,
+                standard_cents=e.standard_cents + cents,
+            )
+        for key, (cents, tenths) in to_flow.items():
             f = self.flows.get(key) or FlowAccount(
-                client_id=r.client_id, practice=r.practice, firm_id=self.firm_id
+                client_id=key[0], practice=key[1], firm_id=self.firm_id
             )
             self.flows[key] = replace(
-                f, wip_cents=f.wip_cents + r.value_cents, wip_tenths=f.wip_tenths + r.tenths
+                f, wip_cents=f.wip_cents + cents, wip_tenths=f.wip_tenths + tenths
             )
         self.add(
             "capacity_tenths",

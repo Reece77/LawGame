@@ -25,6 +25,7 @@ type VoteKind = Literal[
     "capital_call",
     "deequity",  # December: an equity partner to income partner, or out
     "election",  # the MP election
+    "merger",  # PT-M13: a merger or a verein (spec 8.8: two thirds; ptk.sim.mergers.terms)
 ]
 type VoteStatus = Literal["open", "passed", "failed", "withdrawn"]
 type Track = Literal["equity", "income", "counsel", "not_this_year"]

@@ -274,13 +274,32 @@ class MarketState:
         raise KeyError(f"no client {client_id}")
 
     def relationship(self, client_id: int, firm_id: int) -> Relationship | None:
-        return next(
-            (r for r in self.relationships if r.client_id == client_id and r.firm_id == firm_id),
-            None,
-        )
+        # PT-M13 (T12): an index memoised on the (immutable) tuple's identity; the first match
+        # by position, as the scan returned
+        rels = self.relationships
+        hit = _REL_INDEX.get(id(rels))
+        if hit is None or hit[0] is not rels:
+            index: dict[tuple[int, int], Relationship] = {}
+            for r in rels:
+                index.setdefault((r.client_id, r.firm_id), r)
+            hit = (rels, index)
+            if len(_REL_INDEX) >= _INDEX_KEEP:
+                _REL_INDEX.clear()
+            _REL_INDEX[id(rels)] = hit
+        return hit[1].get((client_id, firm_id))
 
     def matter(self, matter_id: int) -> Matter | None:
-        return next((m for m in self.matters if m.id == matter_id), None)
+        matters = self.matters  # PT-M13 (T12): memoised as `relationship`
+        hit = _MATTER_INDEX.get(id(matters))
+        if hit is None or hit[0] is not matters:
+            index: dict[int, Matter] = {}
+            for m in matters:
+                index.setdefault(m.id, m)
+            hit = (matters, index)
+            if len(_MATTER_INDEX) >= _INDEX_KEEP:
+                _MATTER_INDEX.clear()
+            _MATTER_INDEX[id(matters)] = hit
+        return hit[1].get(matter_id)
 
     def judge(self, judge_id: int) -> Judge:
         for j in self.judges:
@@ -295,5 +314,9 @@ class MarketState:
     def next_matter_id(self) -> int:
         return max((m.id for m in self.matters), default=0) + 1
 
+
+_REL_INDEX: dict[int, tuple[tuple[Relationship, ...], dict[tuple[int, int], Relationship]]] = {}
+_MATTER_INDEX: dict[int, tuple[tuple[Matter, ...], dict[int, Matter]]] = {}
+_INDEX_KEEP = 64  # tunable-exempt: memoised tuples (a cache, not a rule)
 
 EMPTY_MARKET = MarketState()

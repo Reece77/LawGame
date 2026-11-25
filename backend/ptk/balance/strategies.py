@@ -308,5 +308,6 @@ VARIANTS: Final[dict[str, Script]] = {
     **TECH_VARIANTS,  # PT-M14: ai-hourly, ai-fixed, never (ptk/balance/tech.py)
     **__import__("ptk.balance.offices").balance.offices.OFFICE_VARIANTS,  # PT-M11 (offices.py)
     **__import__("ptk.balance.practices").balance.practices.PRACTICE_VARIANTS,  # PT-M12
+    **__import__("ptk.balance.mergers").balance.mergers.MERGER_VARIANTS,  # PT-M13 (mergers.py)
 }
 PLAYABLE: Final[dict[str, Script]] = {**STRATEGIES, **VARIANTS}

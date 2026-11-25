@@ -20,6 +20,7 @@ from ptk.sim.founder.models import EMPTY_FOUNDER_LIFE, FounderLifeState
 from ptk.sim.geo.models import EMPTY_GEO, GeoState
 from ptk.sim.hiring.models import Candidate, Offer, PayPolicy, PersonState, Search
 from ptk.sim.matters.models import EMPTY_MARKET, MarketState
+from ptk.sim.mergers.models import EMPTY_MERGERS, MergersState
 from ptk.sim.org.models import EMPTY_ORG, OrgState
 from ptk.sim.org.seat_models import EMPTY_LEADERSHIP, LeadershipState
 from ptk.sim.partnership.models import EMPTY_PARTNERSHIP, PartnershipState
@@ -30,7 +31,8 @@ from ptk.sim.tech.models import EMPTY_TECH, TechState
 
 # ADR PT-0007 section 4: a game ends when the campaign completes or the firm dissolves.
 # Ironman (ADR PT-0007 3): losing the MP election is final.
-type GameOutcome = Literal["active", "campaign_complete", "dissolved", "election_lost"]
+# PT-M13 (ADR PT-0016 1): an absorption the partnerships passed ends the campaign as an exit.
+type GameOutcome = Literal["active", "campaign_complete", "dissolved", "election_lost", "exit"]
 
 
 _STAFF: dict[int, tuple[object, tuple[int, ...]]] = {}  # firm -> (employments, ids)
@@ -96,6 +98,7 @@ class GameState:
     automation: AutomationState = EMPTY_AUTOMATION  # areas, owners, proposals (PT-M9)
     tech: TechState = EMPTY_TECH  # adoption, training, products (PT-M14)
     geo: GeoState = EMPTY_GEO  # offices, admissions, the UK path (PT-M11)
+    mergers: MergersState = EMPTY_MERGERS  # deals, integrations, the verein, the exit (PT-M13)
 
     @property
     def ended(self) -> bool:

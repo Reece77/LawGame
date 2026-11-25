@@ -272,6 +272,11 @@ def _label(state: GameState, turn: int) -> str:
 
 
 def _name(state: GameState, pid: int) -> str:
+    if pid < 0:  # PT-M13: a merged firm's retired partners' annuities (ADR PT-0016 2)
+        deal = state.mergers.deal(-pid)
+        integ = state.mergers.integration(-pid)
+        firm = integ.name if integ is not None else (deal.rival_key if deal else "a merged firm")
+        return f"Retired partners of {firm}"
     p = state.person(pid)
     return f"{p.first_name} {p.last_name}"
 

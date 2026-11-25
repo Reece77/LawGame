@@ -762,6 +762,10 @@ billing: # PT-M3b: WIP, bills, collections, disputes, client money (spec 7.7; AD
   hold_fail_points: -4.0 # relationship points when holding firm fails (the client is credited in full)
   padding_share: 0.08 # share of a bill's standard value a padder adds as time not worked
   padding_points: -8.0 # relationship points when padding comes to light
+  funding: # PT-M12 (spec 7.7; ADR PT-0018): litigation funders carry contingency cases' WIP, non-recourse [A] docs/research/practices-v2.md s6
+    from_ym: [2010, 1] # the US commercial funding market from about 2010 (Burford listed October 2009)
+    funded_bp: [5000, 7500] # bp of the case's WIP at standard value the funder advances, uniform (funders fund 50-75% of fees)
+    return_bp: [20000, 30000] # bp of its advances the funder takes first from the fee on a recovery (2-3x), uniform, capped at the fee
 partnership: # PT-M4: capital, draws, comp, PEP, votes, confidence, elections, laterals, flight (spec 5.5, 5.7, 8; ADR PT-0003, PT-0007)
   agreement: # the founders' agreement's default terms (spec 8.6); each is changed by a vote (terms_bp)
     comp_system: modified_lockstep # lockstep, modified_lockstep, eat_what_you_kill, committee (spec 8.5's default)

@@ -6,11 +6,11 @@ source firm, the practice, the group size, the growth bias), a group of 2-6 key 
 one practice leaves a real rival to found a boutique. Their books follow them at
 `boutique.book_share`; each brings `associates_per_partner` associates from the pools. The
 source loses the people, the demand and its key partners' count (the departures count toward
-its collapse hazard). A litigation, white-collar, IP, arbitration, insurance or mass-tort group founds a
-`litigation_boutique`;
-any other an `elite_lockstep` boutique. A boutique grows with the market plus its drawn
-bias; while its profit over 12 months is negative it fails with chance `failure_bp` a month
-(history.collapse_hazard), and its people become free agents.
+its collapse hazard). A litigation, white-collar, IP, arbitration, insurance or mass-tort
+group founds a `litigation_boutique`; any other an `elite_lockstep` boutique. A boutique
+grows with the market plus its drawn bias; while its profit over 12 months is negative it
+fails with chance `failure_bp` a month (history.collapse_hazard), and its people become free
+agents.
 """
 
 from __future__ import annotations

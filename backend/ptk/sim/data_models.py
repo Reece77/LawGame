@@ -915,6 +915,14 @@ class AgeStep(_Strict):
     value: int = Field(ge=0, le=10000)
 
 
+class FundingBalance(_Strict):
+    """PT-M12 (spec 7.7; ADR PT-0018): litigation funders for contingency cases."""
+
+    from_ym: tuple[int, int]  # the first month a funder offers (the US market from about 2010)
+    funded_bp: tuple[int, int]  # share of the case's WIP the funder advances, uniform
+    return_bp: tuple[int, int]  # the funder's return, bp of its advances, uniform
+
+
 class BillingBalance(_Strict):
     """PT-M3b (spec 7.7; ADR PT-0003, PT-0005)."""
 
@@ -965,6 +973,7 @@ class BillingBalance(_Strict):
     hold_fail_points: float
     padding_share: float = Field(ge=0, le=1)
     padding_points: float
+    funding: FundingBalance  # PT-M12
 
     @model_validator(mode="after")
     def _check(self) -> BillingBalance:

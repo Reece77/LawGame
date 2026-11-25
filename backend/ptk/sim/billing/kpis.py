@@ -26,9 +26,29 @@ def trailing(billing: BillingState, firm_id: int, turn: int) -> tuple[MonthTotal
 
 
 def wip_cents(billing: BillingState, firm_id: int) -> int:
+    """Unbilled WIP on the books (1100): PT-M12, a contingency case's WIP is off the books
+    until its recovery (ADR PT-0018; `contingency_wip_cents`)."""
     return sum(
-        e.wip_cents for e in billing.engagements if e.firm_id == firm_id and not e.closed
+        e.wip_cents
+        for e in billing.engagements
+        if e.firm_id == firm_id and not e.closed and e.model != "contingency"
     ) + sum(f.wip_cents for f in billing.flows if f.firm_id == firm_id)
+
+
+def contingency_wip_cents(billing: BillingState, firm_id: int) -> int:
+    """PT-M12: open contingency cases' WIP at standard value (no fee until a recovery)."""
+    return sum(
+        e.wip_cents
+        for e in billing.engagements
+        if e.firm_id == firm_id and not e.closed and e.model == "contingency"
+    )
+
+
+def funder_advances_cents(billing: BillingState, firm_id: int) -> int:
+    """PT-M12: open funded cases' advances (2800's balance as a positive amount)."""
+    return sum(
+        e.advances_cents for e in billing.engagements if e.firm_id == firm_id and not e.closed
+    )
 
 
 def receivables_cents(billing: BillingState, firm_id: int) -> int:

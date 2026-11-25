@@ -80,6 +80,8 @@ STREAM_IDS: Final = MappingProxyType(
         # PT-M14 (lane C, ids 110-119): legal technology and AI (ptk.sim.tech)
         "tech_seed": 110,  # (era_index, 0) its strength's 2026+ target; (era_index, 1) the market's
         "tech_vote": 111,  # (era_index,): a rollout vote on an era this month, each partner's noise
+        # PT-M12 (lane A, ids 120-129): the twenty practices
+        "funding": 120,  # (matter_id,): a funder's terms for a contingency case, at its opening
         "misc": 99,  # tests only
     }
 )

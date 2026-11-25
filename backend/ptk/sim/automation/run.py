@@ -105,7 +105,7 @@ def _apply(
         m = apply_matter_action(state, a, draws, b, data)  # type: ignore[arg-type]
         return m.state, m.entries, m.log
     if t in BILLING_ACTION_TYPES.values():
-        o = apply_billing_action(state, a, draws, b)  # type: ignore[arg-type]
+        o = apply_billing_action(state, a, draws, b, rng)  # type: ignore[arg-type]
         return o.state, o.entries, o.log
     if t in RIVAL_ACTION_TYPES.values():
         r = apply_rival_action(state, a, draws, b, data)  # type: ignore[arg-type]

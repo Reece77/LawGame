@@ -169,7 +169,7 @@ def apply_action(
             ledger_balances,
         )
     if type(action) in BILLING_ACTION_TYPES.values():
-        return apply_billing_action(state, action, draws, balance)  # type: ignore[arg-type]
+        return apply_billing_action(state, action, draws, balance, rng)  # type: ignore[arg-type]
     if type(action) in MATTER_ACTION_TYPES.values():
         return apply_matter_action(state, action, draws, balance, data)  # type: ignore[arg-type]
     return apply_hiring(state, action, draws, balance, data, ledger_balances)  # type: ignore[arg-type]

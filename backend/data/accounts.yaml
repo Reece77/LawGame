@@ -19,6 +19,7 @@ accounts:
   - { code: 2500_leases, name: "Lease liabilities", type: liability }
   - { code: 2600_retired_partner_annuities, name: "Retired-partner annuities", type: liability }
   - { code: 2700_partner_current_accounts, name: "Partner current accounts", type: liability }
+  - { code: 2800_funder_advances, name: "Litigation funders' advances (non-recourse)", type: liability } # PT-M12, ADR PT-0018
   - { code: 3000_partners_capital, name: "Partners' capital", type: equity }
   - { code: 3100_undistributed_profit, name: "Undistributed profit", type: equity }
   - { code: 3200_drawings, name: "Drawings", type: equity }
@@ -26,6 +27,7 @@ accounts:
   - { code: 4100_success_fees, name: "Success and contingency fees", type: income }
   - { code: 4200_disbursement_recoveries, name: "Disbursement recoveries", type: income }
   - { code: 4300_interest_income, name: "Interest income", type: income }
+  - { code: 4400_funded_fees, name: "Funded fees (advances a funder bears)", type: income } # PT-M12, ADR PT-0018
   - { code: 5000_associate_salaries, name: "Associate and counsel salaries", type: expense }
   - { code: 5010_bonuses, name: "Bonuses", type: expense }
   - { code: 5020_income_partner_salaries, name: "Income-partner salaries", type: expense }
@@ -40,6 +42,7 @@ accounts:
   - { code: 6500_knowledge, name: "Knowledge and research subscriptions", type: expense }
   - { code: 6600_professional_fees, name: "Professional fees", type: expense }
   - { code: 6700_write_offs, name: "Write-offs", type: expense }
+  - { code: 6750_funding_costs, name: "Litigation funding costs", type: expense } # PT-M12, ADR PT-0018
   - { code: 6800_interest, name: "Interest expense", type: expense }
   - { code: 6900_general_admin, name: "General and administrative", type: expense }
   - { code: 6950_lobbying, name: "Lobbying and bar politics", type: expense }

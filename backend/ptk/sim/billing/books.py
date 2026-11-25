@@ -20,6 +20,7 @@ CREDIT_NOTES = "Credit notes (disputes and short payments)"
 WRITE_OFFS = "Bad debts written off"
 CLOSINGS = "Final bills, success and contingency fees"
 PROVISIONS = "WIP and bad-debt provisions"
+FUNDING = "Litigation funding: advances, the funder's return and advances it bears"  # PT-M12
 
 
 class Books:

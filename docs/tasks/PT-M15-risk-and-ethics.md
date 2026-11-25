@@ -65,7 +65,13 @@ From `pt-2008`, hire a rule-bending lateral without a GC in the seat, play to 20
     | T9.rocket | 5/10 | 5/10 | 16/30 (53%) | 14/30 (47%) | 30-60% |
 
     On seeds 1-10 steady survives seeds 4 and 9, which it lost on main, and pyramid's claims and premiums cost it the seeds it won. Rule 3 forbids adding known-miss rows myself: the rows are Reece's or the product manager's to authorise.
-15. **Practice save `pt-risk`** (the e2e): `pt-2008` with a claim walked to the claimant's offer, a second surfacing next month and a shortfall, staged through the engine with the chances forced (`ptk.practice.risk_demo`).
+15. **The product manager's decisions (Reece, 2026-11-25), on the code merged with main (PT-M13):**
+    - **T2** is a known miss owned by PT-M18 (`known_misses.py`): steady 9 of seeds 1-10 on the branch (main 5); seeds 11-40 steady 16/30 on the branch, 19/30 on main (a miss on main: the cause predates PT-M15).
+    - **T5.standard** is a known miss owned by PT-M18, recorded as seed variance: 0 of seeds 1-10 on the branch (main 2); 2 of seeds 11-40 (6.7%) on both.
+    - **PT-M9's steady-automated guard** (decision 3 read on the merged code): seeds 1-10 revenue -21.5%, PEP +9.1% (outside 20%: the strict xfail holds, as on main); seeds 11-40 revenue -18.6%, PEP -11.5% (within). It passes only on 11-40, a case the decision did not name, so the strict xfail is left as it is (owner PT-M18) with both readings here; on the pre-merge branch seeds 1-10 had passed (XPASS).
+    - T8.2020 reads -7.3% on the merged code (band -30% to -10%; a printed band row, not a gate); main's last passing nightly read -5.3%.
+    - PT-M13's merger e2e (`m13.spec.ts`): the practice copy's partners judge the Murphy Cook terms more coolly with risk on (the deal worth -1.59 to them; two of three short of 6,667 bp); before the voting month the spec lobbies and promises four lockstep points to each equity partner (PT-M4's actions; rule 8).
+16. **Practice save `pt-risk`** (the e2e): `pt-2008` with a claim walked to the claimant's offer, a second surfacing next month and a shortfall, staged through the engine with the chances forced (`ptk.practice.risk_demo`).
 
 ## Follow-ups
 

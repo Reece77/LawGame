@@ -61,6 +61,8 @@ PT-M7b (2026-11-21) removed T5 (standard and hard), T9 (the rocket and the heede
 
 **Reece's decisions on PT-M7c's open items (2026-11-24):** steady keeps its layoff rule and T6 counts departures other than layoffs (layoffs print as `T6.layoffs`; band unchanged); steady-automated takes the same layoff rule; T3 (lawyers and revenue) and T4 steady are known misses owned by PT-M18 (growth from PT-M12 and PT-M13); the pyramid's 80% pay and the book's 24-month hold and 60-month fade are approved. T1 and T4 pyramid pass after the client tiers and their rows are removed.
 
+**PT-M15 (2026-11-25), the product manager's decisions:** T2 (steady 9 of seeds 1-10; seeds 11-40 16/30 on the branch, 19/30 on main) and T5.standard (seed variance: 0/10; 2/30 on both) are known misses owned by PT-M18 (`docs/tasks/PT-M15-risk-and-ethics.md`, decision 15).
+
 **PT-M7c (2026-11-23), the firm economics audit** (`docs/tasks/PT-M7c-firm-economics.md`, benchmarks in `docs/research/firm-economics.md`): a partner admitted in December now keeps a budget through December's allocation (homegrown equity partners had been poached within a year, holding leverage at 5.7 lawyers per equity partner). T2 passes on seeds 1-10 (steady 6, pyramid 4) and its row is removed; T3.lawyers (46; seeds 11-40 83.5), T4.steady ($2.72M) and T4.pyramid ($1.65M) keep their bounds, owned by Reece's decision on the rate card (the brief's decision 5: RPL is 83% above the Second Hundred's, from the rate).
 
 ## Measures (PT-M7)

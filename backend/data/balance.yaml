@@ -148,6 +148,7 @@ energy: # the founding partner's monthly energy (TST formulas.md 6, M4c values; 
     capital_call: 4 # put a capital call to a vote
     propose_partner: 4 # propose a candidate in December (equity, income, counsel or not yet)
     deequity: 6 # put a de-equitisation to a vote
+    enter_practice: 10 # PT-M12: a partner retrains into a new practice (the managing partner's time) [A]
     lobby: 3 # a lobbying conversation with one partner (one a month each)
     promise: 0 # promise a partner lockstep points
     withdraw_vote: 0 # withdraw an open vote
@@ -300,6 +301,9 @@ org: # practice groups, teams and supervision (PT-M2; TST formulas.md 13, ported
     manager: director
   pitch_per_recruiting: 0.3 # acceptance-logit points per 10 recruiting above pitch_neutral, from whoever makes the offer (TST 7, 13.12)
   pitch_neutral: 10 # attribute points of recruiting at which the offer pitch is 0
+  enter: # PT-M12: entering a practice (ptk/sim/org/practices.py) [A]
+    team_partners: 2 # partners in a lateral team entering a practice (with their books; PT-M11's lateral group)
+    team_associates: 4 # associates who come with them
   delegates: # delegated hiring (13.10, ADR-0015); each step's energy cost is hiring's (balance energy.cost, PT-M1b)
     energy_per_month: 100 # energy; each delegate's own monthly budget, given in phase 2; never the founder's
     reserve: 20 # energy kept back while interviewing, for a scouting pass (TST: the scout cost)

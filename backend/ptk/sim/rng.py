@@ -82,6 +82,7 @@ STREAM_IDS: Final = MappingProxyType(
         "tech_vote": 111,  # (era_index,): a rollout vote on an era this month, each partner's noise
         # PT-M12 (lane A, ids 120-129): the twenty practices
         "funding": 120,  # (matter_id,): a funder's terms for a contingency case, at its opening
+        "practice_team": 121,  # (practice_index, n): a team entering a practice, its n-th person
         "misc": 99,  # tests only
     }
 )

@@ -46,7 +46,8 @@ def test_practice_group_rules(data: GameData, balance: Balance) -> None:
     with pytest.raises(OrgRuleError, match="already has a group"):
         act(state, CreateUnit(fid, "practice_group", practice="corporate_ma"), data, balance)
     with pytest.raises(OrgActionError):
-        act(state, CreateUnit(fid, "practice_group", practice="tax"), data, balance)
+        # PT-M12: tax is a practice now; an unknown key still fails
+        act(state, CreateUnit(fid, "practice_group", practice="aviation"), data, balance)
     small = game(data, balance, scenario="biglaw_spinout")
     with pytest.raises(OrgRuleError, match="unlock at 10 lawyers"):
         act(small, CreateUnit(founder(small), "practice_group", practice="ip"), data, balance)

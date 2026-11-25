@@ -159,9 +159,8 @@ def draw_familiarity(
     for i, key in enumerate(data.practice_keys):
         lo, hi = home_range if key == home or key in familiar else other_range
         if i >= main and extra is None:
-            bits = gen.bit_generator
-            assert isinstance(bits, np.random.PCG64)  # RngFactory's bit generator
-            extra = np.random.Generator(bits.jumped())
+            # RngFactory's bit generator is PCG64, which jumps; the jump leaves `gen` as it is
+            extra = np.random.Generator(gen.bit_generator.jumped())  # type: ignore[attr-defined]
         values[key] = float((gen if extra is None else extra).uniform(lo, hi))
     return Familiarity.build(data.practice_keys, values)
 

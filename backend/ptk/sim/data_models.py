@@ -433,6 +433,7 @@ ENERGY_ACTIONS: Final = (
     "close_office",  # close an office (a one-off)
     "bar_admission",  # sit a bar exam, apply on motion or register as a foreign lawyer
     "training_contracts",  # offer a year's training contracts (spec 5.7)
+    "enter_practice",  # PT-M12: a partner retrains into a new practice
 )
 LATERAL_CHANNELS: Final = ("referral", "job_post", "recruiter")
 
@@ -639,6 +640,13 @@ class DelegatesBalance(_Strict):
     plan_owner_roles: tuple[str, ...]  # roles that may own a plan without leading a unit
 
 
+class EnterBalance(_Strict):
+    """PT-M12: entering a practice with a lateral team (`ptk.sim.org.practices`)."""
+
+    team_partners: int = Field(gt=0)
+    team_associates: int = Field(ge=0)
+
+
 class OrgBalance(_Strict):
     practice_group_unlock_lawyers: int = Field(gt=0)
     span_base: int = Field(ge=0)
@@ -661,6 +669,7 @@ class OrgBalance(_Strict):
     pitch_per_recruiting: float
     pitch_neutral: float
     delegates: DelegatesBalance
+    enter: EnterBalance  # PT-M12
 
     @model_validator(mode="after")
     def _check(self) -> OrgBalance:

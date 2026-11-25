@@ -5967,7 +5967,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/TermsIn"
+                "$ref": "#/components/schemas/ptk__api__partnership__TermsIn"
               }
             }
           }
@@ -10558,6 +10558,497 @@
         }
       }
     },
+    "/api/saves/{slug}/risk": {
+      "get": {
+        "summary": "Get Risk",
+        "operationId": "getRisk",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskScreenOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/risk/terms": {
+      "post": {
+        "summary": "Terms",
+        "operationId": "setPolicyTerms",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ptk__api__risk__TermsIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskScreenOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/risk/supervision": {
+      "post": {
+        "summary": "Supervision",
+        "operationId": "setSupervision",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupervisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskScreenOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/risk/claims/{claim_id}/respond": {
+      "post": {
+        "summary": "Respond Claim",
+        "operationId": "respondClaim",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "claim_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Claim Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChoiceIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskScreenOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/risk/cases/{case_id}/respond": {
+      "post": {
+        "summary": "Respond Case",
+        "operationId": "respondCase",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChoiceIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskScreenOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/risk/inquiries/{inquiry_id}/respond": {
+      "post": {
+        "summary": "Respond Inquiry",
+        "operationId": "respondInquiry",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "inquiry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Inquiry Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChoiceIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskScreenOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/saves/{slug}/offices": {
       "get": {
         "summary": "Get Offices",
@@ -11789,6 +12280,54 @@
         "type": "object",
         "title": "ApproachRivalIn"
       },
+      "ArbitrationOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "bill_id": {
+            "type": "integer",
+            "title": "Bill Id"
+          },
+          "client": {
+            "type": "string",
+            "title": "Client"
+          },
+          "amount_cents": {
+            "type": "integer",
+            "title": "Amount Cents"
+          },
+          "filed_label": {
+            "type": "string",
+            "title": "Filed Label"
+          },
+          "decide_label": {
+            "type": "string",
+            "title": "Decide Label"
+          },
+          "award_cents": {
+            "type": "integer",
+            "title": "Award Cents"
+          },
+          "decided": {
+            "type": "boolean",
+            "title": "Decided"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "bill_id",
+          "client",
+          "amount_cents",
+          "filed_label",
+          "decide_label",
+          "award_cents",
+          "decided"
+        ],
+        "title": "ArbitrationOut"
+      },
       "AreaLineOut": {
         "properties": {
           "turn": {
@@ -12110,6 +12649,44 @@
           "hi"
         ],
         "title": "AttributeOut"
+      },
+      "AuditOut": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "bill_id": {
+            "type": "integer",
+            "title": "Bill Id"
+          },
+          "client": {
+            "type": "string",
+            "title": "Client"
+          },
+          "practice": {
+            "type": "string",
+            "title": "Practice"
+          },
+          "cut_cents": {
+            "type": "integer",
+            "title": "Cut Cents"
+          },
+          "padding_found_cents": {
+            "type": "integer",
+            "title": "Padding Found Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "bill_id",
+          "client",
+          "practice",
+          "cut_cents",
+          "padding_found_cents"
+        ],
+        "title": "AuditOut"
       },
       "AuthorityIn": {
         "properties": {
@@ -12648,6 +13225,83 @@
         ],
         "title": "CandidateOut"
       },
+      "CaseOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "person_id": {
+            "type": "integer",
+            "title": "Person Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "cause": {
+            "type": "string",
+            "title": "Cause"
+          },
+          "jurisdiction": {
+            "type": "string",
+            "title": "Jurisdiction"
+          },
+          "stage": {
+            "type": "string",
+            "title": "Stage"
+          },
+          "opened_label": {
+            "type": "string",
+            "title": "Opened Label"
+          },
+          "choice": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Choice"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome"
+          },
+          "suspended_until_label": {
+            "type": "string",
+            "title": "Suspended Until Label"
+          },
+          "closed_label": {
+            "type": "string",
+            "title": "Closed Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "person_id",
+          "name",
+          "cause",
+          "jurisdiction",
+          "stage",
+          "opened_label",
+          "choice",
+          "outcome",
+          "suspended_until_label",
+          "closed_label"
+        ],
+        "title": "CaseOut"
+      },
       "CaseUnitOut": {
         "type": "string",
         "enum": [
@@ -12715,6 +13369,19 @@
           "child_id"
         ],
         "title": "ChildIn"
+      },
+      "ChoiceIn": {
+        "properties": {
+          "choice": {
+            "type": "string",
+            "title": "Choice"
+          }
+        },
+        "type": "object",
+        "required": [
+          "choice"
+        ],
+        "title": "ChoiceIn"
       },
       "ChooseIn": {
         "properties": {
@@ -15513,6 +16180,111 @@
         ],
         "title": "InfluenceOut"
       },
+      "InquiryOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "regulator": {
+            "type": "string",
+            "title": "Regulator"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "stage": {
+            "type": "string",
+            "title": "Stage"
+          },
+          "opened_label": {
+            "type": "string",
+            "title": "Opened Label"
+          },
+          "ends_label": {
+            "type": "string",
+            "title": "Ends Label"
+          },
+          "fine_lo_cents": {
+            "type": "integer",
+            "title": "Fine Lo Cents"
+          },
+          "fine_hi_cents": {
+            "type": "integer",
+            "title": "Fine Hi Cents"
+          },
+          "choice": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Choice"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome"
+          },
+          "fine_cents": {
+            "type": "integer",
+            "title": "Fine Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "regulator",
+          "reason",
+          "stage",
+          "opened_label",
+          "ends_label",
+          "fine_lo_cents",
+          "fine_hi_cents",
+          "choice",
+          "outcome",
+          "fine_cents"
+        ],
+        "title": "InquiryOut"
+      },
+      "InsurerOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "min_lawyers": {
+            "type": "integer",
+            "title": "Min Lawyers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "kind",
+          "min_lawyers"
+        ],
+        "title": "InsurerOut"
+      },
       "IntroduceIn": {
         "properties": {
           "colleague_id": {
@@ -16121,6 +16893,151 @@
           "bar"
         ],
         "title": "LegacyOut"
+      },
+      "MalpracticeClaimOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "matter_id": {
+            "type": "integer",
+            "title": "Matter Id"
+          },
+          "matter": {
+            "type": "string",
+            "title": "Matter"
+          },
+          "client": {
+            "type": "string",
+            "title": "Client"
+          },
+          "practice": {
+            "type": "string",
+            "title": "Practice"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "stage": {
+            "type": "string",
+            "title": "Stage"
+          },
+          "stage_label": {
+            "type": "string",
+            "title": "Stage Label"
+          },
+          "noticed_label": {
+            "type": "string",
+            "title": "Noticed Label"
+          },
+          "demand_cents": {
+            "type": "integer",
+            "title": "Demand Cents"
+          },
+          "merit_lo_pct": {
+            "type": "integer",
+            "title": "Merit Lo Pct"
+          },
+          "merit_hi_pct": {
+            "type": "integer",
+            "title": "Merit Hi Pct"
+          },
+          "offer_cents": {
+            "type": "integer",
+            "title": "Offer Cents"
+          },
+          "offer_expires_label": {
+            "type": "string",
+            "title": "Offer Expires Label"
+          },
+          "defence_cents": {
+            "type": "integer",
+            "title": "Defence Cents"
+          },
+          "indemnity_cents": {
+            "type": "integer",
+            "title": "Indemnity Cents"
+          },
+          "deductible_paid_cents": {
+            "type": "integer",
+            "title": "Deductible Paid Cents"
+          },
+          "insurer_paid_cents": {
+            "type": "integer",
+            "title": "Insurer Paid Cents"
+          },
+          "excess_paid_cents": {
+            "type": "integer",
+            "title": "Excess Paid Cents"
+          },
+          "called_cents": {
+            "type": "integer",
+            "title": "Called Cents"
+          },
+          "limit_cents": {
+            "type": "integer",
+            "title": "Limit Cents"
+          },
+          "deductible_cents": {
+            "type": "integer",
+            "title": "Deductible Cents"
+          },
+          "public": {
+            "type": "boolean",
+            "title": "Public"
+          },
+          "blamed": {
+            "type": "string",
+            "title": "Blamed"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome"
+          },
+          "closed_label": {
+            "type": "string",
+            "title": "Closed Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "matter_id",
+          "matter",
+          "client",
+          "practice",
+          "source",
+          "stage",
+          "stage_label",
+          "noticed_label",
+          "demand_cents",
+          "merit_lo_pct",
+          "merit_hi_pct",
+          "offer_cents",
+          "offer_expires_label",
+          "defence_cents",
+          "indemnity_cents",
+          "deductible_paid_cents",
+          "insurer_paid_cents",
+          "excess_paid_cents",
+          "called_cents",
+          "limit_cents",
+          "deductible_cents",
+          "public",
+          "blamed",
+          "outcome",
+          "closed_label"
+        ],
+        "title": "MalpracticeClaimOut"
       },
       "MarketOut": {
         "properties": {
@@ -18549,24 +19466,6 @@
         ],
         "title": "OpinionOut"
       },
-      "OptionOut": {
-        "properties": {
-          "key": {
-            "type": "string",
-            "title": "Key"
-          },
-          "label": {
-            "type": "string",
-            "title": "Label"
-          }
-        },
-        "type": "object",
-        "required": [
-          "key",
-          "label"
-        ],
-        "title": "OptionOut"
-      },
       "OrgMemberOut": {
         "properties": {
           "id": {
@@ -20636,6 +21535,79 @@
         ],
         "title": "PnlLineOut"
       },
+      "PolicyOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "insurer": {
+            "type": "string",
+            "title": "Insurer"
+          },
+          "insurer_kind": {
+            "type": "string",
+            "title": "Insurer Kind"
+          },
+          "start_label": {
+            "type": "string",
+            "title": "Start Label"
+          },
+          "renews_label": {
+            "type": "string",
+            "title": "Renews Label"
+          },
+          "limit_cents": {
+            "type": "integer",
+            "title": "Limit Cents"
+          },
+          "deductible_cents": {
+            "type": "integer",
+            "title": "Deductible Cents"
+          },
+          "premium_cents": {
+            "type": "integer",
+            "title": "Premium Cents"
+          },
+          "paid_cents": {
+            "type": "integer",
+            "title": "Paid Cents"
+          },
+          "premium_per_lawyer_cents": {
+            "type": "integer",
+            "title": "Premium Per Lawyer Cents"
+          },
+          "mod": {
+            "type": "number",
+            "title": "Mod"
+          },
+          "rate_bp": {
+            "type": "integer",
+            "title": "Rate Bp"
+          },
+          "exposure_cents": {
+            "type": "integer",
+            "title": "Exposure Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "insurer",
+          "insurer_kind",
+          "start_label",
+          "renews_label",
+          "limit_cents",
+          "deductible_cents",
+          "premium_cents",
+          "paid_cents",
+          "premium_per_lawyer_cents",
+          "mod",
+          "rate_bp",
+          "exposure_cents"
+        ],
+        "title": "PolicyOut"
+      },
       "PracticeBandsOut": {
         "properties": {
           "practice": {
@@ -21572,6 +22544,44 @@
         ],
         "title": "RatePolicyIn"
       },
+      "ReconciliationOut": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "bank_cents": {
+            "type": "integer",
+            "title": "Bank Cents"
+          },
+          "owed_cents": {
+            "type": "integer",
+            "title": "Owed Cents"
+          },
+          "shortfall_cents": {
+            "type": "integer",
+            "title": "Shortfall Cents"
+          },
+          "cause": {
+            "type": "string",
+            "title": "Cause"
+          },
+          "made_good_cents": {
+            "type": "integer",
+            "title": "Made Good Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "bank_cents",
+          "owed_cents",
+          "shortfall_cents",
+          "cause",
+          "made_good_cents"
+        ],
+        "title": "ReconciliationOut"
+      },
       "RecruitmentOut": {
         "properties": {
           "date_label": {
@@ -21650,7 +22660,7 @@
           },
           "school_tiers": {
             "items": {
-              "$ref": "#/components/schemas/OptionOut"
+              "$ref": "#/components/schemas/ptk__api__recruitment__OptionOut"
             },
             "type": "array",
             "title": "School Tiers"
@@ -21898,6 +22908,126 @@
           "medium",
           "high"
         ]
+      },
+      "RiskScreenOut": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "supervision": {
+            "type": "string",
+            "title": "Supervision"
+          },
+          "policy": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PolicyOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "terms": {
+            "$ref": "#/components/schemas/TermsOut"
+          },
+          "insurers": {
+            "items": {
+              "$ref": "#/components/schemas/InsurerOut"
+            },
+            "type": "array",
+            "title": "Insurers"
+          },
+          "limits": {
+            "items": {
+              "$ref": "#/components/schemas/ptk__api__risk__OptionOut"
+            },
+            "type": "array",
+            "title": "Limits"
+          },
+          "deductibles": {
+            "items": {
+              "$ref": "#/components/schemas/ptk__api__risk__OptionOut"
+            },
+            "type": "array",
+            "title": "Deductibles"
+          },
+          "compulsory_limit_cents": {
+            "type": "integer",
+            "title": "Compulsory Limit Cents"
+          },
+          "claims": {
+            "items": {
+              "$ref": "#/components/schemas/MalpracticeClaimOut"
+            },
+            "type": "array",
+            "title": "Claims"
+          },
+          "cases": {
+            "items": {
+              "$ref": "#/components/schemas/CaseOut"
+            },
+            "type": "array",
+            "title": "Cases"
+          },
+          "inquiries": {
+            "items": {
+              "$ref": "#/components/schemas/InquiryOut"
+            },
+            "type": "array",
+            "title": "Inquiries"
+          },
+          "reconciliations": {
+            "items": {
+              "$ref": "#/components/schemas/ReconciliationOut"
+            },
+            "type": "array",
+            "title": "Reconciliations"
+          },
+          "audits": {
+            "items": {
+              "$ref": "#/components/schemas/AuditOut"
+            },
+            "type": "array",
+            "title": "Audits"
+          },
+          "arbitrations": {
+            "items": {
+              "$ref": "#/components/schemas/ArbitrationOut"
+            },
+            "type": "array",
+            "title": "Arbitrations"
+          },
+          "claims_12m": {
+            "type": "integer",
+            "title": "Claims 12M"
+          },
+          "lawyers": {
+            "type": "integer",
+            "title": "Lawyers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "enabled",
+          "supervision",
+          "policy",
+          "terms",
+          "insurers",
+          "limits",
+          "deductibles",
+          "compulsory_limit_cents",
+          "claims",
+          "cases",
+          "inquiries",
+          "reconciliations",
+          "audits",
+          "arbitrations",
+          "claims_12m",
+          "lawyers"
+        ],
+        "title": "RiskScreenOut"
       },
       "RivalApproachOut": {
         "properties": {
@@ -23451,6 +24581,23 @@
         ],
         "title": "SuccessorIn"
       },
+      "SupervisionIn": {
+        "properties": {
+          "supervision": {
+            "type": "string",
+            "enum": [
+              "standard",
+              "lax"
+            ],
+            "title": "Supervision"
+          }
+        },
+        "type": "object",
+        "required": [
+          "supervision"
+        ],
+        "title": "SupervisionIn"
+      },
       "SupervisorLabel": {
         "type": "string",
         "enum": [
@@ -23756,33 +24903,49 @@
         ],
         "title": "TermOut"
       },
-      "TermsIn": {
+      "TermsOut": {
         "properties": {
-          "term": {
-            "type": "string",
-            "title": "Term"
-          },
-          "value": {
+          "insurer": {
             "anyOf": [
               {
                 "type": "string"
               },
               {
+                "type": "null"
+              }
+            ],
+            "title": "Insurer"
+          },
+          "limit_cents": {
+            "anyOf": [
+              {
                 "type": "integer"
               },
               {
-                "type": "boolean"
+                "type": "null"
               }
             ],
-            "title": "Value"
+            "title": "Limit Cents"
+          },
+          "deductible_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deductible Cents"
           }
         },
         "type": "object",
         "required": [
-          "term",
-          "value"
+          "insurer",
+          "limit_cents",
+          "deductible_cents"
         ],
-        "title": "TermsIn"
+        "title": "TermsOut"
       },
       "TextKindOut": {
         "type": "string",
@@ -24491,6 +25654,109 @@
           "year_profit_cents"
         ],
         "title": "PnlOut"
+      },
+      "ptk__api__partnership__TermsIn": {
+        "properties": {
+          "term": {
+            "type": "string",
+            "title": "Term"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "boolean"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "term",
+          "value"
+        ],
+        "title": "TermsIn"
+      },
+      "ptk__api__recruitment__OptionOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label"
+        ],
+        "title": "OptionOut"
+      },
+      "ptk__api__risk__OptionOut": {
+        "properties": {
+          "cents": {
+            "type": "integer",
+            "title": "Cents"
+          },
+          "factor": {
+            "type": "number",
+            "title": "Factor"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cents",
+          "factor"
+        ],
+        "title": "OptionOut"
+      },
+      "ptk__api__risk__TermsIn": {
+        "properties": {
+          "insurer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Insurer"
+          },
+          "limit_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limit Cents"
+          },
+          "deductible_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deductible Cents"
+          }
+        },
+        "type": "object",
+        "title": "TermsIn"
       },
       "ptk__api__standing__AnswerIn": {
         "properties": {

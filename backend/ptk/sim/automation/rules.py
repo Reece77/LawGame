@@ -33,7 +33,10 @@ rest act through the player's own action functions. Rules read only what the fir
   100 lawyers (0, the default: off until a support-coverage system exists).
 - Knowledge and AI (CKO, PT-M14): the training programme, subscriptions within the budget a
   lawyer (newest era first) and rollout votes; a new platform is a one-off (a proposal).
-- Risk and claims (general counsel): conflicts only until PT-M15: keeps the conflict checks on.
+- Risk and claims (general counsel, PT-M15): keeps the conflict checks on; answers claims'
+  offers by the default rule (a settlement above the deductible left is a one-off); settles
+  inquiries within `settle_fine_k`, else contests; keeps the renewal's deductible within
+  `max_deductible_k`.
 - Pro bono (a partner): once a year (`automation.pro_bono_month`), after the firm's first year
   (its moving average starts at zero), the credit policy stepped toward `target_hours` pro bono
   hours a lawyer a year when the firm is more than `tolerance_pct` away.
@@ -524,11 +527,52 @@ def knowledge(run: AutoRun) -> None:
 
 
 def risk(run: AutoRun) -> None:
+    """PT-M15: conflict checks on; claims' offers answered by the default rule (a settlement
+    above what is left of the deductible is a one-off, so it comes to you); regulators'
+    inquiries settled when the fine's middle is within `settle_fine_k`, else contested; the
+    next renewal's deductible kept at most `max_deductible_k`."""
     from ptk.sim.matters.actions import SetConflictChecks
+    from ptk.sim.risk.actions import RespondClaim, RespondInquiry, SetPolicyTerms
+    from ptk.sim.risk.claims import default_answer
 
-    if run.state.player.conflict_checks or not run.right:
+    me = run.owner.person_id
+    if not run.state.player.conflict_checks and run.right:
+        run.attempt(SetConflictChecks(me, True), "turned the conflict checks back on")
+    if not run.balance.risk.enabled:
         return
-    run.attempt(SetConflictChecks(run.owner.person_id, True), "turned the conflict checks back on")
+    risk = run.state.risk
+    for claim in [c for c in risk.claims if c.firm_id == run.firm_id and c.stage == "offer"]:
+        choice = default_answer(claim)
+        if not run.right:
+            choice = "contest" if choice == "settle" else "settle"
+        run.attempt(
+            RespondClaim(me, claim.id, choice),
+            f"chose to {choice} claim {claim.id}",
+            mistake=not run.right,
+            link=("risk", claim.id),
+            recommendation=choice,
+        )
+    for inq in [
+        i for i in risk.inquiries if i.firm_id == run.firm_id and i.is_open and i.choice is None
+    ]:
+        mid = (inq.fine_lo_cents + inq.fine_hi_cents) // 2
+        choice = "settle" if mid <= run.rail("settle_fine_k") * K_CENTS else "contest"
+        run.attempt(
+            RespondInquiry(me, inq.id, choice),
+            f"chose to {choice} the regulator's inquiry",
+            link=("risk", inq.id),
+        )
+    cap = run.rail("max_deductible_k") * K_CENTS
+    options = [d.cents for d in run.data.insurance.deductibles if d.cents <= cap]
+    terms = risk.firm(run.firm_id).terms
+    if options and terms.deductible_cents is not None and terms.deductible_cents <= cap:
+        return
+    if options and terms.deductible_cents != options[-1]:
+        run.attempt(
+            SetPolicyTerms(me, terms.insurer, terms.limit_cents, options[-1]),
+            f"asked for a deductible of ${options[-1] // 100:,} at the next renewal",
+            link=("risk", 0),
+        )
 
 
 def pro_bono(run: AutoRun) -> None:

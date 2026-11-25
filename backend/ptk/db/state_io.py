@@ -35,6 +35,7 @@ from ptk.db.models import (
 )
 from ptk.db.org_io import load_org, write_org
 from ptk.db.partnership_io import load_partnership, write_partnership
+from ptk.db.risk_io import load_risk, write_risk
 from ptk.db.rivals_io import insert_rivals, load_rivals, write_panels, write_rivals
 from ptk.db.standing_io import load_standing, write_standing
 from ptk.db.tech_io import load_tech, write_tech
@@ -122,6 +123,7 @@ def insert_new(session: Session, state: GameState, entries: tuple[LedgerEntry, .
     write_founder_life(session, state.founder_life, state.family)  # PT-M17
     write_standing(session, state.standing)  # PT-M16
     write_tech(session, state.tech)  # PT-M14
+    write_risk(session, state.risk)  # PT-M15
 
 
 def load_state(session: Session) -> GameState:
@@ -194,6 +196,7 @@ def load_state(session: Session) -> GameState:
         standing=load_standing(session),  # PT-M16
         automation=load_automation(session),  # PT-M9
         tech=load_tech(session),  # PT-M14
+        risk=load_risk(session),  # PT-M15
         geo=load_geo(session),  # PT-M11
         mergers=load_mergers(session),  # PT-M13
         events=load_events(session),
@@ -565,6 +568,7 @@ def write_turn(
     write_founder_life(session, new_state.founder_life, new_state.family)  # PT-M17
     write_standing(session, new_state.standing, new_state.turn - 1)  # PT-M16
     write_tech(session, new_state.tech)  # PT-M14
+    write_risk(session, new_state.risk)  # PT-M15
 
 
 def write_firms(session: Session, state: GameState) -> None:

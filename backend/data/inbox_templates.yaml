@@ -371,6 +371,58 @@ templates:
     title: "{name} qualifies as a solicitor"
     body: "{name} qualifies into {practice} as a newly qualified solicitor."
 
+  # PT-M15: risk and ethics (spec 11.3-11.6): the Risk screen links each to its claim, case or policy
+  claim_notice:
+    title: "A malpractice claim"
+    body: "A former client has given notice of a claim for {demand_cents}. The policy's limit is {limit_cents}; the general counsel's first reading of its merit is on the Risk screen."
+  claim_filed:
+    title: "A claim is filed in court"
+    body: "The claimant has sued the firm for {demand_cents}. The defence begins."
+  claim_offer:
+    title: "The claimant offers to settle"
+    body: "The claimant will settle for {offer_cents}. Answer on the Risk screen, or the default rule will."
+  claim_contested:
+    title: "The firm will fight the claim"
+    body: "The settlement offer has been turned down; the defence goes on."
+  claim_closed:
+    title: "A claim is closed ({outcome})"
+    body: "The claimant received {indemnity_cents}. The firm paid {firm_cents} and the insurer {insurer_cents}, defence costs included."
+  claim_capital_call:
+    title: "The partners pay in capital for a claim"
+    body: "The firm could not pay its part of a claim from its cash: the equity partners have paid in {amount_cents} of capital."
+  policy_renewed:
+    title: "The insurance policy renews with {insurer}"
+    body: "A year's premium of {premium_cents} ({change_pct}% on last year) for a limit of {limit_cents} a claim and a deductible of {deductible_cents}."
+  policy_endorsed:
+    title: "The policy's limit is raised to {limit_cents}"
+    body: "An office in a jurisdiction with compulsory cover needs at least that limit: the year's premium is now {premium_cents}."
+  case_opened:
+    title: "A bar complaint against {name}"
+    body: "The bar has opened a case against {name} ({cause}). Cooperate or contest on the Risk screen; unanswered, the firm cooperates."
+  case_closed:
+    title: "The bar's case against {name}: {outcome}"
+    body: "The case is closed with the outcome {outcome}. A suspension keeps them off billable work for {months} months."
+  inquiry_opened:
+    title: "{regulator} opens an inquiry"
+    body: "The regulator is looking into the firm's systems ({reason}). A finding could bring a fine of up to {fine_hi_cents}. Settle or contest on the Risk screen."
+  inquiry_closed:
+    title: "The regulator's inquiry is closed ({outcome})"
+    body: "The inquiry ended with the outcome {outcome}; the firm paid {fine_cents}."
+  trust_shortfall_found:
+    title: "The client account is short by {amount_cents}"
+    body: "This month's reconciliation found a shortfall ({cause}). The firm has replaced the money from its own cash, as the rules require."
+  padding_reviewed:
+    title: "The general counsel's review found padded time"
+    body: "The billing review found that {name} has been padding their time. The padding stops; the bar may hear of it."
+  fee_suit:
+    title: "A fee dispute goes public"
+    body: "The client the firm held firm against is suing over {amount_cents} of fees, and the press has noticed."
+  arbitration_filed:
+    title: "A client files for fee arbitration"
+    body: "The client has taken the disputed {amount_cents} to the bar's fee arbitration programme."
+  arbitration_decided:
+    title: "The fee arbitration is decided"
+    body: "The arbitrator awarded the client {award_cents} of the disputed {amount_cents}."
   # PT-M13: mergers and the verein (spec 8.8)
   merger_talks:
     title: "Talks open with {firm}"

@@ -47,7 +47,13 @@ def test_wip_at_standard_is_hours_times_rate(
     for before, result in zip(game.befores, game.results, strict=True):
         people = {p.id: p for p in before.people}
         # PT-M7c: the month's card by client tier, as the staffing rule read it
-        month = replace(result.new_state, turn=before.turn)
+        # PT-M15: with the relationships staffing read (a claim's notice in phase 6 can end
+        # a book client's relationship after the month's hours were priced)
+        month = replace(
+            result.new_state,
+            turn=before.turn,
+            market=replace(result.new_state.market, relationships=before.market.relationships),
+        )
         cards = client_indexes(month, month.firm(1), balance)
         for r in result.new_state.market.hours:
             if r.turn != before.turn:

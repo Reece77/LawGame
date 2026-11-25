@@ -659,3 +659,11 @@ class MergersRow(Base):
     __tablename__ = "mergers"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)  # always 1
     data_json: Mapped[str] = mapped_column(Text)
+
+
+class RiskRow(Base):
+    """PT-M15 (schema v19): claims, policies, cases and the rest as JSON (`ptk.db.risk_io`)."""
+
+    __tablename__ = "risk"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)  # always 1
+    data_json: Mapped[str] = mapped_column(Text)

@@ -336,3 +336,9 @@ class TechActionError(SimError):
     """A technology action a rule forbids (an era not begun, a product before stage 3)."""
 
     code = "tech_action"
+
+
+class RiskActionError(SimError):
+    """A risk action a rule forbids (no offer to answer, a limit below the minimum; PT-M15)."""
+
+    code = "risk_action"

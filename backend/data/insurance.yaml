@@ -1,0 +1,46 @@
+# Professional indemnity insurance (PT-M15; spec 11.3; ADR PT-0017 3). Sources and S/D/A tags:
+# docs/research/risk-and-ethics.md s4-s5. Money is integer cents (2005 dollars).
+#
+#   insurers: kind mutual (ALAS-like: lawyer-owned, larger firms only) or commercial; factor x
+#     the premium; min_premium_cents a year; min_lawyers the smallest firm taken; max_mod the
+#     worst experience modifier the insurer will renew.
+#   limits / deductibles: the options a firm may buy, each with its factor on the premium.
+#   rates: the market's premium as bp of a year's fees, by date (hard and soft markets),
+#     linear between points, held after the last (no seeded cycle after 2025).
+#   practice_rating: a practice's rating (1.0 when not listed): securities, real estate and IP
+#     claims are larger; litigation's are frequent but defended.
+src: "[A] dossier s4: US premiums about 1.2% of revenue (0.8-2.2%); $5k-$10k a lawyer"
+insurers:
+  - { key: lawyers_mutual, label: "Lawyers' mutual", kind: mutual, factor: 0.88, min_premium_cents: 20000000, min_lawyers: 50, max_mod: 1.4, src: "[A] dossier s4: ALAS-like mutuals price below the market for large firms with good records" }
+  - { key: national_carrier, label: "National carrier", kind: commercial, factor: 1.0, min_premium_cents: 1500000, min_lawyers: 0, max_mod: 2.0, src: "[A] dossier s4" }
+  - { key: specialty_market, label: "Specialty market (London)", kind: commercial, factor: 1.25, min_premium_cents: 2500000, min_lawyers: 0, max_mod: 2.5, src: "[A] dossier s4-s5: the market of last resort for poor records" }
+limits: # per claim, claims-made
+  - { cents: 200000000, factor: 0.80 } # $2M
+  - { cents: 500000000, factor: 0.90 } # $5M
+  - { cents: 1000000000, factor: 1.00 } # $10M
+  - { cents: 2000000000, factor: 1.12 } # $20M (dossier s4: a typical large-firm tower)
+  - { cents: 5000000000, factor: 1.30 } # $50M
+deductibles: # per claim, defence costs within it
+  - { cents: 2500000, factor: 1.00 } # $25k
+  - { cents: 10000000, factor: 0.93 } # $100k
+  - { cents: 25000000, factor: 0.86 } # $250k (dossier s4: a typical retention)
+  - { cents: 50000000, factor: 0.80 } # $500k
+  - { cents: 100000000, factor: 0.75 } # $1M
+rates:
+  - { ym: [2005, 1], rate_bp: 175, src: "[A] dossier s4: the hard market of 2002-2004 easing" }
+  - { ym: [2008, 1], rate_bp: 155, src: "[A] soft market" }
+  - { ym: [2011, 1], rate_bp: 170, src: "[A] dossier s4: firming after the crash's claims" }
+  - { ym: [2018, 1], rate_bp: 155, src: "[A] soft market" }
+  - { ym: [2022, 1], rate_bp: 195, src: "[S/A] dossier s4: +5-15% a year 2019-2022" }
+  - { ym: [2025, 1], rate_bp: 190, src: "[A] flattening" }
+practice_rating:
+  corporate_ma: 1.05
+  private_equity: 1.05
+  capital_markets: 1.35
+  banking_finance: 1.10
+  restructuring: 1.10
+  commercial_litigation: 1.00
+  white_collar: 0.90
+  ip: 1.20
+  employment: 0.85
+  real_estate: 1.25

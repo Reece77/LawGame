@@ -2,7 +2,9 @@
 June 2008, three months before Lehman, with a corporate associate who is a partnership
 candidate in December 2008 (the brief's manual check: get the firm through the crash).
 `pt-2022` (PT-M14) is a 120-lawyer firm (stage 3) in December 2022, a month after ChatGPT:
-decide the firm's AI strategy.
+decide the firm's AI strategy. `pt-risk` (PT-M15) is `pt-2008` with a malpractice claim whose
+claimant has just offered to settle, a second claim about to surface, and a client-account
+shortfall found at the month's reconciliation (its critical event arrives next month).
 
 Built, not hand-written: the biglaw spin-out plays from January 2005 to June 2008 over the pure
 sim (critical events take their first choice, events written with the mock adapter), so the
@@ -22,12 +24,14 @@ from typing import Final
 import numpy as np
 
 from ptk.db import migrate
+from ptk.db.billing_io import write_client_book
 from ptk.db.saves import save_path
 from ptk.db.session import make_sessionmaker, shared_engine
 from ptk.db.state_io import insert_new, write_billing
 from ptk.events.service import Writer, write_pending_events
 from ptk.llm.offline import MockLLMAdapter
 from ptk.llm.settings import LLMSettings
+from ptk.sim.billing.models import ClientBookEntry
 from ptk.sim.calendar import ym_to_turn
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
@@ -112,6 +116,7 @@ class PracticeSave:
     lateral_book_cents: int
     fees_per_lawyer_cents: int  # the panels the firm is given, a year per lawyer at standard
     copies: int = 1  # PT-M14: the GROWTH table hired this many times (pt-2022: stage 3)
+    risk_demo: bool = False  # PT-M15: stage a claim, a second on its way and a shortfall
 
 
 PRACTICE_SAVES: Final = {
@@ -125,6 +130,19 @@ PRACTICE_SAVES: Final = {
         lateral_comp_cents=150_000_000,  # tunable-exempt: $1.5M
         lateral_book_cents=250_000_000,  # tunable-exempt: $2.5M
         fees_per_lawyer_cents=80_000_000,  # tunable-exempt: $800k
+    ),
+    # PT-M15 (the e2e): a claim to settle under the policy and a client-account shortfall
+    "pt-risk": PracticeSave(
+        key="pt-risk",
+        label="June 2008: a malpractice claim on the desk and a client-account shortfall",
+        seed=2008,
+        scenario="biglaw_spinout",
+        until_ym=(2008, 6),
+        capital_cents=1_500_000_000,  # tunable-exempt: as pt-2008
+        lateral_comp_cents=150_000_000,  # tunable-exempt: as pt-2008
+        lateral_book_cents=250_000_000,  # tunable-exempt: as pt-2008
+        fees_per_lawyer_cents=80_000_000,  # tunable-exempt: as pt-2008
+        risk_demo=True,
     ),
     # PT-M14 (the brief's manual check): decide the firm's AI strategy a month after ChatGPT
     "pt-2022": PracticeSave(
@@ -352,6 +370,10 @@ def create_practice_save(
     if path.exists():
         raise SaveExistsError(f"a save named {slug or spec.key!r} already exists")
     state, entries = build(spec, data, balance)
+    book: tuple[ClientBookEntry, ...] = ()
+    if spec.risk_demo:
+        state, more, book = risk_demo(state, spec, data, balance, entries)
+        entries += more
     meta = replace(state.save_meta, name=slug or spec.key)
     state = replace(state, save_meta=meta)
     save_dir.mkdir(parents=True, exist_ok=True)
@@ -360,4 +382,86 @@ def create_practice_save(
     with sessions() as session, session.begin():
         insert_new(session, state, tuple(entries))
         write_billing(session, state.billing)
+        write_client_book(session, book)  # PT-M15: the demo's money on account and shortfall
     return path
+
+
+def risk_demo(
+    state: GameState,
+    spec: PracticeSave,
+    data: GameData,
+    balance: Balance,
+    entries: list[LedgerEntry],
+) -> tuple[GameState, list[LedgerEntry], tuple[ClientBookEntry, ...]]:
+    """PT-M15's demo, staged through the engine with the chances forced (the rules, not the
+    luck, are what the save shows): $500k on account for the firm's largest client; two
+    escaped errors on two clients' open matters become claims, the first walked from notice to the
+    claimant's offer, the second surfacing next month; the month's reconciliation finds a
+    posting error (made good from firm cash; the critical event is queued for next month)."""
+    from ptk.sim.billing.books import ClientBook
+    from ptk.sim.billing.models import ClientFunds
+    from ptk.sim.risk import claims as cl
+    from ptk.sim.risk import insurance, trust
+    from ptk.sim.risk.common import Books
+    from ptk.sim.risk.config import Span
+    from ptk.sim.risk.models import with_claim
+
+    rng = RngFactory(spec.seed)
+    firm = state.player.id
+    balances = dict(apply_entries({}, entries))
+    books = Books(firm, state.turn, balances.get((firm, CASH), 0))
+    state = insurance.insurance_month(state, firm, books, balance, data)
+    picked: dict[int, int] = {}  # client -> matter: two matters of two clients
+    for m in state.market.open_matters(firm):
+        if m.team and m.lead_id is not None and m.client_id not in picked and len(picked) < 2:
+            picked[m.client_id] = m.id
+    chosen = set(picked.values())
+    after = replace(
+        state,
+        market=replace(
+            state.market,
+            matters=tuple(
+                replace(m, errors_escaped=m.errors_escaped + 1) if m.id in chosen else m
+                for m in state.market.matters
+            ),
+        ),
+    )
+    r = balance.risk
+    zero = Span(lo=0, hi=0)
+    c = r.claims.model_copy(
+        update={
+            "from_error_bp": 10_000,
+            "delay_months": zero,
+            "drop_bp": 0,
+            "offer_bp": 10_000,
+            "stages": r.claims.stages.model_copy(
+                update={"notice": zero, "investigation": zero, "defence": Span(lo=6, hi=6)}
+            ),
+        }
+    )
+    forced = balance.model_copy(update={"risk": r.model_copy(update={"claims": c})})
+    state = cl.make_claims(state, after, rng, forced, data)
+    mine = [x for x in state.risk.claims if x.firm_id == firm]
+    first, second = mine[-2], mine[-1]
+    state = replace(state, risk=with_claim(state.risk, replace(second, surfaces_turn=state.turn)))
+    claim = first
+    for _ in range(6):  # notice, investigation, defence, the offer: one stage a step
+        state, claim = cl.claim_month(state, claim, rng, books, forced, data)
+        state = replace(state, risk=with_claim(state.risk, claim))
+        if claim.stage == "offer":
+            break
+    client = max(
+        (x for x in state.market.relationships if x.firm_id == firm),
+        key=lambda x: (x.score, -x.client_id),
+    ).client_id
+    deposit = ClientBook(state.turn, firm)
+    deposit.receive("Money on account", client, 50_000_000)
+    funds = (
+        *state.billing.funds,
+        ClientFunds(client_id=client, firm_id=firm, owed_cents=50_000_000),
+    )
+    state = replace(state, billing=replace(state.billing, funds=funds))
+    t = r.trust.model_copy(update={"error_bp": 10_000})
+    shortfall = balance.model_copy(update={"risk": r.model_copy(update={"trust": t})})
+    state, made_good, _ = trust.reconcile(state, rng, books, shortfall, data)
+    return state, list(books.entries), (*deposit.entries(), *made_good)

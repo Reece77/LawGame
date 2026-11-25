@@ -71,7 +71,22 @@ test('merge with a generated firm through both votes and clearance', async ({ pa
   await page.getByTestId('put-terms').click();
   await expect(page.getByTestId('deal-stage')).toHaveText('Terms'); // saved before Continue
 
-  // both partnerships vote: conflicts are cleared, and it closes the next month
+  // both partnerships vote: conflicts are cleared, and it closes the next month. PT-M15: the
+  // MP canvasses the equity partners before the vote (a lobbying conversation and a promise of
+  // lockstep points each, PT-M4's actions): with claims and premiums the firm's month-31
+  // partners judge the terms more coolly, and two of three falls short of 6,667 bp
+  const pship = await (await page.request.get(`/api/saves/${slug}/partnership`)).json();
+  type P = { person_id: number; klass: string; is_you: boolean };
+  for (const p of (pship.partners as P[]).filter((x) => x.klass === 'equity' && !x.is_you)) {
+    const lobbied = await page.request.post(`/api/saves/${slug}/partnership/lobby`, {
+      data: { person_id: p.person_id },
+    });
+    expect(lobbied.ok()).toBeTruthy();
+    const promised = await page.request.post(`/api/saves/${slug}/partnership/promise`, {
+      data: { person_id: p.person_id, points: 4 },
+    });
+    expect(promised.ok()).toBeTruthy();
+  }
   await advanceMonths(page, slug, 1);
   await answerBlocking(page, slug);
   await page.reload();

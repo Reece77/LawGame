@@ -143,6 +143,10 @@ def is_one_off(state: GameState, action: object, b: Balance) -> bool:
         return era is None or not era.platform
     if kind == "set_pay_policy":  # a salary-scale change above the market
         return str(getattr(action, "mode", "match")) == "lead"
+    if kind == "respond_claim":  # PT-M15: settling a malpractice claim above the deductible
+        claim = state.risk.claim(int(_f(action, "claim_id")))
+        left = 0 if claim is None else claim.deductible_cents - claim.deductible_paid_cents
+        return str(_f(action, "choice")) == "settle" and (claim is None or claim.offer_cents > left)
     if kind == "seek_waiver":  # a matter adverse to a key client, with a waiver
         m = state.market.matter(int(_f(action, "matter_id")))
         adverse = None if m is None else m.adverse_client_id

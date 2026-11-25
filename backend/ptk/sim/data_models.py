@@ -1422,6 +1422,17 @@ class PracticeDef(_Strict):
     short_label: str = Field(min_length=1)
     demand_cents: int = Field(gt=0)  # NY 2005 annual demand base D0 (spec 6)
     driver: str = Field(min_length=1)
+    # PT-M12: spec 6's cycle column, for the Practices screen's filter
+    cycle: Literal[
+        "pro_cyclical",
+        "counter_cyclical",
+        "steady",
+        "policy",
+        "rising",
+        "mixed",
+        "long_cycle",
+        "lumpy",
+    ]
     beta: float  # sensitivity to the driver index (spec 6)
     index: str  # PT-M7: the driver's macro_history.yaml series
     sigma: float = Field(ge=0)  # monthly LogNormal demand noise

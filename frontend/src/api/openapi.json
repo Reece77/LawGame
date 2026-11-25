@@ -3804,6 +3804,85 @@
         }
       }
     },
+    "/api/saves/{slug}/matters/{matter_id}/funding": {
+      "post": {
+        "summary": "Accept Funding",
+        "description": "PT-M12 (ADR PT-0018): take the litigation funder's offer on a contingency case.",
+        "operationId": "acceptFunding",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "matter_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Matter Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatterOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/saves/{slug}/matters/{matter_id}/assessment": {
       "post": {
         "summary": "Assess Case",
@@ -4840,6 +4919,99 @@
                     "$ref": "#/components/schemas/PracticeScreenOut"
                   },
                   "title": "Response Listpracticesscreen"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/practices/{practice}/enter": {
+      "post": {
+        "summary": "Enter Practice",
+        "description": "PT-M12: enter a practice (a lateral partner search, a lateral team or a partner\nretraining).",
+        "operationId": "enterPractice",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "practice",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Practice"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnterPracticeIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PracticeScreenOut"
+                  },
+                  "title": "Response Enterpractice"
                 }
               }
             }
@@ -13194,6 +13366,36 @@
         ],
         "title": "ElectionIn"
       },
+      "EnterPracticeIn": {
+        "properties": {
+          "route": {
+            "type": "string",
+            "enum": [
+              "lateral",
+              "team",
+              "retrain"
+            ],
+            "title": "Route"
+          },
+          "person_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Person Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "route"
+        ],
+        "title": "EnterPracticeIn",
+        "description": "PT-M12: enter a practice by a lateral partner, a lateral team or a partner retraining."
+      },
       "EntryOut": {
         "properties": {
           "when": {
@@ -16021,6 +16223,87 @@
             "type": "boolean",
             "title": "Ai Product",
             "default": false
+          },
+          "billing_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Billing Model"
+          },
+          "contingency_share_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contingency Share Bp"
+          },
+          "contingency_wip_cents": {
+            "type": "integer",
+            "title": "Contingency Wip Cents",
+            "default": 0
+          },
+          "funded": {
+            "type": "boolean",
+            "title": "Funded",
+            "default": false
+          },
+          "funded_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Funded Bp"
+          },
+          "funder_return_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Funder Return Bp"
+          },
+          "funder_advances_cents": {
+            "type": "integer",
+            "title": "Funder Advances Cents",
+            "default": 0
+          },
+          "funding_offer_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Funding Offer Bp"
+          },
+          "funding_offer_return_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Funding Offer Return Bp"
           }
         },
         "type": "object",
@@ -19717,6 +20000,26 @@
             "type": "integer",
             "title": "Ai Products",
             "default": 0
+          },
+          "driver": {
+            "type": "string",
+            "title": "Driver",
+            "default": ""
+          },
+          "cycle": {
+            "type": "string",
+            "title": "Cycle",
+            "default": ""
+          },
+          "practised": {
+            "type": "boolean",
+            "title": "Practised",
+            "default": false
+          },
+          "billing_model": {
+            "type": "string",
+            "title": "Billing Model",
+            "default": "hourly"
           }
         },
         "type": "object",

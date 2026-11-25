@@ -797,6 +797,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/saves/{slug}/matters/{matter_id}/funding": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Accept Funding
+         * @description PT-M12 (ADR PT-0018): take the litigation funder's offer on a contingency case.
+         */
+        post: operations["acceptFunding"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/saves/{slug}/matters/{matter_id}/assessment": {
         parameters: {
             query?: never;
@@ -1037,6 +1057,27 @@ export interface paths {
         get: operations["listPracticesScreen"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/practices/{practice}/enter": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Enter Practice
+         * @description PT-M12: enter a practice (a lateral partner search, a lateral team or a partner
+         *     retraining).
+         */
+        post: operations["enterPractice"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3153,6 +3194,19 @@ export interface components {
             /** Successor Id */
             successor_id?: number | null;
         };
+        /**
+         * EnterPracticeIn
+         * @description PT-M12: enter a practice by a lateral partner, a lateral team or a partner retraining.
+         */
+        EnterPracticeIn: {
+            /**
+             * Route
+             * @enum {string}
+             */
+            route: "lateral" | "team" | "retrain";
+            /** Person Id */
+            person_id?: number | null;
+        };
         /** EntryOut */
         EntryOut: {
             /** When */
@@ -4122,6 +4176,33 @@ export interface components {
              * @default false
              */
             ai_product?: boolean;
+            /** Billing Model */
+            billing_model?: string | null;
+            /** Contingency Share Bp */
+            contingency_share_bp?: number | null;
+            /**
+             * Contingency Wip Cents
+             * @default 0
+             */
+            contingency_wip_cents?: number;
+            /**
+             * Funded
+             * @default false
+             */
+            funded?: boolean;
+            /** Funded Bp */
+            funded_bp?: number | null;
+            /** Funder Return Bp */
+            funder_return_bp?: number | null;
+            /**
+             * Funder Advances Cents
+             * @default 0
+             */
+            funder_advances_cents?: number;
+            /** Funding Offer Bp */
+            funding_offer_bp?: number | null;
+            /** Funding Offer Return Bp */
+            funding_offer_return_bp?: number | null;
         };
         /** MatterRowOut */
         MatterRowOut: {
@@ -5298,6 +5379,26 @@ export interface components {
              * @default 0
              */
             ai_products?: number;
+            /**
+             * Driver
+             * @default
+             */
+            driver?: string;
+            /**
+             * Cycle
+             * @default
+             */
+            cycle?: string;
+            /**
+             * Practised
+             * @default false
+             */
+            practised?: boolean;
+            /**
+             * Billing Model
+             * @default hourly
+             */
+            billing_model?: string;
         };
         /** PressOut */
         PressOut: {
@@ -9404,6 +9505,65 @@ export interface operations {
             };
         };
     };
+    acceptFunding: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                matter_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MatterOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     assessCase: {
         parameters: {
             query?: never;
@@ -10209,6 +10369,69 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PracticeScreenOut"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    enterPractice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                practice: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EnterPracticeIn"];
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {

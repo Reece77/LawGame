@@ -429,7 +429,8 @@ export type MatterAction =
   | { kind: 'waiver'; advance: boolean }
   | { kind: 'settlement'; accept: boolean }
   | { kind: 'forum'; court: string }
-  | { kind: 'assess' };
+  | { kind: 'assess' }
+  | { kind: 'funding' };
 
 async function runMatter(slug: string, id: number, a: MatterAction): Promise<MatterDetail> {
   const path = { slug, matter_id: id };
@@ -491,6 +492,10 @@ async function runMatter(slug: string, id: number, a: MatterAction): Promise<Mat
     case 'assess': // PT-M7a: early case assessment
       return unwrap(
         await api.POST('/api/saves/{slug}/matters/{matter_id}/assessment', { params: { path } }),
+      );
+    case 'funding': // PT-M12: take the litigation funder's offer on a contingency case
+      return unwrap(
+        await api.POST('/api/saves/{slug}/matters/{matter_id}/funding', { params: { path } }),
       );
   }
 }
@@ -559,6 +564,36 @@ export const usePracticesScreen = (slug: string) =>
     queryFn: async () =>
       unwrap(await api.GET('/api/saves/{slug}/practices/screen', { params: { path: { slug } } })),
   });
+
+export type EnterRoute = 'lateral' | 'team' | 'retrain';
+
+// PT-M12: enter a practice (a lateral partner search, a lateral team or a partner retraining)
+export function useEnterPractice(slug: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: async (a: { practice: string; route: EnterRoute; personId?: number }) =>
+      unwrap(
+        await api.POST('/api/saves/{slug}/practices/{practice}/enter', {
+          params: { path: { slug, practice: a.practice } },
+          body: { route: a.route, person_id: a.personId ?? null },
+        }),
+      ),
+    onSuccess: (rows) => {
+      client.setQueryData(['practices', slug], rows);
+      for (const key of [
+        'people',
+        'partnership',
+        'recruitment',
+        'org',
+        'game',
+        'inbox',
+        'finance',
+      ]) {
+        void client.invalidateQueries({ queryKey: [key, slug] });
+      }
+    },
+  });
+}
 
 export const useExplain = (
   slug: string,

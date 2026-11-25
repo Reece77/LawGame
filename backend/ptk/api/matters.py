@@ -203,6 +203,18 @@ class MatterOut(MatterRowOut):
     ai_exposed_pct: int = 0
     ai_client_cut_bp: int = 0
     ai_product: bool = False
+    # PT-M12 (spec 7.7; ADR PT-0018): the billing terms, a contingency case's share and its
+    # unbilled WIP (no fee until a recovery), and its litigation funding: the terms taken or
+    # the funder's standing offer
+    billing_model: str | None = None
+    contingency_share_bp: int | None = None
+    contingency_wip_cents: int = 0
+    funded: bool = False
+    funded_bp: int | None = None
+    funder_return_bp: int | None = None
+    funder_advances_cents: int = 0
+    funding_offer_bp: int | None = None
+    funding_offer_return_bp: int | None = None
 
 
 class ConflictChecksOut(BaseModel):
@@ -504,8 +516,41 @@ def matter_view(state: GameState, matter_id: int, data: GameData, balance: Balan
             "opposing_counsel": opposing_counsel(state, m.id)[0],
             "opposing_firm_id": opposing_counsel(state, m.id)[1],
             **matter_ai_fields(state, m, data, balance),  # PT-M14
+            **_billing_fields(state, m, balance),  # PT-M12
         }
     )
+
+
+def _billing_fields(state: GameState, m: Matter, balance: Balance) -> dict[str, Any]:
+    """PT-M12: the engagement's model, a contingency case's terms and its funding."""
+    from ptk.sim.billing.funding import funding_offer
+    from ptk.sim.rng import RngFactory
+
+    e = state.billing.engagement(m.id)
+    if e is None:
+        return {}
+    out: dict[str, Any] = {"billing_model": e.model}
+    if e.model != "contingency":
+        return out
+    out |= {
+        "contingency_share_bp": e.share_bp,
+        "contingency_wip_cents": e.wip_cents,
+        "funded": e.funded_turn is not None,
+        "funder_advances_cents": e.advances_cents,
+    }
+    if e.funded_turn is not None:
+        out |= {"funded_bp": e.funded_bp, "funder_return_bp": e.funder_return_bp}
+        return out
+    offer = funding_offer(
+        e,
+        state.turn,
+        state.save_meta.start_ym,
+        RngFactory(state.save_meta.master_seed),
+        balance.billing.funding,
+    )
+    if offer is not None:
+        out |= {"funding_offer_bp": offer.funded_bp, "funding_offer_return_bp": offer.return_bp}
+    return out
 
 
 # --- Router ----------------------------------------------------------------------------------
@@ -777,6 +822,18 @@ def make_matters_router(errors: dict[int | str, dict[str, Any]]) -> APIRouter:
     )
     def choose_forum(slug: str, matter_id: int, body: ForumIn) -> MatterOut:
         return matter_out(_act(slug, lambda a: ChooseForum(a, matter_id, body.court)), matter_id)
+
+    @router.post(
+        f"{base}/matters/{{matter_id}}/funding",
+        response_model=MatterOut,
+        responses=errors,
+        operation_id="acceptFunding",
+    )
+    def accept_funding(slug: str, matter_id: int) -> MatterOut:
+        """PT-M12 (ADR PT-0018): take the litigation funder's offer on a contingency case."""
+        from ptk.sim.billing.actions import AcceptFunding
+
+        return matter_out(_act(slug, lambda a: AcceptFunding(a, matter_id)), matter_id)
 
     @router.post(
         f"{base}/matters/{{matter_id}}/assessment",

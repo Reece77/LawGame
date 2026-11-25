@@ -141,6 +141,7 @@ practices:
     short_label: M&A
     demand_cents: 240000000000 # $2.4bn [A] s4 row 1 (range $1.9-3.0bn): US M&A $1.1tn [S]
     driver: M&A volume
+    cycle: pro_cyclical # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: 1.4 # [spec]
     index: ma # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.10
@@ -162,6 +163,7 @@ practices:
     short_label: PE
     demand_cents: 110000000000 # $1.1bn [A] s4 row 2 (range $0.8-1.5bn): record buyout fundraising $86bn [S]
     driver: PE deal and fundraising volume
+    cycle: pro_cyclical # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: 1.5
     index: pe # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.12
@@ -183,6 +185,7 @@ practices:
     short_label: Cap mkts
     demand_cents: 130000000000 # $1.3bn [A] s4 row 3 (range $1.0-1.7bn): US underwriting $3.2tn [S]
     driver: IPO and issuance volume
+    cycle: pro_cyclical # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: 1.3
     index: issuance # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.15
@@ -204,6 +207,7 @@ practices:
     short_label: Banking
     demand_cents: 110000000000 # $1.1bn [A] s4 row 4 (range $0.8-1.4bn): leveraged lending boom (volume not found)
     driver: leveraged lending volume
+    cycle: pro_cyclical # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: 1.1
     index: lending # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.10
@@ -225,6 +229,7 @@ practices:
     short_label: Restruct
     demand_cents: 70000000000 # $0.7bn [A] s4 row 5 (range $0.5-1.0bn): SDNY 790 Chapter 11 cases in 2005 [S]
     driver: default rate and distressed debt
+    cycle: counter_cyclical # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: -0.8 # [spec] counter-cyclical (-1.2); PT-M7b tuning -1.2 -> -0.8 (T8: restructuring-heavy firms grew +40-70% in 2009 at -1.2 with beta_scale 1.3)
     index: credit # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.10
@@ -246,6 +251,7 @@ practices:
     short_label: Litigation
     demand_cents: 250000000000 # $2.5bn [A] s4 row 6 (range $2.0-3.2bn): litigation 58% of large-company spend [S]
     driver: litigation index
+    cycle: steady # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: -0.2 # [spec] steady, slightly counter-cyclical
     index: cycle # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.05
@@ -268,6 +274,7 @@ practices:
     short_label: White collar
     demand_cents: 85000000000 # $0.85bn [A] s4 row 7 (range $0.6-1.2bn): post-Enron, SOX era
     driver: enforcement intensity
+    cycle: policy # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: 0.6 # [A] PT-M7: policy-driven, follows the enforcement index (was 0.0 while indices were flat)
     index: enforcement # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.08
@@ -289,6 +296,7 @@ practices:
     short_label: IP
     demand_cents: 85000000000 # $0.85bn [A] s4 row 9 (range $0.6-1.1bn): 2,720 patent and 5,796 copyright suits FY2005 [S]
     driver: patent filings and tech M&A
+    cycle: steady # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: 0.2
     index: ip # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.06
@@ -310,6 +318,7 @@ practices:
     short_label: Employment
     demand_cents: 55000000000 # $0.55bn [A] s4 row 10 (range $0.4-0.8bn): 16,930 employment civil-rights suits [S]
     driver: employment level and regulation
+    cycle: counter_cyclical # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: -0.3 # [A] counter-cyclical (layoffs)
     index: cycle # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.05
@@ -331,6 +340,7 @@ practices:
     short_label: Real estate
     demand_cents: 100000000000 # $1.0bn [A] s4 row 8 (range $0.7-1.4bn): Manhattan's 2005 property boom
     driver: property transactions
+    cycle: pro_cyclical # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: 1.2 # [A] pro-cyclical, should fall by half in 2009
     index: real_estate # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.08
@@ -356,6 +366,7 @@ practices:
     short_label: Arbitration
     demand_cents: 16000000000 # $0.16bn [A] v2 s2 row 11 (range $0.10-0.28bn)
     driver: cross-border disputes
+    cycle: rising # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: 0.5 # [A] v2 s4: steady, rising; its index rises in downturns
     index: arbitration
     sigma: 0.08
@@ -378,6 +389,7 @@ practices:
     short_label: Tax
     demand_cents: 45000000000 # $0.45bn [A] v2 s2 row 12 (range $0.30-0.70bn)
     driver: deal volume and tax reform
+    cycle: mixed # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: 0.8 # [A] v2 s4: mixed, reform spikes (2017)
     index: tax
     sigma: 0.08
@@ -400,6 +412,7 @@ practices:
     short_label: Antitrust
     demand_cents: 33000000000 # $0.33bn [A] v2 s2 row 13 (range $0.25-0.50bn): HSR about 1,700 filings [S/A]
     driver: merger reviews and enforcement
+    cycle: pro_cyclical # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: 1.0 # [A] v2 s4: follows M&A, with policy
     index: antitrust
     sigma: 0.08
@@ -422,6 +435,7 @@ practices:
     short_label: Fin reg
     demand_cents: 30000000000 # $0.30bn [A] v2 s2 row 14 (range $0.20-0.45bn)
     driver: regulation intensity
+    cycle: policy # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: 0.6 # [A] v2 s4: policy-driven (the 2010 Dodd-Frank surge)
     index: finreg
     sigma: 0.07
@@ -444,6 +458,7 @@ practices:
     short_label: Healthcare
     demand_cents: 18000000000 # $0.18bn [A] v2 s2 row 15 (range $0.10-0.30bn)
     driver: healthcare deals and enforcement
+    cycle: rising # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: 0.5 # [A] v2 s4: steady, rising
     index: healthcare
     sigma: 0.06
@@ -466,6 +481,7 @@ practices:
     short_label: Energy
     demand_cents: 22000000000 # $0.22bn [A] v2 s2 row 16 (range $0.15-0.35bn)
     driver: project finance and energy transition
+    cycle: long_cycle # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: 0.9 # [A] v2 s4: long cycles
     index: energy
     sigma: 0.08
@@ -488,6 +504,7 @@ practices:
     short_label: Tech/privacy
     demand_cents: 12000000000 # $0.12bn [A] v2 s2 row 17 (range $0.08-0.20bn)
     driver: tech activity and privacy law
+    cycle: rising # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: 0.6 # [A] v2 s4: rising (GDPR 2018)
     index: privacy
     sigma: 0.07
@@ -510,6 +527,7 @@ practices:
     short_label: Private client
     demand_cents: 15000000000 # $0.15bn [A] v2 s2 row 18 (range $0.10-0.25bn): individuals pooled as flow (spec 7.1)
     driver: wealth index
+    cycle: steady # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: 0.7 # [A] v2 s4: steady, with wealth
     index: wealth
     sigma: 0.05
@@ -532,6 +550,7 @@ practices:
     short_label: Insurance
     demand_cents: 20000000000 # $0.20bn [A] v2 s2 row 19 (range $0.15-0.35bn)
     driver: catastrophe and claims cycles
+    cycle: steady # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: 0.5 # [A] v2 s4: steady, claims cycle
     index: catastrophe
     sigma: 0.07
@@ -554,6 +573,7 @@ practices:
     short_label: Mass torts
     demand_cents: 9000000000 # $0.09bn [A] v2 s2 row 20 (range $0.05-0.20bn): the large-firm share of plaintiff fees
     driver: contingency settlements
+    cycle: lumpy # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: 0.6 # [A] v2 s4: lumpy
     index: torts
     sigma: 0.25 # [A] lumpy: settlements arrive in waves

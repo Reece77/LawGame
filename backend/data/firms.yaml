@@ -6,7 +6,8 @@
 #   key: the stable rival key (TST ADR-0013 amendment); client panels carry it.
 #   personality: spec 10.1 [A for every firm]; hq, offices, comp: [A] unless the comp says S.
 #   strong: practices with double weight in the firm's lawyer mix [A], from the dossier's main
-#     practices and clients.yaml's panel strengths.
+#     practices and clients.yaml's panel strengths; PT-M12 adds the v2 practices' strengths
+#     (docs/research/practices-v2.md s8, Chambers bands from memory [A]).
 #   panel_base: NY panel appeal (logit points), from clients.yaml's panel_firms where listed.
 #   fy2005: the turn-0 figures; path: later fiscal years the history pin follows. DLA Piper is
 #     pinned on its US basis only (FY2005-2009): the verein basis from FY2012 is another firm's
@@ -28,6 +29,10 @@ firms:
   - commercial_litigation
   - white_collar
   - capital_markets
+  - tax
+  - antitrust
+  - insurance
+  - international_arbitration
   panel_base: 1.6
   fy2005:
     year: 2005
@@ -157,6 +162,8 @@ firms:
   - commercial_litigation
   - employment
   - ip
+  - antitrust
+  - healthcare
   panel_base: 1.2
   fy2005:
     year: 2005
@@ -220,6 +227,10 @@ firms:
   - capital_markets
   - banking_finance
   - ip
+  - tax
+  - antitrust
+  - energy
+  - technology_privacy
   panel_base: 1.4
   fy2005:
     year: 2005
@@ -291,6 +302,10 @@ firms:
   - capital_markets
   - commercial_litigation
   - banking_finance
+  - financial_regulation
+  - insurance
+  - healthcare
+  - energy
   fy2005:
     year: 2005
     revenue_cents: 112400000000
@@ -355,6 +370,8 @@ firms:
   - banking_finance
   - corporate_ma
   - commercial_litigation
+  - international_arbitration
+  - energy
   fy2005:
     year: 2005
     revenue_cents: 104600000000
@@ -416,6 +433,7 @@ firms:
   - restructuring
   - private_equity
   - ip
+  - antitrust
   panel_base: 1.4
   fy2005:
     year: 2005
@@ -472,6 +490,7 @@ firms:
   - banking_finance
   - commercial_litigation
   - capital_markets
+  - insurance
   fy2005:
     year: 2005
     revenue_cents: 98000000000
@@ -527,6 +546,7 @@ firms:
   - employment
   - commercial_litigation
   - banking_finance
+  - healthcare
   fy2005:
     year: 2005
     revenue_cents: 80450000000
@@ -723,6 +743,10 @@ firms:
   - corporate_ma
   - capital_markets
   - banking_finance
+  - tax
+  - antitrust
+  - financial_regulation
+  - private_client
   panel_base: 1.7
   fy2005:
     year: 2005
@@ -779,6 +803,7 @@ firms:
   - corporate_ma
   - capital_markets
   - commercial_litigation
+  - tax
   panel_base: 1.7
   fy2005:
     year: 2005
@@ -834,6 +859,8 @@ firms:
   strong:
   - corporate_ma
   - restructuring
+  - tax
+  - antitrust
   panel_base: 1.4
   fy2005:
     year: 2005
@@ -890,6 +917,9 @@ firms:
   - capital_markets
   - banking_finance
   - white_collar
+  - tax
+  - antitrust
+  - financial_regulation
   panel_base: 1.6
   fy2005:
     year: 2005
@@ -946,6 +976,8 @@ firms:
   - private_equity
   - banking_finance
   - corporate_ma
+  - tax
+  - insurance
   panel_base: 1.6
   fy2005:
     year: 2005
@@ -1057,6 +1089,10 @@ firms:
   strong:
   - capital_markets
   - corporate_ma
+  - tax
+  - antitrust
+  - financial_regulation
+  - international_arbitration
   panel_base: 1.5
   fy2005:
     year: 2005
@@ -1112,6 +1148,9 @@ firms:
   strong:
   - private_equity
   - white_collar
+  - international_arbitration
+  - insurance
+  - private_client
   panel_base: 1.4
   fy2005:
     year: 2005
@@ -1167,6 +1206,9 @@ firms:
   strong:
   - banking_finance
   - capital_markets
+  - international_arbitration
+  - financial_regulation
+  - energy
   panel_base: 1.3
   fy2005:
     year: 2005
@@ -1225,6 +1267,8 @@ firms:
   strong:
   - banking_finance
   - restructuring
+  - energy
+  - private_client
   panel_base: 1.3
   fy2005:
     year: 2005
@@ -1336,6 +1380,8 @@ firms:
   - capital_markets
   - banking_finance
   - restructuring
+  - tax
+  - insurance
   fy2005:
     year: 2005
     revenue_cents: 48300000000
@@ -1385,6 +1431,7 @@ firms:
   - private_equity
   - corporate_ma
   - restructuring
+  - insurance
   fy2005:
     year: 2005
     revenue_cents: 44300000000
@@ -1440,6 +1487,7 @@ firms:
   - employment
   - real_estate
   - commercial_litigation
+  - private_client
   fy2005:
     year: 2005
     revenue_cents: 45350000000
@@ -1518,6 +1566,8 @@ firms:
   - banking_finance
   - commercial_litigation
   - corporate_ma
+  - insurance
+  - energy
   fy2005:
     year: 2005
     revenue_cents: 44000000000
@@ -1541,6 +1591,7 @@ firms:
   - private_equity
   - ip
   - white_collar
+  - healthcare
   fy2005:
     year: 2005
     revenue_cents: 55800000000
@@ -1602,6 +1653,8 @@ firms:
   - white_collar
   - ip
   - commercial_litigation
+  - antitrust
+  - financial_regulation
   fy2005:
     year: 2005
     revenue_cents: 81500000000
@@ -1657,6 +1710,10 @@ firms:
   - white_collar
   - commercial_litigation
   - ip
+  - antitrust
+  - financial_regulation
+  - healthcare
+  - technology_privacy
   fy2005:
     year: 2005
     revenue_cents: 38000000000
@@ -1715,6 +1772,9 @@ firms:
   - commercial_litigation
   - ip
   - corporate_ma
+  - antitrust
+  - healthcare
+  - technology_privacy
   fy2005:
     year: 2005
     revenue_cents: 70000000000
@@ -2016,6 +2076,7 @@ firms:
   - ip
   - capital_markets
   - corporate_ma
+  - technology_privacy
   fy2005:
     year: 2005
     revenue_cents: 41200000000
@@ -2071,6 +2132,8 @@ firms:
   - ip
   - capital_markets
   - private_equity
+  - technology_privacy
+  - healthcare
   fy2005:
     year: 2005
     revenue_cents: 29800000000
@@ -2345,7 +2408,7 @@ firms:
   ny_office: false
   offices: 30
   comp: modified lockstep
-  strong: [banking_finance, capital_markets, corporate_ma]
+  strong: [banking_finance, capital_markets, corporate_ma, energy, international_arbitration]
   fy2005:
     year: 2005
     revenue_cents: 167152000000
@@ -2388,7 +2451,7 @@ firms:
   ny_office: false
   offices: 30
   comp: modified lockstep
-  strong: [corporate_ma, banking_finance, capital_markets]
+  strong: [corporate_ma, banking_finance, capital_markets, antitrust, financial_regulation, energy]
   fy2005:
     year: 2005
     revenue_cents: 147218000000
@@ -2431,7 +2494,7 @@ firms:
   ny_office: false
   offices: 28
   comp: modified lockstep
-  strong: [corporate_ma, commercial_litigation, capital_markets]
+  strong: [corporate_ma, commercial_litigation, capital_markets, international_arbitration, antitrust]
   fy2005:
     year: 2005
     revenue_cents: 142646000000
@@ -2474,7 +2537,7 @@ firms:
   ny_office: false
   offices: 25
   comp: modified lockstep
-  strong: [banking_finance, capital_markets, corporate_ma]
+  strong: [banking_finance, capital_markets, corporate_ma, energy, financial_regulation]
   fy2005:
     year: 2005
     revenue_cents: 121798000000
@@ -2514,7 +2577,7 @@ firms:
   ny_office: false
   offices: 4
   comp: pure lockstep [S]
-  strong: [corporate_ma, commercial_litigation, banking_finance]
+  strong: [corporate_ma, commercial_litigation, banking_finance, antitrust]
   fy2005:
     year: 2005
     revenue_cents: 53035000000
@@ -2554,7 +2617,7 @@ firms:
   ny_office: false
   offices: 14
   comp: lockstep
-  strong: [commercial_litigation, white_collar, corporate_ma]
+  strong: [commercial_litigation, white_collar, corporate_ma, international_arbitration, insurance]
   fy2005:
     year: 2005
     revenue_cents: 48463000000
@@ -2673,7 +2736,7 @@ firms:
   ny_office: false
   offices: 20
   comp: lockstep
-  strong: [banking_finance, commercial_litigation, corporate_ma]
+  strong: [banking_finance, commercial_litigation, corporate_ma, energy, insurance]
   fy2005:
     year: 2005
     revenue_cents: 38405000000
@@ -2988,7 +3051,7 @@ firms:
   ny_office: false
   offices: 1
   comp: lockstep
-  strong: [private_equity, corporate_ma, real_estate]
+  strong: [private_equity, corporate_ma, real_estate, private_client]
   fy2005:
     year: 2005
     revenue_cents: 13533000000
@@ -3057,6 +3120,53 @@ firms:
   - year: 2018
     revenue_cents: 19168000000
     src: 'rev S A-L7 (GBP 146.9m, FY to April 2018, at 1.3048); london-and-us-cities A s4.2'
+# PT-M12: practice specialists (docs/research/practices-v2.md s8; fiscal 2005 figures [A], not
+# pinned: T11 reads only [S] points).
+- key: curtis_mallet
+  name: Curtis, Mallet-Prevost, Colt & Mosle
+  short: Curtis
+  personality: arbitration_firm
+  hq: new_york
+  offices: 12
+  comp: modified lockstep [A]
+  strong: [international_arbitration, energy]
+  fy2005:
+    year: 2005
+    revenue_cents: 11000000000
+    lawyers: 230
+    equity_partners: 55
+    pep_cents: 80000000
+    src: 'rev A; lawyers A; EP A; PEP A (practices-v2 s8: investment-treaty arbitration for states)'
+- key: withers_bergman
+  name: Withers Bergman
+  short: Withers Bergman
+  personality: private_client_firm
+  hq: new_york
+  offices: 3
+  comp: modified lockstep [A]
+  strong: [private_client, tax]
+  fy2005:
+    year: 2005
+    revenue_cents: 3000000000
+    lawyers: 60
+    equity_partners: 18
+    pep_cents: 60000000
+    src: 'rev A; lawyers A; EP A; PEP A (practices-v2 s8: Withers'' US arm, from its 2002 merger with Bergman, Horowitz & Reynolds)'
+- key: lieff_cabraser
+  name: Lieff Cabraser Heimann & Bernstein
+  short: Lieff Cabraser
+  personality: plaintiff_firm
+  hq: san_francisco
+  offices: 3
+  comp: eat what you kill [A]
+  strong: [mass_torts]
+  fy2005:
+    year: 2005
+    revenue_cents: 9000000000
+    lawyers: 60
+    equity_partners: 20
+    pep_cents: 150000000
+    src: 'rev A; lawyers A; EP A; PEP A (practices-v2 s8: a plaintiff mass-tort and class-action firm)'
 events:
 - key: kl_preston_gates
   ym:

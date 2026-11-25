@@ -420,7 +420,7 @@ rivals: # rival firms (PT-M5; spec 10; ADR PT-0008). Money is cents a year unles
       utilisation: 0.85
       growth_bias: 0.0
       fragility: 0.5
-      mix: { corporate_ma: 0.22, private_equity: 0.1, capital_markets: 0.14, banking_finance: 0.12, restructuring: 0.06, commercial_litigation: 0.18, white_collar: 0.06, ip: 0.03, employment: 0.03, real_estate: 0.06 }
+      mix: { corporate_ma: 0.22, private_equity: 0.1, capital_markets: 0.14, banking_finance: 0.12, restructuring: 0.06, commercial_litigation: 0.18, white_collar: 0.06, ip: 0.03, employment: 0.03, real_estate: 0.06, international_arbitration: 0.03, tax: 0.05, antitrust: 0.04, financial_regulation: 0.03, healthcare: 0.01, energy: 0.02, technology_privacy: 0.01, private_client: 0.01, insurance: 0.02, mass_torts: 0.0 } # PT-M12: the v2 practices [A] (docs/research/practices-v2.md s8)
     performance_machine:
       label: Performance machine
       weights: { raise_rates: 1.0, cut_rates: 0.5, hire_associates: 1.0, hire_lateral: 1.4, lift_team: 1.0, approach_player: 1.2, open_office: 0.8, cut_costs: 1.0, de_equitise: 1.0 }
@@ -429,7 +429,7 @@ rivals: # rival firms (PT-M5; spec 10; ADR PT-0008). Money is cents a year unles
       utilisation: 0.85
       growth_bias: 0.03
       fragility: 1.0
-      mix: { corporate_ma: 0.18, private_equity: 0.14, capital_markets: 0.1, banking_finance: 0.1, restructuring: 0.07, commercial_litigation: 0.2, white_collar: 0.06, ip: 0.07, employment: 0.03, real_estate: 0.05 }
+      mix: { corporate_ma: 0.18, private_equity: 0.14, capital_markets: 0.1, banking_finance: 0.1, restructuring: 0.07, commercial_litigation: 0.2, white_collar: 0.06, ip: 0.07, employment: 0.03, real_estate: 0.05, international_arbitration: 0.03, tax: 0.04, antitrust: 0.04, financial_regulation: 0.02, healthcare: 0.02, energy: 0.02, technology_privacy: 0.02, private_client: 0.0, insurance: 0.02, mass_torts: 0.0 } # PT-M12: the v2 practices [A] (docs/research/practices-v2.md s8)
     global_verein:
       label: Global verein
       weights: { raise_rates: 0.7, cut_rates: 0.8, hire_associates: 1.0, hire_lateral: 1.0, lift_team: 0.8, approach_player: 0.6, open_office: 1.4, cut_costs: 0.8, de_equitise: 0.6 }
@@ -438,7 +438,7 @@ rivals: # rival firms (PT-M5; spec 10; ADR PT-0008). Money is cents a year unles
       utilisation: 0.82
       growth_bias: 0.02
       fragility: 0.8
-      mix: { corporate_ma: 0.18, private_equity: 0.05, capital_markets: 0.08, banking_finance: 0.12, restructuring: 0.05, commercial_litigation: 0.18, white_collar: 0.04, ip: 0.1, employment: 0.1, real_estate: 0.1 }
+      mix: { corporate_ma: 0.18, private_equity: 0.05, capital_markets: 0.08, banking_finance: 0.12, restructuring: 0.05, commercial_litigation: 0.18, white_collar: 0.04, ip: 0.1, employment: 0.1, real_estate: 0.1, international_arbitration: 0.04, tax: 0.04, antitrust: 0.03, financial_regulation: 0.03, healthcare: 0.03, energy: 0.05, technology_privacy: 0.03, private_client: 0.01, insurance: 0.03, mass_torts: 0.0 } # PT-M12: the v2 practices [A] (docs/research/practices-v2.md s8)
     litigation_boutique:
       label: Litigation boutique
       weights: { raise_rates: 1.0, cut_rates: 0.3, hire_associates: 1.0, hire_lateral: 0.8, lift_team: 0.4, approach_player: 0.8, open_office: 0.6, cut_costs: 0.6, de_equitise: 0.3 }
@@ -447,7 +447,7 @@ rivals: # rival firms (PT-M5; spec 10; ADR PT-0008). Money is cents a year unles
       utilisation: 0.87
       growth_bias: 0.04
       fragility: 1.0
-      mix: { corporate_ma: 0.0, private_equity: 0.0, capital_markets: 0.0, banking_finance: 0.0, restructuring: 0.04, commercial_litigation: 0.6, white_collar: 0.2, ip: 0.14, employment: 0.02, real_estate: 0.0 }
+      mix: { corporate_ma: 0.0, private_equity: 0.0, capital_markets: 0.0, banking_finance: 0.0, restructuring: 0.04, commercial_litigation: 0.6, white_collar: 0.2, ip: 0.14, employment: 0.02, real_estate: 0.0, international_arbitration: 0.08, tax: 0.0, antitrust: 0.05, financial_regulation: 0.0, healthcare: 0.01, energy: 0.0, technology_privacy: 0.01, private_client: 0.0, insurance: 0.05, mass_torts: 0.04 } # PT-M12: the v2 practices [A] (docs/research/practices-v2.md s8)
     tech_coast:
       label: Tech coast
       weights: { raise_rates: 0.8, cut_rates: 0.8, hire_associates: 1.1, hire_lateral: 1.0, lift_team: 0.6, approach_player: 0.6, open_office: 1.0, cut_costs: 1.2, de_equitise: 0.5 }
@@ -456,7 +456,7 @@ rivals: # rival firms (PT-M5; spec 10; ADR PT-0008). Money is cents a year unles
       utilisation: 0.83
       growth_bias: 0.03
       fragility: 1.2
-      mix: { corporate_ma: 0.22, private_equity: 0.08, capital_markets: 0.12, banking_finance: 0.04, restructuring: 0.02, commercial_litigation: 0.16, white_collar: 0.04, ip: 0.24, employment: 0.05, real_estate: 0.03 }
+      mix: { corporate_ma: 0.22, private_equity: 0.08, capital_markets: 0.12, banking_finance: 0.04, restructuring: 0.02, commercial_litigation: 0.16, white_collar: 0.04, ip: 0.24, employment: 0.05, real_estate: 0.03, international_arbitration: 0.01, tax: 0.03, antitrust: 0.04, financial_regulation: 0.01, healthcare: 0.04, energy: 0.01, technology_privacy: 0.08, private_client: 0.01, insurance: 0.0, mass_torts: 0.0 } # PT-M12: the v2 practices [A] (docs/research/practices-v2.md s8)
     regional_champion:
       label: Regional champion
       weights: { raise_rates: 0.7, cut_rates: 0.8, hire_associates: 1.0, hire_lateral: 1.1, lift_team: 0.8, approach_player: 0.6, open_office: 1.2, cut_costs: 0.9, de_equitise: 0.6 }
@@ -465,7 +465,7 @@ rivals: # rival firms (PT-M5; spec 10; ADR PT-0008). Money is cents a year unles
       utilisation: 0.83
       growth_bias: 0.02
       fragility: 0.8
-      mix: { corporate_ma: 0.16, private_equity: 0.05, capital_markets: 0.06, banking_finance: 0.1, restructuring: 0.06, commercial_litigation: 0.24, white_collar: 0.06, ip: 0.09, employment: 0.09, real_estate: 0.09 }
+      mix: { corporate_ma: 0.16, private_equity: 0.05, capital_markets: 0.06, banking_finance: 0.1, restructuring: 0.06, commercial_litigation: 0.24, white_collar: 0.06, ip: 0.09, employment: 0.09, real_estate: 0.09, international_arbitration: 0.02, tax: 0.04, antitrust: 0.03, financial_regulation: 0.02, healthcare: 0.04, energy: 0.04, technology_privacy: 0.02, private_client: 0.03, insurance: 0.04, mass_torts: 0.01 } # PT-M12: the v2 practices [A] (docs/research/practices-v2.md s8)
     volume_mid_market:
       label: Volume mid-market
       weights: { raise_rates: 0.4, cut_rates: 1.2, hire_associates: 1.2, hire_lateral: 0.7, lift_team: 0.5, approach_player: 0.5, open_office: 0.8, cut_costs: 1.2, de_equitise: 0.8 }
@@ -474,7 +474,34 @@ rivals: # rival firms (PT-M5; spec 10; ADR PT-0008). Money is cents a year unles
       utilisation: 0.88
       growth_bias: 0.0
       fragility: 1.0
-      mix: { corporate_ma: 0.1, private_equity: 0.02, capital_markets: 0.02, banking_finance: 0.08, restructuring: 0.05, commercial_litigation: 0.3, white_collar: 0.03, ip: 0.06, employment: 0.2, real_estate: 0.14 }
+      mix: { corporate_ma: 0.1, private_equity: 0.02, capital_markets: 0.02, banking_finance: 0.08, restructuring: 0.05, commercial_litigation: 0.3, white_collar: 0.03, ip: 0.06, employment: 0.2, real_estate: 0.14, international_arbitration: 0.01, tax: 0.03, antitrust: 0.01, financial_regulation: 0.01, healthcare: 0.03, energy: 0.02, technology_privacy: 0.02, private_client: 0.03, insurance: 0.05, mass_torts: 0.02 } # PT-M12: the v2 practices [A] (docs/research/practices-v2.md s8)
+    plaintiff_firm: # PT-M12: a plaintiff contingency firm (docs/research/practices-v2.md s8) [A]
+      label: Plaintiff firm
+      weights: { raise_rates: 0.6, cut_rates: 0.3, hire_associates: 0.8, hire_lateral: 0.8, lift_team: 0.4, approach_player: 0.6, open_office: 0.6, cut_costs: 0.8, de_equitise: 0.3 }
+      equity_share: 0.3
+      partner_share: 0.42
+      utilisation: 0.85
+      growth_bias: 0.03
+      fragility: 1.2
+      mix: { commercial_litigation: 0.15, employment: 0.05, antitrust: 0.05, mass_torts: 0.75 }
+    arbitration_firm: # PT-M12: an international arbitration specialist (docs/research/practices-v2.md s8) [A]
+      label: Arbitration specialist
+      weights: { raise_rates: 1.0, cut_rates: 0.3, hire_associates: 1.0, hire_lateral: 0.8, lift_team: 0.4, approach_player: 0.6, open_office: 0.8, cut_costs: 0.6, de_equitise: 0.3 }
+      equity_share: 0.26
+      partner_share: 0.36
+      utilisation: 0.85
+      growth_bias: 0.03
+      fragility: 0.8
+      mix: { international_arbitration: 0.45, commercial_litigation: 0.2, corporate_ma: 0.1, banking_finance: 0.05, energy: 0.1, tax: 0.05, antitrust: 0.05 }
+    private_client_firm: # PT-M12: a trusts and estates firm (docs/research/practices-v2.md s8) [A]
+      label: Private client firm
+      weights: { raise_rates: 0.8, cut_rates: 0.4, hire_associates: 0.8, hire_lateral: 0.6, lift_team: 0.3, approach_player: 0.4, open_office: 0.8, cut_costs: 0.6, de_equitise: 0.3 }
+      equity_share: 0.3
+      partner_share: 0.45
+      utilisation: 0.8
+      growth_bias: 0.02
+      fragility: 0.6
+      mix: { private_client: 0.6, tax: 0.2, real_estate: 0.1, commercial_litigation: 0.1 }
     big_four_legal:
       label: Big Four legal
       weights: { raise_rates: 0.3, cut_rates: 1.2, hire_associates: 1.2, hire_lateral: 1.0, lift_team: 1.0, approach_player: 0.6, open_office: 1.4, cut_costs: 1.0, de_equitise: 0.5 }
@@ -483,7 +510,7 @@ rivals: # rival firms (PT-M5; spec 10; ADR PT-0008). Money is cents a year unles
       utilisation: 0.8
       growth_bias: 0.05
       fragility: 0.3
-      mix: { corporate_ma: 0.2, private_equity: 0.05, capital_markets: 0.05, banking_finance: 0.1, restructuring: 0.05, commercial_litigation: 0.1, white_collar: 0.05, ip: 0.05, employment: 0.2, real_estate: 0.15 }
+      mix: { corporate_ma: 0.2, private_equity: 0.05, capital_markets: 0.05, banking_finance: 0.1, restructuring: 0.05, commercial_litigation: 0.1, white_collar: 0.05, ip: 0.05, employment: 0.2, real_estate: 0.15, international_arbitration: 0.02, tax: 0.15, antitrust: 0.02, financial_regulation: 0.04, healthcare: 0.02, energy: 0.02, technology_privacy: 0.04, private_client: 0.03, insurance: 0.02, mass_torts: 0.0 } # PT-M12: the v2 practices [A] (docs/research/practices-v2.md s8)
 clients: # the client universe (spec 7.1, 7.3; PT-M3a)
   generated_count: 700 # generated clients beside clients.yaml's 300 real ones (stream client_gen)
   size_exponent: 0.7 # wallet weight = revenue_bn ^ this x sector intensity x mix (diminishing with size)

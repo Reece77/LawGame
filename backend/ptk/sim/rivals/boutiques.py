@@ -6,7 +6,8 @@ source firm, the practice, the group size, the growth bias), a group of 2-6 key 
 one practice leaves a real rival to found a boutique. Their books follow them at
 `boutique.book_share`; each brings `associates_per_partner` associates from the pools. The
 source loses the people, the demand and its key partners' count (the departures count toward
-its collapse hazard). A litigation, white-collar or IP group founds a `litigation_boutique`;
+its collapse hazard). A litigation, white-collar, IP, arbitration, insurance or mass-tort group founds a
+`litigation_boutique`;
 any other an `elite_lockstep` boutique. A boutique grows with the market plus its drawn
 bias; while its profit over 12 months is negative it fails with chance `failure_bp` a month
 (history.collapse_hazard), and its people become free agents.
@@ -26,7 +27,17 @@ from ptk.sim.rivals.setup import BOUTIQUE_ID_OFFSET, build_firm
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
 
-LITIGATION = frozenset({"commercial_litigation", "white_collar", "ip"})  # tunable-exempt
+# PT-M12: arbitration, insurance and mass-tort groups found litigation boutiques too
+LITIGATION = frozenset(
+    {
+        "commercial_litigation",
+        "white_collar",
+        "ip",
+        "international_arbitration",
+        "insurance",
+        "mass_torts",
+    }
+)  # tunable-exempt
 MIN_GROUP = 2  # tunable-exempt: the smallest group that founds a boutique
 
 

@@ -43,6 +43,7 @@ from ptk.sim.partnership import phase as partnership
 from ptk.sim.people.models import WorkMonth
 from ptk.sim.people.phase import people_month
 from ptk.sim.reputation import turn_hooks as standing
+from ptk.sim.risk import phase as risk
 from ptk.sim.rivals import phase as rival_phase
 from ptk.sim.rivals.models import RivalMove
 from ptk.sim.rng import RngFactory
@@ -191,11 +192,15 @@ def work_and_billing(ctx: TurnContext) -> TurnContext:
 
 
 def payroll_and_operating_costs(ctx: TurnContext) -> TurnContext:
-    """6. Salaries, benefits, rent per head, recruiting; December bonuses (PT-M1b); insurance
-    and technology arrive later."""
+    """6. Salaries, benefits, rent per head, recruiting; December bonuses (PT-M1b); the
+    offices' leases (PT-M11); risk: claims, the insurance policy and its premium (PT-M15)."""
     entries, logs = hiring.payroll(ctx.state, ctx.balance, ctx.data)
     state, leases, _ = geo.phase_six(ctx.state, ctx.balance, ctx.data)  # PT-M11: offices
-    return replace(ctx, state=state).post(*entries, *leases).log(*logs)
+    ctx = replace(ctx, state=state).post(*entries, *leases).log(*logs)
+    month = risk.month(
+        ctx.state, ctx.start or ctx.state, ctx.rng, ctx.balance, ctx.data, ctx.balances
+    )
+    return replace(ctx, state=month.state).post(*month.entries).log(*month.log)  # PT-M15
 
 
 def financing(ctx: TurnContext) -> TurnContext:

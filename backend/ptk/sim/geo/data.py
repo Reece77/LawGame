@@ -16,6 +16,8 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from ptk.sim.risk.config import DisciplineRule
+
 _KEY = r"^[a-z][a-z0-9_]*$"
 
 type Region = Literal["us", "uk"]
@@ -86,6 +88,7 @@ class JurisdictionRules(_Strict):
     foreign_lawyers: str = ""  # what a foreign lawyer may do (the dossier's summary)
     foreign_lead: bool = False  # a registered foreign lawyer may lead non-contentious matters
     insurance: InsuranceRule = Field(default_factory=InsuranceRule)
+    discipline: DisciplineRule = Field(default_factory=DisciplineRule)  # PT-M15 (spec 11.4)
     client_money: str = ""  # the client account rules' name (ADR PT-0003 7 enforces them)
     llp: bool = False  # firms practise as limited liability partnerships
     ownership: tuple[OwnershipRule, ...] = ()

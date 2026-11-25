@@ -24,6 +24,7 @@ from ptk.sim.reputation.config import ReputationBalance
 from ptk.sim.rivals.data import RivalsBalance, RivalsData, WorldBalance
 from ptk.sim.tech.config import TASKS as TECH_TASKS
 from ptk.sim.tech.config import LegalEras, TechBalance
+from ptk.sim.risk.config import InsuranceData, RiskBalance
 
 type AccountType = Literal["asset", "liability", "equity", "income", "expense"]
 type PersonKind = Literal["lawyer", "paralegal", "business_services"]
@@ -1275,6 +1276,7 @@ class Balance(_Strict):
     automation: AutomationBalance  # PT-M9 (ptk.sim.automation.config)
     tech: TechBalance  # PT-M14 (ptk.sim.tech.config)
     geo: GeoBalance  # PT-M11 (ptk.sim.geo.data): offices and the UK path
+    risk: RiskBalance  # PT-M15 (ptk.sim.risk.config)
 
 
 # --- People seed data (PT-M1a) ------------------------------------------------------------
@@ -1739,6 +1741,7 @@ class GameData(_Strict):
     seats: SeatsData  # PT-M8: seats.yaml
     legal_eras: LegalEras  # PT-M14: legal_eras.yaml
     geo: GeoData = GeoData()  # PT-M11: cities.yaml and bar_rules.yaml
+    insurance: InsuranceData = InsuranceData()  # PT-M15: insurance.yaml
 
     @model_validator(mode="after")
     def _unique(self) -> GameData:

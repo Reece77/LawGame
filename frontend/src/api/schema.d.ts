@@ -64,7 +64,8 @@ export interface paths {
         /**
          * Create Practice
          * @description PT-M7: create a practice save (pt-2008: a 60-lawyer firm in June 2008); 404 for an
-         *     unknown key, 409 if a save of that name exists.
+         *     unknown key, 409 if a save of that name exists. PT-M13: `slug` names the copy (the
+         *     key by default), so tests can play their own.
          */
         post: operations["createPracticeSave"];
         delete?: never;
@@ -7088,7 +7089,9 @@ export interface operations {
     };
     createPracticeSave: {
         parameters: {
-            query?: never;
+            query?: {
+                slug?: string | null;
+            };
             header?: never;
             path: {
                 key: string;

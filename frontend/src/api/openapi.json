@@ -183,7 +183,7 @@
     "/api/practice/{key}": {
       "post": {
         "summary": "Create Practice",
-        "description": "PT-M7: create a practice save (pt-2008: a 60-lawyer firm in June 2008); 404 for an\nunknown key, 409 if a save of that name exists.",
+        "description": "PT-M7: create a practice save (pt-2008: a 60-lawyer firm in June 2008); 404 for an\nunknown key, 409 if a save of that name exists. PT-M13: `slug` names the copy (the\nkey by default), so tests can play their own.",
         "operationId": "createPracticeSave",
         "parameters": [
           {
@@ -193,6 +193,22 @@
             "schema": {
               "type": "string",
               "title": "Key"
+            }
+          },
+          {
+            "name": "slug",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Slug"
             }
           }
         ],

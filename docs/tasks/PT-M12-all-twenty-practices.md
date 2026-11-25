@@ -64,9 +64,37 @@ From `pt-2008`, hire a lateral restructuring partner into a new financial regula
     | T9.rocket | 5/10 | 5/10 | 13/30 | 14/30 | 3-6/10 |
     | T9.heeded | 4/10 | 2/10 | 5/30 | 6/30 | at most 1/10 |
 
-    CI's balance job on the merged branch (nightly run 45668103684 on `672f299`) reads seeds 1-10 exactly as the local run before the merge (T2 steady 7, pyramid 2, boutique 1; T5 10/30/60%; T9 5 and 4; T3 69.5 / $55.70M; full-service 79.5 / $72.32M): PT-M13's mergers do not move these runs before 2026. It also prints T7.realisation 84.0% as a fail at the band's floor (84%-92%; main 85.0%, the local run 84.0% ok: a rounding edge) and T12 1,025 ms on the runner (main 950 ms; the gate is `check-timing`, 178 ms). **The nightly's balance job fails on the T2 gate**; rule 3 allows no known-miss row without Reece or the product manager, so PT-M12 waits for that decision before merging.
+    CI's balance job on the merged branch (nightly run 45668103684 on `672f299`) reads seeds 1-10 exactly as the local run before the merge (T2 steady 7, pyramid 2, boutique 1; T5 10/30/60%; T9 5 and 4; T3 69.5 / $55.70M; full-service 79.5 / $72.32M): PT-M13's mergers do not move these runs before 2026. It also prints T7.realisation 84.0% as a fail at the band's floor (84%-92%; main 85.0%, the local run 84.0% ok: a rounding edge) and T12 1,025 ms on the runner (main 950 ms; the gate is `check-timing`, 178 ms). The nightly's balance job failed on the T2 gate; the product manager's decisions of 2026-11-25 (decision 13) settle it.
     Main's seeds 1-10 are CI's balance job on PT-M13's final commit (run 45616864061); branch seeds 1-10 the local `make balance` before merging PT-M13; seeds 11-40 local, both on the merged code and `main` 27e61ac (`T2`, `T5`, `T9` runs only). On 30 seeds the branch is no worse than main on any row (T2 better). T9.heeded and T6.partners (7.1% on both) and T5.hard on seeds 1-10 fail on a clean `main` too (rule 3); T8.restructuring (main -17.2%, branch +1.9%) and T8.2020 (main 0.1%, branch -18.8%) now pass. T3 69.5 lawyers / $55.70M and T4.steady $1.45M stay within their known-miss bounds (main 60 / $47.28M, $1.32M); T4 boutique $2.23M and pyramid $1.36M (main $1.49M, $0.98M) and T1, T6 attrition, T7, T10, T11 pass.
+
+13. **The product manager's decisions (Reece, 2026-11-25) and lane A's re-read with PT-M15's risk system on.** Main (PT-M15, `04efa78`) merged; no migration to re-chain; golden snapshots and the state cache regenerated (CHANGELOG). T2 is covered by PT-M15's known-miss row (owner PT-M18, known while steady wins at most 9 of 10): PT-M12's readings are added to its reason and its bound is unchanged (branch 8). PT-M9's steady-automated guard is a non-strict xfail owned by PT-M18 with both sides' readings. The re-read (all twenty practices, claims and insurance on; this is also the re-read PT-M15 asked lane A for):
+
+    | Target | band | main, seeds 1-10 | branch, seeds 1-10 | main, seeds 11-40 | branch, seeds 11-40 |
+    | --- | --- | --- | --- | --- | --- |
+    | T1 do-nothing fails | >= 90% | 10/10 | 10/10 | 29/30 | 29/30 |
+    | T2 most wins | <= 60% | steady 9 (known) | steady 8 (known) | steady 16 | steady 21 |
+    | T3 lawyers / revenue | 100-250 / $60-150M | 70.5 / $59.96M (known) | 71.0 / **$71.35M** | 66.5 / $54.75M | 64.0 / **$67.53M** |
+    | T4 steady / boutique / pyramid PEP | | $1.62M (known) / $1.49M / $0.95M | $1.66M (known) / $1.85M / $1.24M | $1.51M / $1.29M / $1.33M | $1.65M / $1.45M / $1.16M |
+    | T5 easy / standard / hard | 0-10 / 5-20 / 20-45% | 0 / 0 (known) / 50% | 10 / 20 / 60% | 10.0 / 6.7 / 23.3% | 3.3 / 13.3 / 26.7% |
+    | T6 attrition / partners | 15-25% / 8-15% | 22.4% / 0.0% | 22.6% / 7.1% | 21.8% / 0.0% | 21.8% / 0.0% |
+    | T7 realisation / collection / utilisation / lockup | | 85.3 / 96.4 / 84.2 / 126 | 84.8 / 96.3 / 85.4 / 121 | 84.9 / 96.4 / 85.6 / 124 | 84.2 / 96.4 / 85.9 / 120 |
+    | T8 corporate / restructuring | -30 to -10% / -5 to +20% | -16.9% / -10.9% | -14.3% / **+1.6%** | -15.8% / -9.9% | -11.7% / **+1.1%** |
+    | T9 rocket / heeded | 30-60% / <= 10% | 5/10 / 3/10 | 5/10 / 4/10 | 16/30 / 9/30 | 15/30 / 6/30 |
+    | T10 ratio / steady | >= 2x / <= 5% | 10.98x / 0.7% | 19.53x / 0.4% | 10.52x / 0.8% | 10.75x / 0.8% |
+    | T11 (2009, 2015) | 15%, 0, >= 8 | 6.9%, 0, 9 | 6.8%, 0, 9 | 7.7%, 0, 9 | 7.7%, 0, 9 |
+    | T11.2025 / T8.2020 | | 7.2%, 0, 8 / -7.3% | 7.2%, 0, 8 / **-15.3%** | (seeds 1-10 only) | |
+    | 30y steady (printed) | | 108.5, $168.79M, $2.70M, 1/10 | 182.5, $330.12M, $4.24M, 2/10 | | |
+    | PT-M12.specialist survives | >= 70% | | 8/10 | | 21/30 |
+    | specialist 2009 PEP vs steady | falls less | | -45.1% vs -51.3% | | -25.3% vs -54.6% |
+    | T2.specialist | <= 60% | | **steady 7** | | steady 18 |
+    | full-service vs steady (printed) | | | 88.5 / $78.45M vs 71.0 / $71.35M | | 59.0 / $57.41M vs 64.0 / $67.53M |
+    | PT-M9 automated vs steady, revenue / PEP | within 20% | -21.5% / +9.1% | -34.3% / -17.7% | -18.6% / -11.5% | -31.5% / -2.1% |
+
+    Sources: main seeds 1-10, PT-M15's nightly on `77f5769` (run 45680522492, the tree merged as `04efa78`); branch seeds 1-10, the nightly on `0132515` (run 45708182750; `make balance` green); seeds 11-40, `tools/balance_runner.py --seeds 11..40` on `04efa78` and `0132515` (helper sessions on the same container type, one each). T12 is the gate `check-timing` (decision 14), not the runner's row. Readings: no band target newly misses on both seed ranges. **New misses reported, not given rows (decision 5):** `T2.specialist` reads steady 7 on seeds 1-10 (6 before PT-M15) and passes on 11-40 (18/30, at the bound); T5.hard (60% against main's 50%) and T9.heeded (4 against 3) fail on seeds 1-10 on main too and are no worse on 11-40 (rule 3/4). T2 on seeds 11-40 is worse on the branch (21/30 against 16/30): the row is PT-M18's. PT-M9's gap widens on revenue on both ranges (follow-up below). T3.revenue, T8.restructuring and T8.2020 now pass on the branch.
+14. **T12 after merging PT-M15 (rule 6).** `check-timing` read the merger-and-verein case at 256 ms (budget 250; main 202). Identical-result speed-ups for the twenty practices (practice keys computed once; familiarities read by dict in growth and staffing; rival definitions indexed once): golden snapshots and the state cache replay unchanged. Best of three 2025 medians on one machine, branch against main: base 187 against 143 ms, merger and verein 224 against 168 ms; all four `check-timing` budgets pass run alone (170-244 ms across runs). The remaining gap is the twenty practices' per-practice work and the firm's busier matter list.
 
 ## Follow-ups
 
-(The session records follow-ups here.)
+- **PT-M18:** steady wins T2 more often on the branch on seeds 11-40 (21/30 against main's 16/30), and PT-M9's automated steady trails steady's revenue by 31-34% (main 19-22%): steady's cross-sell adds (decision 11) grow it faster than its automated form; the PT-M18 owners of both rows should read them together.
+- **PT-M15's insurance `practice_rating`** lists v1's ten practices; the v2 ten rate 1.0 (its default). Ratings for tax, mass torts, private client and others need the risk dossier's numbers (lane C's file).
+- **T12 headroom:** the merger-and-verein case has about 10% headroom; the next per-practice loop should be built proportional.

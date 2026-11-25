@@ -78,7 +78,9 @@ KNOWN_MISSES: Final[tuple[KnownMiss, ...]] = (
         worse_than=9.0,
         reason="PT-M15 (authorised by the product manager, Reece, 2026-11-25): steady wins 9 "
         "of seeds 1-10 on the branch (main 5); seeds 11-40 steady 16/30 on the branch, 19/30 "
-        "on main (a miss on main too: the cause predates PT-M15)",
+        "on main (a miss on main too: the cause predates PT-M15). PT-M12 (the product "
+        "manager's decision, 2026-11-25: this row covers it, bound unchanged): steady 8 of "
+        "seeds 1-10 (main 9), 21/30 on seeds 11-40 (main 16/30)",
     ),
     KnownMiss(
         target="T5.standard",  # steady dissolves on 5-20% of seeds at standard difficulty

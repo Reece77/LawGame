@@ -18,6 +18,7 @@ const ROUTES: Record<string, string> = {
   org: 'org',
   rankings: 'rankings', // PT-M16
   press: 'press',
+  risk: 'risk', // PT-M15
 };
 
 function route(slug: string, kind: string, id?: number | null): string {

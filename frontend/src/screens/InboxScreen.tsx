@@ -18,6 +18,7 @@ function linkTo(slug: string, item: InboxItem): string | null {
   if (item.link_kind === 'rankings') return `/game/${slug}/rankings`; // PT-M16
   if (item.link_kind === 'press') return `/game/${slug}/press`;
   if (item.link_kind === 'tech') return `/game/${slug}/technology`; // PT-M14
+  if (item.link_kind === 'risk') return `/game/${slug}/risk`; // PT-M15
   if (item.link_kind === 'automation')
     return item.template === 'automation_digest' && item.link_id !== null
       ? `/game/${slug}/automation?month=${item.link_id}`

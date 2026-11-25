@@ -45,11 +45,11 @@ def test_cases_open_from_the_month_rolls_and_never_for_real_people() -> None:
     hot = _always(balance)
     state = _clean()
     books = _books(state)
-    out = dc.new_cases(state, state, np.random.default_rng(1), books, hot, data, [])  # noqa: NPY002
+    out = dc.new_cases(state, state, np.random.default_rng(1), books, hot, data, [])
     staff = lawyers(state, state.player.id, data)
     assert {c.person_id for c in out.risk.cases} == {p.id for p in staff if not p.real}
     real = replace(state, people=tuple(replace(p, real=True) for p in state.people))
-    none = dc.new_cases(real, real, np.random.default_rng(1), _books(real), hot, data, [])  # noqa: NPY002
+    none = dc.new_cases(real, real, np.random.default_rng(1), _books(real), hot, data, [])
     assert none.risk.cases == ()
 
 
@@ -71,7 +71,7 @@ def test_a_case_runs_its_stages_to_a_sanction_and_a_suspension_stops_billing() -
     b = _risky(balance, discipline=only_suspension)
     state = _clean()
     pid = next(p.id for p in lawyers(state, state.player.id, data) if not p.is_founder)
-    state = dc.open_case(state, pid, "neglect", np.random.default_rng(2), _books(state), b, data)  # noqa: NPY002
+    state = dc.open_case(state, pid, "neglect", np.random.default_rng(2), _books(state), b, data)
     case = state.risk.cases[0]
     state = replace(state, risk=replace(state.risk, cases=(replace(case, culpability=1.0),)))
     state = _run_case(state, b)
@@ -94,7 +94,7 @@ def test_disbarment_ends_an_associates_time_at_the_firm() -> None:
     pid = next(
         p.id for p in lawyers(state, state.player.id, data) if p.level.startswith("associate")
     )
-    state = dc.open_case(state, pid, "court", np.random.default_rng(2), _books(state), b, data)  # noqa: NPY002
+    state = dc.open_case(state, pid, "court", np.random.default_rng(2), _books(state), b, data)
     case = replace(state.risk.cases[0], culpability=1.0)
     state = _run_case(replace(state, risk=replace(state.risk, cases=(case,))), b)
     e = state.employment_of(pid)
@@ -179,7 +179,7 @@ def test_a_held_dispute_in_range_goes_to_fee_arbitration() -> None:
 def test_a_large_clients_audit_cuts_a_bill() -> None:
     from ptk.sim.billing.audits import audit
 
-    data, balance = loaded()
+    _, balance = loaded()
     a = balance.risk.audits.model_copy(update={"audit_bp": 10_000})
     b = _risky(balance, audits=a)
     state = replace(_clean(), turn=24)

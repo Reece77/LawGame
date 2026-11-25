@@ -22,6 +22,7 @@ from ptk.api.offices import make_offices_router
 from ptk.api.org import make_org_router
 from ptk.api.partnership import make_partnership_router
 from ptk.api.people import make_router
+from ptk.api.risk import make_risk_router
 from ptk.api.screens import make_screens_router
 from ptk.api.standing import make_standing_router
 from ptk.api.tech import make_tech_router
@@ -349,6 +350,7 @@ def create_app() -> FastAPI:
     app.include_router(make_founder_router(errors))  # PT-M17
     app.include_router(make_standing_router(errors))  # PT-M16
     app.include_router(make_tech_router(errors))  # PT-M14
+    app.include_router(make_risk_router(errors))  # PT-M15
     app.include_router(make_offices_router(errors))  # PT-M11
     return app
 

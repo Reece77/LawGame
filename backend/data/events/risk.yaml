@@ -1,0 +1,47 @@
+# Risk events (PT-M15; spec 11.3-11.4, 15): the critical pair the engine queues
+# (`queue_engine_event`): a trust-account shortfall found at the month-end reconciliation (the
+# engine has already replaced the money from firm cash) and a malpractice claim whose demand is
+# above the policy's limit. Neither names a lawyer.
+templates:
+  - id: trust_shortfall
+    category: regulatory
+    trigger: trust_shortfall
+    severities: [critical]
+    weight: 1.0
+    title: "A shortfall in the client account"
+    body: >-
+      The month-end reconciliation found less money in {firm}'s client account than the firm
+      holds for its clients. The money has been replaced from the firm's own cash, as the rules
+      require; what remains is how the firm answers for it.
+    choices:
+      - key: A
+        label: "Report it to the regulator and tighten the controls"
+        effects:
+          - { type: cash_delta, target: firm, share: -0.2 }
+          - { type: confidence_delta, target: partnership, share: -0.1 }
+      - key: B
+        label: "Treat it as an internal matter"
+        effects:
+          - { type: reputation_delta, target: firm, share: -0.4 }
+          - { type: confidence_delta, target: partnership, share: -0.3 }
+
+  - id: malpractice_claim
+    category: regulatory
+    trigger: malpractice_claim
+    severities: [critical]
+    weight: 1.0
+    title: "A claim above the insurance limit"
+    body: >-
+      A former client has given notice of a malpractice claim against {firm} for more than the
+      firm's insurance covers. Anything above the limit falls on the partners, and they want to
+      know what it means for their capital.
+    choices:
+      - key: A
+        label: "Reassure the partners and brief the insurer"
+        effects:
+          - { type: confidence_delta, target: partnership, share: -0.1 }
+          - { type: strain_delta, target: firm, share: 0.1 }
+      - key: B
+        label: "Say nothing until the claim is clearer"
+        effects:
+          - { type: confidence_delta, target: partnership, share: -0.3 }

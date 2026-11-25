@@ -396,3 +396,30 @@ templates:
   policy_endorsed:
     title: "The policy's limit is raised to {limit_cents}"
     body: "An office in a jurisdiction with compulsory cover needs at least that limit: the year's premium is now {premium_cents}."
+  case_opened:
+    title: "A bar complaint against {name}"
+    body: "The bar has opened a case against {name} ({cause}). Cooperate or contest on the Risk screen; unanswered, the firm cooperates."
+  case_closed:
+    title: "The bar's case against {name}: {outcome}"
+    body: "The case is closed with the outcome {outcome}. A suspension keeps them off billable work for {months} months."
+  inquiry_opened:
+    title: "{regulator} opens an inquiry"
+    body: "The regulator is looking into the firm's systems ({reason}). A finding could bring a fine of up to {fine_hi_cents}. Settle or contest on the Risk screen."
+  inquiry_closed:
+    title: "The regulator's inquiry is closed ({outcome})"
+    body: "The inquiry ended with the outcome {outcome}; the firm paid {fine_cents}."
+  trust_shortfall_found:
+    title: "The client account is short by {amount_cents}"
+    body: "This month's reconciliation found a shortfall ({cause}). The firm has replaced the money from its own cash, as the rules require."
+  padding_reviewed:
+    title: "The general counsel's review found padded time"
+    body: "The billing review found that {name} has been padding their time. The padding stops; the bar may hear of it."
+  fee_suit:
+    title: "A fee dispute goes public"
+    body: "The client the firm held firm against is suing over {amount_cents} of fees, and the press has noticed."
+  arbitration_filed:
+    title: "A client files for fee arbitration"
+    body: "The client has taken the disputed {amount_cents} to the bar's fee arbitration programme."
+  arbitration_decided:
+    title: "The fee arbitration is decided"
+    body: "The arbitrator awarded the client {award_cents} of the disputed {amount_cents}."

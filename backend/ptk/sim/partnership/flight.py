@@ -139,7 +139,7 @@ class FlightHook:
         loyalty = person.personality["loyalty"]
         if "lifer" in person.tags:
             loyalty = max(loyalty, balance.resign.lifer_loyalty_floor)
-        return fx.leave_chance_bp(
+        chance = fx.leave_chance_bp(
             self.market_value_cents(state, person_id, balance, data),
             firm_comp_cents(p),
             loyalty,
@@ -149,6 +149,13 @@ class FlightHook:
             star,
             cfg,
         )
+        if state.mergers.integrations:  # PT-M13: integration raises it (ptk.sim.mergers)
+            from ptk.sim.mergers.integration import flight_multiplier
+
+            chance = min(
+                cfg.cap_bp, round(chance * flight_multiplier(state, person_id, balance, data))
+            )
+        return chance
 
     def approach(
         self, state: GameState, request: ApproachRequest, *, balance: Balance, data: GameData

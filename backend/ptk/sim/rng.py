@@ -80,6 +80,15 @@ STREAM_IDS: Final = MappingProxyType(
         # PT-M14 (lane C, ids 110-119): legal technology and AI (ptk.sim.tech)
         "tech_seed": 110,  # (era_index, 0) its strength's 2026+ target; (era_index, 1) the market's
         "tech_vote": 111,  # (era_index,): a rollout vote on an era this month, each partner's noise
+        # PT-M13 (lane B, ids 130-139): mergers and the verein (ptk.sim.mergers; ADR PT-0016)
+        "merger_target": 130,  # (*rival_key,) at turn 0: a firm's fixed hidden values
+        "merger_book": 131,  # (deal_id,): a deal's client book, drawn when talks open
+        "merger_answer": 132,  # (deal_id, round): the other side's answer, each partner's noise
+        "merger_clear": 133,  # (deal_id,): clearance's waiver draws, in conflict order
+        "merger_people": 134,  # (deal_id, n): the n-th materialised lawyer at closing
+        "integration": 135,  # (deal_id, client_id): a book client's balk at the merged card
+        "rival_merger": 136,  # (0,) a month's approach to the player; (1,) a free-play merger
+        "verein": 137,  # (verein_id, member_firm_id): a member's quarterly introduction
         "misc": 99,  # tests only
     }
 )

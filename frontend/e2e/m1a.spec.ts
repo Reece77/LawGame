@@ -14,7 +14,7 @@ test('found a firm, see its people, open a profile', async ({ page }) => {
   await expect(page.getByTestId('date')).toHaveText('Feb 2005');
   await table.locator('tbody tr').first().getByRole('link').click();
   await expect(page.getByTestId('person-name')).toBeVisible();
-  await expect(page.getByTestId('familiarity-grid').locator('tr')).toHaveCount(10);
+  await expect(page.getByTestId('familiarity-grid').locator('tr')).toHaveCount(20); // PT-M12: twenty practices
   await expect(page.getByTestId('strain').first()).toBeVisible();
   await expect(page.getByTestId('potential')).not.toBeEmpty();
   await expect(page.getByText('Book of business')).toBeVisible();

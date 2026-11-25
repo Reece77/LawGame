@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from functools import cached_property
 from typing import Final, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -1959,8 +1960,10 @@ class GameData(_Strict):
     def interest_keys(self) -> tuple[str, ...]:
         return tuple(i.key for i in self.interests)
 
-    @property
+    @cached_property
     def practice_keys(self) -> tuple[str, ...]:
+        """In practices.yaml order; computed once (PT-M12, T12: twenty practices, read in
+        every phase)."""
         return tuple(p.key for p in self.practices)
 
     def seat(self, key: str) -> SeatDef:

@@ -14,10 +14,13 @@ partners loses its clients' favour. Computed in phase 2; intake reads it (PT-M3a
 
 from __future__ import annotations
 
+import heapq
 import math
+from collections.abc import Mapping
 from dataclasses import replace
 
 from ptk.sim.data_models import Balance, GameData
+from ptk.sim.rivals.data import FirmDef
 from ptk.sim.rivals.models import RivalFirm, RivalsState
 
 FULL_CAPACITY = 0.95  # tunable-exempt: utilisation above which a firm turns work away
@@ -35,13 +38,17 @@ def base_appeal(firm: RivalFirm, data: GameData, balance: Balance) -> float:
     return min(rb.appeal_size_max, max(rb.appeal_size_min, size))
 
 
-def strong_practices(firm: RivalFirm, data: GameData) -> frozenset[str]:
-    defs = {f.key: f for f in data.rivals.firms.firms}
+def strong_practices(
+    firm: RivalFirm, data: GameData, defs: Mapping[str, FirmDef] | None = None
+) -> frozenset[str]:
+    if defs is None:
+        defs = {f.key: f for f in data.rivals.firms.firms}
     fdef = defs.get(firm.key)
     if fdef is not None:
         return frozenset(fdef.strong)
-    top = sorted(firm.pools, key=lambda p: (-p.lawyers, p.practice))[:2]
-    return frozenset(p.practice for p in top)
+    # the two largest pools (ties by practice key): nsmallest gives sorted()[:2] exactly
+    top = heapq.nsmallest(2, ((-p.lawyers, p.practice) for p in firm.pools))
+    return frozenset(practice for _, practice in top)
 
 
 def appeal_table(rivals: RivalsState, data: GameData, balance: Balance) -> RivalsState:
@@ -62,6 +69,8 @@ def appeal_table(rivals: RivalsState, data: GameData, balance: Balance) -> Rival
         if m.kind == "partner":
             partners[m.firm_id] = partners.get(m.firm_id, 0) + 1
     out = []
+    defs = {d.key: d for d in data.rivals.firms.firms}  # T12: once, not per firm
+    keys = data.practice_keys
     for f in active:
         base = base_appeal(f, data, balance)
         price = rb.appeal_price_weight * (1.0 - f.rate_index / means[region[f.id]])
@@ -69,10 +78,10 @@ def appeal_table(rivals: RivalsState, data: GameData, balance: Balance) -> Rival
         people = 0.0
         if f.key_target > 0:
             people = rb.appeal_rep_weight * REP_SCALE * (partners.get(f.id, 0) / f.key_target - 1.0)
-        strong = strong_practices(f, data)
+        strong = strong_practices(f, data, defs)
         values = tuple(
             base + price + capacity + people + (balance.appeal.rival_strong if p in strong else 0.0)
-            for p in data.practice_keys
+            for p in keys
         )
         out.append((f.key, values))
     return replace(rivals, appeals=tuple(sorted(out)))

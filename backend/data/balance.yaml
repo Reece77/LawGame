@@ -955,7 +955,7 @@ macro: # PT-M7: how macro_history.yaml's indices act on the firm (ptk/sim/macro.
     until: [2034, 12] # the last seeded month (the standard campaign's end)
     fit_years: [2005, 2025] # each index's AR(1) is fitted to its July values over these years
     mean_years: [2016, 2025] # a mean-reverting index reverts to its mean log level over these years
-    trend_series: [growth] # these revert to their fitted 2005-2025 log trend instead (long-run growth G keeps growing)
+    trend_series: [growth, arbitration, healthcare, privacy, wealth] # these revert to their fitted 2005-2025 log trend instead (long-run growth G keeps growing); PT-M12: the rising v2 drivers (docs/research/practices-v2.md s4: arbitration, healthcare, privacy "rising", wealth)
     phi_range: [0.0, 0.9] # the fitted annual AR(1) coefficient is held in this range (a unit root would wander off)
     noise_scale: 1.0 # multiplier on each fitted residual spread (1: history's)
     episodes: # history's recessions, from the start of the fall to the trough; a seeded recession replays one of them

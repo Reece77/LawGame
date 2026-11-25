@@ -33,6 +33,7 @@ from ptk.sim.partnership.actions import (
     ProposePartner,
     ProposeTerms,
 )
+from ptk.sim.risk.actions import RespondClaim
 from ptk.sim.rivals.actions import ApproachRival
 from ptk.sim.rng import RngFactory
 from ptk.sim.tech.actions import InvestInEra
@@ -219,6 +220,15 @@ def _one_off_actions(state, data, b):  # type: ignore[no-untyped-def]
             for r in state.market.relationships
         )
         state = replace(state, market=replace(state.market, relationships=rels))
+    from ptk.sim.risk.models import Claim, with_claim
+
+    claim = Claim(  # PT-M15: a claimant's offer above the deductible
+        id=9_000, firm_id=firm, matter_id=matter.id, client_id=matter.client_id,
+        practice=matter.practice, source="error", created_turn=state.turn,
+        surfaces_turn=state.turn, merit=0.5, size_cents=10**8, demand_cents=2 * 10**8,
+        stage="offer", offer_cents=5 * 10**7, deductible_cents=10**6,
+    )  # fmt: skip
+    state = replace(state, risk=with_claim(state.risk, claim))
     return state, {
         "partnership admissions": [ProposePartner(actor, partner, "equity")],
         "de-equitisations": [Deequitise(actor, partner, "income")],
@@ -232,6 +242,7 @@ def _one_off_actions(state, data, b):  # type: ignore[no-untyped-def]
         "a salary-scale change above the market": [SetPayPolicy(actor, "lead", 11_000)],
         "any AI platform above the limit": [InvestInEra(actor, "ediscovery", 10_000)],  # PT-M14
         "taking on a matter adverse to a key client with a waiver": [SeekWaiver(actor, held.id)],
+        "settling a malpractice claim above the deductible": [RespondClaim(actor, 9_000, "settle")],
     }
 
 

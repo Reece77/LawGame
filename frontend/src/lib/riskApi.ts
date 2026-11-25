@@ -3,8 +3,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, type Schemas } from '../api/client';
 import { unwrap } from './api';
 
-export type Risk = Schemas['RiskOut'];
-export type RiskClaim = Schemas['ClaimOut'];
+export type Risk = Schemas['RiskScreenOut'];
+export type RiskClaim = Schemas['MalpracticeClaimOut'];
 export type RiskCase = Schemas['CaseOut'];
 export type RiskInquiry = Schemas['InquiryOut'];
 export type RiskReconciliation = Schemas['ReconciliationOut'];
@@ -38,12 +38,15 @@ export const useSetPolicyTerms = (slug: string) =>
       insurer?: string | null;
       limit_cents?: number | null;
       deductible_cents?: number | null;
-    }) => unwrap(await api.POST('/api/saves/{slug}/risk/terms', { params: { path: { slug } }, body })),
+    }) =>
+      unwrap(await api.POST('/api/saves/{slug}/risk/terms', { params: { path: { slug } }, body })),
   );
 
 export const useSetSupervision = (slug: string) =>
   useRiskAction(slug, async (body: { supervision: 'standard' | 'lax' }) =>
-    unwrap(await api.POST('/api/saves/{slug}/risk/supervision', { params: { path: { slug } }, body })),
+    unwrap(
+      await api.POST('/api/saves/{slug}/risk/supervision', { params: { path: { slug } }, body }),
+    ),
   );
 
 export const useRespondClaim = (slug: string) =>

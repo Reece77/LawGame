@@ -2,7 +2,8 @@
 
 - **Making.** Each escaped error on the player's matters (`progress.py` records them; read here
   as the month's rise in a matter's `errors_escaped`) becomes a latent claim with chance
-  `risk.claims.from_error_bp` x the GC's term x lax supervision x conflict checks off; a lost
+  `risk.claims.from_error_bp` x the GC's term (a client with a claim open or on its way makes
+  no second one: it sues once) x lax supervision x conflict checks off; a lost
   case with stakes of at least `grievance_min_stakes_cents` brings an aggrieved client's claim
   with chance `grievance_bp` (stream `risk_claim`). A latent claim draws a delay before it
   surfaces, a hidden merit (Beta) and size, and the demand the claimant will make. **Nothing
@@ -97,8 +98,12 @@ def make_claims(
     risk = state.risk
     p_error = None
     a, b = c.merit
+    def suing() -> set[int]:  # clients with a claim open or on its way: they sue once
+        return {c.client_id for c in risk.claims if c.stage != "closed" and c.firm_id == firm_id}
+
+    claimed = suing()
     for m in state.market.matters:
-        if m.firm_id != firm_id:
+        if m.firm_id != firm_id or m.client_id in claimed:
             continue
         old = before.get(m.id)
         for k in range(old.errors_escaped if old is not None else 0, m.errors_escaped):
@@ -109,6 +114,10 @@ def make_claims(
                 continue
             u = [float(x) for x in gen.random(3)]
             risk = _latent(risk, state, m, "error", u, float(gen.beta(a, b)), balance)
+            break  # later escapes this month join the same claim
+        claimed = suing()
+        if m.client_id in claimed:
+            continue
         lost_now = m.outcome == "lost" and (old is None or old.outcome != "lost")
         if lost_now and m.kind in CASE_KINDS and m.stakes_cents >= c.grievance_min_stakes_cents:
             gen = dr.claim_draws(rng, state.turn, dr.GRIEVANCE, m.id)

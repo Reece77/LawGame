@@ -5,9 +5,9 @@
 - **No general counsel:** the seat is left vacant (PT-M8's fill-seats step appoints one each
   month; the script vacates it before the turn, so the turn runs without a GC), and the conflict
   checks are switched off.
-- **Rule-bending laterals:** lateral partners are taken on the size of the book they claim
-  (the top of its range) and offered their ask at once, without diligence (steady diligences
-  every lateral and goes by the bottom of the range).
+- **Rule-bending laterals:** whenever steady would hire a lateral partner, the cowboy takes the
+  candidate with the biggest claimed book (the top of its range) and offers their ask at once,
+  without diligence (steady diligences every lateral and goes by the bottom of the range).
 
 Otherwise it is steady (`ptk.balance.strategies.steady`). Registered in
 `ptk.balance.strategies.VARIANTS` in one line (lane A owns the runner). It acts only through
@@ -24,11 +24,10 @@ from ptk.balance import moves as mv
 from ptk.balance.game import Game, start_game
 from ptk.sim.matters.actions import SetConflictChecks
 from ptk.sim.org.seats import AppointSeat
-from ptk.sim.partnership.actions import LateralOffer
+from ptk.sim.partnership.actions import LateralOffer, LateralSearch
 from ptk.sim.risk.actions import SetSupervision
 
 GC: Final = "general_counsel"
-MIN_BOOK_HI: Final = 150_000_000  # $1.5M: the top of the claimed book a cowboy needs to hear
 FIRST_YEAR: Final = 2006  # T14 reads claims from the first full year (2005 has no history)
 
 
@@ -42,24 +41,31 @@ def _cut_corners(g: Game) -> None:
         g.act(AppointSeat(me, GC, h.slot, None))
 
 
-def _unvetted_laterals(g: Game) -> None:
-    """An open lateral candidate with a claimed book of at least MIN_BOOK_HI, offered their
-    ask at once (no diligence), one a month while the bank is quiet."""
+def _unvetted(g: Game, practice: str, rule: mv.LateralRule) -> bool:
+    """Steady's lateral step without diligence: the candidate with the biggest claimed book
+    (the top of its range) is offered their ask as soon as the top reaches the rule's floor."""
     fp = g.state.partnership.of(g.state.player.id)
-    if fp is None or not mv.bank_quiet(g):
-        return
-    open_ = [c for c in fp.laterals if c.status == "open" and c.book_hi_cents >= MIN_BOOK_HI]
-    if open_:
-        best = max(open_, key=lambda c: (c.book_hi_cents, -c.person_id))
-        g.act(LateralOffer(g.founder_id, best.person_id, best.ask_cents, 0))
+    if fp is None:
+        return False
+    open_ = [c for c in fp.laterals if c.status == "open" and c.practice == practice]
+    if not open_:
+        return g.act(LateralSearch(g.founder_id, practice))
+    best = max(open_, key=lambda c: (c.book_hi_cents, -c.person_id))
+    if best.book_hi_cents < rule.min_book_cents:
+        return False
+    return g.act(LateralOffer(g.founder_id, best.person_id, best.ask_cents, rule.guarantee_years))
 
 
 def cowboy(g: Game) -> None:
     from ptk.balance.strategies import steady  # strategies imports this module
 
     _cut_corners(g)
-    _unvetted_laterals(g)
-    steady(g)
+    vetted = mv.lateral_partner
+    mv.lateral_partner = _unvetted  # steady's cadence, without diligence (restored below)
+    try:
+        steady(g)
+    finally:
+        mv.lateral_partner = vetted
 
 
 RISK_VARIANTS: Final[dict[str, Callable[[Game], None]]] = {"cowboy": cowboy}

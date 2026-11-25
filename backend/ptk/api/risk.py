@@ -77,7 +77,7 @@ class TermsOut(BaseModel):
     deductible_cents: int | None
 
 
-class ClaimOut(BaseModel):
+class MalpracticeClaimOut(BaseModel):
     id: int
     matter_id: int
     matter: str
@@ -163,7 +163,7 @@ class ArbitrationOut(BaseModel):
     decided: bool
 
 
-class RiskOut(BaseModel):
+class RiskScreenOut(BaseModel):
     enabled: bool
     supervision: str
     policy: PolicyOut | None
@@ -172,7 +172,7 @@ class RiskOut(BaseModel):
     limits: list[OptionOut]
     deductibles: list[OptionOut]
     compulsory_limit_cents: int
-    claims: list[ClaimOut]
+    claims: list[MalpracticeClaimOut]
     cases: list[CaseOut]
     inquiries: list[InquiryOut]
     reconciliations: list[ReconciliationOut]
@@ -207,7 +207,7 @@ def _name(state: GameState, person_id: int | None) -> str:
     return f"{p.first_name} {p.last_name}"
 
 
-def risk_out(state: GameState, data: GameData, balance: Balance) -> RiskOut:
+def risk_out(state: GameState, data: GameData, balance: Balance) -> RiskScreenOut:
     from ptk.sim.risk.common import lawyers
 
     firm = state.player.id
@@ -239,7 +239,7 @@ def risk_out(state: GameState, data: GameData, balance: Balance) -> RiskOut:
             continue
         m = state.market.matter(c.matter_id)
         claims.append(
-            ClaimOut(
+            MalpracticeClaimOut(
                 id=c.id,
                 matter_id=c.matter_id,
                 matter=m.name if m is not None else "",
@@ -341,7 +341,7 @@ def risk_out(state: GameState, data: GameData, balance: Balance) -> RiskOut:
         if a.firm_id == firm
     ]
     since = state.turn - MONTHS
-    return RiskOut(
+    return RiskScreenOut(
         enabled=balance.risk.enabled,
         supervision=risk.firm(firm).supervision,
         policy=policy,
@@ -379,12 +379,12 @@ def _path(slug: str) -> Path:
     return saves.open_save(get_settings().resolved_save_dir(), slug)
 
 
-def _view(path: Path) -> RiskOut:
+def _view(path: Path) -> RiskScreenOut:
     state = saves.read_state(path)[0]
     return risk_out(state, loader.game_data(), loader.balance())
 
 
-def _act(slug: str, build: Any) -> RiskOut:
+def _act(slug: str, build: Any) -> RiskScreenOut:
     path = _path(slug)
     state = saves.read_state(path)[0]
     actor = state.founder_of(state.player.id)
@@ -398,33 +398,33 @@ def _act(slug: str, build: Any) -> RiskOut:
 def make_risk_router(errors: dict[int | str, dict[str, Any]]) -> APIRouter:
     router = APIRouter()
     base = "/api/saves/{slug}/risk"
-    kw: dict[str, Any] = {"response_model": RiskOut, "responses": errors}
+    kw: dict[str, Any] = {"response_model": RiskScreenOut, "responses": errors}
 
     @router.get(base, operation_id="getRisk", **kw)
-    def get_risk(slug: str) -> RiskOut:
+    def get_risk(slug: str) -> RiskScreenOut:
         return _view(_path(slug))
 
     @router.post(f"{base}/terms", operation_id="setPolicyTerms", **kw)
-    def terms(slug: str, body: TermsIn) -> RiskOut:
+    def terms(slug: str, body: TermsIn) -> RiskScreenOut:
         return _act(
             slug,
             lambda a: SetPolicyTerms(a, body.insurer, body.limit_cents, body.deductible_cents),
         )
 
     @router.post(f"{base}/supervision", operation_id="setSupervision", **kw)
-    def supervision(slug: str, body: SupervisionIn) -> RiskOut:
+    def supervision(slug: str, body: SupervisionIn) -> RiskScreenOut:
         return _act(slug, lambda a: SetSupervision(a, body.supervision))
 
     @router.post(f"{base}/claims/{{claim_id}}/respond", operation_id="respondClaim", **kw)
-    def respond_claim(slug: str, claim_id: int, body: ChoiceIn) -> RiskOut:
+    def respond_claim(slug: str, claim_id: int, body: ChoiceIn) -> RiskScreenOut:
         return _act(slug, lambda a: RespondClaim(a, claim_id, body.choice))
 
     @router.post(f"{base}/cases/{{case_id}}/respond", operation_id="respondCase", **kw)
-    def respond_case(slug: str, case_id: int, body: ChoiceIn) -> RiskOut:
+    def respond_case(slug: str, case_id: int, body: ChoiceIn) -> RiskScreenOut:
         return _act(slug, lambda a: RespondCase(a, case_id, body.choice))
 
     @router.post(f"{base}/inquiries/{{inquiry_id}}/respond", operation_id="respondInquiry", **kw)
-    def respond_inquiry(slug: str, inquiry_id: int, body: ChoiceIn) -> RiskOut:
+    def respond_inquiry(slug: str, inquiry_id: int, body: ChoiceIn) -> RiskScreenOut:
         return _act(slug, lambda a: RespondInquiry(a, inquiry_id, body.choice))
 
     return router

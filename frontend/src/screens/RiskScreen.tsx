@@ -83,7 +83,10 @@ function claimColumns(slug: string) {
               public
             </Badge>
           )}
-          <span className="tst-muted"> {row.original.closed_label || row.original.stage_label}</span>
+          <span className="tst-muted">
+            {' '}
+            {row.original.closed_label || row.original.stage_label}
+          </span>
         </span>
       ),
     }),
@@ -119,8 +122,8 @@ function claimColumns(slug: string) {
       sortFn: 'basic',
       cell: ({ row }) => (
         <span className="tst-num" data-testid={`claim-paid-${row.original.id}`}>
-          {formatMoneyShort(row.original.deductible_paid_cents + row.original.excess_paid_cents)}{' '}
-          / {formatMoneyShort(row.original.insurer_paid_cents)}
+          {formatMoneyShort(row.original.deductible_paid_cents + row.original.excess_paid_cents)} /{' '}
+          {formatMoneyShort(row.original.insurer_paid_cents)}
           {row.original.called_cents > 0 && (
             <span className="tst-muted">
               {' '}
@@ -168,7 +171,7 @@ function Answer({
 }
 
 const caseHelper = createColumnHelper<GameTableFeatures, RiskCase>();
-function caseColumns(slug: string, respond: ReturnType<typeof useRespondCase>) {
+function caseColumns(respond: ReturnType<typeof useRespondCase>) {
   return caseHelper.columns([
     caseHelper.accessor('name', { header: 'Lawyer', sortFn: 'alphanumeric' }),
     caseHelper.accessor('cause', {
@@ -291,7 +294,8 @@ const auditColumns = auditHelper.columns([
   auditHelper.accessor('padding_found_cents', {
     header: 'Padding found',
     sortFn: 'basic',
-    cell: (c) => (c.getValue() ? <span className="tst-num">{formatMoneyShort(c.getValue())}</span> : ''),
+    cell: (c) =>
+      c.getValue() ? <span className="tst-num">{formatMoneyShort(c.getValue())}</span> : '',
   }),
 ]);
 
@@ -384,16 +388,13 @@ function Policy({ slug, r }: { slug: string; r: Risk }) {
       )}
       <Group mt="sm">
         <Text size="sm">
-          Supervision:{' '}
-          <span data-testid="supervision">{humanize(r.supervision)}</span>
+          Supervision: <span data-testid="supervision">{humanize(r.supervision)}</span>
         </Text>
         <Button
           size="compact-xs"
           variant="default"
           loading={sup.isPending}
-          onClick={() =>
-            sup.mutate({ supervision: r.supervision === 'lax' ? 'standard' : 'lax' })
-          }
+          onClick={() => sup.mutate({ supervision: r.supervision === 'lax' ? 'standard' : 'lax' })}
           data-testid="toggle-supervision"
         >
           {r.supervision === 'lax' ? 'Tighten supervision' : 'Relax supervision'}
@@ -417,7 +418,7 @@ export function RiskScreen() {
   });
   const cases = useTable({
     features: gameTableFeatures,
-    columns: caseColumns(slug, respondCase),
+    columns: caseColumns(respondCase),
     data: data?.cases ?? [],
     getRowId: (r) => String(r.id),
   });

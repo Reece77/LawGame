@@ -35,6 +35,7 @@ from ptk.db.state_io import (
     write_people,
     write_turn,
 )
+from ptk.db.risk_io import write_risk
 from ptk.db.tech_io import write_tech
 from ptk.llm.base import LLMAdapter
 from ptk.sim.actions import Action, action_payload, apply_action
@@ -209,6 +210,7 @@ def run_action(path: Path, action: Action, balance: Balance, data: GameData) -> 
         write_founder_life(session, outcome.state.founder_life, outcome.state.family)  # PT-M17
         write_standing(session, outcome.state.standing)  # PT-M16: the press, the submission
         write_tech(session, outcome.state.tech)  # PT-M14
+        write_risk(session, outcome.state.risk)  # PT-M15
         session.add(
             DecisionLogRow(
                 turn=state.turn,

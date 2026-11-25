@@ -3,7 +3,7 @@
     [
       1,
       "1000_cash",
-      188818968
+      174303673
     ],
     [
       1,
@@ -13,17 +13,17 @@
     [
       1,
       "1110_wip_provision",
-      -7495044
+      -3494990
     ],
     [
       1,
       "1200_receivables",
-      26385679
+      14190600
     ],
     [
       1,
       "1210_bad_debt_provision",
-      -263856
+      -141906
     ],
     [
       1,
@@ -38,17 +38,17 @@
     [
       1,
       "2700_partner_current_accounts",
-      -54235659
+      -70897816
     ],
     [
       1,
       "3000_partners_capital",
-      -134583309
+      -103405857
     ],
     [
       1,
       "3100_undistributed_profit",
-      6333821402
+      6095676414
     ],
     [
       1,
@@ -58,17 +58,17 @@
     [
       1,
       "4000_fees",
-      -7729595890
+      -7352096132
     ],
     [
       1,
       "4100_success_fees",
-      -298582434
+      -469503877
     ],
     [
       1,
       "5000_associate_salaries",
-      271809416
+      271996716
     ],
     [
       1,
@@ -83,7 +83,7 @@
     [
       1,
       "5200_benefits",
-      67952342
+      67999166
     ],
     [
       1,
@@ -98,7 +98,12 @@
     [
       1,
       "6300_insurance",
-      57680000
+      89631351
+    ],
+    [
+      1,
+      "6310_claims",
+      5000000
     ],
     [
       1,
@@ -108,17 +113,17 @@
     [
       1,
       "6700_write_offs",
-      5880186
+      5307324
     ],
     [
       1,
       "6800_interest",
-      1574880
+      139688
     ],
     [
       1,
       "6900_general_admin",
-      366421401
+      370883728
     ],
     [
       101,
@@ -3591,19 +3596,19 @@
   "matter_outcomes": [
     [
       "closed",
-      35
+      33
     ],
     [
       "collapsed",
-      4
+      6
     ],
     [
       "done",
-      20
+      19
     ],
     [
       "lost",
-      6
+      7
     ],
     [
       "open",
@@ -3611,17 +3616,17 @@
     ],
     [
       "won",
-      6
+      5
     ]
   ],
-  "matters": "d2a5c62327d0e6f3389027dedaa291b435e8ef0872b3e9a79d89e4f1ae10a528",
+  "matters": "a03fedb55198e19714f494e8f171d6f3f6b4c7f2552babd5789a3bf414e0d393",
   "names": [
     "Sarah Williams",
     "Kevin Stewart",
     "Luis Allen",
     "Logan Robinson"
   ],
-  "people": "16eeec08ae01818124b930736c63d3eb7ff0335a5a922da0bfffb2b0164f5c01",
-  "relationships": "94a8723e64dbbfb3343b1dbc36aef77164b7045fc264193c7d8d1c4f0de3b5f2",
-  "sha256": "a9281ad4c14e212fac1254f7d86679963404451fd42370af521835186b74f3fc"
+  "people": "51402230ff3f6baee365ce3f9f8e39e53b141f793b9e6127af78470054474aaf",
+  "relationships": "9d0f3ce24a71e223623737f126a3ca33c7e3fc543a16b5615fe4e78f1e262368",
+  "sha256": "4645afb1646ef26a28f059e1c69c7462eb593fb228643972015f752221a6d05a"
 }

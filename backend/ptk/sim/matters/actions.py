@@ -327,7 +327,9 @@ def seek_waiver(
     [+ advance penalty]) from the affected client's relationship and GC (ADR PT-0009 2)."""
     firm = acting_firm(state, a.actor_id)
     matter = _matter(state, firm, a.matter_id, status="conflicted")
-    index = conflict_index(state.market, firm, state.turn, balance)
+    from ptk.sim.mergers.verein import verein_clients
+
+    index = conflict_index(state.market, firm, state.turn, balance, verein_clients(state, firm))
     affected = affected_client(matter, index)
     if affected is None:  # the conflict has gone (the other matter ended): it may open
         affected = matter.adverse_client_id or matter.client_id

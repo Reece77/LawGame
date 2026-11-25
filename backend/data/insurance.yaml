@@ -27,12 +27,12 @@ deductibles: # per claim, defence costs within it
   - { cents: 50000000, factor: 0.80 } # $500k
   - { cents: 100000000, factor: 0.75 } # $1M
 rates:
-  - { ym: [2005, 1], rate_bp: 130, src: "[A] dossier s4: the hard market of 2002-2004 easing" }
-  - { ym: [2008, 1], rate_bp: 115, src: "[A] soft market" }
-  - { ym: [2011, 1], rate_bp: 125, src: "[A] dossier s4: firming after the crash's claims" }
-  - { ym: [2018, 1], rate_bp: 115, src: "[A] soft market" }
-  - { ym: [2022, 1], rate_bp: 145, src: "[S/A] dossier s4: +5-15% a year 2019-2022" }
-  - { ym: [2025, 1], rate_bp: 140, src: "[A] flattening" }
+  - { ym: [2005, 1], rate_bp: 175, src: "[A] dossier s4: the hard market of 2002-2004 easing" }
+  - { ym: [2008, 1], rate_bp: 155, src: "[A] soft market" }
+  - { ym: [2011, 1], rate_bp: 170, src: "[A] dossier s4: firming after the crash's claims" }
+  - { ym: [2018, 1], rate_bp: 155, src: "[A] soft market" }
+  - { ym: [2022, 1], rate_bp: 195, src: "[S/A] dossier s4: +5-15% a year 2019-2022" }
+  - { ym: [2025, 1], rate_bp: 190, src: "[A] flattening" }
 practice_rating:
   corporate_ma: 1.05
   private_equity: 1.05

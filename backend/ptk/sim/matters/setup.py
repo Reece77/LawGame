@@ -39,6 +39,7 @@ from ptk.sim.scale import ATTR_MAX, ATTR_MIN
 from ptk.sim.state import GameState
 
 SETUP_TURN: Final = 0
+HOME_CITY_LABEL: Final = "New York"  # PT-M12: the home market's pooled clients' names
 TRAIT_MEAN: Final = 10.0  # tunable-exempt: the 1-20 scale's centre
 TRAIT_SD: Final = 3.5  # tunable-exempt: generated traits' spread, as people's personality
 UNIQUE_TRIES: Final = 8  # tunable-exempt: name redraws before a numeral is added
@@ -75,11 +76,17 @@ def generate_clients(rng: RngFactory, data: GameData, balance: Balance) -> tuple
     taken: set[str] = {c.name for c in data.clients.real_clients}
     out: list[Client] = []
     n_real = len(data.clients.real_clients)
-    for index in range(n_real + cfg.generated_count):
+    n_gen = n_real + cfg.generated_count
+    pooled = data.clients.pooled_clients  # PT-M12: after the generated ones (ids append)
+    for index in range(n_gen + len(pooled)):
         gen = client_gen_stream(rng, index)
         if index < n_real:
             real = data.clients.real_clients[index]
             name, sector, revenue, country = real.name, real.sector, real.revenue_bn, real.country
+        elif index >= n_gen:
+            real = pooled[index - n_gen]
+            name = real.name.format(city=HOME_CITY_LABEL)
+            sector, revenue, country = real.sector, real.revenue_bn, real.country
         else:
             sector = _weighted(gen, data.clients.generated_sector_weights)
             span = cfg.generated_revenue_bn
@@ -121,7 +128,7 @@ def generate_clients(rng: RngFactory, data: GameData, balance: Balance) -> tuple
                 name=name,
                 sector=sector,
                 country=country,
-                real=index < n_real,
+                real=index < n_real or index >= n_gen,  # pooled: no generated failure
                 revenue_bn=revenue,
                 size_class=size_class,
                 price_sensitivity=price,

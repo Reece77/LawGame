@@ -25,7 +25,7 @@ START = (2005, 1)
 SEEDS = range(1, 11)
 PRO_CYCLICAL = ("tax", "antitrust", "energy", "technology_privacy", "private_client")
 COUNTER_CYCLICAL = ("international_arbitration", "financial_regulation", "insurance")
-# (practice, first month after the event, months either side): the year after against the year before
+# (practice, the first month after the event): the year after against the year before
 EVENTS = (
     ("financial_regulation", (2010, 8), "Dodd-Frank"),
     ("tax", (2018, 1), "the TCJA"),

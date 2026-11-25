@@ -1493,6 +1493,9 @@ class SectorDef(_Strict):
     intensity: float = Field(gt=0)  # legal spend per unit of size, relative
     mix: dict[str, float]  # practice -> weight
     suffixes: tuple[str, ...] = Field(min_length=1)  # generated client names
+    # PT-M12 (spec 7.1): individuals (private clients, plaintiffs) pooled as one client per
+    # city; never an adverse party, never generated
+    pooled: bool = False
 
 
 class ClientFailureDef(_Strict):
@@ -1526,6 +1529,13 @@ class ClientsData(_Strict):
     panel_firms: tuple[PanelFirmDef, ...] = Field(min_length=1)
     real_clients: tuple[RealClientDef, ...]
     uk_clients: tuple[RealClientDef, ...] = ()  # PT-M11: London's real clients (FTSE names)
+    # PT-M12: each city's pooled individuals (a pooled sector each; "{city}" in the name is the
+    # city's label), made after the city's other clients
+    pooled_clients: tuple[RealClientDef, ...] = ()
+
+    @property
+    def pooled_sectors(self) -> frozenset[str]:
+        return frozenset(s.key for s in self.sectors if s.pooled)
 
     def sector(self, key: str) -> SectorDef:
         for s in self.sectors:

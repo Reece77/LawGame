@@ -61,7 +61,11 @@ def _copy(dest: Path) -> Path:
     shutil.copytree(DATA, dest)
     for name in MENTIONS:
         path = dest / name
-        path.write_text(yaml.safe_dump(_strip(yaml.safe_load(path.read_text())), sort_keys=False))
+        doc = _strip(yaml.safe_load(path.read_text()))
+        if name == "clients.yaml":  # the pooled individuals exist for the v2 practices only
+            doc.pop("pooled_clients", None)
+            doc["sectors"] = [x for x in doc["sectors"] if not x.get("pooled")]
+        path.write_text(yaml.safe_dump(doc, sort_keys=False))
     return dest
 
 

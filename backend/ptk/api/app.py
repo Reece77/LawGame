@@ -50,6 +50,7 @@ from ptk.sim.errors import (
     OneOffError,
     OverCapacityError,
     PartnershipError,
+    RiskActionError,
     SaveExistsError,
     SaveNotFoundError,
     SeatRuleError,
@@ -95,6 +96,7 @@ _STATUS: dict[type[SimError], int] = {
     # PT-M3b: billing
     BillingActionError: 409,
     TechActionError: 409,  # PT-M14
+    RiskActionError: 409,  # PT-M15
     # PT-M17: the founder's life, family and succession
     FounderLifeError: 409,
     FamilyError: 409,

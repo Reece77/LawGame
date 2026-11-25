@@ -47,7 +47,13 @@ from typing import Final
 
 from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import PARTNER_LEVELS, Balance, GameData, KindDef
-from ptk.sim.interfaces import NO_TECH_HOURS, TechHoursView, tech_hours
+from ptk.sim.interfaces import (
+    NO_TECH_HOURS,
+    TechHoursView,
+    lax_supervision_hours,
+    suspended,
+    tech_hours,
+)
 from ptk.sim.macro import shock_share
 from ptk.sim.matters import formulas as fx
 from ptk.sim.matters.models import (
@@ -97,6 +103,7 @@ def fee_earners(
     staff = set(state.staff_ids(firm_id))
     assessing = assessment_tenths(state.market, firm_id, state.turn, balance)
     training = tech_hours(state, firm_id, data, balance).training_tenths  # PT-M14
+    lax_hours = lax_supervision_hours(state, firm_id, balance)  # PT-M15
     out = []
     for person in state.people:
         if person.id not in staff:
@@ -106,19 +113,22 @@ def fee_earners(
             continue
         other = (
             (
-                balance.matters.partner_other_hours * fx.TENTHS
+                max(0, balance.matters.partner_other_hours - lax_hours) * fx.TENTHS
                 if person.level in PARTNER_LEVELS
                 else 0
             )
             + assessing.get(person.id, 0)
             + training.get(person.id, 0)
         )
+        capacity = round(monthly_capacity_tenths(person, balance))
+        if suspended(state, person.id):  # PT-M15: a suspended lawyer does no billable work
+            other = capacity
         out.append(
             FeeEarner(
                 person=person,
                 level=level,
                 home=home_practice(person, data),
-                capacity=round(monthly_capacity_tenths(person, balance)),
+                capacity=capacity,
                 other=other,
             )
         )

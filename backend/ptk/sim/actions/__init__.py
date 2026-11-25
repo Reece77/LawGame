@@ -49,7 +49,7 @@ from ptk.sim.hiring.actions import (
     WithdrawOffer,
     apply_hiring,
 )
-from ptk.sim.ledger import LedgerBalances
+from ptk.sim.ledger import CASH, LedgerBalances
 from ptk.sim.macro_seed import world_data
 from ptk.sim.matters.actions import MATTER_ACTION_TYPES, MatterAction, apply_matter_action
 from ptk.sim.org.pitches import AnswerPitch, answer_pitch
@@ -60,6 +60,7 @@ from ptk.sim.partnership.actions import (
     apply_partnership_action,
 )
 from ptk.sim.press.actions import STANDING_ACTION_TYPES, StandingAction, apply_standing_action
+from ptk.sim.risk.actions import RISK_ACTION_TYPES, RiskAction, apply_risk_action
 from ptk.sim.rivals.actions import RIVAL_ACTION_TYPES, RivalAction, apply_rival_action
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
@@ -79,6 +80,7 @@ type Action = (
     | AutomationAction
     | TechAction
     | GeoAction
+    | RiskAction
 )
 
 ACTION_TYPES: dict[str, type[Any]] = {
@@ -103,6 +105,7 @@ ACTION_TYPES: dict[str, type[Any]] = {
     **AUTOMATION_ACTION_TYPES,  # PT-M9
     **TECH_ACTION_TYPES,  # PT-M14
     **GEO_ACTION_TYPES,  # PT-M11
+    **RISK_ACTION_TYPES,  # PT-M15
 }
 
 
@@ -144,6 +147,9 @@ def apply_action(
             data,
             ledger_balances,
         )
+    if type(action) in RISK_ACTION_TYPES.values():  # PT-M15: claims, cases, the policy
+        cash = ledger_balances.get((state.player.id, CASH), 0)
+        return apply_risk_action(state, action, balance, data, cash)  # type: ignore[arg-type]
     if isinstance(action, ChooseEvent):
         return apply_event_action(state, action, balance, data)
     if isinstance(action, AnswerPitch):  # PT-M8
@@ -169,7 +175,7 @@ def apply_action(
             ledger_balances,
         )
     if type(action) in BILLING_ACTION_TYPES.values():
-        return apply_billing_action(state, action, draws, balance)  # type: ignore[arg-type]
+        return apply_billing_action(state, action, draws, balance, data)  # type: ignore[arg-type]
     if type(action) in MATTER_ACTION_TYPES.values():
         return apply_matter_action(state, action, draws, balance, data)  # type: ignore[arg-type]
     return apply_hiring(state, action, draws, balance, data, ledger_balances)  # type: ignore[arg-type]

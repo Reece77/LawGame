@@ -8,7 +8,7 @@ from functools import cache
 from ptk.loader import load_balance, load_game_data
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.matters.models import Matter
-from ptk.sim.risk.models import Claim, Policy, with_claim, with_policy
+from ptk.sim.risk.models import EMPTY_RISK, Claim, Policy, with_claim, with_policy
 from ptk.sim.state import GameState
 from tests.conftest import DATA_DIR
 from tests.matters_support import game, play
@@ -67,6 +67,7 @@ def a_claim(
 
 
 def with_a_policy(state: GameState, limit: int, deductible: int) -> GameState:
+    """`state` with no risk history but one policy in force."""
     p = Policy(
         id=900,
         firm_id=state.player.id,
@@ -79,8 +80,11 @@ def with_a_policy(state: GameState, limit: int, deductible: int) -> GameState:
         mod=1.0,
         rate_bp=120,
         exposure_cents=100_000_000,
+        lawyers=10,
     )
-    return replace(state, risk=with_policy(state.risk, p))
+    return replace(
+        state, risk=with_policy(replace(EMPTY_RISK, next_id=1000), p)
+    )  # only this policy
 
 
 def with_a_claim(state: GameState, claim: Claim) -> GameState:

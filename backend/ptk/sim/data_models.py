@@ -21,10 +21,10 @@ from ptk.sim.org.seat_data import AuthorityBalance, PitchesBalance, SeatDef, Sea
 from ptk.sim.press.config import PressBalance
 from ptk.sim.rankings.config import RankingsBalance
 from ptk.sim.reputation.config import ReputationBalance
+from ptk.sim.risk.config import InsuranceData, RiskBalance
 from ptk.sim.rivals.data import RivalsBalance, RivalsData, WorldBalance
 from ptk.sim.tech.config import TASKS as TECH_TASKS
 from ptk.sim.tech.config import LegalEras, TechBalance
-from ptk.sim.risk.config import InsuranceData, RiskBalance
 
 type AccountType = Literal["asset", "liability", "equity", "income", "expense"]
 type PersonKind = Literal["lawyer", "paralegal", "business_services"]

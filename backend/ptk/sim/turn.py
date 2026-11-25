@@ -200,7 +200,8 @@ def payroll_and_operating_costs(ctx: TurnContext) -> TurnContext:
     month = risk.month(
         ctx.state, ctx.start or ctx.state, ctx.rng, ctx.balance, ctx.data, ctx.balances
     )
-    return replace(ctx, state=month.state).post(*month.entries).log(*month.log)  # PT-M15
+    ctx = replace(ctx, state=month.state, client_book=ctx.client_book + month.book)
+    return ctx.post(*month.entries).log(*month.log)  # PT-M15
 
 
 def financing(ctx: TurnContext) -> TurnContext:

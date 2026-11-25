@@ -34,9 +34,9 @@ from ptk.db.models import (
 )
 from ptk.db.org_io import load_org, write_org
 from ptk.db.partnership_io import load_partnership, write_partnership
+from ptk.db.risk_io import load_risk, write_risk
 from ptk.db.rivals_io import insert_rivals, load_rivals, write_panels, write_rivals
 from ptk.db.standing_io import load_standing, write_standing
-from ptk.db.risk_io import load_risk, write_risk
 from ptk.db.tech_io import load_tech, write_tech
 from ptk.sim.billing.models import ClientBookEntry
 from ptk.sim.data_models import InboxTemplate

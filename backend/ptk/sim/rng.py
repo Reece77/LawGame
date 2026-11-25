@@ -81,14 +81,14 @@ STREAM_IDS: Final = MappingProxyType(
         "tech_seed": 110,  # (era_index, 0) its strength's 2026+ target; (era_index, 1) the market's
         "tech_vote": 111,  # (era_index,): a rollout vote on an era this month, each partner's noise
         # PT-M15 (lane C, ids 140-149): risk and ethics (ptk.sim.risk; ADR PT-0017)
-        "risk_claim": 140,  # (1, matter_id, n) the n-th escaped error's claim; (2, matter_id) a grievance
+        "risk_claim": 140,  # (1, matter_id, n) an escape's claim; (2, matter_id, 0) a grievance
         "risk_case": 141,  # (claim_id,): a claim's month: drop, offer, stage length, trial
         "discipline": 142,  # (firm_id,): the month's disciplinary rolls, by person id
         "discipline_case": 143,  # (case_id,): a case's month: stage length, then the outcome
         "regulator": 144,  # (purpose, id): (1, firm_id) inquiries opened; (2, inquiry_id) its month
         "trust": 145,  # (firm_id,): the month's client-account errors and misuse
         "audit": 146,  # (bill_id,): a client's e-billing audit of a new bill
-        "arbitration": 147,  # (1, bill_id) the client files; (2, arbitration_id) the award
+        "arbitration": 147,  # (2, arbitration_id): the award (the filing is the hold's action draw)
         "misc": 99,  # tests only
     }
 )

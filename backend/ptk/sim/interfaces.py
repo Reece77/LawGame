@@ -1487,3 +1487,19 @@ def tech_rfp_gap(state: GameState, firm_id: int, data: GameData, balance: Balanc
     from ptk.sim.tech.hooks import rfp_gap
 
     return rfp_gap(state, firm_id, data, balance)
+
+
+# --- PT-M15 (risk): what other systems read of a lawyer's discipline and the firm's policy --
+
+
+def suspended(state: GameState, person_id: int) -> bool:
+    """A lawyer suspended by the bar this month (spec 11.4): on the books, no billable work."""
+    return state.risk.suspended(person_id, state.turn)
+
+
+def lax_supervision_hours(state: GameState, firm_id: int, balance: Balance) -> int:
+    """Hours a month a partner's non-billable time falls under the firm's lax supervision
+    policy (PT-M15; 0 under standard supervision or with risk off)."""
+    if not balance.risk.enabled or state.risk.firm(firm_id).supervision != "lax":
+        return 0
+    return balance.risk.policy.lax_hours

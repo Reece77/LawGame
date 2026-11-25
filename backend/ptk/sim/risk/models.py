@@ -102,6 +102,7 @@ class Policy:
     mod: float  # the experience modifier it was priced with (shown)
     rate_bp: int  # the market's rate that year (shown)
     exposure_cents: int  # the fees it was priced on (shown)
+    lawyers: int = 0  # lawyers on the books at its start (the claims history's lawyer-years)
     paid_cents: int = 0  # premium paid so far (monthly instalments)
 
 

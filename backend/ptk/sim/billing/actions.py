@@ -17,11 +17,12 @@ import numpy as np
 from ptk.sim.billing import books as bk
 from ptk.sim.billing.models import DISPUTE_CHOICES, BillingState, DisputeChoice
 from ptk.sim.billing.phase import resolve_dispute
-from ptk.sim.data_models import Balance
+from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import BillingActionError, UnknownBillError, UnknownMatterError
 from ptk.sim.hiring.actions import Outcome, acting_firm, spend_energy
 from ptk.sim.interfaces import bump_relationship, relationship_score
 from ptk.sim.ledger import FEES, RECEIVABLES, LedgerEntry, LedgerLine
+from ptk.sim.log import LogItem
 from ptk.sim.state import GameState
 
 type Draws = Callable[[], np.random.Generator]
@@ -74,7 +75,13 @@ def write_down(state: GameState, a: WriteDownMatter, balance: Balance) -> Outcom
     return Outcome(state=_with_billing(state, replace(state.billing, engagements=engagements)))
 
 
-def respond_dispute(state: GameState, a: RespondDispute, draws: Draws, balance: Balance) -> Outcome:
+def respond_dispute(
+    state: GameState,
+    a: RespondDispute,
+    draws: Draws,
+    balance: Balance,
+    data: GameData | None = None,
+) -> Outcome:
     firm = acting_firm(state, a.actor_id)
     if a.choice not in DISPUTE_CHOICES:
         raise BillingActionError(f"a dispute is answered by {DISPUTE_CHOICES}, got {a.choice!r}")
@@ -84,7 +91,8 @@ def respond_dispute(state: GameState, a: RespondDispute, draws: Draws, balance: 
     if bill.dispute is None:
         raise BillingActionError(f"bill {a.bill_id} is not disputed")
     state = spend_energy(state, a.actor_id, "dispute", balance)
-    u = float(draws().random()) if a.choice == "hold" else 0.0
+    gen = draws() if a.choice == "hold" else None
+    u = float(gen.random()) if gen is not None else 0.0
     rel = relationship_score(state, bill.client_id, firm)
     out, credit, points = resolve_dispute(bill, a.choice, u, rel, state.turn, balance.billing)
     bills = tuple(out if b.id == bill.id else b for b in state.billing.bills)
@@ -106,14 +114,26 @@ def respond_dispute(state: GameState, a: RespondDispute, draws: Draws, balance: 
                 ),
             ),
         )
-    return Outcome(state=state, entries=entries)
+    logs: tuple[LogItem, ...] = ()
+    if gen is not None and credit == 0 and data is not None and bill.dispute is not None:
+        from ptk.sim.risk.arbitration import after_hold  # PT-M15: arbitration, fee suits
+
+        more = gen.random(2)
+        state, logs = after_hold(
+            state, bill, bill.dispute.amount_cents, float(more[0]), float(more[1]), balance, data
+        )
+    return Outcome(state=state, entries=entries, log=logs)
 
 
 def apply_billing_action(
-    state: GameState, action: BillingAction, draws: Draws, balance: Balance
+    state: GameState,
+    action: BillingAction,
+    draws: Draws,
+    balance: Balance,
+    data: GameData | None = None,
 ) -> Outcome:
     match action:
         case WriteDownMatter():
             return write_down(state, action, balance)
         case RespondDispute():
-            return respond_dispute(state, action, draws, balance)
+            return respond_dispute(state, action, draws, balance, data)

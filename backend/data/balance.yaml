@@ -1547,7 +1547,7 @@ geo:
 risk: # PT-M15: claims, insurance, discipline, regulators, trust accounts, audits (spec 11.3-11.6; ADR PT-0017; numbers from docs/research/risk-and-ethics.md, tags there)
   enabled: true # off: no claims, policies, cases, inquiries, reconciliations or audits (tests of earlier systems)
   claims:
-    from_error_bp: 600 # bp of escaped errors that become claim notices at a GC effect of 0 (steady escapes 30-70 errors a 100 lawyers a year; the dossier's ~3 notices a 100 lawyers) [A]
+    from_error_bp: 900 # bp of escaped errors that become claim notices at a GC effect of 0 (steady escapes 30-70 errors a 100 lawyers a year; the dossier's ~3 notices a 100 lawyers) [A]
     grievance_min_stakes_cents: 500000000 # $5M: a lost case with stakes of at least this may bring the client's claim
     grievance_bp: 1500 # bp of such lost cases that bring a claim [A]
     delay_months: { lo: 2, hi: 18 } # months from the error to the notice (errors surface late) [A]
@@ -1585,7 +1585,7 @@ risk: # PT-M15: claims, insurance, discipline, regulators, trust accounts, audit
     count_weight: 0.25 # premium x (1 + this x (frequency / expected - 1))
     loss_weight: 0.30 # ... + this x (losses / premiums - target)
     loss_target: 0.6 # the loss ratio insurers price for
-    mod: { lo: 0.75, hi: 2.5 } # the experience modifier's bounds
+    mod: { lo: 0.8, hi: 2.5 } # the experience modifier's bounds
     default_limit_per_lawyer_cents: 20000000 # $200k a lawyer: 100 lawyers buy $20M (dossier s4)
   discipline:
     causes: # bp a lawyer-month at integrity 10 (large-firm complaints ~2 a 100 lawyers a year; formal cases far fewer, dossier s6)

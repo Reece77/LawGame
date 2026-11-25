@@ -8,7 +8,7 @@ from ptk.sim.rng import RngFactory
 
 ERROR, GRIEVANCE = 1, 2  # risk_claim purposes
 OPENED, MONTH = 1, 2  # regulator purposes
-FILED, AWARD = 1, 2  # arbitration purposes
+AWARD = 2  # arbitration's purpose (the filing is the action's draw)
 
 
 def claim_draws(

@@ -173,7 +173,8 @@ def office_costs(
             geo = with_office(geo, office)
             entries.extend(renewal)
         entries.extend(month_entries(office, state.turn))
-        entries.extend(insurance_entry(state, office, data))
+        if not balance.risk.enabled:  # PT-M15: the firm's policy covers it (ptk.sim.risk)
+            entries.extend(insurance_entry(state, office, data))
     return replace(state, geo=geo), tuple(entries)
 
 

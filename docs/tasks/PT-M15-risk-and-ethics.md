@@ -54,8 +54,18 @@ From `pt-2008`, hire a rule-bending lateral without a GC in the seat, play to 20
 9. **Lax supervision** is a firm policy (`SetSupervision`): it frees `risk.policy.lax_hours` of each partner's non-billable hours a month and multiplies claims, discipline and misuse (x2). Tuned for the brief's cowboy criterion (rule 1, my keys): `lax_hours` 15 -> 5 (at 15 the freed capacity kept steady's hiring rule from hiring and cowboy dissolved on 4 of 10 seeds), claims' `lax_mult` 1.6 -> **3.0**, discipline's 2.0 -> **6.0**. Readings (seeds 1-10, final keys): cowboy has at least twice steady's claims and cases on **8 of 10** and lower PEP in December 2015 on **6 of 10** (both gated nightly at the brief's thresholds, and passing at them: seeds 4 and 9 are steady's busiest claim years). The catch rate in `progress.py` is not touched (the brief: error chances are lane A's).
 10. **`cowboy`** (`ptk/balance/risk.py`, one line in `strategies.VARIANTS`): steady with lax supervision, the GC seat vacated each month after PT-M8's fill-seats step, conflict checks off, and steady's lateral partner step replaced by one without diligence that judges the book by the top of its range ("rule-bending laterals": scripts see only what the player sees, so the hidden rule-bender tag cannot be chosen).
 11. **Fee arbitration** comes only from a dispute the firm held and won (the client goes further); the filing is the hold action's own draw, the award stream `arbitration`'s.
-12. **T14 proposed** (for the product manager's approval): claim notices per 100 lawyer-years 2006-2015, median of steady's seeds 1-10, band **1.5-5.0** (the dossier's 2-4 notices for a 50-250 lawyer firm, widened because a 30-90 lawyer firm's 10 years give 3-60 notices). Premium per lawyer in December 2015 within the dossier's $5k-$10k (gated nightly beside it). Readings: T14 median **1.69** notices a 100 lawyer-years (per seed 0.0-5.73), premium median **$7,000** a lawyer ($6.3k-$16.6k).
-13. **Practice save `pt-risk`** (the e2e): `pt-2008` with a claim walked to the claimant's offer, a second surfacing next month and a shortfall, staged through the engine with the chances forced (`ptk.practice.risk_demo`).
+12. **T14 proposed** (for the product manager's approval): claim notices per 100 lawyer-years 2006-2015, median of steady's seeds 1-10, band **1.5-5.0** (the dossier's 2-4 notices for a 50-250 lawyer firm, widened because a 30-90 lawyer firm's 10 years give 3-60 notices). Premium per lawyer in December 2015 within the dossier's $5k-$10k (gated nightly beside it). Readings (final keys): T14 median **1.72** notices a 100 lawyer-years (per seed 0.0-6.5), premium median **$9,434** a lawyer ($8.5k-$18.9k); cowboy 2x on **8 of 10**, lower PEP on **7 of 10**.
+13. **Premium rates x1.35** (`insurance.yaml`, 130-145 bp -> 175-195 bp), rule 2: with the first rates a steady firm's premium (~$7k a lawyer) was below the $9.6k-a-lawyer overhead it replaced, and the nightly read T9.rocket 7/10 (main 5/10, band 3-6). At the new rates T9.rocket reads 5/10 on seeds 1-10.
+14. **T2 and T5.standard on seeds 1-10 are seed variance (rule 4):**
+
+    | Target | seeds 1-10, branch | seeds 1-10, main | seeds 11-40, branch | seeds 11-40, main | band |
+    | --- | --- | --- | --- | --- | --- |
+    | T2 (most wins) | steady 9 | steady 5 | steady 16/30 (53%) | steady 19/30 (63%) | at most 60% |
+    | T5.standard | 0/10 | 2/10 | 2/30 (6.7%) | 2/30 (6.7%) | 5-20% |
+    | T9.rocket | 5/10 | 5/10 | 16/30 (53%) | 14/30 (47%) | 30-60% |
+
+    On seeds 1-10 steady survives seeds 4 and 9, which it lost on main, and pyramid's claims and premiums cost it the seeds it won. Rule 3 forbids adding known-miss rows myself: the rows are Reece's or the product manager's to authorise.
+15. **Practice save `pt-risk`** (the e2e): `pt-2008` with a claim walked to the claimant's offer, a second surfacing next month and a shortfall, staged through the engine with the chances forced (`ptk.practice.risk_demo`).
 
 ## Follow-ups
 

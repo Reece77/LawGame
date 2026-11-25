@@ -211,6 +211,7 @@ def _partners(
     pool = pool_cents(ours, theirs)
     budget = round(pool * (1.0 - share) / max(1, len(equity)))
     nudge = balance.mergers.integration.confidence_nudge * their_change(ours, theirs, our_share_bp)
+    protection = balance.mergers.integration.protection_months
     for p, cap in zip(equity, capital, strict=True):
         fp = with_partner(
             fp,
@@ -224,6 +225,10 @@ def _partners(
                 capital_cents=cap,
                 budget_cents=budget,
                 budget_base_cents=budget,
+                # the terms protect their comp while it is harmonised (a PT-M4 guarantee:
+                # a floor the rest of the partnership funds)
+                guarantee_cents=budget if protection > 0 else 0,
+                guarantee_until_turn=state.turn + protection - 1 if protection > 0 else None,
                 confidence=cfg.confidence.start,
                 nudge=nudge,
             ),

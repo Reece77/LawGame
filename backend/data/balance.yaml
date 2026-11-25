@@ -1552,7 +1552,7 @@ geo:
 # Sources and tags: docs/research/law-firm-mergers.md. [A] unless a tag says otherwise.
 mergers:
   max_lawyers: 400 # a firm of at most this many lawyers can be integrated (TST 28.5's 250-staff rule, re-cast); larger ones join a verein or absorb the player
-  absorbed_below_bp: 3000 # the player's partners below this share of the merged profit pool: the player's firm is absorbed (the campaign ends as an exit)
+  absorbed_below_bp: 1000 # the player's firm is absorbed (the campaign ends as an exit) when its partners bring under this share of the merged pool, or when it takes the other firm's name and managing partner (ADR PT-0016 1)
   vote_bp: 6667 # each partnership's threshold, bp of votes cast (spec 8.8: two thirds) [S dossier s7]
   confidential_months: 6 # talks open longer than this leak to the legal press (a press moment)
   leak_nudge: -3.0 # confidence points each of the player's partners loses when talks leak
@@ -1608,13 +1608,15 @@ mergers:
       modified_lockstep: { eat_what_you_kill: 0.7, committee: 0.4 }
       eat_what_you_kill: { committee: 0.5 }
     personality_distance: 0.3 # distance added when the firms' personalities differ (the player's from its comp system)
-    flight_mult: 1.2 # the other side's partners' flight x (1 + this x clash)
-    pep_fall_mult: 1.5 # a partner whose PEP fell after closing: flight x (1 + this)
-    subordinated_mult: 1.0 # a partner whose practice the other side dominates: flight x (1 + this)
+    flight_mult: 0.8 # the other side's partners' flight x (1 + this x clash) (T13: 1.2 -> 0.8)
+    pep_fall_mult: 0.5 # a partner whose budget fell after closing: flight x (1 + this) (T13: 1.5 -> 0.5)
+    pep_fall_tolerance: 0.1 # ... by more than this share of their PEP or budget before
+    subordinated_mult: 0.5 # a partner whose practice the other side dominates: flight x (1 + this) (T13: 1.0 -> 0.5)
     subordinated_share: 0.25 # their side's share of the practice's lawyers below this: subordinated
     balk_bp: 120 # a book client's monthly chance of leaving per unit of card rise x price sensitivity / 10 (bp)
     balk_months: 12 # clients balk in the first year
     surrender_months: 6 # months of rent to surrender a home-city lease (PT-M11's close penalty)
+    protection_months: 12 # the other side's budgets at closing are guaranteed this long while comp is harmonised (PT-M4's guarantee; dossier s3: harmonisation takes 0-24 months)
     confidence_nudge: 10.0 # confidence points per unit of a side's expected PEP change, at closing
   verein: # ADR PT-0016 5 (TST 31, re-cast)
     cost_base_cents: 25000000 # $250,000 a month of shared brand, technology and management
@@ -1622,11 +1624,13 @@ mergers:
     referral_months: 3 # a member introduces the player to one of its clients every this many months
     referral_score: { lo: 20.0, hi: 35.0 } # the introduction's relationship score
     talk_bias: { elite_lockstep: null, global_verein: 0.8, regional_champion: 0.4, performance_machine: 0.0, litigation_boutique: -0.3, tech_coast: 0.0, volume_mid_market: 0.3, big_four_legal: null }
+    size_weight: 1.0 # a firm more than ten times the player's size loses this per tenfold beyond (vereins join firms of some standing to each other)
     appeal_share: 0.1 # appeal logit points per member firm on the player's clients (reputation shared)
   rival: # rivals' merger decisions (stream rival_merger)
     approach_bp: 40 # a month's chance that a rival with a reason approaches the player (all rivals together)
     approach_min_utility: 0.3 # the talks utility a rival needs to approach
     min_player_lawyers: 20 # rivals approach only a firm at least this large
+    absorb_offer_below_bp: 3000 # a rival bringing over 70% of the pool approaches to absorb the firm (its name and managing partner)
     cooldown_months: 24 # months between rivals' approaches to the player
     free_rate_bp: 600 # from 2026: a quarter's chance of one merger between rivals (PT-0015's seeded world) [A dossier s1: ~5 large deals a year]
     free_max_ratio: 0.5 # the smaller firm at most this share of the larger's lawyers

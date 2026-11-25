@@ -80,7 +80,11 @@ def flight_multiplier(state: GameState, person_id: int, balance: Balance, data: 
         if theirs:
             mult *= 1.0 + cfg.flight_mult * integ.clash
         before = dict(integ.pep_before).get(person_id)
-        if partner is not None and before and partner.budget_cents < before:
+        if (
+            partner is not None
+            and before
+            and partner.budget_cents < before * (1.0 - cfg.pep_fall_tolerance)
+        ):
             mult *= 1.0 + cfg.pep_fall_mult
         share = their_share_by_practice(state, integ, data).get(
             home_practice(state.person(person_id), data), 0.0

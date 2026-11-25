@@ -87,11 +87,13 @@ class IntegrationBalance(_Strict):
     personality_distance: float = Field(ge=0, le=1)  # different personalities' distance
     flight_mult: float = Field(ge=0)  # flight x (1 + this x clash) for the other side
     pep_fall_mult: float = Field(ge=0)  # flight x (1 + this) for a partner whose PEP fell
+    pep_fall_tolerance: float = Field(ge=0, lt=1)  # a fall of more than this share counts
     subordinated_mult: float = Field(ge=0)  # ... whose practice the other side leads
     subordinated_share: float = Field(ge=0, le=1)  # their side's share of the practice below
     balk_bp: int = Field(ge=0)  # monthly chance per unit of card rise x sensitivity / 10
     balk_months: int = Field(ge=0)
     surrender_months: int = Field(ge=0)  # rent paid to surrender a home-city lease
+    protection_months: int = Field(ge=0)  # the other side's first budgets are guaranteed
     confidence_nudge: float  # each partner's confidence at closing, by side's PEP change
 
 
@@ -101,13 +103,17 @@ class VereinBalance(_Strict):
     referral_months: int = Field(ge=1)  # a member introduces a client every this many months
     referral_score: Span
     talk_bias: dict[str, float | None]  # by personality, for a verein
-    appeal_share: float = Field(ge=0)  # reputation shared: appeal points per member
+    appeal_share: float = Field(ge=0)
+    size_weight: float = Field(
+        ge=0
+    )  # points per tenfold of size gap over ten  # reputation shared: appeal points per member
 
 
 class RivalMergersBalance(_Strict):
     approach_bp: int = Field(ge=0)  # monthly chance a rival with a reason approaches the player
     approach_min_utility: float
     min_player_lawyers: int = Field(ge=0)  # rivals approach only a firm at least this large
+    absorb_offer_below_bp: int = Field(ge=0, le=10000)  # a larger approacher offers absorption
     cooldown_months: int = Field(ge=0)
     free_rate_bp: int = Field(ge=0)  # from 2026: a quarter's chance of one rival merger
     free_max_ratio: float = Field(gt=0)  # the smaller firm's lawyers at most this share

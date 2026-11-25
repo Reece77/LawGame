@@ -235,7 +235,9 @@ def test_no_real_person_is_named_in_merger_events_or_press(
 def test_being_absorbed_ends_the_campaign_scored(data: GameData, balance: Balance) -> None:
     state, balances = _game(data, balance)
     firm = targets(state, data, balance)[-1]
-    state, deal = forced(state, firm, Terms(our_share_bp=1500), data, balance)
+    state, deal = forced(
+        state, firm, Terms(our_share_bp=1500, name="theirs", mp="theirs"), data, balance
+    )
     assert deal.absorbed
     after, logs = exits.absorb(state, deal, data, balance)
     assert after.save_meta.game_state == "exit" and after.ended
@@ -246,7 +248,9 @@ def test_being_absorbed_ends_the_campaign_scored(data: GameData, balance: Balanc
         advance_turn(after, Decisions(), RngFactory(1), balance, data, balances)
 
 
-def test_terms_below_the_line_are_an_absorption(data: GameData, balance: Balance) -> None:
+def test_their_name_and_mp_or_a_sliver_of_the_pool_is_an_absorption(
+    data: GameData, balance: Balance
+) -> None:
     state, _ = _game(data, balance)
     firm = targets(state, data, balance)[0]
     state, deal = forced(state, firm, Terms(our_share_bp=5000), data, balance, stage="talks")
@@ -254,12 +258,21 @@ def test_terms_below_the_line_are_an_absorption(data: GameData, balance: Balance
     assert mp is not None
     out = apply_merger_action(
         state,
-        PutTerms(actor_id=mp, deal_id=deal.id, our_share_bp=2000),
+        PutTerms(actor_id=mp, deal_id=deal.id, our_share_bp=2000, name="theirs", mp="theirs"),
         RngFactory(1),
         balance,
         data,
     )
     assert out.state.mergers.deal(deal.id).absorbed  # type: ignore[union-attr]
+    for share, name, absorbed in ((2000, "combined", False), (700, "ours", True)):
+        out = apply_merger_action(
+            state,
+            PutTerms(actor_id=mp, deal_id=deal.id, our_share_bp=share, name=name),  # type: ignore[arg-type]
+            RngFactory(1),
+            balance,
+            data,
+        )
+        assert out.state.mergers.deal(deal.id).absorbed is absorbed  # type: ignore[union-attr]
     with pytest.raises(InvalidActionError):
         apply_merger_action(
             state,

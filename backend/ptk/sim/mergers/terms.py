@@ -29,7 +29,7 @@ from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.mergers import streams
 from ptk.sim.mergers.models import Deal, Terms, with_deal
 from ptk.sim.mergers.profile import Side, player_side, rival_side
-from ptk.sim.mergers.talks import bias, put_mergers
+from ptk.sim.mergers.talks import bias, put_mergers, size_gap
 from ptk.sim.money import BP_DENOMINATOR
 from ptk.sim.rivals.models import RivalFirm
 from ptk.sim.rng import RngFactory
@@ -127,6 +127,14 @@ def our_utility(state: GameState, deal: Deal, data: GameData, balance: Balance) 
     ) + our_bias(deal.terms, ours, theirs, balance)
 
 
+def is_absorption(terms: Terms, balance: Balance) -> bool:
+    """ADR PT-0016 1: the player's firm is the absorbed one when it takes the other firm's name
+    and managing partner, or brings its partners under `mergers.absorbed_below_bp` of the pool."""
+    if terms.name == "theirs" and terms.mp == "theirs":
+        return True
+    return terms.our_share_bp < balance.mergers.absorbed_below_bp
+
+
 def passes(yes: int, voters: int, threshold_bp: int) -> bool:
     """A partnership's count passes with at least `threshold_bp` of the votes cast (PT-M4's
     rule for governance votes: 7 of 9 pass two thirds at 6,667 bp, 6 of 9 do not)."""
@@ -149,7 +157,13 @@ def their_answer(
     gen = streams.answer(rng, state.turn, deal.id, deal.rounds + 1)
     if deal.form == "verein":
         b = bias(firm, "verein", balance)
-        mean = None if b is None else b + cfg.region_weight * (ours.region != theirs.region)
+        mean = (
+            None
+            if b is None
+            else b
+            + cfg.region_weight * (ours.region != theirs.region)
+            - size_gap(ours, theirs, balance)
+        )
     else:
         b = bias(firm, "merger", balance)
         mean = (

@@ -11,6 +11,7 @@ from ptk.sim.ledger import apply_entries
 from ptk.sim.mergers.models import Deal, Terms, with_deal
 from ptk.sim.mergers.profile import rival_side
 from ptk.sim.mergers.talks import open_deal, put_mergers
+from ptk.sim.mergers.terms import is_absorption
 from ptk.sim.rivals.models import RivalFirm
 from ptk.sim.rng import RngFactory
 from ptk.sim.setup import new_game
@@ -71,6 +72,6 @@ def forced(
         deal,
         stage=stage,  # type: ignore[arg-type]
         stage_turn=state.turn - 1,
-        absorbed=form == "merger" and terms.our_share_bp < balance.mergers.absorbed_below_bp,
+        absorbed=form == "merger" and is_absorption(terms, balance),
     )
     return put_mergers(state, with_deal(state.mergers, deal)), deal

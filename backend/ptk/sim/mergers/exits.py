@@ -1,7 +1,8 @@
 """Being absorbed: the exit (spec 8.8; ADR PT-0016 1, 6; TST formulas.md 28.6).
 
-When both partnerships pass terms that give the player's partners less than
-`mergers.absorbed_below_bp` of the merged pool, closing ends the campaign with outcome `exit`.
+When both partnerships pass terms in which the player's firm takes the other firm's name and
+managing partner, or brings its partners under `mergers.absorbed_below_bp` of the merged pool
+(`terms.is_absorption`), closing ends the campaign with outcome `exit`.
 The score: the founder's capital account, the founder's draws and true-ups to date (their
 personal book; PT-M7's T2 score is the same allocations), and the merged firm's rank by revenue
 among active firms (the other firm's revenue plus the player's). Nothing is drawn.

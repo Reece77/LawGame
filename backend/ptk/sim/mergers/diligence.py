@@ -53,7 +53,8 @@ def commission(
     if firm is None or not firm.active:
         raise InvalidActionError("the other firm no longer exists")
     fee = fee_cents(firm, balance)
-    due = state.turn + balance.mergers.diligence.months
+    # this month and the next `months - 1`: the report arrives in the last of them (phase 1)
+    due = state.turn + max(0, balance.mergers.diligence.months - 1)
     deal = replace(
         deal,
         diligence_due_turn=due,

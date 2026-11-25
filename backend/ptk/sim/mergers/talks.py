@@ -45,6 +45,15 @@ def bias(firm: RivalFirm, form: DealForm, balance: Balance) -> float | None:
     return table.get(firm.personality)
 
 
+def size_gap(ours: Side, theirs: Side, balance: Balance) -> float:
+    """A verein's members are firms of some standing to each other: `verein.size_weight` per
+    tenfold of the other firm's lawyers over ten times the player's."""
+    import math
+
+    ratio = max(theirs.lawyers, 1) / max(ours.lawyers, 1)
+    return balance.mergers.verein.size_weight * max(0.0, math.log10(ratio) - 1.0)
+
+
 def talk_utility(
     ours: Side, theirs: Side, firm: RivalFirm, form: DealForm, balance: Balance
 ) -> float | None:
@@ -56,7 +65,12 @@ def talk_utility(
     pep = ours.pep_cents / max(theirs.pep_cents, 1) - 1.0
     region = 1.0 if ours.region != theirs.region else 0.0
     if form == "verein":
-        return b + cfg.region_weight * region + cfg.pep_weight * min(pep, 0.5)
+        return (
+            b
+            + cfg.region_weight * region
+            + cfg.pep_weight * min(pep, 0.5)
+            - size_gap(ours, theirs, balance)
+        )
     return (
         b
         + cfg.complement_weight * complement(theirs, ours)
@@ -70,6 +84,8 @@ def eligible(state: GameState, firm: RivalFirm, form: DealForm, balance: Balance
     ms = state.mergers
     if not firm.active:
         return "it no longer exists"
+    if bias(firm, form, balance) is None:  # spec 10.1: the elite lockstep firms never merge
+        return "it does not merge" if form == "merger" else "it does not join vereins"
     if ms.open_with(firm.key) is not None:
         return "talks are already open"
     if ms.cooldown(firm.key) > state.turn:
@@ -207,12 +223,23 @@ def rival_approaches(
     if best is None:
         return state, ()
     _, _, firm, form = best
+    from ptk.sim.mergers.terms import is_absorption
+
     terms = None
     if form == "merger":
-        terms = Terms(our_share_bp=fit(state, firm, data, balance).fair_share_bp)
+        share = fit(state, firm, data, balance).fair_share_bp
+        # a firm that brings most of the pool proposes its own name and managing partner
+        larger = share < cfg.absorb_offer_below_bp
+        terms = Terms(
+            our_share_bp=share,
+            name="theirs" if larger else "combined",
+            mp="theirs" if larger else "ours",
+            comp_system=rival_side(firm, data).comp_system,
+            rates="blend",
+        )
     state, deal = open_deal(state, firm, form, "rival", rng, data, balance, terms)
     state = put_mergers(state, replace(state.mergers, last_rival_approach_turn=state.turn))
-    absorbed = terms is not None and terms.our_share_bp < balance.mergers.absorbed_below_bp
+    absorbed = terms is not None and is_absorption(terms, balance)
     log = inbox_item(
         state.turn,
         state.player.id,

@@ -283,17 +283,18 @@ def create_app() -> FastAPI:
         responses=errors,
         operation_id="createPracticeSave",
     )
-    def create_practice(key: str) -> GameOut:
+    def create_practice(key: str, slug: str | None = None) -> GameOut:
         """PT-M7: create a practice save (pt-2008: a 60-lawyer firm in June 2008); 404 for an
-        unknown key, 409 if a save of that name exists."""
+        unknown key, 409 if a save of that name exists. PT-M13: `slug` names the copy (the
+        key by default), so tests can play their own."""
         from ptk.practice import PRACTICE_SAVES, create_practice_save
 
         if key not in PRACTICE_SAVES:
             raise NotFoundError(f"no practice save {key!r}")
         create_practice_save(
-            get_settings().resolved_save_dir(), key, loader.game_data(), loader.balance()
+            get_settings().resolved_save_dir(), key, loader.game_data(), loader.balance(), slug
         )
-        return _game(key)
+        return _game(slug or key)
 
     @app.post(
         "/api/saves/{slug}/advance",

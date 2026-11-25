@@ -178,7 +178,9 @@ def put_terms(state: GameState, a: PutTerms, balance: Balance, data: GameData) -
         comp_system=a.comp_system,
         rates=a.rates,
     )
-    absorbed = deal.form == "merger" and a.our_share_bp < balance.mergers.absorbed_below_bp
+    from ptk.sim.mergers.terms import is_absorption
+
+    absorbed = deal.form == "merger" and is_absorption(terms, balance)
     put = replace(deal, terms=terms, stage="terms", stage_turn=state.turn, absorbed=absorbed)
     return Outcome(put_mergers(state, with_deal(state.mergers, put)))
 

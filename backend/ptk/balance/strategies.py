@@ -43,7 +43,30 @@ STEADY_LAYOFF_MAX: Final = 0.10  # at most this share of the associates in a mon
 CORPORATE: Final = "corporate_ma"
 LITIGATION: Final = "commercial_litigation"
 # The order steady adds practices in (one at each 30 lawyers): cross-sell from M&A first.
+# PT-M12 (CLAUDE.md 9 rule 2): with twenty practices a sensible steady firm adds the new ones
+# its corporate clients cross-sell (practices.yaml: M&A to antitrust 0.8, tax 0.7) among v1's,
+# in the same rule; plaintiff mass torts never (its adverse parties are its clients)
 STEADY_ADDS: Final = (
+    "private_equity",
+    "banking_finance",
+    "tax",
+    "antitrust",
+    "restructuring",
+    "capital_markets",
+    "financial_regulation",
+    "white_collar",
+    "ip",
+    "employment",
+    "energy",
+    "real_estate",
+    "technology_privacy",
+    "healthcare",
+    "insurance",
+    "international_arbitration",
+    "private_client",
+)
+# the rocket's and the pyramid's lists keep v1's eight (their guards pass on them)
+V1_ADDS: Final = (
     "private_equity",
     "banking_finance",
     "restructuring",
@@ -215,7 +238,7 @@ def lateral_rocket(g: Game, heeded: bool = False) -> None:
     # lateral and takes none until six months of trend show headroom
     asked = not heeded or mv.cfo_clear(g)
     if not warned and asked and mv.bank_quiet(g):
-        for practice in [CORPORATE, LITIGATION, *STEADY_ADDS][: 2 + len(g.lawyers()) // 15]:
+        for practice in [CORPORATE, LITIGATION, *V1_ADDS][: 2 + len(g.lawyers()) // 15]:
             if mv.lateral_partner(
                 g, practice, mv.LateralRule(min_book_cents=200_000_000, guarantee_years=3)
             ):
@@ -255,7 +278,7 @@ def pyramid(g: Game) -> None:
     if mv.utilisation(g) >= 0.90 and mv.bank_quiet(g, cash_months=1.0):
         _grow(g, held, max(2, lawyers // 6))
     if len(held) < 2 + lawyers // 40 and mv.bank_quiet(g):
-        missing = [p for p in STEADY_ADDS if p not in held]
+        missing = [p for p in V1_ADDS if p not in held]
         if missing:
             mv.lateral_partner(g, missing[0], mv.LateralRule(min_book_cents=100_000_000))
     fees = g.months[-1].revenue_cents if g.months else 0

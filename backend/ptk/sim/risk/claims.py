@@ -98,6 +98,7 @@ def make_claims(
     risk = state.risk
     p_error = None
     a, b = c.merit
+
     def suing() -> set[int]:  # clients with a claim open or on its way: they sue once
         return {c.client_id for c in risk.claims if c.stage != "closed" and c.firm_id == firm_id}
 

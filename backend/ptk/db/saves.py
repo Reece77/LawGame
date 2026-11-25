@@ -21,6 +21,7 @@ from ptk.db.market_io import write_market
 from ptk.db.models import DecisionLogRow, FirmRow, SaveMetaRow, TurnSnapshotRow
 from ptk.db.org_io import write_delegate_actions, write_org
 from ptk.db.partnership_io import write_partnership
+from ptk.db.risk_io import write_risk
 from ptk.db.rivals_io import write_panels, write_rival_moves, write_rivals
 from ptk.db.session import make_sessionmaker, shared_engine
 from ptk.db.standing_io import write_standing
@@ -35,7 +36,6 @@ from ptk.db.state_io import (
     write_people,
     write_turn,
 )
-from ptk.db.risk_io import write_risk
 from ptk.db.tech_io import write_tech
 from ptk.llm.base import LLMAdapter
 from ptk.sim.actions import Action, action_payload, apply_action

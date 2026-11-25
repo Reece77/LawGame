@@ -1459,8 +1459,11 @@ automation: # PT-M9: automation everywhere (spec 9.4; TST formulas.md 40)
       label: Risk and claims
       rule: risk
       seat: general_counsel
-      energy: 5
-      does: "Keeps the conflict checks running (claims and insurance arrive with PT-M15)."
+      energy: 10
+      guardrails: # PT-M15
+        - { key: settle_fine_k, label: "Settle a regulator's inquiry when the fine is at most ($k)", default: 100, min: 0, max: 5000 }
+        - { key: max_deductible_k, label: "Deductible at renewal at most ($k)", default: 250, min: 25, max: 1000 }
+      does: "Keeps the conflict checks running, answers claimants' offers by the default rule (a settlement above the deductible comes to you), settles small inquiries and keeps the deductible within its guardrail at renewal."
     pro_bono:
       label: Pro bono
       rule: pro_bono

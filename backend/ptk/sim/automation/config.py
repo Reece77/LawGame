@@ -125,7 +125,7 @@ AREA_RULES: Final[tuple[str, ...]] = (
 # Spec 9.4's one-offs and the action kinds that carry them. A one-off is always a proposal,
 # whatever its size, whoever owns the area, on Holiday or not (TST 40.2). `None`: the system
 # that would carry it is a later milestone's (offices PT-M11, mergers PT-M13,
-# claims and funding PT-M15, ABS PT-M18); nothing in the game can take it yet.
+# funding PT-M12, ABS PT-M18); nothing in the game can take it yet.
 SPEC_ONE_OFFS: Final[dict[str, tuple[str, ...] | None]] = {
     "partnership admissions": ("propose_partner",),
     "de-equitisations": ("deequitise",),
@@ -140,7 +140,7 @@ SPEC_ONE_OFFS: Final[dict[str, tuple[str, ...] | None]] = {
     "any lease above the limit": None,  # leases are the COO's PT-M8 pitches, the player's
     "a salary-scale change above the market": ("set_pay_policy",),  # mode lead
     "litigation funding agreements": None,
-    "settling a malpractice claim above the deductible": None,
+    "settling a malpractice claim above the deductible": ("respond_claim",),  # PT-M15
     "taking on a matter adverse to a key client with a waiver": ("seek_waiver",),  # key client
     "ABS formation": None,
 }

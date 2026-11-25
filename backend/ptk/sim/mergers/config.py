@@ -41,7 +41,7 @@ class BooksBalance(_Strict):
 class BookBalance(_Strict):
     """The other firm's client book (ADR PT-0016 2)."""
 
-    client_cents: int = Field(gt=0)  # a year of the firm's revenue per book client
+    coverage: float = Field(gt=0)  # the book's expected work, x the firm's revenue
     max_clients: int = Field(ge=1)
     relationship: Span  # its relationships' scores, 0-100
     adverse_p: float = Field(ge=0, le=1)  # an engagement adverse to another client

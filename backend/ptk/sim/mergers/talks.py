@@ -20,7 +20,15 @@ from ptk.sim.data_models import Balance, GameData
 from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.mergers import streams
 from ptk.sim.mergers.books import draw_book
-from ptk.sim.mergers.models import Deal, DealForm, Initiator, Terms, with_cooldown, with_deal
+from ptk.sim.mergers.models import (
+    BookClient,
+    Deal,
+    DealForm,
+    Initiator,
+    Terms,
+    with_cooldown,
+    with_deal,
+)
 from ptk.sim.mergers.profile import Side, complement, fit, player_side, rival_side
 from ptk.sim.rivals.models import RivalFirm
 from ptk.sim.rng import RngFactory
@@ -76,6 +84,23 @@ def eligible(state: GameState, firm: RivalFirm, form: DealForm, balance: Balance
     return ""
 
 
+def book_for(
+    state: GameState,
+    deal_id: int,
+    firm: RivalFirm,
+    rng: RngFactory,
+    data: GameData,
+    balance: Balance,
+) -> tuple[GameState, tuple[BookClient, ...]]:
+    """The other firm's client book (its city's clients join the world first)."""
+    from ptk.sim.geo.markets import make_city_clients
+
+    city = data.geo.city_key(firm.hq)
+    if city is not None and city != state.player.home_city:
+        state = make_city_clients(state, city, rng, data, balance)
+    return state, draw_book(state, deal_id, firm, rng, data, balance)
+
+
 def open_deal(
     state: GameState,
     firm: RivalFirm,
@@ -88,13 +113,11 @@ def open_deal(
 ) -> tuple[GameState, Deal]:
     ms = state.mergers
     did = ms.next_deal_id
-    if form == "merger":
-        from ptk.sim.geo.markets import make_city_clients
-
-        city = data.geo.city_key(firm.hq)
-        if city is not None and city != state.player.home_city:
-            state = make_city_clients(state, city, rng, data, balance)
-    book = draw_book(state, did, firm, rng, data, balance) if form == "merger" else ()
+    # a rival's approach changes nothing in the world until the player opens talks (a firm that
+    # never merges plays as before): its book is drawn then (`with_book`)
+    book: tuple[BookClient, ...] = ()
+    if form == "merger" and initiator == "player":
+        state, book = book_for(state, did, firm, rng, data, balance)
     deal = Deal(
         id=did,
         rival_id=firm.id,

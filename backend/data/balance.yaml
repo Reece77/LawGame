@@ -1571,12 +1571,12 @@ mergers:
     annuity_years: 10 # carried annuities are paid monthly over this many years (PT-M17's annuities)
     facility_mult: 1.5 # the merged revolver's facility grows by the carried debt x this (headroom)
   book: # the other firm's client book, drawn when talks open
-    client_cents: 75000000 # $750k of its revenue a year per book client (PT-M4's lateral books)
-    max_clients: 120
+    coverage: 1.0 # clients are drawn until the merged firm's expected work from them (wallet x its logit share) reaches this x the other firm's revenue (ADR PT-0016 2)
+    max_clients: 80 # at most this many book clients (T12: each client's flow is split over every lawyer of its practice)
     relationship: { lo: 45.0, hi: 70.0 } # its relationships' scores (founders' books: 55-70)
     adverse_p: 0.06 # a book client's engagement adverse to another client (the conflicts clearance solves)
     adverse_player_bias: 4.0 # weight of the player's clients among adverse parties (firms in one market meet)
-    practices_per_client: 2 # practices each book client instructs it in, at most
+    practices_per_client: 1 # practices each book client instructs it in, at most (more come by cross-selling)
   diligence:
     fee_bp: 25 # professional fees a level, bp of the other firm's revenue (6600)
     min_fee_cents: 15000000 # $150,000 a level at least

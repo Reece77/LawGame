@@ -23,7 +23,7 @@ from ptk.sim.errors import InvalidActionError
 from ptk.sim.hiring.actions import Outcome, acting_firm, spend_energy
 from ptk.sim.log import inbox_item
 from ptk.sim.mergers.models import Deal, Terms, with_cooldown, with_deal
-from ptk.sim.mergers.talks import approach, eligible, put_mergers
+from ptk.sim.mergers.talks import approach, book_for, eligible, put_mergers
 from ptk.sim.partnership.common import require_mp
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
@@ -112,7 +112,7 @@ def end_deal(state: GameState, deal: Deal, reason: str, balance: Balance) -> Gam
 def approach_firm(
     state: GameState, a: ApproachFirm, rng: RngFactory, balance: Balance, data: GameData
 ) -> Outcome:
-    firm_id = _mp(state, a.actor_id)
+    _mp(state, a.actor_id)
     firm = state.rivals.by_key(a.rival_key)
     if firm is None:
         raise _err(f"no firm {a.rival_key!r}")
@@ -125,12 +125,13 @@ def approach_firm(
         if rival_region(data, firm.hq) not in ("us", "uk"):
             raise _err("a verein member must sit in a region the game models")
     state = spend_energy(state, a.actor_id, "merger_approach", balance)
-    del firm_id
     state, _deal_made, log = approach(state, firm, a.form, rng, data, balance)
     return Outcome(state, (), log)
 
 
-def answer_approach(state: GameState, a: AnswerApproach, balance: Balance) -> Outcome:
+def answer_approach(
+    state: GameState, a: AnswerApproach, rng: RngFactory, balance: Balance, data: GameData
+) -> Outcome:
     firm_id = _mp(state, a.actor_id)
     deal = _deal(state, a.deal_id)
     if deal.stage != "approached":
@@ -141,6 +142,9 @@ def answer_approach(state: GameState, a: AnswerApproach, balance: Balance) -> Ou
         state = end_deal(state, deal, "the player declined", balance)
         return Outcome(state)
     opened = replace(deal, stage="talks", stage_turn=state.turn)
+    if deal.form == "merger" and firm is not None and not deal.book:
+        state, book = book_for(state, deal.id, firm, rng, data, balance)
+        opened = replace(opened, book=book)
     state = put_mergers(state, with_deal(state.mergers, opened))
     log = inbox_item(
         state.turn,
@@ -157,8 +161,8 @@ def answer_approach(state: GameState, a: AnswerApproach, balance: Balance) -> Ou
 def put_terms(state: GameState, a: PutTerms, balance: Balance, data: GameData) -> Outcome:
     _mp(state, a.actor_id)
     deal = _deal(state, a.deal_id)
-    if deal.stage not in ("talks", "countered", "approached"):
-        raise _err("terms can be put only while talks are open")
+    if deal.stage not in ("talks", "countered"):
+        raise _err("terms can be put only while talks are open (answer an approach first)")
     if deal.form == "merger":
         if not 500 <= a.our_share_bp <= 9500:  # tunable-exempt: a share between 5% and 95%
             raise _err("the points ratio gives each side between 5% and 95%")
@@ -193,7 +197,7 @@ def apply_merger_action(
     if isinstance(action, ApproachFirm):
         return approach_firm(state, action, rng, balance, data)
     if isinstance(action, AnswerApproach):
-        return answer_approach(state, action, balance)
+        return answer_approach(state, action, rng, balance, data)
     if isinstance(action, CommissionDiligence):
         from ptk.sim.mergers.diligence import commission
 

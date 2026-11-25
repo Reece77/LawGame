@@ -12,7 +12,7 @@ from dataclasses import dataclass, replace
 import numpy as np
 
 from ptk.sim.data_models import Balance, GameData
-from ptk.sim.matters.market import client_weight
+from ptk.sim.matters.market import Wallets, client_weight, wallets
 from ptk.sim.matters.models import Client
 from ptk.sim.mergers import streams
 from ptk.sim.mergers.models import BookClient, Sheet
@@ -114,6 +114,46 @@ def _practices(
     return tuple(p for p in data.practice_keys if p in keep)
 
 
+def expected_fees(
+    state: GameState,
+    client: Client,
+    practices: tuple[str, ...],
+    score: float,
+    without: str,
+    data: GameData,
+    balance: Balance,
+    shares: Wallets | None = None,
+) -> float:
+    """A year of work the player's firm can expect from a client it would hold at `score` in
+    `practices`, the other firm (`without`) gone from its panel: the client's wallet x the
+    firm's logit share (PT-M3a's intake, at last month's demand, no conflicts, the firm's card at
+    the market's)."""
+    from ptk.sim.matters.market import base_monthly_demand, firm_reputation, player_share
+    from ptk.sim.matters.models import Relationship
+
+    demand = state.market.demand_cents or base_monthly_demand(data)
+    if client.city:
+        demand = state.geo.city_demand(client.city) or demand
+    shares = shares or wallets(state.market.clients, data, balance)
+    appeals = dict(state.rivals.appeals) or None
+    solo = replace(client, panel=tuple(k for k in client.panel if k != without))
+    rel = Relationship(
+        client_id=client.id,
+        firm_id=state.player.id,
+        score=score,
+        partner_id=None,
+        practices=practices,
+        since_turn=state.turn,
+    )
+    keys = data.practice_keys
+    total = 0.0
+    for p in practices:
+        rep = firm_reputation(state, state.player.id, p, balance)
+        share = player_share(solo, rel, p, rep, False, data, balance, appeals)
+        total += shares.wallet(client.id, keys.index(p), demand) * MONTHS * share
+    return total
+
+
 def draw_book(
     state: GameState,
     deal_id: int,
@@ -122,18 +162,18 @@ def draw_book(
     data: GameData,
     balance: Balance,
 ) -> tuple[BookClient, ...]:
-    """The clients whose panels carry its key first, then its city's market by wallet in its
-    practices, until the book holds revenue / `book.client_cents` clients. With probability
+    """The clients whose panels carry its key first, then its city's market drawn by wallet in
+    its practices, until the work the merged firm can expect from them (`expected_fees`)
+    reaches `book.coverage` x its revenue (at most `book.max_clients`). With probability
     `book.adverse_p` each has an engagement adverse to another client of the market (the
     player's clients weigh `adverse_player_bias` times as much: firms in one market meet)."""
     cfg = balance.mergers.book
     gen = streams.book(rng, state.turn, deal_id)
-    revenue = annualised(firm.revenue)
-    k = max(3, min(cfg.max_clients, round(revenue / cfg.client_cents)))  # tunable-exempt: 3
+    target = annualised(firm.revenue) * cfg.coverage
     city = market_city(state, data.geo.city_key(firm.hq))
     clients = state.market.clients
     mix = {p.practice: p.lawyers for p in firm.pools}
-    panel = [c for c in clients if firm.key in c.panel][:k]
+    panel = [c for c in clients if firm.key in c.panel]
     chosen = {c.id for c in panel}
     pool = [c for c in clients if c.id not in chosen and (city is None or c.city == city)]
     if city is None:  # outside the modelled cities: the home market stands in
@@ -141,30 +181,51 @@ def draw_book(
     weights = np.array(
         [sum(mix.get(p, 0.0) * client_weight(c, p, data, balance) for p in mix) for c in pool]
     )
-    extra = min(k - len(panel), int((weights > 0).sum()))
-    picked: list[Client] = list(panel)
-    if extra > 0 and weights.sum() > 0:
-        idx = gen.choice(len(pool), size=extra, replace=False, p=weights / weights.sum())
-        picked += [pool[int(j)] for j in sorted(idx)]
-    picked.sort(key=lambda c: c.id)
+    order: list[Client] = list(panel)
+    live = int((weights > 0).sum())
+    if live > 0:
+        idx = gen.choice(len(pool), size=live, replace=False, p=weights / weights.sum())
+        order += [pool[int(j)] for j in idx]
     ours = {r.client_id for r in state.market.relationships if r.firm_id == state.player.id}
-    book_ids = {c.id for c in picked}
-    others = [c for c in clients if c.id not in book_ids and c.id != 0]
-    adverse_w = np.array([cfg.adverse_player_bias if c.id in ours else 1.0 for c in others])
-    out: list[BookClient] = []
-    sizes: list[float] = []
-    for c in picked:
-        practices = _practices(c, mix, cfg.practices_per_client, data, balance)
+    shares = wallets(clients, data, balance)
+    lawyers = sum(mix.values()) or 1.0
+    # each practice's work is sized to its share of the firm's lawyers (the book is the work
+    # its people do)
+    left = {p: target * n / lawyers for p, n in mix.items() if n > 0}
+    picked: list[tuple[Client, tuple[str, ...], float, float]] = []
+    for c in order:
+        if len(picked) >= cfg.max_clients or all(v <= 0 for v in left.values()):
+            break
+        open_ = [p for p in data.practice_keys if left.get(p, 0.0) > 0]
+        practices = tuple(
+            p
+            for p in sorted(
+                open_, key=lambda p: (-(left[p] * client_weight(c, p, data, balance)), p)
+            )[: cfg.practices_per_client]
+            if client_weight(c, p, data, balance) > 0
+        )
+        if not practices:
+            continue
+        practices = tuple(p for p in data.practice_keys if p in practices)
         score = float(gen.uniform(cfg.relationship.lo, cfg.relationship.hi))
+        fees = expected_fees(state, c, practices, score, firm.key, data, balance, shares)
+        if fees <= 0:
+            continue
+        picked.append((c, practices, score, fees))
+        for p in practices:
+            left[p] -= fees / len(practices)
+    picked.sort(key=lambda x: x[0].id)
+    book_ids = {c.id for c, _, _, _ in picked}
+    others = [c for c in clients if c.id not in book_ids]
+    adverse_w = np.array([cfg.adverse_player_bias if c.id in ours else 1.0 for c in others])
+    total = sum(f for _, _, _, f in picked) or 1.0
+    out: list[BookClient] = []
+    for c, practices, score, fees in picked:
         adverse = None
         if float(gen.random()) < cfg.adverse_p and others:
             adverse = others[int(gen.choice(len(others), p=adverse_w / adverse_w.sum()))].id
-        size = sum(client_weight(c, p, data, balance) for p in practices) or 1e-9
-        sizes.append(size)
-        out.append(BookClient(c.id, score, practices, 0.0, adverse))
-    kept = [(b, s) for b, s in zip(out, sizes, strict=True) if b.practices]
-    total = sum(s for _, s in kept) or 1.0
-    return tuple(replace(b, share=s / total) for b, s in kept)
+        out.append(BookClient(c.id, score, practices, fees / total, adverse))
+    return tuple(out)
 
 
 def split_exact(total: int, shares: list[float]) -> list[int]:

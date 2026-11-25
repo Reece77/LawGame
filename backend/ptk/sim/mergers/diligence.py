@@ -43,7 +43,7 @@ def max_level(balance: Balance) -> int:
 def commission(
     state: GameState, deal: Deal, rng: RngFactory, balance: Balance, data: GameData
 ) -> Outcome:
-    if deal.stage not in ("talks", "countered", "approached"):
+    if deal.stage not in ("talks", "countered"):
         raise InvalidActionError("diligence runs only while talks are open")
     if deal.diligence_due_turn is not None:
         raise InvalidActionError("a level of diligence is already running")
@@ -58,7 +58,6 @@ def commission(
         deal,
         diligence_due_turn=due,
         diligence_fees_cents=deal.diligence_fees_cents + fee,
-        stage="talks" if deal.stage == "approached" else deal.stage,
     )
     state = put_mergers(state, with_deal(state.mergers, deal))
     entry = LedgerEntry.transfer(

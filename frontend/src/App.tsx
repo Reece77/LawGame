@@ -26,6 +26,7 @@ import { OfficesScreen } from './screens/OfficesScreen';
 import { RecruitmentScreen } from './screens/RecruitmentScreen';
 import { RivalScreen } from './screens/RivalScreen';
 import { SavesScreen } from './screens/SavesScreen';
+import { RiskScreen } from './screens/RiskScreen';
 import { TechScreen } from './screens/TechScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 
@@ -62,6 +63,7 @@ export default function App() {
           <Route path="founder" element={<FounderScreen />} />
           <Route path="family" element={<FamilyScreen />} />
           <Route path="technology" element={<TechScreen />} />
+          <Route path="risk" element={<RiskScreen />} />
         </Route>
       </Routes>
     </BrowserRouter>

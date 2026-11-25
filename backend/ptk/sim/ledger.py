@@ -63,6 +63,10 @@ RIGHT_OF_USE: Final = "1510_right_of_use"
 LEASES: Final = "2500_leases"
 DEPRECIATION: Final = "6050_depreciation"
 INSURANCE: Final = "6300_insurance"
+# PT-M15: risk (spec 11.3-11.4): claims paid by the firm, client-account shortfalls, fines.
+CLAIMS: Final = "6310_claims"
+TRUST_SHORTFALLS: Final = "6320_trust_shortfalls"
+FINES: Final = "6970_fines"
 # The client-money book's accounts (never in a firm entry).
 CLIENT_BANK: Final = "C1000_client_bank"
 OWED_TO_CLIENTS: Final = "C2000_owed_to_clients"
@@ -101,6 +105,9 @@ ENGINE_ACCOUNTS: Final = (
     LEASES,
     DEPRECIATION,
     INSURANCE,
+    CLAIMS,
+    TRUST_SHORTFALLS,
+    FINES,
 )
 
 

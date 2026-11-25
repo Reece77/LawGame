@@ -26,6 +26,7 @@ type LinkKind = Literal[
     "event",  # PT-M9: an event an area's owner answered
     "tech",  # PT-M14: the Technology screen
     "offices",  # PT-M11: the Offices screen (an office)
+    "risk",  # PT-M15: the Risk screen (a claim, a case, an inquiry, the policy)
     "mergers",  # PT-M13: the Mergers screen (a deal)
 ]  # appended by each milestone that links a new screen
 type ParamValue = str | int

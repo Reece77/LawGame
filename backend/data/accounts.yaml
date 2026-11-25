@@ -38,6 +38,8 @@ accounts:
   - { code: 6100_technology, name: "Technology and AI", type: expense }
   - { code: 6200_recruiting, name: "Recruiting and lateral fees", type: expense }
   - { code: 6300_insurance, name: "Malpractice insurance", type: expense }
+  - { code: 6310_claims, name: "Malpractice claims (deductibles, excess, defence)", type: expense } # PT-M15
+  - { code: 6320_trust_shortfalls, name: "Client-account shortfalls made good", type: expense } # PT-M15
   - { code: 6400_marketing, name: "Marketing and business development", type: expense }
   - { code: 6500_knowledge, name: "Knowledge and research subscriptions", type: expense }
   - { code: 6600_professional_fees, name: "Professional fees", type: expense }

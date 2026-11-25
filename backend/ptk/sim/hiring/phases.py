@@ -432,6 +432,7 @@ def overhead_lines(lawyers: int, city: str, balance: Balance) -> tuple[CostLine,
             label, account, lawyers * pct_of(pay.overhead_per_lawyer_cents[key], pay.city(city))
         )
         for label, account, key in OVERHEAD_LINES
+        if not (key == "insurance" and balance.risk.enabled)  # PT-M15: the policy's premium
     )
 
 

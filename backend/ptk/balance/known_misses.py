@@ -72,6 +72,24 @@ KNOWN_MISSES: Final[tuple[KnownMiss, ...]] = (
         "the product manager authorised the row (tools/tech_readings.py; PT-M14's brief)",
     ),
     KnownMiss(
+        target="T2",  # no strategy has the best founder's earnings on more than 6 of 10 seeds
+        owner="PT-M18",
+        # score: the most wins any strategy has on seeds 1-10; known while at most 9
+        worse_than=9.0,
+        reason="PT-M15 (authorised by the product manager, Reece, 2026-11-25): steady wins 9 "
+        "of seeds 1-10 on the branch (main 5); seeds 11-40 steady 16/30 on the branch, 19/30 "
+        "on main (a miss on main too: the cause predates PT-M15)",
+    ),
+    KnownMiss(
+        target="T5.standard",  # steady dissolves on 5-20% of seeds at standard difficulty
+        owner="PT-M18",
+        # score: minus the dissolution rate (too few is the miss); known while at most 0
+        worse_than=0.0,
+        reason="seed variance (rule 4; authorised by the product manager, Reece, 2026-11-25): "
+        "0 of seeds 1-10 on PT-M15's branch (main 2); 2 of seeds 11-40 (6.7%) on both the "
+        "branch and main",
+    ),
+    KnownMiss(
         target="T8.corporate",  # corporate-heavy firms' 2009 revenue -30% to -10% on 2008
         owner="accepted (Reece, 2026-11-22)",
         # score: the median change; known while it is at most -5% (a fall within noise of -10%)

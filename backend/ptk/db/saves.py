@@ -22,6 +22,7 @@ from ptk.db.mergers_io import write_mergers
 from ptk.db.models import DecisionLogRow, FirmRow, SaveMetaRow, TurnSnapshotRow
 from ptk.db.org_io import write_delegate_actions, write_org
 from ptk.db.partnership_io import write_partnership
+from ptk.db.risk_io import write_risk
 from ptk.db.rivals_io import write_panels, write_rival_moves, write_rivals
 from ptk.db.session import make_sessionmaker, shared_engine
 from ptk.db.standing_io import write_standing
@@ -211,6 +212,7 @@ def run_action(path: Path, action: Action, balance: Balance, data: GameData) -> 
         write_founder_life(session, outcome.state.founder_life, outcome.state.family)  # PT-M17
         write_standing(session, outcome.state.standing)  # PT-M16: the press, the submission
         write_tech(session, outcome.state.tech)  # PT-M14
+        write_risk(session, outcome.state.risk)  # PT-M15
         session.add(
             DecisionLogRow(
                 turn=state.turn,

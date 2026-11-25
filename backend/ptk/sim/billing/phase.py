@@ -34,6 +34,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass, replace
 from typing import Final
 
+from ptk.sim.billing import audits as au
 from ptk.sim.billing import books as bk
 from ptk.sim.billing import formulas as fx
 from ptk.sim.billing import funding
@@ -86,6 +87,7 @@ from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.macro import bankrupt_by, collections_stress, crisis_factor, crisis_stress
 from ptk.sim.matters.rates import client_indexes
 from ptk.sim.money import BP_DENOMINATOR, pct_of, round_half_even, times
+from ptk.sim.risk.models import Audit, keep_audits
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState, with_reveals
 
@@ -168,6 +170,7 @@ class _Run:
         self.totals: dict[str, int] = {}
         self.clients: dict[int, ClientBillingView] = {}
         self.views: dict[int, MatterBillingView] = {}
+        self.audits: list[Audit] = []  # PT-M15: the month's e-billing audits
 
     # --- helpers ----------------------------------------------------------------------------
 
@@ -458,12 +461,33 @@ class _Run:
         self.next_bill_id += 1
         u = fx.billing_draws(self.rng, self.turn, fx.BILL, bid)
         client = self.client(client_id)
+        rejected = False
         if rejectable and fee > 0:
             chance = fx.bp_chance(
                 cfg.guideline_bp, cfg.guideline_per_point_bp, client.price_sensitivity
             )
             if u[0] < chance:
                 fee -= times(fee, fx.uniform(*cfg.guideline_share, u[1]))
+                rejected = True
+        # PT-M15 (spec 11.6): the client's e-billing audit cuts the bill and finds padding
+        checked = (
+            au.audit(self.state, self.rng, bid, client, fee, padding, self.balance)
+            if rejectable
+            else None
+        )
+        if checked is not None:
+            fee -= checked.cut_cents
+            self.audits.append(
+                Audit(
+                    bill_id=bid,
+                    turn=self.turn,
+                    firm_id=self.firm_id,
+                    client_id=client_id,
+                    practice=practice,
+                    cut_cents=checked.cut_cents,
+                    padding_found_cents=padding if checked.finds_padding else 0,
+                )
+            )
         self.books.move(memo, RECEIVABLES, WIP, standard, practice, self.office(client_id))
         diff = fee - standard
         if diff < 0:
@@ -471,7 +495,9 @@ class _Run:
         else:
             self.books.move(memo, RECEIVABLES, revenue, diff, practice, self.office(client_id))
         dispute = None
-        if disputable and fee > 0 and u[2] < fx.dispute_chance(client, padding > 0, cfg):
+        overrun = self.overrun(matter_id)
+        mult = au.dispute_mult(overrun, rejected, self.balance)  # PT-M15: overruns, guidelines
+        if disputable and fee > 0 and u[2] < fx.dispute_chance(client, padding > 0, cfg) * mult:
             share = fx.uniform(*cfg.dispute_share, u[3])
             amount = min(fee, max(times(fee, share), padding))
             dispute = Dispute(
@@ -520,10 +546,20 @@ class _Run:
             )
             if dispute.padded:
                 bill = self.padding_found(bill)
+        if checked is not None and checked.finds_padding and bill.padding_cents > 0:
+            bill = self.padding_found(bill)  # PT-M15: the audit found it
         if fee <= 0 and bill.status == "open":
             bill = replace(bill, status="paid", closed_turn=self.turn)
         self.bills[bid] = bill
         return bill
+
+    def overrun(self, matter_id: int | None) -> bool:
+        """PT-M15: the matter's work at standard is over its budget (PT-M3b's tolerance)."""
+        e = self.eng.get(matter_id) if matter_id is not None else None
+        v = self.views.get(matter_id) if matter_id is not None else None
+        if e is None or v is None or v.expected_fees_cents <= 0:
+            return False
+        return e.standard_cents > v.expected_fees_cents * (1 + self.cfg.overrun_tolerance)
 
     def realised(self, standard: int, fee: int) -> None:
         self.add("standard_cents", standard)
@@ -1057,6 +1093,8 @@ class _Run:
             padding_found=tuple(sorted(self.found)),
         )
         state = replace(self.state, billing=billing)
+        if self.audits:  # PT-M15: the month's audits, for the Risk screen
+            state = replace(state, risk=keep_audits(state.risk, self.audits, self.turn))
         for cid in sorted(self.points):
             state = bump_relationship(state, cid, self.firm_id, self.points[cid])
         return BillingMonth(

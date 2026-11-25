@@ -4,7 +4,8 @@ re-made for the law firm).
 Pure and read-only: built from the state the player can see (no hidden values, no energy, no
 randomness). **What next** is a short list of what needs the managing partner now, the most
 urgent first: a critical decision waiting, the bank's warnings, open settlement offers, rivals'
-approaches to partners, December's partnership candidates, RFPs to pitch, then capacity (busy
+approaches to partners, claims' offers and bar or regulator matters (PT-M15), December's
+partnership candidates, RFPs to pitch, then capacity (busy
 people to hire for, or idle people to find work for). **Getting started** is the guided first
 year: six steps, each ticked from state.
 """
@@ -38,7 +39,7 @@ WARNINGS: Final = (
 class Item:
     key: str
     text: str
-    link_kind: str  # event, finance, matter, partnership, market, recruitment, clients
+    link_kind: str  # event, finance, matter, partnership, market, recruitment, clients, risk
     link_id: int | None = None
 
 
@@ -83,6 +84,21 @@ def what_next(
                 Item("settlement", f"A settlement offer is open on {m.name}.", "matter", m.id)
             )
             break
+    risk = state.risk  # PT-M15: claims' offers, cases and inquiries to answer
+    if any(c.firm_id == firm and c.stage == "offer" for c in risk.claims):
+        items.append(Item("claim", "A malpractice claimant offers to settle.", "risk"))
+    waiting = sum(1 for c in risk.cases if c.firm_id == firm and c.is_open and c.choice is None)
+    waiting += sum(
+        1 for i in risk.inquiries if i.firm_id == firm and i.is_open and i.choice is None
+    )
+    if waiting:
+        items.append(
+            Item(
+                "risk",
+                f"{waiting} bar or regulator matter{'s' if waiting > 1 else ''} to answer.",
+                "risk",
+            )
+        )
     fp = state.partnership.of(firm)
     if fp is not None:
         if any(a.status == "open" for a in fp.approaches):

@@ -69,7 +69,7 @@ seats:
     income: true
     slots: one
     weights: { legal_reasoning: 0.3, integrity: 0.3, communication: 0.2, procedure: 0.2 }
-    effect: "Better conflicts checks: unseen conflicts surface less often."
+    effect: "Better checks: unseen conflicts surface less often; fewer escaped errors become claims, fewer bar complaints and client-account errors, a narrower reading of a claim's merit, and a billing review that finds padders (PT-M15)."
     authority:
       does: "Asks clients for conflict waivers on held instructions (never adverse to a key client)."
       guardrails:

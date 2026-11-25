@@ -26,6 +26,7 @@ from ptk.sim.org.seat_models import EMPTY_LEADERSHIP, LeadershipState
 from ptk.sim.partnership.models import EMPTY_PARTNERSHIP, PartnershipState
 from ptk.sim.people.models import Employment, Person, RevealState
 from ptk.sim.reputation.models import EMPTY_STANDING, StandingState
+from ptk.sim.risk.models import EMPTY_RISK, RiskState
 from ptk.sim.rivals.models import EMPTY_RIVALS, RIVAL_PERSON_BASE, RivalsState
 from ptk.sim.tech.models import EMPTY_TECH, TechState
 
@@ -98,6 +99,7 @@ class GameState:
     automation: AutomationState = EMPTY_AUTOMATION  # areas, owners, proposals (PT-M9)
     tech: TechState = EMPTY_TECH  # adoption, training, products (PT-M14)
     geo: GeoState = EMPTY_GEO  # offices, admissions, the UK path (PT-M11)
+    risk: RiskState = EMPTY_RISK  # claims, insurance, discipline, trust accounts (PT-M15)
     mergers: MergersState = EMPTY_MERGERS  # deals, integrations, the verein, the exit (PT-M13)
 
     @property

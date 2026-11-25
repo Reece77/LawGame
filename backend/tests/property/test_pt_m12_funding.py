@@ -96,7 +96,7 @@ def check_contingency(data: GameData, balance: Balance, seed: int, months: int =
                     AcceptFunding(_founder(game.state), e.matter_id),
                     lambda: rng.stream(0, "misc"),
                     balance,
-                    rng,
+                    rng=rng,
                 )
                 game.state = out.state
                 game.balances = apply_entries(game.balances, out.entries)
@@ -217,7 +217,7 @@ def test_a_funded_loss_costs_only_the_unfunded_wip_and_a_win_pays_the_funder_fir
             AcceptFunding(_founder(game.state), e.matter_id),
             lambda: rng.stream(0, "misc"),
             balance,
-            rng,
+            rng=rng,
         )
         game.state, game.balances = out.state, apply_entries(game.balances, out.entries)
         assert -sum(

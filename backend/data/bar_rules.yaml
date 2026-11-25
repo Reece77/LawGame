@@ -11,6 +11,8 @@
 #   foreign_lead: a registered foreign lawyer (ew_rfl) may lead non-contentious matters there.
 #   insurance: compulsory professional indemnity insurance (England and Wales; a cost to 6300).
 #   ownership: dated rules on who may own a firm (ADR PT-0010; ABS entities are v3).
+#   discipline (PT-M15, spec 11.4): who hears cases, whether firms are sanctioned and fined
+#     (caps by date), whether lawyers are fined, and fee arbitration's range (spec 7.7).
 jurisdictions:
   - key: us_ny
     label: New York
@@ -19,6 +21,7 @@ jurisdictions:
     admission: { exam: true, exam_months: [2, 7], results_months: 4, exam_cost_cents: 400000, study_hours: 30, pass_bp: 7500, motion_years: 5, motion_from: [us_dc, us_il, us_ma, us_tx], motion_cost_cents: 100000, motion_months: 6 }
     pro_hac_vice_cents: 40000
     ownership: [{ from_ym: [2005, 1], rule: lawyers_only }]
+    discipline: { body: "Attorney Grievance Committees", firm_sanctions: true, fee_arbitration: true, arbitration_min_cents: 100000, arbitration_max_cents: 5000000, src: "[S] risk dossier s6, s8: New York's Rule 5.1(a) reaches law firms (censure, no fines); Part 137 fee arbitration for disputes of $1,000-$50,000" }
     src: "[A] dossier s8"
   - key: us_dc
     label: District of Columbia
@@ -78,6 +81,7 @@ jurisdictions:
     foreign_lead: true
     insurance: { compulsory: true, min_cover_cents: 364000000, llp_min_cover_cents: 546000000, premium_per_lawyer_cents: 1100000, min_premium_cents: 3600000, src: "[A] dossier s6: SRA minimum terms GBP 2m per claim, GBP 3m for LLPs and companies; premium about 1.5% of fees: $11,000 a lawyer a year, at least GBP 20,000 [A]" }
     client_money: "Solicitors' Accounts Rules 1998, then the SRA Accounts Rules (2011, 2019)"
+    discipline: { body: "Solicitors Disciplinary Tribunal", firm_sanctions: true, individual_fines: true, firm_fine_caps: [{ from_ym: [2005, 1], cap_cents: 50000000, src: "[A] risk dossier s5: the Tribunal's fines are unlimited (most under GBP 25,000); a game cap of $500k" }], src: "[S] risk dossier s5: the SRA sanctions firms; its own cap GBP 2,000 from 31 March 2009 and GBP 25,000 from 20 July 2022, larger cases to the Tribunal" }
     llp: true
     ownership:
       - { from_ym: [2005, 1], rule: lawyers_only }

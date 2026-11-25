@@ -2309,6 +2309,108 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/saves/{slug}/risk": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Risk */
+        get: operations["getRisk"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/risk/terms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Terms */
+        post: operations["setPolicyTerms"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/risk/supervision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Supervision */
+        post: operations["setSupervision"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/risk/claims/{claim_id}/respond": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Respond Claim */
+        post: operations["respondClaim"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/risk/cases/{case_id}/respond": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Respond Case */
+        post: operations["respondCase"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/saves/{slug}/risk/inquiries/{inquiry_id}/respond": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Respond Inquiry */
+        post: operations["respondInquiry"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/saves/{slug}/offices": {
         parameters: {
             query?: never;
@@ -2611,6 +2713,25 @@ export interface components {
             /** Practice */
             practice?: string | null;
         };
+        /** ArbitrationOut */
+        ArbitrationOut: {
+            /** Id */
+            id: number;
+            /** Bill Id */
+            bill_id: number;
+            /** Client */
+            client: string;
+            /** Amount Cents */
+            amount_cents: number;
+            /** Filed Label */
+            filed_label: string;
+            /** Decide Label */
+            decide_label: string;
+            /** Award Cents */
+            award_cents: number;
+            /** Decided */
+            decided: boolean;
+        };
         /** AreaLineOut */
         AreaLineOut: {
             /** Turn */
@@ -2699,6 +2820,21 @@ export interface components {
             lo: number;
             /** Hi */
             hi: number;
+        };
+        /** AuditOut */
+        AuditOut: {
+            /** Label */
+            label: string;
+            /** Bill Id */
+            bill_id: number;
+            /** Client */
+            client: string;
+            /** Practice */
+            practice: string;
+            /** Cut Cents */
+            cut_cents: number;
+            /** Padding Found Cents */
+            padding_found_cents: number;
         };
         /** AuthorityIn */
         AuthorityIn: {
@@ -2893,6 +3029,31 @@ export interface components {
             /** Expires Label */
             expires_label: string;
         };
+        /** CaseOut */
+        CaseOut: {
+            /** Id */
+            id: number;
+            /** Person Id */
+            person_id: number;
+            /** Name */
+            name: string;
+            /** Cause */
+            cause: string;
+            /** Jurisdiction */
+            jurisdiction: string;
+            /** Stage */
+            stage: string;
+            /** Opened Label */
+            opened_label: string;
+            /** Choice */
+            choice: string | null;
+            /** Outcome */
+            outcome: string | null;
+            /** Suspended Until Label */
+            suspended_until_label: string;
+            /** Closed Label */
+            closed_label: string;
+        };
         /** @enum {string} */
         CaseUnitOut: "cents" | "people" | "bp" | "morale";
         /** CauseIn */
@@ -2920,6 +3081,11 @@ export interface components {
         ChildIn: {
             /** Child Id */
             child_id: number;
+        };
+        /** ChoiceIn */
+        ChoiceIn: {
+            /** Choice */
+            choice: string;
         };
         /** ChooseIn */
         ChooseIn: {
@@ -3908,6 +4074,42 @@ export interface components {
             /** Max Spend Cents */
             max_spend_cents: number;
         };
+        /** InquiryOut */
+        InquiryOut: {
+            /** Id */
+            id: number;
+            /** Regulator */
+            regulator: string;
+            /** Reason */
+            reason: string;
+            /** Stage */
+            stage: string;
+            /** Opened Label */
+            opened_label: string;
+            /** Ends Label */
+            ends_label: string;
+            /** Fine Lo Cents */
+            fine_lo_cents: number;
+            /** Fine Hi Cents */
+            fine_hi_cents: number;
+            /** Choice */
+            choice: string | null;
+            /** Outcome */
+            outcome: string | null;
+            /** Fine Cents */
+            fine_cents: number;
+        };
+        /** InsurerOut */
+        InsurerOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Kind */
+            kind: string;
+            /** Min Lawyers */
+            min_lawyers: number;
+        };
         /** IntroduceIn */
         IntroduceIn: {
             /** Colleague Id */
@@ -4128,6 +4330,61 @@ export interface components {
             family: number;
             /** Bar */
             bar: number;
+        };
+        /** MalpracticeClaimOut */
+        MalpracticeClaimOut: {
+            /** Id */
+            id: number;
+            /** Matter Id */
+            matter_id: number;
+            /** Matter */
+            matter: string;
+            /** Client */
+            client: string;
+            /** Practice */
+            practice: string;
+            /** Source */
+            source: string;
+            /** Stage */
+            stage: string;
+            /** Stage Label */
+            stage_label: string;
+            /** Noticed Label */
+            noticed_label: string;
+            /** Demand Cents */
+            demand_cents: number;
+            /** Merit Lo Pct */
+            merit_lo_pct: number;
+            /** Merit Hi Pct */
+            merit_hi_pct: number;
+            /** Offer Cents */
+            offer_cents: number;
+            /** Offer Expires Label */
+            offer_expires_label: string;
+            /** Defence Cents */
+            defence_cents: number;
+            /** Indemnity Cents */
+            indemnity_cents: number;
+            /** Deductible Paid Cents */
+            deductible_paid_cents: number;
+            /** Insurer Paid Cents */
+            insurer_paid_cents: number;
+            /** Excess Paid Cents */
+            excess_paid_cents: number;
+            /** Called Cents */
+            called_cents: number;
+            /** Limit Cents */
+            limit_cents: number;
+            /** Deductible Cents */
+            deductible_cents: number;
+            /** Public */
+            public: boolean;
+            /** Blamed */
+            blamed: string;
+            /** Outcome */
+            outcome: string | null;
+            /** Closed Label */
+            closed_label: string;
         };
         /** MarketOut */
         MarketOut: {
@@ -4980,13 +5237,6 @@ export interface components {
             /** Overruled */
             overruled: boolean;
         };
-        /** OptionOut */
-        OptionOut: {
-            /** Key */
-            key: string;
-            /** Label */
-            label: string;
-        };
         /** OrgMemberOut */
         OrgMemberOut: {
             /** Id */
@@ -5624,6 +5874,35 @@ export interface components {
             /** Amount Cents */
             amount_cents: number;
         };
+        /** PolicyOut */
+        PolicyOut: {
+            /** Id */
+            id: number;
+            /** Insurer */
+            insurer: string;
+            /** Insurer Kind */
+            insurer_kind: string;
+            /** Start Label */
+            start_label: string;
+            /** Renews Label */
+            renews_label: string;
+            /** Limit Cents */
+            limit_cents: number;
+            /** Deductible Cents */
+            deductible_cents: number;
+            /** Premium Cents */
+            premium_cents: number;
+            /** Paid Cents */
+            paid_cents: number;
+            /** Premium Per Lawyer Cents */
+            premium_per_lawyer_cents: number;
+            /** Mod */
+            mod: number;
+            /** Rate Bp */
+            rate_bp: number;
+            /** Exposure Cents */
+            exposure_cents: number;
+        };
         /** PracticeBandsOut */
         PracticeBandsOut: {
             /** Practice */
@@ -5962,6 +6241,21 @@ export interface components {
             /** Rise Bp */
             rise_bp: number | null;
         };
+        /** ReconciliationOut */
+        ReconciliationOut: {
+            /** Label */
+            label: string;
+            /** Bank Cents */
+            bank_cents: number;
+            /** Owed Cents */
+            owed_cents: number;
+            /** Shortfall Cents */
+            shortfall_cents: number;
+            /** Cause */
+            cause: string;
+            /** Made Good Cents */
+            made_good_cents: number;
+        };
         /** RecruitmentOut */
         RecruitmentOut: {
             /** Date Label */
@@ -5991,7 +6285,7 @@ export interface components {
                 [key: string]: string[];
             };
             /** School Tiers */
-            school_tiers: components["schemas"]["OptionOut"][];
+            school_tiers: components["schemas"]["ptk__api__recruitment__OptionOut"][];
         };
         /** RefOut */
         RefOut: {
@@ -6073,6 +6367,39 @@ export interface components {
         };
         /** @enum {string} */
         RiskOut: "low" | "medium" | "high";
+        /** RiskScreenOut */
+        RiskScreenOut: {
+            /** Enabled */
+            enabled: boolean;
+            /** Supervision */
+            supervision: string;
+            policy: components["schemas"]["PolicyOut"] | null;
+            terms: components["schemas"]["TermsOut"];
+            /** Insurers */
+            insurers: components["schemas"]["InsurerOut"][];
+            /** Limits */
+            limits: components["schemas"]["ptk__api__risk__OptionOut"][];
+            /** Deductibles */
+            deductibles: components["schemas"]["ptk__api__risk__OptionOut"][];
+            /** Compulsory Limit Cents */
+            compulsory_limit_cents: number;
+            /** Claims */
+            claims: components["schemas"]["MalpracticeClaimOut"][];
+            /** Cases */
+            cases: components["schemas"]["CaseOut"][];
+            /** Inquiries */
+            inquiries: components["schemas"]["InquiryOut"][];
+            /** Reconciliations */
+            reconciliations: components["schemas"]["ReconciliationOut"][];
+            /** Audits */
+            audits: components["schemas"]["AuditOut"][];
+            /** Arbitrations */
+            arbitrations: components["schemas"]["ArbitrationOut"][];
+            /** Claims 12M */
+            claims_12m: number;
+            /** Lawyers */
+            lawyers: number;
+        };
         /** RivalApproachOut */
         RivalApproachOut: {
             /** Id */
@@ -6604,6 +6931,14 @@ export interface components {
             /** Person Id */
             person_id: number;
         };
+        /** SupervisionIn */
+        SupervisionIn: {
+            /**
+             * Supervision
+             * @enum {string}
+             */
+            supervision: "standard" | "lax";
+        };
         /** @enum {string} */
         SupervisorLabel: "strong" | "fine" | "stretched";
         /**
@@ -6717,12 +7052,14 @@ export interface components {
             /** Value */
             value: string | number | boolean;
         };
-        /** TermsIn */
-        TermsIn: {
-            /** Term */
-            term: string;
-            /** Value */
-            value: string | number | boolean;
+        /** TermsOut */
+        TermsOut: {
+            /** Insurer */
+            insurer: string | null;
+            /** Limit Cents */
+            limit_cents: number | null;
+            /** Deductible Cents */
+            deductible_cents: number | null;
         };
         /** @enum {string} */
         TextKindOut: "headlines" | "matter_brief" | "pitch_letter" | "partner_memo" | "year_end_letter" | "seat_report";
@@ -6983,6 +7320,36 @@ export interface components {
             year_costs_cents: number;
             /** Year Profit Cents */
             year_profit_cents: number;
+        };
+        /** TermsIn */
+        ptk__api__partnership__TermsIn: {
+            /** Term */
+            term: string;
+            /** Value */
+            value: string | number | boolean;
+        };
+        /** OptionOut */
+        ptk__api__recruitment__OptionOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+        };
+        /** OptionOut */
+        ptk__api__risk__OptionOut: {
+            /** Cents */
+            cents: number;
+            /** Factor */
+            factor: number;
+        };
+        /** TermsIn */
+        ptk__api__risk__TermsIn: {
+            /** Insurer */
+            insurer?: string | null;
+            /** Limit Cents */
+            limit_cents?: number | null;
+            /** Deductible Cents */
+            deductible_cents?: number | null;
         };
         /** AnswerIn */
         ptk__api__standing__AnswerIn: {
@@ -11678,7 +12045,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["TermsIn"];
+                "application/json": components["schemas"]["ptk__api__partnership__TermsIn"];
             };
         };
         responses: {
@@ -15237,6 +15604,377 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TechOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getRisk: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RiskScreenOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    setPolicyTerms: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ptk__api__risk__TermsIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RiskScreenOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    setSupervision: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SupervisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RiskScreenOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    respondClaim: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                claim_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChoiceIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RiskScreenOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    respondCase: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                case_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChoiceIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RiskScreenOut"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    respondInquiry: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                inquiry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChoiceIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RiskScreenOut"];
                 };
             };
             /** @description Bad Request */

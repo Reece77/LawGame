@@ -37,7 +37,7 @@ from ptk.sim.automation.models import (
 )
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import SimError
-from ptk.sim.ledger import AccountCode, LedgerEntry, apply_entries
+from ptk.sim.ledger import CASH, AccountCode, LedgerEntry, apply_entries
 from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.money import Cents
 from ptk.sim.org.seats import managing_partner
@@ -105,7 +105,7 @@ def _apply(
         m = apply_matter_action(state, a, draws, b, data)  # type: ignore[arg-type]
         return m.state, m.entries, m.log
     if t in BILLING_ACTION_TYPES.values():
-        o = apply_billing_action(state, a, draws, b, rng)  # type: ignore[arg-type]
+        o = apply_billing_action(state, a, draws, b, rng=rng)  # type: ignore[arg-type]
         return o.state, o.entries, o.log
     if t in RIVAL_ACTION_TYPES.values():
         r = apply_rival_action(state, a, draws, b, data)  # type: ignore[arg-type]
@@ -116,6 +116,12 @@ def _apply(
     if t in EVENT_ACTION_TYPES.values():
         e = apply_event_action(state, a, b, data)  # type: ignore[arg-type]
         return e.state, e.entries, e.log
+    from ptk.sim.risk.actions import RISK_ACTION_TYPES, apply_risk_action  # PT-M15
+
+    if t in RISK_ACTION_TYPES.values():
+        cash = balances.get((state.player.id, CASH), 0)
+        k = apply_risk_action(state, a, b, data, cash)  # type: ignore[arg-type]
+        return k.state, k.entries, k.log
     h = apply_hiring(state, a, draws, b, data, balances)  # type: ignore[arg-type]
     return h.state, h.entries, h.log
 

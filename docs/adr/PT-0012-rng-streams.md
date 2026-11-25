@@ -67,6 +67,14 @@
 | `office_team` | 102 | `(office_id, n)` | An opened office's n-th lifted or lateral person (their making, book, portability and clients' follow draws); n = 0 an organic start's introductions (one call site, `ptk.sim.geo.actions.team_stream`) | PT-M11 |
 | `city_demand` | 103 | `(city_index, practice_index)` | An office city's monthly demand noise (`ptk.sim.geo.markets.city_demand`) | PT-M11 |
 | `trainees` | 104 | `(contract_id, n)` | A training contract's n-th trainee: their seats, then their making (`ptk.sim.geo.uk.trainees_join`) | PT-M11 |
+| `risk_claim` | 140 | `(1, matter_id, n)` the n-th escaped error of a matter; `(2, matter_id, 0)` a lost case's grievance | Whether it becomes a latent claim, then its size, delay and demand draws and its merit (Beta) (`ptk.sim.risk.draws.claim_draws`; lane C's range 140-149) | PT-M15 |
+| `risk_case` | 141 | `(claim_id,)` | A claim's month: the drop or offer draw, a stage's length, the offer's share, the trial, the merit range's place at notice | PT-M15 |
+| `discipline` | 142 | `(firm_id,)` | The month's disciplinary draws: the GC's billing review first, then the trust misuse case's culpability, the triggered chances, then each lawyer's roll by id | PT-M15 |
+| `discipline_case` | 143 | `(case_id,)` | A case's month: the next stage's length, the finding, the contest draw; a disbarred partner's departure | PT-M15 |
+| `regulator` | 144 | `(1, firm_id)` the month's inquiries opened; `(2, inquiry_id)` a contested inquiry's finding | Regulators' inquiries (`ptk.sim.risk.inquiries`) | PT-M15 |
+| `trust` | 145 | `(firm_id,)` | The month's reconciliation: a posting error, the shortfall's share, then each partner's misuse roll by id | PT-M15 |
+| `audit` | 146 | `(bill_id,)` | A large client's e-billing audit of a new bill and its cut (`ptk.sim.billing.audits`) | PT-M15 |
+| `arbitration` | 147 | `(2, arbitration_id)` | A fee arbitration's award (the filing is the held dispute's action draw) | PT-M15 |
 | `merger_target` | 130 | `(*rival_key,)` at turn 0 | A firm's fixed hidden values for mergers: annuity share, lease years left, the diligence ranges' offsets (`ptk.sim.mergers.streams`; lane B's range 130-139, ADR PT-0016) | PT-M13 |
 | `merger_book` | 131 | `(deal_id,)` | A deal's client book, drawn when talks open | PT-M13 |
 | `merger_answer` | 132 | `(deal_id, round)` | The other firm's answer: round 0 whether it talks, then each partner's noise on the terms | PT-M13 |

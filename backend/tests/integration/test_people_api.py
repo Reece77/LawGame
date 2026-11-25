@@ -89,7 +89,7 @@ def test_people_list_and_profile(save_dir: Path) -> None:
     founder = rows[0]
     assert founder["is_founder"] and founder["role"] == "commercial_litigation"
     assert founder["strain"] == 20.0 and founder["burnt_out"] is False
-    assert len(founder["familiarity"]) == 10
+    assert len(founder["familiarity"]) == 20  # PT-M12: twenty practices
     lit = next(f for f in founder["familiarity"] if f["practice"] == "commercial_litigation")
     assert lit["lo"] == lit["hi"] >= 15  # the firm knows its founder exactly
     assert founder["potential"]  # a phrase, never a number

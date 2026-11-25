@@ -395,7 +395,7 @@ def risk_demo(
 ) -> tuple[GameState, list[LedgerEntry], tuple[ClientBookEntry, ...]]:
     """PT-M15's demo, staged through the engine with the chances forced (the rules, not the
     luck, are what the save shows): $500k on account for the firm's largest client; two
-    escaped errors on an open matter become claims, the first walked from notice to the
+    escaped errors on two clients' open matters become claims, the first walked from notice to the
     claimant's offer, the second surfacing next month; the month's reconciliation finds a
     posting error (made good from firm cash; the critical event is queued for next month)."""
     from ptk.sim.billing.books import ClientBook
@@ -411,13 +411,17 @@ def risk_demo(
     balances = dict(apply_entries({}, entries))
     books = Books(firm, state.turn, balances.get((firm, CASH), 0))
     state = insurance.insurance_month(state, firm, books, balance, data)
-    matter = next(m for m in state.market.open_matters(firm) if m.team and m.lead_id is not None)
+    picked: dict[int, int] = {}  # client -> matter: two matters of two clients
+    for m in state.market.open_matters(firm):
+        if m.team and m.lead_id is not None and m.client_id not in picked and len(picked) < 2:
+            picked[m.client_id] = m.id
+    chosen = set(picked.values())
     after = replace(
         state,
         market=replace(
             state.market,
             matters=tuple(
-                replace(m, errors_escaped=m.errors_escaped + 2) if m.id == matter.id else m
+                replace(m, errors_escaped=m.errors_escaped + 1) if m.id in chosen else m
                 for m in state.market.matters
             ),
         ),
@@ -439,9 +443,7 @@ def risk_demo(
     state = cl.make_claims(state, after, rng, forced, data)
     mine = [x for x in state.risk.claims if x.firm_id == firm]
     first, second = mine[-2], mine[-1]
-    state = replace(
-        state, risk=with_claim(state.risk, replace(second, surfaces_turn=state.turn + 1))
-    )
+    state = replace(state, risk=with_claim(state.risk, replace(second, surfaces_turn=state.turn)))
     claim = first
     for _ in range(6):  # notice, investigation, defence, the offer: one stage a step
         state, claim = cl.claim_month(state, claim, rng, books, forced, data)

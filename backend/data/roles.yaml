@@ -191,3 +191,114 @@ roles:
     work_style: researcher
     work_style_weights: { builder: 1, operator: 4, researcher: 4, seller: 0 }
     interest_weights: { policy: 2, security: 2 }
+
+  # --- PT-M12: one lawyer role per v2 practice (appended; docs/research/practices-v2.md) ------
+  - key: international_arbitration
+    label: International arbitration lawyer
+    kind: lawyer
+    practice: international_arbitration
+    summary: "Runs cross-border disputes before ICC, LCIA and investment-treaty tribunals."
+    primary: [advocacy, legal_reasoning, languages]
+    secondary: [writing, procedure, client_care]
+    work_style: researcher
+    work_style_weights: { builder: 1, operator: 3, researcher: 5, seller: 2 }
+    interest_weights: { policy: 3, climate: 2 }
+
+  - key: tax
+    label: Tax lawyer
+    kind: lawyer
+    practice: tax
+    summary: "Structures deals and planning for tax, writes the opinions and fights the IRS."
+    primary: [numeracy, legal_reasoning, deal_structuring]
+    secondary: [writing, research, commercial_awareness]
+    work_style: researcher
+    work_style_weights: { builder: 1, operator: 3, researcher: 6, seller: 1 }
+    interest_weights: { fintech: 3, policy: 3 }
+
+  - key: antitrust
+    label: Antitrust lawyer
+    kind: lawyer
+    practice: antitrust
+    summary: "Clears mergers with the agencies and defends cartel and monopoly cases."
+    primary: [legal_reasoning, commercial_awareness, advocacy]
+    secondary: [writing, numeracy, project_management]
+    work_style: researcher
+    work_style_weights: { builder: 1, operator: 4, researcher: 4, seller: 2 }
+    interest_weights: { policy: 4, enterprise: 2 }
+
+  - key: financial_regulation
+    label: Financial regulation lawyer
+    kind: lawyer
+    practice: financial_regulation
+    summary: "Advises banks, brokers and funds on regulation and handles the regulators."
+    primary: [legal_reasoning, writing, procedure]
+    secondary: [commercial_awareness, numeracy, client_care]
+    work_style: operator
+    work_style_weights: { builder: 1, operator: 5, researcher: 4, seller: 1 }
+    interest_weights: { fintech: 4, policy: 3, crypto: 1 }
+
+  - key: healthcare
+    label: Healthcare and life sciences lawyer
+    kind: lawyer
+    practice: healthcare
+    summary: "Advises hospitals, pharma and device makers on deals, the FDA and fraud-and-abuse rules."
+    primary: [legal_reasoning, technical, writing]
+    secondary: [procedure, commercial_awareness, client_care]
+    work_style: researcher
+    work_style_weights: { builder: 2, operator: 4, researcher: 4, seller: 1 }
+    interest_weights: { policy: 3, consumer: 2 }
+
+  - key: energy
+    label: Energy and infrastructure lawyer
+    kind: lawyer
+    practice: energy
+    summary: "Finances and builds power, oil and gas and infrastructure projects."
+    primary: [deal_structuring, negotiation, numeracy]
+    secondary: [writing, project_management, technical]
+    work_style: operator
+    work_style_weights: { builder: 4, operator: 5, researcher: 1, seller: 1 }
+    interest_weights: { climate: 4, mining: 2 }
+
+  - key: technology_privacy
+    label: Technology and privacy lawyer
+    kind: lawyer
+    practice: technology_privacy
+    summary: "Drafts technology deals and runs privacy programmes and breach responses."
+    primary: [technology, writing, legal_reasoning]
+    secondary: [technical, project_management, client_care]
+    work_style: builder
+    work_style_weights: { builder: 5, operator: 3, researcher: 2, seller: 1 }
+    interest_weights: { security: 4, ai: 3, open_source: 1 }
+
+  - key: private_client
+    label: Private client lawyer
+    kind: lawyer
+    practice: private_client
+    summary: "Plans estates and trusts for wealthy families and settles their disputes."
+    primary: [client_care, numeracy, writing]
+    secondary: [legal_reasoning, communication, research]
+    work_style: seller
+    work_style_weights: { builder: 1, operator: 3, researcher: 2, seller: 5 }
+    interest_weights: { design: 2, consumer: 2 }
+
+  - key: insurance
+    label: Insurance and reinsurance lawyer
+    kind: lawyer
+    practice: insurance
+    summary: "Fights coverage disputes and reinsurance arbitrations and advises insurers."
+    primary: [legal_reasoning, advocacy, numeracy]
+    secondary: [writing, procedure, commercial_awareness]
+    work_style: researcher
+    work_style_weights: { builder: 1, operator: 4, researcher: 4, seller: 1 }
+    interest_weights: { climate: 3, fintech: 2 }
+
+  - key: mass_torts
+    label: Plaintiff mass torts lawyer
+    kind: lawyer
+    practice: mass_torts
+    summary: "Brings mass torts and class actions for claimants, on contingency."
+    primary: [advocacy, client_care, business_development]
+    secondary: [procedure, stamina, communication]
+    work_style: seller
+    work_style_weights: { builder: 2, operator: 2, researcher: 2, seller: 5 }
+    interest_weights: { consumer: 4, policy: 2 }

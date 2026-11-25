@@ -8,12 +8,13 @@ History is pinned to December 2025 (`macro_history.yaml`, `salary_scale.yaml`); 
   `macro.seeded.fit_years` (the persistence and the residual spread of years outside the
   recession episodes), reverting to its mean over `mean_years` (a `trend_series` index, the
   long-run growth G, reverts to its fitted trend instead); stream `macro_seed` (65), keyed by
-  `(index_number,)` (the index's position in `macro_data.SERIES`);
+  `(index_number,)` (the index's position in `macro_data.SERIES`; PT-M12: an index appended
+  after v1's twelve is keyed one higher, after the regime key);
 - **recessions** are regime switches: each month a recession starts with history's frequency
   (episodes / months fitted), at most one every `recession_gap_months`; it replays one of
   history's episodes chosen at random (2008-2009 or 2020): over the episode's fall months each
   index takes that episode's fall (log of its trough over its start) as impulses, and the AR(1)
-  brings it back. The regime draws are the same stream keyed `(len(SERIES),)`;
+  brings it back. The regime draws are the same stream keyed `(V1_SERIES,)` (12);
 - **the rate rise** each January follows an AR(1) fitted to the history's rises outside
   recession years; a year after a recession began takes history's mean recession-year rise;
   stream `scale_seed` (66) keyed `(0,)`;
@@ -41,7 +42,7 @@ import numpy as np
 
 from ptk.sim import dmath
 from ptk.sim.data_models import Balance, BonusRow, GameData, SalaryScale, ScaleRow
-from ptk.sim.macro_data import SERIES, MacroData, MacroPoint, SeededBalance
+from ptk.sim.macro_data import SERIES, V1_SERIES, MacroData, MacroPoint, SeededBalance
 from ptk.sim.rng import RngFactory
 
 MONTHS = 12  # tunable-exempt: months in a year
@@ -50,6 +51,15 @@ STREAM_TURN = 0  # tunable-exempt: the seeded world is drawn once per save, at t
 RATE_KEY = 0  # scale_seed key: the rate rises
 SCALE_KEY = 1  # scale_seed key: the salary scale's steps
 CACHE = 32  # tunable-exempt: saves' worlds kept in memory
+
+
+REGIME_KEY = V1_SERIES  # macro_seed key: the recession regime (v1's len(SERIES), kept)
+
+
+def series_key(index: int) -> int:
+    """macro_seed's key for the index at `index` in SERIES: its position, or one past the
+    regime key for an index appended after v1 (PT-M12), so no v1 draw moves."""
+    return index if index < REGIME_KEY else index + 1
 
 
 def _macro_stream(rng: RngFactory, key: int) -> np.random.Generator:
@@ -144,10 +154,10 @@ class Recession:
 
 def recessions(rng: RngFactory, cfg: SeededBalance) -> tuple[Recession, ...]:
     """The seeded recessions: history's frequency, one at a time, `recession_gap_months`
-    apart (stream macro_seed, key (len(SERIES),))."""
+    apart (stream macro_seed, key (REGIME_KEY,))."""
     fitted = _m((cfg.fit_years[1], MONTHS)) - _m((cfg.fit_years[0], 1)) + 1
     hazard = len(cfg.episodes) / fitted * cfg.recession_hazard_scale
-    gen = _macro_stream(rng, len(SERIES))
+    gen = _macro_stream(rng, REGIME_KEY)
     out: list[Recession] = []
     last = -(10**6)
     for m in range(_m(cfg.start), _m(cfg.until) + 1):
@@ -177,7 +187,7 @@ def seeded_points(macro: MacroData, cfg: SeededBalance, rng: RngFactory) -> tupl
     paths: dict[str, list[float]] = {}
     for i, series in enumerate(SERIES):
         fit = fit_series(macro, series, cfg)
-        gen = _macro_stream(rng, i)
+        gen = _macro_stream(rng, series_key(i))
         level0 = dmath.log(_level(macro, series, end))
         dev = level0 - fit.mean
         out = []

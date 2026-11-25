@@ -26,7 +26,21 @@ SERIES: Final = (
     "real_estate",  # commercial property transactions
     "lateral_heat",  # the lateral market: moves per year over 2005's
     "collections",  # clients' payment stress: days to pay over 2005's
+    # PT-M12: the v2 practices' drivers (docs/research/practices-v2.md s4), appended
+    "arbitration",  # cross-border disputes (ICC cases)
+    "tax",  # deal volume and tax reform
+    "antitrust",  # merger reviews (HSR filings) and enforcement policy
+    "finreg",  # financial regulation intensity
+    "healthcare",  # healthcare deals and enforcement
+    "energy",  # oil, project finance and the energy transition
+    "privacy",  # tech activity and privacy law
+    "wealth",  # household wealth
+    "catastrophe",  # catastrophe and claims cycle
+    "torts",  # mass-tort waves
 )
+# PT-M12: v1's series count. The seeded world's recession draws keep this stream key, and the
+# indices appended after v1 take the keys after it (ptk/sim/macro_seed.py `series_key`).
+V1_SERIES: Final = 12  # tunable-exempt: v1's series count
 
 
 class _Strict(BaseModel):

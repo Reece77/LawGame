@@ -14,7 +14,7 @@ from tests.unit.test_data import _copy, _edit
 
 
 def test_new_york_demand_base_is_the_dossiers_12_35bn(data: GameData) -> None:
-    total = sum(p.demand_cents for p in data.practices)
+    total = sum(p.demand_cents for p in data.practices[:10])  # v1's ten (PT-M12 appends ten)
     assert total == 1_235_000_000_000
     assert [p.key for p in data.practices][:3] == [
         "corporate_ma",

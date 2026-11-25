@@ -7,6 +7,7 @@ from typing import Final, Literal
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from ptk.sim.automation.config import AutomationBalance
+from ptk.sim.billing.models import BILLING_MODELS
 from ptk.sim.events.data import (
     ColleaguesBalance,
     EventsBalance,
@@ -1416,6 +1417,9 @@ class PracticeDef(_Strict):
     seasonality: tuple[float, ...] = Field(min_length=12, max_length=12)
     matter_kinds: tuple[MatterKindDef, ...] = Field(min_length=1)
     cross_sell: dict[str, float]
+    # PT-M12: the practice's own billing model mix (spec 7.7: retainers in private client,
+    # success fees in arbitration, contingency in mass torts); empty = balance.yaml's by kind
+    billing_models: dict[str, float] = Field(default_factory=dict)
 
     @model_validator(mode="after")
     def _check(self) -> PracticeDef:
@@ -1428,6 +1432,10 @@ class PracticeDef(_Strict):
             raise ValueError(f"practice {self.key}: duplicate matter kind keys")
         if any(not 0 <= v <= 1 for v in self.cross_sell.values()):
             raise ValueError(f"practice {self.key}: cross_sell affinities are 0-1")
+        if self.billing_models:
+            if bad := sorted(set(self.billing_models) - set(BILLING_MODELS)):
+                raise ValueError(f"practice {self.key}: unknown billing models {bad}")
+            _weights_positive(self.billing_models, f"practice {self.key} billing_models")
         return self
 
     def kind(self, key: str) -> MatterKindDef:
@@ -1446,6 +1454,9 @@ class PracticeMarket(_Strict):
     tasks: tuple[TaskDef, ...] = Field(min_length=1)
     kinds: dict[str, KindDef]
     flow_tasks: dict[str, float]
+    # PT-M12: practices drawn from a person's own generator (ADR-0013's order); later ones
+    # (appended) draw from a jump of it, so adding a practice never moves an existing draw
+    familiarity_main_draws: int = Field(gt=0)
 
     @model_validator(mode="after")
     def _check(self) -> PracticeMarket:

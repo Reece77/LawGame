@@ -149,11 +149,20 @@ def draw_familiarity(
     familiar: frozenset[str] = frozenset(),
 ) -> Familiarity:
     """One Uniform per practice in file order (step 12): `home` and `familiar` practices in
-    `home_range`, every other practice in `other_range`."""
+    `home_range`, every other practice in `other_range`. PT-M12: the first
+    `familiarity_main_draws` practices draw from `gen`; later (appended) practices from a jump
+    of it, a sub-stream derived from the same seeded state that leaves `gen` where v1 left it,
+    so appending a practice moves no other draw (ADR-0013's append rule)."""
     values: dict[str, float] = {}
-    for key in data.practice_keys:
+    main = data.market.familiarity_main_draws
+    extra: np.random.Generator | None = None
+    for i, key in enumerate(data.practice_keys):
         lo, hi = home_range if key == home or key in familiar else other_range
-        values[key] = float(gen.uniform(lo, hi))
+        if i >= main and extra is None:
+            bits = gen.bit_generator
+            assert isinstance(bits, np.random.PCG64)  # RngFactory's bit generator
+            extra = np.random.Generator(bits.jumped())
+        values[key] = float((gen if extra is None else extra).uniform(lo, hi))
     return Familiarity.build(data.practice_keys, values)
 
 

@@ -75,7 +75,7 @@ STREAM_IDS: Final = MappingProxyType(
         "auto_quality": 60,  # (area_index, firm_id, slot): an area's month: q, then its draws
         "auto_events": 61,  # (event_id,): an owner's answer to a routine event: q
         # PT-M10 (lane A, ids 65-69): the seeded world after history (ptk.sim.macro_seed)
-        "macro_seed": 65,  # (index_number,): an index's 2026-2034 path; (len(SERIES),) recessions
+        "macro_seed": 65,  # (series_key,): an index's 2026-2034 path; (12,) recessions (PT-M12)
         "scale_seed": 66,  # (0,) the seeded rate rises; (1,) the salary scale's seeded steps
         # PT-M14 (lane C, ids 110-119): legal technology and AI (ptk.sim.tech)
         "tech_seed": 110,  # (era_index, 0) its strength's 2026+ target; (era_index, 1) the market's

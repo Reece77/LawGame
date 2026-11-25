@@ -24,9 +24,20 @@ sources:
   real_estate: "[D] dossier s2: US commercial property transaction volume, damped"
   lateral_heat: "[D/A] dossier s2: lateral partner moves (Am Law Lateral Report) and associate hiring"
   collections: "[A] dossier s2: lockup and days to pay (Citi Private Bank Law Firm Group)"
+  # PT-M12: the v2 practices' drivers (docs/research/practices-v2.md s4, "v2 s4")
+  arbitration: "[D/A] v2 s4: ICC new cases, square root of the ratio to 2005's (2016, 2017, 2025 [S])"
+  tax: "[A] v2 s4: half deal volume, half planning and reform events (TCJA 22 Dec 2017)"
+  antitrust: "[D] v2 s4: HSR transactions reported [S], damped; 2021-24 x 1.08 for policy [A]"
+  finreg: "[A] v2 s4: regulation intensity (Dodd-Frank 21 Jul 2010, roll-back from 2017)"
+  healthcare: "[A] v2 s4: healthcare deals and enforcement (the ACA 23 Mar 2010)"
+  energy: "[A] v2 s4: oil price and project finance (the 2014-16 crash, the IRA 16 Aug 2022)"
+  privacy: "[A] v2 s4: tech activity and privacy law (GDPR 25 May 2018, CCPA 1 Jan 2020)"
+  wealth: "[D/A] v2 s4: US household net worth (Fed Z.1, from memory), damped"
+  catastrophe: "[A] v2 s4: catastrophe and claims cycle, a year's lag (2017 insured losses USD 144bn [S])"
+  torts: "[A] v2 s4: mass-tort waves and the MDL docket share (2014, 2018, 2024 [S])"
 
 points:
-  - { ym: [2005, 1], values: { growth: 1.00, ma: 1.00, pe: 1.00, issuance: 1.00, lending: 1.00, credit: 1.00, cycle: 1.00, enforcement: 1.00, ip: 1.00, real_estate: 1.00, lateral_heat: 1.00, collections: 1.00 } }
+  - { ym: [2005, 1], values: { growth: 1.00, ma: 1.00, pe: 1.00, issuance: 1.00, lending: 1.00, credit: 1.00, cycle: 1.00, enforcement: 1.00, ip: 1.00, real_estate: 1.00, lateral_heat: 1.00, collections: 1.00, arbitration: 1.00, tax: 1.00, antitrust: 1.00, finreg: 1.00, healthcare: 1.00, energy: 1.00, privacy: 1.00, wealth: 1.00, catastrophe: 1.00, torts: 1.00 } }
   - { ym: [2005, 7], values: { growth: 1.00, ma: 1.00, pe: 1.00, issuance: 1.00, lending: 1.00, credit: 1.00, cycle: 1.00, enforcement: 1.00, ip: 1.00, real_estate: 1.00, lateral_heat: 1.00, collections: 1.00 } }
   - { ym: [2006, 7], values: { growth: 1.02, ma: 1.15, pe: 1.39, issuance: 1.00, lending: 1.00, credit: 1.05, cycle: 1.03, enforcement: 0.95, ip: 1.03, real_estate: 1.04, lateral_heat: 1.05, collections: 0.98 } }
   - { ym: [2007, 7], values: { growth: 1.04, ma: 1.15, pe: 1.53, issuance: 1.05, lending: 1.06, credit: 1.25, cycle: 1.04, enforcement: 1.10, ip: 1.07, real_estate: 1.19, lateral_heat: 1.12, collections: 1.00 } }

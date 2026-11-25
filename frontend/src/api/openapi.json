@@ -183,7 +183,7 @@
     "/api/practice/{key}": {
       "post": {
         "summary": "Create Practice",
-        "description": "PT-M7: create a practice save (pt-2008: a 60-lawyer firm in June 2008); 404 for an\nunknown key, 409 if a save of that name exists.",
+        "description": "PT-M7: create a practice save (pt-2008: a 60-lawyer firm in June 2008); 404 for an\nunknown key, 409 if a save of that name exists. PT-M13: `slug` names the copy (the\nkey by default), so tests can play their own.",
         "operationId": "createPracticeSave",
         "parameters": [
           {
@@ -193,6 +193,22 @@
             "schema": {
               "type": "string",
               "title": "Key"
+            }
+          },
+          {
+            "name": "slug",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Slug"
             }
           }
         ],
@@ -11502,6 +11518,486 @@
           }
         }
       }
+    },
+    "/api/saves/{slug}/mergers": {
+      "get": {
+        "summary": "Get Mergers",
+        "operationId": "getMergers",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MergersOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/mergers/approach": {
+      "post": {
+        "summary": "Approach",
+        "operationId": "approachFirm",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MergerApproachIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MergersOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/mergers/{deal_id}/answer": {
+      "post": {
+        "summary": "Answer",
+        "operationId": "answerApproach",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "deal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Deal Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MergerAnswerIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MergersOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/mergers/{deal_id}/diligence": {
+      "post": {
+        "summary": "Diligence",
+        "operationId": "commissionDiligence",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "deal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Deal Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MergersOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/mergers/{deal_id}/terms": {
+      "post": {
+        "summary": "Put Terms",
+        "operationId": "putTerms",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "deal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Deal Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MergerTermsIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MergersOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saves/{slug}/mergers/{deal_id}/walk-away": {
+      "post": {
+        "summary": "Walk Away",
+        "operationId": "walkAway",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "deal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Deal Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MergersOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -15049,7 +15545,8 @@
               "active",
               "campaign_complete",
               "dissolved",
-              "election_lost"
+              "election_lost",
+              "exit"
             ],
             "title": "Game State"
           },
@@ -17307,6 +17804,785 @@
           "on"
         ],
         "title": "MentorIn"
+      },
+      "MergerAnswerIn": {
+        "properties": {
+          "accept": {
+            "type": "boolean",
+            "title": "Accept"
+          }
+        },
+        "type": "object",
+        "required": [
+          "accept"
+        ],
+        "title": "MergerAnswerIn"
+      },
+      "MergerApproachIn": {
+        "properties": {
+          "rival_key": {
+            "type": "string",
+            "title": "Rival Key"
+          },
+          "form": {
+            "type": "string",
+            "enum": [
+              "merger",
+              "verein"
+            ],
+            "title": "Form",
+            "default": "merger"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rival_key"
+        ],
+        "title": "MergerApproachIn"
+      },
+      "MergerConflictOut": {
+        "properties": {
+          "our_client": {
+            "type": "string",
+            "title": "Our Client"
+          },
+          "their_client": {
+            "type": "string",
+            "title": "Their Client"
+          },
+          "matter_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Matter Id"
+          },
+          "outcome": {
+            "type": "string",
+            "title": "Outcome"
+          }
+        },
+        "type": "object",
+        "required": [
+          "our_client",
+          "their_client",
+          "matter_id",
+          "outcome"
+        ],
+        "title": "MergerConflictOut"
+      },
+      "MergerDealOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "firm_key": {
+            "type": "string",
+            "title": "Firm Key"
+          },
+          "firm": {
+            "type": "string",
+            "title": "Firm"
+          },
+          "form": {
+            "type": "string",
+            "title": "Form"
+          },
+          "initiator": {
+            "type": "string",
+            "title": "Initiator"
+          },
+          "stage": {
+            "type": "string",
+            "title": "Stage"
+          },
+          "opened": {
+            "type": "string",
+            "title": "Opened"
+          },
+          "leaked": {
+            "type": "boolean",
+            "title": "Leaked"
+          },
+          "absorbed": {
+            "type": "boolean",
+            "title": "Absorbed"
+          },
+          "diligence_running": {
+            "type": "boolean",
+            "title": "Diligence Running"
+          },
+          "diligence_fees_cents": {
+            "type": "integer",
+            "title": "Diligence Fees Cents"
+          },
+          "reveal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MergerRevealOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "terms": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MergerTermsOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "counter_share_pct": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Counter Share Pct"
+          },
+          "their_yes_pct": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Their Yes Pct"
+          },
+          "prediction": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MergerPredictionOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "conflicts": {
+            "items": {
+              "$ref": "#/components/schemas/MergerConflictOut"
+            },
+            "type": "array",
+            "title": "Conflicts"
+          },
+          "ended": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ended"
+          },
+          "ended_reason": {
+            "type": "string",
+            "title": "Ended Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "firm_key",
+          "firm",
+          "form",
+          "initiator",
+          "stage",
+          "opened",
+          "leaked",
+          "absorbed",
+          "diligence_running",
+          "diligence_fees_cents",
+          "reveal",
+          "terms",
+          "counter_share_pct",
+          "their_yes_pct",
+          "prediction",
+          "conflicts",
+          "ended",
+          "ended_reason"
+        ],
+        "title": "MergerDealOut"
+      },
+      "MergerExitOut": {
+        "properties": {
+          "turn": {
+            "type": "string",
+            "title": "Turn"
+          },
+          "firm": {
+            "type": "string",
+            "title": "Firm"
+          },
+          "capital_cents": {
+            "type": "integer",
+            "title": "Capital Cents"
+          },
+          "earnings_cents": {
+            "type": "integer",
+            "title": "Earnings Cents"
+          },
+          "rank": {
+            "type": "integer",
+            "title": "Rank"
+          },
+          "revenue_cents": {
+            "type": "integer",
+            "title": "Revenue Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "turn",
+          "firm",
+          "capital_cents",
+          "earnings_cents",
+          "rank",
+          "revenue_cents"
+        ],
+        "title": "MergerExitOut"
+      },
+      "MergerIntegrationOut": {
+        "properties": {
+          "deal_id": {
+            "type": "integer",
+            "title": "Deal Id"
+          },
+          "firm": {
+            "type": "string",
+            "title": "Firm"
+          },
+          "closed": {
+            "type": "string",
+            "title": "Closed"
+          },
+          "until": {
+            "type": "string",
+            "title": "Until"
+          },
+          "months_left": {
+            "type": "integer",
+            "title": "Months Left"
+          },
+          "clash_pct": {
+            "type": "integer",
+            "title": "Clash Pct"
+          },
+          "lawyers_at_closing": {
+            "type": "integer",
+            "title": "Lawyers At Closing"
+          },
+          "partners_at_closing": {
+            "type": "integer",
+            "title": "Partners At Closing"
+          },
+          "partners_lost": {
+            "type": "integer",
+            "title": "Partners Lost"
+          },
+          "partners_lost_pct": {
+            "type": "integer",
+            "title": "Partners Lost Pct"
+          },
+          "clients_lost": {
+            "type": "integer",
+            "title": "Clients Lost"
+          },
+          "card_rise_pct": {
+            "type": "integer",
+            "title": "Card Rise Pct"
+          },
+          "surrender_cents": {
+            "type": "integer",
+            "title": "Surrender Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "deal_id",
+          "firm",
+          "closed",
+          "until",
+          "months_left",
+          "clash_pct",
+          "lawyers_at_closing",
+          "partners_at_closing",
+          "partners_lost",
+          "partners_lost_pct",
+          "clients_lost",
+          "card_rise_pct",
+          "surrender_cents"
+        ],
+        "title": "MergerIntegrationOut"
+      },
+      "MergerPredictionOut": {
+        "properties": {
+          "yes_lo": {
+            "type": "number",
+            "title": "Yes Lo"
+          },
+          "yes_hi": {
+            "type": "number",
+            "title": "Yes Hi"
+          },
+          "total": {
+            "type": "number",
+            "title": "Total"
+          },
+          "needed": {
+            "type": "number",
+            "title": "Needed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "yes_lo",
+          "yes_hi",
+          "total",
+          "needed"
+        ],
+        "title": "MergerPredictionOut"
+      },
+      "MergerRangeOut": {
+        "properties": {
+          "lo": {
+            "type": "integer",
+            "title": "Lo"
+          },
+          "hi": {
+            "type": "integer",
+            "title": "Hi"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lo",
+          "hi"
+        ],
+        "title": "MergerRangeOut"
+      },
+      "MergerRevealOut": {
+        "properties": {
+          "level": {
+            "type": "integer",
+            "title": "Level"
+          },
+          "max_level": {
+            "type": "integer",
+            "title": "Max Level"
+          },
+          "exact": {
+            "type": "boolean",
+            "title": "Exact"
+          },
+          "revenue_cents": {
+            "type": "integer",
+            "title": "Revenue Cents"
+          },
+          "profit_cents": {
+            "type": "integer",
+            "title": "Profit Cents"
+          },
+          "pep_cents": {
+            "type": "integer",
+            "title": "Pep Cents"
+          },
+          "lawyers": {
+            "type": "integer",
+            "title": "Lawyers"
+          },
+          "equity_partners": {
+            "type": "integer",
+            "title": "Equity Partners"
+          },
+          "wip_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wip Cents"
+          },
+          "receivables_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Receivables Cents"
+          },
+          "cash_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cash Cents"
+          },
+          "revolver_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revolver Cents"
+          },
+          "partner_ability": {
+            "$ref": "#/components/schemas/MergerRangeOut"
+          },
+          "annuities_cents": {
+            "$ref": "#/components/schemas/MergerRangeOut"
+          },
+          "leases_cents": {
+            "$ref": "#/components/schemas/MergerRangeOut"
+          },
+          "conflicts": {
+            "$ref": "#/components/schemas/MergerRangeOut"
+          },
+          "book_clients": {
+            "type": "integer",
+            "title": "Book Clients"
+          },
+          "next_fee_cents": {
+            "type": "integer",
+            "title": "Next Fee Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level",
+          "max_level",
+          "exact",
+          "revenue_cents",
+          "profit_cents",
+          "pep_cents",
+          "lawyers",
+          "equity_partners",
+          "wip_cents",
+          "receivables_cents",
+          "cash_cents",
+          "revolver_cents",
+          "partner_ability",
+          "annuities_cents",
+          "leases_cents",
+          "conflicts",
+          "book_clients",
+          "next_fee_cents"
+        ],
+        "title": "MergerRevealOut"
+      },
+      "MergerTargetOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "city": {
+            "type": "string",
+            "title": "City"
+          },
+          "region": {
+            "type": "string",
+            "title": "Region"
+          },
+          "lawyers": {
+            "type": "integer",
+            "title": "Lawyers"
+          },
+          "equity_partners": {
+            "type": "integer",
+            "title": "Equity Partners"
+          },
+          "revenue_cents": {
+            "type": "integer",
+            "title": "Revenue Cents"
+          },
+          "pep_cents": {
+            "type": "integer",
+            "title": "Pep Cents"
+          },
+          "practices": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Practices"
+          },
+          "complement_pct": {
+            "type": "integer",
+            "title": "Complement Pct"
+          },
+          "new_city": {
+            "type": "boolean",
+            "title": "New City"
+          },
+          "rate_pct": {
+            "type": "integer",
+            "title": "Rate Pct"
+          },
+          "pep_pct": {
+            "type": "integer",
+            "title": "Pep Pct"
+          },
+          "clash_pct": {
+            "type": "integer",
+            "title": "Clash Pct"
+          },
+          "fair_share_pct": {
+            "type": "integer",
+            "title": "Fair Share Pct"
+          },
+          "integrable": {
+            "type": "boolean",
+            "title": "Integrable"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "merger_blocked": {
+            "type": "string",
+            "title": "Merger Blocked"
+          },
+          "verein_blocked": {
+            "type": "string",
+            "title": "Verein Blocked"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "name",
+          "kind",
+          "city",
+          "region",
+          "lawyers",
+          "equity_partners",
+          "revenue_cents",
+          "pep_cents",
+          "practices",
+          "complement_pct",
+          "new_city",
+          "rate_pct",
+          "pep_pct",
+          "clash_pct",
+          "fair_share_pct",
+          "integrable",
+          "reason",
+          "merger_blocked",
+          "verein_blocked"
+        ],
+        "title": "MergerTargetOut"
+      },
+      "MergerTermsIn": {
+        "properties": {
+          "our_share_bp": {
+            "type": "integer",
+            "title": "Our Share Bp",
+            "default": 5000
+          },
+          "name": {
+            "type": "string",
+            "enum": [
+              "ours",
+              "theirs",
+              "combined"
+            ],
+            "title": "Name",
+            "default": "ours"
+          },
+          "mp": {
+            "type": "string",
+            "enum": [
+              "ours",
+              "theirs"
+            ],
+            "title": "Mp",
+            "default": "ours"
+          },
+          "comp_system": {
+            "type": "string",
+            "title": "Comp System",
+            "default": "modified_lockstep"
+          },
+          "rates": {
+            "type": "string",
+            "enum": [
+              "ours",
+              "theirs",
+              "higher",
+              "blend"
+            ],
+            "title": "Rates",
+            "default": "ours"
+          }
+        },
+        "type": "object",
+        "title": "MergerTermsIn"
+      },
+      "MergerTermsOut": {
+        "properties": {
+          "our_share_pct": {
+            "type": "integer",
+            "title": "Our Share Pct"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "mp": {
+            "type": "string",
+            "title": "Mp"
+          },
+          "comp_system": {
+            "type": "string",
+            "title": "Comp System"
+          },
+          "rates": {
+            "type": "string",
+            "title": "Rates"
+          }
+        },
+        "type": "object",
+        "required": [
+          "our_share_pct",
+          "name",
+          "mp",
+          "comp_system",
+          "rates"
+        ],
+        "title": "MergerTermsOut"
+      },
+      "MergersOut": {
+        "properties": {
+          "targets": {
+            "items": {
+              "$ref": "#/components/schemas/MergerTargetOut"
+            },
+            "type": "array",
+            "title": "Targets"
+          },
+          "deals": {
+            "items": {
+              "$ref": "#/components/schemas/MergerDealOut"
+            },
+            "type": "array",
+            "title": "Deals"
+          },
+          "integrations": {
+            "items": {
+              "$ref": "#/components/schemas/MergerIntegrationOut"
+            },
+            "type": "array",
+            "title": "Integrations"
+          },
+          "verein": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VereinOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "exit": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MergerExitOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_mp": {
+            "type": "boolean",
+            "title": "Is Mp"
+          },
+          "energy": {
+            "type": "integer",
+            "title": "Energy"
+          },
+          "costs": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Costs"
+          },
+          "absorbed_below_pct": {
+            "type": "integer",
+            "title": "Absorbed Below Pct"
+          },
+          "vote_pct": {
+            "type": "integer",
+            "title": "Vote Pct"
+          },
+          "max_lawyers": {
+            "type": "integer",
+            "title": "Max Lawyers"
+          },
+          "comp_systems": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Comp Systems"
+          }
+        },
+        "type": "object",
+        "required": [
+          "targets",
+          "deals",
+          "integrations",
+          "verein",
+          "exit",
+          "is_mp",
+          "energy",
+          "costs",
+          "absorbed_below_pct",
+          "vote_pct",
+          "max_lawyers",
+          "comp_systems"
+        ],
+        "title": "MergersOut"
       },
       "MetaOut": {
         "properties": {
@@ -23965,6 +25241,75 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "VereinMemberOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "city": {
+            "type": "string",
+            "title": "City"
+          },
+          "joined": {
+            "type": "string",
+            "title": "Joined"
+          },
+          "lawyers": {
+            "type": "integer",
+            "title": "Lawyers"
+          },
+          "revenue_cents": {
+            "type": "integer",
+            "title": "Revenue Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "name",
+          "city",
+          "joined",
+          "lawyers",
+          "revenue_cents"
+        ],
+        "title": "VereinMemberOut"
+      },
+      "VereinOut": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "formed": {
+            "type": "string",
+            "title": "Formed"
+          },
+          "members": {
+            "items": {
+              "$ref": "#/components/schemas/VereinMemberOut"
+            },
+            "type": "array",
+            "title": "Members"
+          },
+          "costs_cents": {
+            "type": "integer",
+            "title": "Costs Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "formed",
+          "members",
+          "costs_cents"
+        ],
+        "title": "VereinOut"
       },
       "VoteOut": {
         "properties": {

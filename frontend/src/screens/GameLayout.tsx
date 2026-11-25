@@ -56,6 +56,7 @@ export function GameLayout() {
           <NavLink component={Link} to={`/game/${slug}/rankings`} label="Rankings" />
           <NavLink component={Link} to={`/game/${slug}/offices`} label="Offices" />
           <NavLink component={Link} to={`/game/${slug}/risk`} label="Risk" />
+          <NavLink component={Link} to={`/game/${slug}/mergers`} label="Mergers" />
           <NavLink component={Link} to={`/game/${slug}/press`} label="Press" />
           <NavLink component={Link} to={`/game/${slug}/partnership`} label="Partnership" />
           <NavLink component={Link} to={`/game/${slug}/history`} label="History" />

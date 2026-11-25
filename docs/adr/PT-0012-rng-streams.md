@@ -73,6 +73,14 @@
 | `trust` | 145 | `(firm_id,)` | The month's reconciliation: a posting error, the shortfall's share, then each partner's misuse roll by id | PT-M15 |
 | `audit` | 146 | `(bill_id,)` | A large client's e-billing audit of a new bill and its cut (`ptk.sim.billing.audits`) | PT-M15 |
 | `arbitration` | 147 | `(2, arbitration_id)` | A fee arbitration's award (the filing is the held dispute's action draw) | PT-M15 |
+| `merger_target` | 130 | `(*rival_key,)` at turn 0 | A firm's fixed hidden values for mergers: annuity share, lease years left, the diligence ranges' offsets (`ptk.sim.mergers.streams`; lane B's range 130-139, ADR PT-0016) | PT-M13 |
+| `merger_book` | 131 | `(deal_id,)` | A deal's client book, drawn when talks open | PT-M13 |
+| `merger_answer` | 132 | `(deal_id, round)` | The other firm's answer: round 0 whether it talks, then each partner's noise on the terms | PT-M13 |
+| `merger_clear` | 133 | `(deal_id,)` | Conflicts clearance's waiver draws, one per conflict in order | PT-M13 |
+| `merger_people` | 134 | `(deal_id, n)` | The n-th lawyer of the other firm's pools made at closing | PT-M13 |
+| `integration` | 135 | `(deal_id, client_id)` | A book client's monthly balk at the merged rate card | PT-M13 |
+| `rival_merger` | 136 | `(0,)` a rival's approach to the player; `(1,)` a quarter's free-play merger from 2026 | Rivals' merger decisions | PT-M13 |
+| `verein` | 137 | `(verein_id, member_firm_id)` | A member's quarterly referral | PT-M13 |
 
 ## Consequences
 

@@ -48,3 +48,4 @@ Partner Track inherits Tech Startup Tycoon's ADRs by reference where they apply.
 | [PT-0014](PT-0014-macro-history.md) | The macro history to 2015 as dated indices; history's client failures as data | Accepted |
 | [PT-0015](PT-0015-seeded-world.md) | The world after 2025 seeded from the save (AR(1) indices, recessions, rate rises, the salary scale); dated shocks; a layoff action | Accepted |
 | [PT-0017](PT-0017-risk-and-ethics.md) | Malpractice claims as staged cases with hidden merit and size; a renewing policy with deductible, limit and excess (capital call); discipline and regulators' inquiries; the monthly trust reconciliation; e-billing audits and fee arbitration; real people never subjects | Proposed (PT-M15) |
+| [PT-0016](PT-0016-mergers-and-the-verein.md) | Mergers and the verein: books at closing, identity, the pin, the exit | Accepted (PT-M13) |

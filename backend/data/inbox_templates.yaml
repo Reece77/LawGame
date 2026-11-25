@@ -423,3 +423,55 @@ templates:
   arbitration_decided:
     title: "The fee arbitration is decided"
     body: "The arbitrator awarded the client {award_cents} of the disputed {amount_cents}."
+  # PT-M13: mergers and the verein (spec 8.8)
+  merger_talks:
+    title: "Talks open with {firm}"
+    body: "{firm} has agreed to talk about a {form}. Talks are confidential for now; commission due diligence and put terms on the Mergers screen."
+  merger_declined:
+    title: "{firm} declines to talk"
+    body: "{firm} is not interested in a {form} with the firm. It will not talk again for a year."
+  merger_approached:
+    title: "{firm} approaches the firm"
+    body: "{firm} proposes a {form}. Open talks or decline on the Mergers screen."
+  merger_diligence:
+    title: "Due diligence on {firm}: level {level}"
+    body: "The advisers have reported. The Mergers screen shows what they found."
+  merger_their_yes:
+    title: "{firm}'s partners back the terms"
+    body: "{yes_pct}% of {firm}'s partners voted for the terms. The firm's own partners vote now."
+  merger_countered:
+    title: "{firm} counters"
+    body: "{firm}'s partners did not back the terms ({yes_pct}% in favour). They ask for the firm's partners to take {counter_pct}% of the merged profit pool. Accept, put new terms or walk away."
+  merger_their_no:
+    title: "{firm}'s partners vote no"
+    body: "Only {yes_pct}% of {firm}'s partners backed the terms. Talks have ended."
+  merger_voted:
+    title: "The partners approve the deal with {firm}"
+    body: "Both partnerships have voted for it. Conflicts are cleared; it closes next month."
+  merger_our_no:
+    title: "The partners reject the deal with {firm}"
+    body: "The firm's partners did not reach the two-thirds the agreement needs. Talks have ended."
+  merger_cleared:
+    title: "Conflicts cleared: {conflicts} found"
+    body: "Every client of both firms was checked. {lost} conflicts were resolved by letting a client go; the rest were waived."
+  merger_closed:
+    title: "{firm} joins the firm"
+    body: "The merger has closed: {lawyers} lawyers and {clients} clients join {name}. Integration runs for the next two years."
+  merger_lapsed:
+    title: "Talks with {firm} lapse"
+    body: "Months passed without progress, and the talks have ended."
+  merger_client_balked:
+    title: "{client} leaves over the merged rates"
+    body: "{client} will not pay the merged firm's rates and has moved its work elsewhere."
+  merger_integrated:
+    title: "Integration with {firm} is complete"
+    body: "Two years on, {partners} equity partners have left and {clients} clients balked at the merged rates."
+  merger_exit:
+    title: "The firm joins {firm}"
+    body: "Both partnerships approved the combination. The firm is absorbed into {firm}, which ranks number {rank} by revenue. The campaign ends here."
+  verein_joined:
+    title: "{firm} joins {verein}"
+    body: "{firm} is now a member of the verein. Each member keeps its own books and profit pool; costs are shared by revenue, and members refer clients to each other."
+  verein_referral:
+    title: "{firm} refers {client}"
+    body: "Through the verein, {firm} has introduced the firm to {client}."

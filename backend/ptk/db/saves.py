@@ -18,6 +18,7 @@ from ptk.db.founder_io import write_founder_life
 from ptk.db.geo_io import write_geo
 from ptk.db.leadership_io import write_leadership, write_seat_decisions
 from ptk.db.market_io import write_market
+from ptk.db.mergers_io import write_mergers
 from ptk.db.models import DecisionLogRow, FirmRow, SaveMetaRow, TurnSnapshotRow
 from ptk.db.org_io import write_delegate_actions, write_org
 from ptk.db.partnership_io import write_partnership
@@ -207,6 +208,7 @@ def run_action(path: Path, action: Action, balance: Balance, data: GameData) -> 
         write_leadership(session, outcome.state.leadership)  # PT-M8
         write_automation(session, outcome.state.automation)  # PT-M9
         write_geo(session, outcome.state.geo)  # PT-M11
+        write_mergers(session, outcome.state.mergers)  # PT-M13
         write_founder_life(session, outcome.state.founder_life, outcome.state.family)  # PT-M17
         write_standing(session, outcome.state.standing)  # PT-M16: the press, the submission
         write_tech(session, outcome.state.tech)  # PT-M14

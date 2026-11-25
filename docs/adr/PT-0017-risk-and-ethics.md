@@ -24,6 +24,6 @@ Spec §11.3-§11.6 makes mistakes and misconduct cost something. PT-M3a already 
 
 ## Consequences
 
-- New accounts 6310 and 6320; schema v18 (`risk`, one JSON row).
+- New accounts 6310 and 6320; schema v19 (`risk`, one JSON row, chained after PT-M13's v18).
 - The golden snapshots and state cache change (premiums replace the overhead; claims and audits move cash).
 - PT-M13's merged firm inherits the other side's open claims through `RiskState.claims` keyed by firm (the hook it leaves); PT-M12's funding and contingency read nothing here.

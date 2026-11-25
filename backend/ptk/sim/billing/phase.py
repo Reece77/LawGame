@@ -748,29 +748,47 @@ class _Run:
     # --- 4. WIP -----------------------------------------------------------------------------
 
     def post_wip(self) -> None:
+        # PT-M13 (T12): the month's records are summed per ledger line, engagement and flow
+        # account first (integer sums, keys in first-seen order), then posted once each;
+        # identical results to posting record by record
+        wip: dict[tuple[str, int | None], int] = {}
+        to_eng: dict[int, list[int]] = {}
+        to_flow: dict[tuple[int, str], list[int]] = {}
+        worked = billable = 0
+        seen = False
         for r in month_hours(self.state, self.firm_id):
             if r.value_cents == 0 and r.tenths == 0:
                 continue
-            self.books.move(
-                bk.WIP_POSTED, WIP, FEES, r.value_cents, r.practice, self.office(r.client_id)
+            seen = True
+            line = (r.practice, self.office(r.client_id))
+            wip[line] = wip.get(line, 0) + r.value_cents
+            worked += r.value_cents
+            billable += r.tenths
+            if r.matter_id is not None and r.matter_id in self.eng:
+                acc = to_eng.setdefault(r.matter_id, [0, 0])
+            else:
+                acc = to_flow.setdefault((r.client_id, r.practice), [0, 0])
+            acc[0] += r.value_cents
+            acc[1] += r.tenths
+        for (practice, office), cents in wip.items():
+            self.books.move(bk.WIP_POSTED, WIP, FEES, cents, practice, office)
+        if seen:
+            self.add("worked_cents", worked)
+            self.add("billable_tenths", billable)
+        for mid, (cents, tenths) in to_eng.items():
+            e = self.eng[mid]
+            self.eng[mid] = replace(
+                e,
+                wip_cents=e.wip_cents + cents,
+                wip_tenths=e.wip_tenths + tenths,
+                standard_cents=e.standard_cents + cents,
             )
-            self.add("worked_cents", r.value_cents)
-            self.add("billable_tenths", r.tenths)
-            e = self.eng.get(r.matter_id) if r.matter_id is not None else None
-            if e is not None:
-                self.eng[e.matter_id] = replace(
-                    e,
-                    wip_cents=e.wip_cents + r.value_cents,
-                    wip_tenths=e.wip_tenths + r.tenths,
-                    standard_cents=e.standard_cents + r.value_cents,
-                )
-                continue
-            key = (r.client_id, r.practice)
+        for key, (cents, tenths) in to_flow.items():
             f = self.flows.get(key) or FlowAccount(
-                client_id=r.client_id, practice=r.practice, firm_id=self.firm_id
+                client_id=key[0], practice=key[1], firm_id=self.firm_id
             )
             self.flows[key] = replace(
-                f, wip_cents=f.wip_cents + r.value_cents, wip_tenths=f.wip_tenths + r.tenths
+                f, wip_cents=f.wip_cents + cents, wip_tenths=f.wip_tenths + tenths
             )
         self.add(
             "capacity_tenths",

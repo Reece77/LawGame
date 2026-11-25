@@ -33,6 +33,7 @@ from ptk.sim.ledger import CASH, AccountCode, LedgerBalances, LedgerEntry, apply
 from ptk.sim.log import LogItem
 from ptk.sim.macro_seed import world_data
 from ptk.sim.matters import phase as matters
+from ptk.sim.mergers import phase as mergers
 from ptk.sim.money import Cents
 from ptk.sim.org.delegates import DelegateAction, available_hook, run_delegates
 from ptk.sim.org.phase import clear_nudges
@@ -135,9 +136,11 @@ def apply_player_decisions(ctx: TurnContext) -> TurnContext:
     state, left = hiring.end_notices(ctx.state)
     state, entries, resolved = hiring.resolve_offers(state, ctx.rng, ctx.balance, ctx.data)
     state, started = hiring.start_signed(state, ctx.balance, ctx.data)
-    state, voted, votes = partnership.votes_and_offers(state, ctx.rng, ctx.balance, ctx.data)
-    ctx = replace(ctx, state=state).post(*entries, *voted)
-    ctx = ctx.log(*left, *resolved, *started, *votes)
+    talks = mergers.before_votes(state, ctx.rng, ctx.data, ctx.balance)  # PT-M13: answers
+    state, voted, votes = partnership.votes_and_offers(talks.state, ctx.rng, ctx.balance, ctx.data)
+    closed = mergers.after_votes(state, ctx.rng, ctx.data, ctx.balance)  # PT-M13: closings
+    ctx = replace(ctx, state=closed.state).post(*entries, *voted, *closed.entries)
+    ctx = ctx.log(*left, *resolved, *started, *talks.log, *votes, *closed.log)
     state, trained, joined = geo.phase_one(ctx.state, ctx.rng, ctx.balance, ctx.data)  # PT-M11
     ctx = replace(ctx, state=state).post(*trained).log(*joined)
     return ctx.take(rival_phase.answer_approaches(ctx.state, ctx.rng, ctx.data, ctx.balance))
@@ -196,7 +199,8 @@ def payroll_and_operating_costs(ctx: TurnContext) -> TurnContext:
     offices' leases (PT-M11); risk: claims, the insurance policy and its premium (PT-M15)."""
     entries, logs = hiring.payroll(ctx.state, ctx.balance, ctx.data)
     state, leases, _ = geo.phase_six(ctx.state, ctx.balance, ctx.data)  # PT-M11: offices
-    ctx = replace(ctx, state=state).post(*entries, *leases).log(*logs)
+    shared = mergers.phase_six(state, ctx.balances, ctx.balance)  # PT-M13: the verein's costs
+    ctx = replace(ctx, state=shared.state).post(*entries, *leases, *shared.entries).log(*logs)
     month = risk.month(
         ctx.state, ctx.start or ctx.state, ctx.rng, ctx.balance, ctx.data, ctx.balances
     )
@@ -211,7 +215,8 @@ def financing(ctx: TurnContext) -> TurnContext:
     age retire (PT-M17)."""
     before = ctx.state
     month = partnership.financing(ctx.state, ctx.balances, ctx.balance, ctx.data)
-    ctx = replace(ctx, state=month.state).post(*month.entries).log(*month.log)
+    state = mergers.phase_seven(month.state, ctx.balance)  # PT-M13: merged partners' budgets
+    ctx = replace(ctx, state=state).post(*month.entries).log(*month.log)
     life = founder_life.financing(ctx.state, before, ctx.rng, ctx.balances, ctx.balance, ctx.data)
     ctx = replace(ctx, state=life.state, personal_book=ctx.personal_book + life.personal)
     return ctx.post(*life.entries).log(*life.log)
@@ -231,7 +236,8 @@ def people_updates(ctx: TurnContext) -> TurnContext:
     state, flight, moves = partnership.people_month(
         state, ctx.rng, ctx.balance, ctx.data, ctx.balances
     )
-    ctx = replace(ctx, state=clear_nudges(state)).post(*flight)
+    merged = mergers.phase_eight(state, ctx.rng, ctx.balance)  # PT-M13: integration
+    ctx = replace(ctx, state=clear_nudges(merged.state)).post(*flight).log(*merged.log)
     ctx = ctx.log(*departures, *tags, *moves)
     state, _, geo_logs = geo.phase_eight(ctx.state, ctx.rng, ctx.balance, ctx.data)  # PT-M11
     ctx = replace(ctx, state=state).log(*geo_logs)
@@ -242,7 +248,10 @@ def market_and_macro_update(ctx: TurnContext) -> TurnContext:
     """9. The salary scale moves (PT-M1b: history to 2015); rivals' dated history, collapses
     and boutiques (PT-M5); legal demand and rates (PT-M7)."""
     ctx = replace(ctx, state=hiring.apply_scale(ctx.state, ctx.data))
-    return ctx.take(rival_phase.market(ctx.state, ctx.rng, ctx.data, ctx.balance))
+    ctx = ctx.take(rival_phase.market(ctx.state, ctx.rng, ctx.data, ctx.balance))
+    step = mergers.phase_nine(ctx.state, ctx.rng, ctx.data, ctx.balance)  # PT-M13
+    ctx = replace(ctx, state=step.state, rival_moves=ctx.rival_moves + step.moves)
+    return ctx.log(*step.log)
 
 
 def stage_checks(ctx: TurnContext) -> TurnContext:

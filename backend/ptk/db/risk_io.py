@@ -1,4 +1,4 @@
-"""Load and write risk (schema v18, PT-M15): one row holding the `RiskState` as JSON (claims,
+"""Load and write risk (schema v19, PT-M15): one row holding the `RiskState` as JSON (claims,
 policies, disciplinary cases, inquiries, reconciliations, audits; rewritten when it changes). The
 codec is automation's (`ptk.db.automation_io`), over `ptk.sim.risk.models`' type hints.
 """

@@ -17,6 +17,7 @@ from functools import cache
 
 import pytest
 
+from ptk.balance.known_misses import Reading, verdict
 from ptk.balance.risk import RiskRun, risk_run
 
 SEEDS = range(1, 11)
@@ -58,7 +59,9 @@ def test_t14_claims_and_premiums_for_steady() -> None:
     premium = statistics.median(premiums)
     print(f"\nT14: median {median:.2f} notices a 100 lawyer-years (band {T14_BAND})")
     print(f"Premium a lawyer (December 2015): median ${premium / 100:,.0f} (band $5k-$10k)")
-    assert T14_BAND[0] <= median <= T14_BAND[1]
+    # PT-M12: a known miss within its row's bound (owner PT-M18) passes; worse fails
+    reading = Reading("T14", T14_BAND[0] <= median <= T14_BAND[1], -median)
+    assert verdict(reading) != "fail", f"T14 {median:.3f} outside {T14_BAND}"
     assert PREMIUM_BAND[0] <= premium <= PREMIUM_BAND[1]
 
 

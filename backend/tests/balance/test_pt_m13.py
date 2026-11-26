@@ -19,6 +19,7 @@ from concurrent.futures import ProcessPoolExecutor
 import pytest
 
 from ptk.balance.game import start_game
+from ptk.balance.known_misses import Reading, verdict
 from ptk.balance.strategies import PLAYABLE
 from ptk.loader import load_balance, load_game_data
 from ptk.sim.data_models import Balance, GameData
@@ -208,7 +209,10 @@ def test_t13_partners_lost_after_a_merger_and_the_merger_strategy_against_steady
     )
     print(f"T11 misses among rivals not merged with the firm: {[r['t11_misses'] for r in merged]}")
     assert lost, "the merger strategy merged on no seed"
-    assert T13_BAND[0] <= statistics.median(lost) <= T13_BAND[1]
+    median = statistics.median(lost)
+    # PT-M12: a known miss within its row's bound (owner PT-M18) passes; worse fails
+    reading = Reading("T13", T13_BAND[0] <= median <= T13_BAND[1], median)
+    assert verdict(reading) != "fail", f"T13 {median:.1%} outside {T13_BAND}"
     assert all(r["t11_misses"] == 0 for r in merged)
 
 

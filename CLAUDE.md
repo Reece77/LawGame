@@ -99,3 +99,14 @@ Each session works in its **own clone or worktree**; never share a folder with a
 ## 11. When unsure
 
 Ask one short, specific question with your proposed default. Engineering details you may decide and note in your summary. Tech Startup Tycoon's decision rules (its CLAUDE.md §9) apply here by analogy.
+
+## 12. Balance, seeds and lanes (Reece, 2026-11-25)
+
+These rules settle routine balance outcomes without a decision from Reece or the product manager. "The next balance milestone" is PT-M18 until it merges, then the next one named in `docs/roadmap.md`.
+
+1. **Seeds.** Until PT-M18 merges, targets and nightly guards are judged on seeds 1-10, with seeds 11-40 for seed-luck checks. From PT-M18, every target and guard is judged on seeds 1-40, with thresholds written as shares of seeds.
+2. **Seed variance: settle it yourself.** A target or guard that misses on seeds 1-10 but passes on seeds 11-40, on both your branch and `main`, is seed variance. Record a known-miss row (a target) or a non-strict xfail (a guard) owned by the next balance milestone, with both readings for both sides, in the brief's "Decisions made"; then merge. Rule 2 is retired when seeds 1-40 arrive.
+3. **Inherited misses: settle them yourself.** A target or guard that fails on `main` too, and is no worse on your branch over seeds 1-40, is inherited: record it as in rule 2 and merge.
+4. **Real regressions: stop.** If your branch is worse than `main` over seeds 1-40 (11-40 until PT-M18), first try a fix within the files and keys your lane owns. If that fails, stop and bring the table to the product manager or Reece.
+5. **Bounds and markers.** A row you add yourself is bounded at your reading, never wider. Never widen a target's band or change how it is measured: those stay Reece's decisions. Expected failures are non-strict unless the product manager asks for strict.
+6. **One owner per simulated system.** Each system's keys and data (its `balance.yaml` section and its data files) belong to the milestone that built it. Once it merges, they pass to the next balance milestone, not to whichever lane merges next. A lane may set values for its own new entities in another system (for example, claim weights for its own new practices), but it does not retune another system's existing keys; if its work moves another system's guard, that is rule 4. This rule applies to lanes launched after 2026-11-25; PT-M12 finishes under the decisions it already has.

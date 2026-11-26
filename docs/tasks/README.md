@@ -66,3 +66,11 @@ RNG ids by lane: PT-M7c 80-84, PT-M11 100-109, PT-M14 110-119 (99 stays tests-on
 | [PT-M15-risk-and-ethics.md](PT-M15-risk-and-ethics.md) | Malpractice, insurance, discipline, trust accounts, billing audits | PT-M7c |
 
 Lanes: PT-M12 A (owns `ptk/balance/` and re-reads for every lane), PT-M13 B, PT-M15 C. RNG ids by lane: PT-M12 120-129, PT-M13 130-139, PT-M15 140-149. ADRs reserved: PT-0016 (PT-M13), PT-0017 (PT-M15). PT-M18 (v2 balance) follows all three.
+
+## v2, closing (2026-11-25)
+
+| Brief | Milestone | Depends on |
+| --- | --- | --- |
+| [PT-M18-v2-balance.md](PT-M18-v2-balance.md) | v2 balance: seeds 1-40, every known miss, 30-year targets, turn time, a sharded nightly | PT-M12 (runs alone) |
+
+From 2026-11-25, sessions settle seed variance and inherited misses themselves under CLAUDE.md §12, and stop only on real regressions.

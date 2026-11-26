@@ -33,7 +33,7 @@ from tests.balance.test_pt_m5 import (
     T12_MS,
     T12_YEAR,
     _pinned,
-    t12_median_ms,
+    t12_ms,
 )
 from tests.geo_support import open_london
 from tests.matters_support import grown_firm, top_up
@@ -142,6 +142,6 @@ def test_t12_turn_time_at_december_2025_with_two_offices(data: GameData, balance
         result = advance_turn(state, Decisions(), rng, balance, data, balances)
         balances = dict(apply_entries(balances, result.ledger_entries))
         state = top_up(result.new_state, data, balance, before)
-    median = t12_median_ms(turns, rng, data, balance)
+    median = t12_ms(turns, rng, data, balance)
     print(f"\nT12 (two offices): median turn {median:.0f} ms at December {T12_YEAR}")
     assert median <= T12_MS

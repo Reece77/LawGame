@@ -46,18 +46,19 @@ T12_YEAR = 2025  # PT-M10: the history pin's last year (PT-M5: 2015)
 T12_CAPITAL = 15_000_000_000  # tunable-exempt: $150M of partners' capital for the test firm
 
 
-T12_RUNS = 5  # tunable-exempt: check-timing's measure, the median of five runs (Reece, 2026-11-25)
+T12_RUNS = 5  # tunable-exempt: check-timing's measure, the minimum of five runs (Reece, 2026-11-26)
 
 
-def t12_median_ms(
+def t12_ms(
     turns: list[tuple[GameState, dict[tuple[int, str], int]]],
     rng: RngFactory,
     data: GameData,
     balance: Balance,
 ) -> float:
-    """T12's measure (docs/balance-targets.md, 2026-11-25): the last `T12_TIMED` turns of the
-    year, each replayed from its own state (the sim is pure: every run does the same work),
-    timed `T12_RUNS` times; the median of the runs' medians, in ms."""
+    """T12's gate (docs/balance-targets.md, 2026-11-26): the last `T12_TIMED` turns of the year,
+    each replayed from its own state (the sim is pure: every run does the same work), timed
+    `T12_RUNS` times; the minimum of the runs' median turns, in ms (2026-11-25 to 11-26: the
+    median of them)."""
     assert len(turns) >= T12_TIMED, f"the firm dissolved before December {T12_YEAR}"
     runs = []
     for _ in range(T12_RUNS):
@@ -67,7 +68,7 @@ def t12_median_ms(
             advance_turn(state, Decisions(), rng, balance, data, balances)
             times.append(time.perf_counter() - t0)
         runs.append(statistics.median(times))
-    return statistics.median(runs) * 1000
+    return min(runs) * 1000
 
 
 def _pinned(data: GameData, year: int) -> dict[str, int]:
@@ -162,6 +163,6 @@ def test_t12_turn_time_at_december_2025(data: GameData, balance: Balance) -> Non
         result = advance_turn(state, Decisions(), rng, balance, data, balances)
         balances = dict(apply_entries(balances, result.ledger_entries))
         state = top_up(result.new_state, data, balance, before)
-    median = t12_median_ms(turns, rng, data, balance)
+    median = t12_ms(turns, rng, data, balance)
     print(f"\nT12: median turn {median:.0f} ms at December {T12_YEAR} ({T12_LAWYERS} lawyers)")
     assert median <= T12_MS

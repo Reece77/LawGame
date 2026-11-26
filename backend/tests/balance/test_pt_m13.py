@@ -40,7 +40,7 @@ from tests.balance.test_pt_m5 import (
     T12_MS,
     T12_YEAR,
     _pinned,
-    t12_median_ms,
+    t12_ms,
 )
 from tests.conftest import DATA_DIR
 from tests.matters_support import grown_firm, top_up
@@ -111,7 +111,7 @@ def _median_2025(state: GameState, rng: RngFactory, data: GameData, balance: Bal
         result = advance_turn(state, Decisions(), rng, balance, data, balances)
         balances = dict(apply_entries(balances, result.ledger_entries))
         state = top_up(result.new_state, data, balance, before)
-    return t12_median_ms(turns, rng, data, balance)
+    return t12_ms(turns, rng, data, balance)
 
 
 def _lawyers(state: GameState, data: GameData) -> int:

@@ -66,4 +66,4 @@ ADR PT-0001 §5 set two conditions for planning the extraction of a shared `sim-
 2. **Conversations in v3:** port TST v6's conversations as PT-M28. *Default: yes.*
 3. **Dynasty:** the player continues as the successor managing partner, with the founder as senior counsel, to 2064. *Default: yes, as TST v5 chose.*
 4. **Scenario starts:** 2010 New York and 2010 London. *Default: those two.*
-5. **`sim-core`:** plan the extraction during PT-M19, and extract before phase 2 if the plan costs at most two milestones; otherwise keep transplanting. *Default: yes.*
+5. **`sim-core`:** plan the extraction during PT-M19, and extract before phase 2 if the plan costs at most two milestones; otherwise keep transplanting. *Accepted (Reece, 2026-11-26): `docs/sim-core-plan.md`'s two-milestone route; SC-1 beside PT-M18, SC-2 as PT-M19a before the world framework.*

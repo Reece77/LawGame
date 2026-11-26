@@ -52,3 +52,5 @@ Foreign offices under local rules (Asia, Europe, the Gulf); ABS entities, outsid
 ## The `sim-core` checkpoint
 
 Per ADR PT-0001 §5: when TST v5 closes **and** PT-M7 has merged, the product manager writes a short plan for extracting `sim-core` from both codebases, for Reece's decision. Until then the vendoring check keeps the copies honest.
+
+**Plan written (2026-11-26):** `docs/sim-core-plan.md`, for Reece's decision. Plaza's route (SC-1 and SC-2) costs two milestones; moving TST as well costs about five in all.

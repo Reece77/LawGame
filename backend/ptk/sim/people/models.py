@@ -72,8 +72,18 @@ class AttrSet:
         return dict(self.items)
 
     def updated(self, changes: Mapping[str, float]) -> Self:
-        """A copy with some values replaced (clamped)."""
-        return type(self)(tuple((k, changes.get(k, v)) for k, v in self.items))
+        """A copy with some values replaced (clamped). PT-M18 (T12): only the changed values
+        are clamped (the others already were, on construction); same values as before."""
+        lo, hi = ATTR_MIN, ATTR_MAX
+        items = []
+        for k, v in self.items:
+            if k in changes:
+                v = changes[k]
+                v = hi if v > hi else lo if v < lo else v
+            items.append((k, v))
+        out = object.__new__(type(self))
+        object.__setattr__(out, "items", tuple(items))
+        return out
 
 
 @dataclass(frozen=True, slots=True)

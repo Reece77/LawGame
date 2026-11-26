@@ -16,12 +16,13 @@ cash stays at zero (rivals hold no reserves; ADR-0003's balance holds).
 
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from functools import cached_property
 
 from ptk.sim import dmath
 from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance, GameData
+from ptk.sim.fastcopy import replace
 from ptk.sim.ledger import CASH, DRAWINGS, FEES, GENERAL_ADMIN, SALARIES, LedgerEntry, LedgerLine
 from ptk.sim.rivals.data import FirmDef, HistoryEventDef, PersonalityDef
 from ptk.sim.rivals.models import RivalFirm

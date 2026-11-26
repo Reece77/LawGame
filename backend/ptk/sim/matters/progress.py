@@ -25,11 +25,12 @@ Hidden conflicts (checks skipped) may surface from stream `conflict`, keyed by m
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from typing import Final
 
 from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance, GameData, KindDef
+from ptk.sim.fastcopy import replace
 from ptk.sim.interfaces import seat_effect, tech_hours
 from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.macro import docket_slowed, driver_shortfall

@@ -14,9 +14,8 @@ nothing and change only by -d(age). Familiarity draws nothing.
 
 from __future__ import annotations
 
-from dataclasses import replace
-
 from ptk.sim.data_models import Balance, GameData, band_value
+from ptk.sim.fastcopy import replace
 from ptk.sim.people.formulas import familiarity_after, growth_delta, learn_factor
 from ptk.sim.people.models import Person, WorkMonth, role_ability
 from ptk.sim.rng import RngFactory

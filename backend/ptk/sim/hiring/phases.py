@@ -20,7 +20,7 @@ own stream keyed by the entity it belongs to (ADR-0013).
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from typing import Final
 
 import numpy as np
@@ -28,6 +28,7 @@ import numpy as np
 from ptk.sim.calendar import MONTHS_PER_YEAR, YearMonth, format_turn, turn_to_ym
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.events.modifiers import person_factor
+from ptk.sim.fastcopy import replace
 from ptk.sim.hiring.formulas import (
     ROLL_RANGE,
     acceptance_probability,

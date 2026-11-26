@@ -7,8 +7,8 @@ theirs (people, matters, clients, rivals) as sorted tuples with empty defaults.
 
 from __future__ import annotations
 
-from collections.abc import Iterable
-from dataclasses import dataclass, field, replace
+from collections.abc import Callable, Iterable
+from dataclasses import dataclass, field
 from typing import Literal
 
 from ptk.sim.automation.models import EMPTY_AUTOMATION, AutomationState
@@ -16,6 +16,7 @@ from ptk.sim.billing.models import EMPTY_BILLING, BillingState
 from ptk.sim.calendar import YearMonth
 from ptk.sim.events.models import EMPTY_EVENTS, EventsState
 from ptk.sim.family.models import EMPTY_FAMILY, FamilyState
+from ptk.sim.fastcopy import replace
 from ptk.sim.founder.models import EMPTY_FOUNDER_LIFE, FounderLifeState
 from ptk.sim.geo.models import EMPTY_GEO, GeoState
 from ptk.sim.hiring.models import Candidate, Offer, PayPolicy, PersonState, Search
@@ -38,6 +39,43 @@ type GameOutcome = Literal["active", "campaign_complete", "dissolved", "election
 
 _STAFF: dict[int, tuple[object, tuple[int, ...]]] = {}  # firm -> (employments, ids)
 _STAFF_KEEP = 256  # tunable-exempt: memoised firms (a cache, not a rule)
+
+# PT-M18 (T12): id lookups into the state's tuples (people, employments, person states,
+# reveals) were linear scans, called thousands of times a turn. Each kind keeps the index of
+# its last few tuples, memoised on the tuple's identity (tuples are immutable, and the entry
+# holds the tuple, so the identity is never reused). A tuple is indexed on its eighth lookup:
+# a tuple read a few times (a state about to be replaced) costs scans, as before. The first
+# match wins, as the scans did.
+_INDEX_SLOTS = 4  # tunable-exempt: memoised tuples a kind (a cache, not a rule)
+_INDEX_AFTER = 8  # tunable-exempt: lookups into one tuple before it is indexed (a cache)
+_INDEXES: dict[str, list[list[object]]] = {}  # kind -> [[tuple, index or reads], ...]
+
+
+def _indexed[T](
+    kind: str, items: tuple[T, ...], key: Callable[[T], object | None]
+) -> dict[object, T] | None:
+    """The index of `items` by `key` (None: skip an item), or None while the tuple has had
+    fewer than `_INDEX_AFTER` lookups (the caller scans)."""
+    slots = _INDEXES.setdefault(kind, [])
+    for slot in slots:
+        if slot[0] is items:
+            if isinstance(slot[1], dict):
+                return slot[1]
+            reads = slot[1] + 1  # type: ignore[operator]
+            if reads < _INDEX_AFTER:
+                slot[1] = reads
+                return None
+            index: dict[object, T] = {}
+            for item in items:
+                k = key(item)
+                if k is not None and k not in index:
+                    index[k] = item
+            slot[1] = index
+            return index
+    if len(slots) >= _INDEX_SLOTS:
+        slots.pop(0)
+    slots.append([items, 1])
+    return None
 
 
 @dataclass(frozen=True, slots=True)
@@ -107,6 +145,12 @@ class GameState:
         return self.save_meta.game_state != "active"
 
     def person(self, person_id: int) -> Person:
+        index = _indexed("person", self.people, _person_key)
+        if index is not None:
+            hit = index.get(person_id)
+            if hit is None:
+                raise KeyError(f"no person {person_id}")
+            return hit
         for person in self.people:
             if person.id == person_id:
                 return person
@@ -138,12 +182,13 @@ class GameState:
 
     def employer_of(self, person_id: int) -> int | None:
         """The firm whose books the person is on (active or notice), if any."""
-        for e in self.employments:
-            if e.person_id == person_id and e.counts_as_staff:
-                return e.firm_id
-        return None
+        e = self.employment_of(person_id)
+        return None if e is None else e.firm_id
 
     def reveal(self, observer_firm_id: int, person_id: int) -> RevealState | None:
+        index = _indexed("reveal", self.reveals, _reveal_key)
+        if index is not None:
+            return index.get((observer_firm_id, person_id))
         for state in self.reveals:
             if state.observer_firm_id == observer_firm_id and state.person_id == person_id:
                 return state
@@ -166,6 +211,9 @@ class GameState:
 
     def employment_of(self, person_id: int) -> Employment | None:
         """The person's current (active or notice) employment."""
+        index = _indexed("employment", self.employments, _staff_key)
+        if index is not None:
+            return index.get(person_id)
         for e in self.employments:
             if e.person_id == person_id and e.counts_as_staff:
                 return e
@@ -196,6 +244,10 @@ class GameState:
         )
 
     def person_state(self, person_id: int) -> PersonState:
+        index = _indexed("person_state", self.person_states, _person_state_key)
+        if index is not None:
+            found = index.get(person_id)
+            return PersonState(person_id=person_id) if found is None else found
         for ps in self.person_states:
             if ps.person_id == person_id:
                 return ps
@@ -214,6 +266,22 @@ class GameState:
         else:
             ids = (o.id for o in self.offers)
         return max(ids, default=0) + 1
+
+
+def _person_key(p: Person) -> int:
+    return p.id
+
+
+def _staff_key(e: Employment) -> int | None:
+    return e.person_id if e.counts_as_staff else None
+
+
+def _reveal_key(r: RevealState) -> tuple[int, int]:
+    return (r.observer_firm_id, r.person_id)
+
+
+def _person_state_key(ps: PersonState) -> int:
+    return ps.person_id
 
 
 # --- Upserts (return new states; tuples stay sorted) -----------------------------------------

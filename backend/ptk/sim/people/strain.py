@@ -7,11 +7,11 @@ strain.founder_start.
 
 from __future__ import annotations
 
-from dataclasses import replace
 from typing import Final
 
 from ptk.sim.calendar import MONTHS_PER_YEAR
 from ptk.sim.data_models import Balance
+from ptk.sim.fastcopy import replace
 from ptk.sim.people.formulas import clamp_strain, strain_delta
 from ptk.sim.people.models import Person, WorkMonth
 from ptk.sim.rng import RngFactory

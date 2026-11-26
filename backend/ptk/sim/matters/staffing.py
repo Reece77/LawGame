@@ -42,11 +42,12 @@ from __future__ import annotations
 
 import math
 from collections.abc import Callable, Mapping, Sequence
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, field
 from typing import Final
 
 from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import PARTNER_LEVELS, Balance, GameData, KindDef
+from ptk.sim.fastcopy import replace
 from ptk.sim.interfaces import (
     NO_TECH_HOURS,
     TechHoursView,

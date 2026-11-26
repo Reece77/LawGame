@@ -15,10 +15,11 @@ lifts and new offices move demand only in free play (the path already holds hist
 
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 
 import numpy as np
 
+from ptk.sim.fastcopy import replace
 from ptk.sim.rivals import formulas as f
 from ptk.sim.rivals.data import RIVAL_ACTIONS
 from ptk.sim.rivals.economy import Month, rate_gap, target_lawyers

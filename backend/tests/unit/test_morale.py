@@ -18,7 +18,7 @@ from ptk.sim.hiring.formulas import (
 from ptk.sim.hiring.phases import month_multiplier, morale_and_departures
 from ptk.sim.people.models import WorkMonth
 from ptk.sim.rng import RngFactory
-from tests.hiring_helpers import start
+from tests.hiring_helpers import Game, start
 
 
 def test_tst_resignation_table(balance: Balance) -> None:
@@ -98,9 +98,18 @@ def test_morale_follows_pay_and_hours(data: GameData, balance: Balance) -> None:
 
 @pytest.mark.nightly  # PT-M11: over 60 s; check's runtime (product manager, 2026-11-23)
 def test_resignations_are_seeded_and_give_notice(data: GameData, balance: Balance) -> None:
-    def leavers(seed: int) -> list[tuple[int, int]]:
+    def played(seed: int) -> Game:
+        """60 unmanaged months, or until the firm dissolves (PT-M12: an unmanaged firm may not
+        last five years: T1's do-nothing; seed 0 dissolves in month 55)."""
         game = start(data, balance, seed=seed)
-        game.advance(60)
+        for _ in range(60):
+            if game.state.ended:
+                break
+            game.advance(1)
+        return game
+
+    def leavers(seed: int) -> list[tuple[int, int]]:
+        game = played(seed)
         return [
             (e.person_id, e.end_turn or 0) for e in game.state.employments if e.status != "active"
         ]
@@ -108,8 +117,7 @@ def test_resignations_are_seeded_and_give_notice(data: GameData, balance: Balanc
     assert leavers(5) == leavers(5)
     found = False
     for seed in range(6):
-        game = start(data, balance, seed=seed)
-        game.advance(60)
+        game = played(seed)
         for e in game.state.employments:
             if e.end_reason == "resigned":
                 found = True

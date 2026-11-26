@@ -75,11 +75,14 @@ STREAM_IDS: Final = MappingProxyType(
         "auto_quality": 60,  # (area_index, firm_id, slot): an area's month: q, then its draws
         "auto_events": 61,  # (event_id,): an owner's answer to a routine event: q
         # PT-M10 (lane A, ids 65-69): the seeded world after history (ptk.sim.macro_seed)
-        "macro_seed": 65,  # (index_number,): an index's 2026-2034 path; (len(SERIES),) recessions
+        "macro_seed": 65,  # (series_key,): an index's 2026-2034 path; (12,) recessions (PT-M12)
         "scale_seed": 66,  # (0,) the seeded rate rises; (1,) the salary scale's seeded steps
         # PT-M14 (lane C, ids 110-119): legal technology and AI (ptk.sim.tech)
         "tech_seed": 110,  # (era_index, 0) its strength's 2026+ target; (era_index, 1) the market's
         "tech_vote": 111,  # (era_index,): a rollout vote on an era this month, each partner's noise
+        # PT-M12 (lane A, ids 120-129): the twenty practices
+        "funding": 120,  # (matter_id,): a funder's terms for a contingency case, at its opening
+        "practice_team": 121,  # (practice_index, n): a team entering a practice, its n-th person
         # PT-M15 (lane C, ids 140-149): risk and ethics (ptk.sim.risk; ADR PT-0017)
         "risk_claim": 140,  # (1, matter_id, n) an escape's claim; (2, matter_id, 0) a grievance
         "risk_case": 141,  # (claim_id,): a claim's month: drop, offer, stage length, trial

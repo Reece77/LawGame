@@ -54,6 +54,7 @@ from ptk.sim.macro_seed import world_data
 from ptk.sim.matters.actions import MATTER_ACTION_TYPES, MatterAction, apply_matter_action
 from ptk.sim.mergers.actions import MERGER_ACTION_TYPES, MergerAction, apply_merger_action
 from ptk.sim.org.pitches import AnswerPitch, answer_pitch
+from ptk.sim.org.practices import ENTER_ACTION_TYPES, EnterPractice, enter_practice
 from ptk.sim.org.seats import SEAT_ACTION_TYPES, SeatAction, apply_seat_action
 from ptk.sim.partnership.actions import (
     PARTNERSHIP_ACTION_TYPES,
@@ -81,6 +82,7 @@ type Action = (
     | AutomationAction
     | TechAction
     | GeoAction
+    | EnterPractice
     | RiskAction
     | MergerAction
 )
@@ -107,6 +109,7 @@ ACTION_TYPES: dict[str, type[Any]] = {
     **AUTOMATION_ACTION_TYPES,  # PT-M9
     **TECH_ACTION_TYPES,  # PT-M14
     **GEO_ACTION_TYPES,  # PT-M11
+    **ENTER_ACTION_TYPES,  # PT-M12
     **RISK_ACTION_TYPES,  # PT-M15
     **MERGER_ACTION_TYPES,  # PT-M13
 }
@@ -141,6 +144,8 @@ def apply_action(
         return Outcome(auto.state, auto.entries, auto.log)
     if type(action) in TECH_ACTION_TYPES.values():  # PT-M14
         return apply_tech_action(state, action, draws, rng, data, balance)  # type: ignore[arg-type]
+    if isinstance(action, EnterPractice):  # PT-M12: entering a practice
+        return enter_practice(state, action, rng, balance, data)
     if type(action) in GEO_ACTION_TYPES.values():  # PT-M11: offices, admissions, trainees
         return apply_geo_action(
             state,
@@ -180,7 +185,7 @@ def apply_action(
             ledger_balances,
         )
     if type(action) in BILLING_ACTION_TYPES.values():
-        return apply_billing_action(state, action, draws, balance, data)  # type: ignore[arg-type]
+        return apply_billing_action(state, action, draws, balance, data, rng)  # type: ignore[arg-type]
     if type(action) in MATTER_ACTION_TYPES.values():
         return apply_matter_action(state, action, draws, balance, data)  # type: ignore[arg-type]
     return apply_hiring(state, action, draws, balance, data, ledger_balances)  # type: ignore[arg-type]

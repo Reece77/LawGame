@@ -78,7 +78,9 @@ KNOWN_MISSES: Final[tuple[KnownMiss, ...]] = (
         worse_than=9.0,
         reason="PT-M15 (authorised by the product manager, Reece, 2026-11-25): steady wins 9 "
         "of seeds 1-10 on the branch (main 5); seeds 11-40 steady 16/30 on the branch, 19/30 "
-        "on main (a miss on main too: the cause predates PT-M15)",
+        "on main (a miss on main too: the cause predates PT-M15). PT-M12 (the product "
+        "manager's decision, 2026-11-25: this row covers it, bound unchanged): steady 8 of "
+        "seeds 1-10 (main 9), 21/30 on seeds 11-40 (main 16/30)",
     ),
     KnownMiss(
         target="T5.standard",  # steady dissolves on 5-20% of seeds at standard difficulty
@@ -88,6 +90,28 @@ KNOWN_MISSES: Final[tuple[KnownMiss, ...]] = (
         reason="seed variance (rule 4; authorised by the product manager, Reece, 2026-11-25): "
         "0 of seeds 1-10 on PT-M15's branch (main 2); 2 of seeds 11-40 (6.7%) on both the "
         "branch and main",
+    ),
+    KnownMiss(
+        target="T13",  # partners lost within 24 months of a merger: 10-20% (PT-M13)
+        owner="PT-M18",
+        # score: the median share lost; known while at most 28% (seeds 1-10's 27.98%: bounded
+        # at the reading, CLAUDE.md 12.5)
+        worse_than=0.28,
+        reason="PT-M12 (authorised by the product manager, Reece, 2026-11-25): 28.0% on seeds "
+        "1-10 and 23.9% on 11-40 on PT-M12's branch (main 04efa78: 12.8% and 18.8%). The "
+        "targeted fix (subordination only in a practice both firms had, contested_min_share "
+        "10%) does not move it: no merged partner is subordinated in these runs",
+    ),
+    KnownMiss(
+        target="T14",  # steady's claim notices a 100 lawyer-years 2006-2015: 1.5-5.0 (PT-M15)
+        owner="PT-M18",
+        # score: minus the median; known while the median is at least 1.495 (seeds 1-10's
+        # 1.4951: bounded at the reading, CLAUDE.md 12.5)
+        worse_than=-1.495,
+        reason="PT-M12 (authorised by the product manager, Reece, 2026-11-25): 1.495 on seeds "
+        "1-10 and 1.497 on 11-40 on PT-M12's branch (main 04efa78: 1.717 and 1.998). The v2 "
+        "practices' claim weights (risk-and-ethics.md s2a) do not move it: steady's escaped "
+        "errors fall in v1's practices; its larger firm (lawyer-years) lowers the rate",
     ),
     KnownMiss(
         target="T8.corporate",  # corporate-heavy firms' 2009 revenue -30% to -10% on 2008

@@ -68,16 +68,17 @@ def grow_skills(
 def grow_familiarity(person: Person, data: GameData, balance: Balance, work: WorkMonth) -> Person:
     """Familiarity in every practice: up with hours worked there, down without (spec 5.3)."""
     fam = balance.familiarity
+    # PT-M12 (T12, rule 6): dict lookups, not AttrSet's linear scan, for twenty practices
+    current = person.familiarity.as_dict()
+    peaks = person.familiarity_peak.as_dict()
     values = {
-        key: familiarity_after(
-            person.familiarity[key], person.familiarity_peak[key], work.tenths_in(key), fam
-        )
+        key: familiarity_after(current[key], peaks[key], work.tenths_in(key), fam)
         for key in data.practice_keys
     }
     familiarity = person.familiarity.updated(values)
-    peak = person.familiarity_peak.updated(
-        {k: max(person.familiarity_peak[k], familiarity[k]) for k in data.practice_keys}
-    )
+    after = familiarity.as_dict()
+    rises = {k: v for k, v in after.items() if v > peaks[k]}  # usually none, or the home one
+    peak = person.familiarity_peak.updated(rises) if rises else person.familiarity_peak
     return replace(person, familiarity=familiarity, familiarity_peak=peak)
 
 

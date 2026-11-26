@@ -37,7 +37,7 @@ jobs:
     if: needs.changed.outputs.run == 'true'
     name: nightly (${{ matrix.part }})
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 180 # PT-M12: twenty practices put `make nightly` past 2 hours (main read 112 min)
     strategy:
       fail-fast: false
       matrix:

@@ -162,6 +162,19 @@ class PracticeScreenOut(BaseModel):
     reputation_causes: list[ReputationCauseOut]  # its latest changes, newest first
     ai_cut_bp: int = 0  # PT-M14: clients' AI cut on the practice's hourly bills now
     ai_products: int = 0  # PT-M14: the firm's active fixed-fee products in the practice
+    # PT-M12: the driver and cycle (spec 6, the screen's filters), whether the firm practises
+    # it (a lawyer whose home practice it is), and its main billing model
+    driver: str = ""
+    cycle: str = ""
+    practised: bool = False
+    billing_model: str = "hourly"
+
+
+class EnterPracticeIn(BaseModel):
+    """PT-M12: enter a practice by a lateral partner, a lateral team or a partner retraining."""
+
+    route: Literal["lateral", "team", "retrain"]
+    person_id: int | None = None  # retrain: the partner
 
 
 def _products_in(state: GameState, practice: str) -> int:
@@ -319,6 +332,9 @@ def practices_screen(state: GameState, data: GameData, balance: Balance) -> list
     player = state.player
     start_bp = start_card_bp(state.save_meta.difficulty, data, balance)
     market = round(market_index(state.turn, start, data, balance) * BP_DENOMINATOR)
+    from ptk.sim.org.practices import firm_practices
+
+    held = set(firm_practices(state, firm, data))  # PT-M12
     out = []
     for i, p in enumerate(data.practices):
         index = practice_index(player, p.key)
@@ -383,9 +399,24 @@ def practices_screen(state: GameState, data: GameData, balance: Balance) -> list
                 ][:CAUSES_SHOWN],
                 ai_cut_bp=practice_ai_cut_bp(state, p.key, data, balance),  # PT-M14
                 ai_products=_products_in(state, p.key),
+                driver=p.driver,  # PT-M12
+                cycle=p.cycle,
+                practised=p.key in held,
+                billing_model=_main_model(p.key, data, balance),
             )
         )
     return out
+
+
+def _main_model(practice: str, data: GameData, balance: Balance) -> str:
+    """PT-M12: the practice's most likely billing model (its own mix, else its kinds')."""
+    p = data.practice(practice)
+    mix: dict[str, float] = dict(p.billing_models)
+    if not mix:
+        for k in p.matter_kinds:  # balance.yaml's mix by matter kind, weighted
+            for model, w in balance.billing.models.get(k.kind, {"hourly": 1.0}).items():
+                mix[model] = mix.get(model, 0.0) + w * k.weight
+    return max(mix, key=lambda m: (mix[m], m))
 
 
 # --- Explain ---------------------------------------------------------------------------------
@@ -647,6 +678,25 @@ def make_screens_router(errors: dict[int | str, dict[str, Any]]) -> APIRouter:
     )
     def list_practices_screen(slug: str) -> list[PracticeScreenOut]:
         state = saves.read_state(_path(slug))[0]
+        return practices_screen(state, loader.game_data(), loader.balance())
+
+    @router.post(
+        f"{base}/practices/{{practice}}/enter",
+        response_model=list[PracticeScreenOut],
+        responses=errors,
+        operation_id="enterPractice",
+    )
+    def enter_practice(slug: str, practice: str, body: EnterPracticeIn) -> list[PracticeScreenOut]:
+        """PT-M12: enter a practice (a lateral partner search, a lateral team or a partner
+        retraining)."""
+        from ptk.sim.org.practices import EnterPractice
+
+        path = _path(slug)
+        state = saves.read_state(path)[0]
+        founder = next(p.id for p in state.people if p.is_founder)
+        action = EnterPractice(founder, practice, body.route, body.person_id)
+        saves.run_action(path, action, loader.balance(), loader.game_data())
+        state = saves.read_state(path)[0]
         return practices_screen(state, loader.game_data(), loader.balance())
 
     @router.get(

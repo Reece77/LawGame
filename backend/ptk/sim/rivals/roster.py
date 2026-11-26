@@ -174,7 +174,12 @@ def _replenish(state: GameState, rng: RngFactory, month: Month) -> GameState:
         members = []
         pid = rivals.next_person_id
         n = firm.people_made
-        practices = sorted(firm.pools, key=lambda p: (-p.lawyers, p.practice))
+        # PT-M12: key partners go to the practices the firm has lawyers in (twenty practices
+        # leave a specialist with many empty pools)
+        practices = sorted(
+            [p for p in firm.pools if p.lawyers > 0] or list(firm.pools),
+            key=lambda p: (-p.lawyers, p.practice),
+        )
         book = books(firm.demand_cents * rb.key_book_share, firm.key_target, rb.book_pareto)[-1]
         for i in range(need):
             practice = practices[i % len(practices)].practice

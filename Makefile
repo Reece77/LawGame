@@ -41,7 +41,7 @@ balance:
 
 # The long balance tests (CI: nightly.yml; dispatch it on a branch for long runs).
 nightly:
-	cd backend && uv run pytest -q -n auto -m nightly -s
+	cd backend && uv run pytest -q -n auto --dist loadgroup -m nightly -s
 
 golden:
 	cd backend && uv run pytest tests/golden -q --update-golden

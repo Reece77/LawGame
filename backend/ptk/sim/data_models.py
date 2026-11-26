@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+from functools import cached_property
 from typing import Final, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from ptk.sim.automation.config import AutomationBalance
+from ptk.sim.billing.models import BILLING_MODELS
 from ptk.sim.events.data import (
     ColleaguesBalance,
     EventsBalance,
@@ -434,6 +436,7 @@ ENERGY_ACTIONS: Final = (
     "close_office",  # close an office (a one-off)
     "bar_admission",  # sit a bar exam, apply on motion or register as a foreign lawyer
     "training_contracts",  # offer a year's training contracts (spec 5.7)
+    "enter_practice",  # PT-M12: a partner retrains into a new practice
     # PT-M13
     "merger_approach",  # approach a firm about a merger or a verein (spec 8.8)
     "merger_diligence",  # a level of due diligence (TST 28.2)
@@ -644,6 +647,13 @@ class DelegatesBalance(_Strict):
     plan_owner_roles: tuple[str, ...]  # roles that may own a plan without leading a unit
 
 
+class EnterBalance(_Strict):
+    """PT-M12: entering a practice with a lateral team (`ptk.sim.org.practices`)."""
+
+    team_partners: int = Field(gt=0)
+    team_associates: int = Field(ge=0)
+
+
 class OrgBalance(_Strict):
     practice_group_unlock_lawyers: int = Field(gt=0)
     span_base: int = Field(ge=0)
@@ -666,6 +676,7 @@ class OrgBalance(_Strict):
     pitch_per_recruiting: float
     pitch_neutral: float
     delegates: DelegatesBalance
+    enter: EnterBalance  # PT-M12
 
     @model_validator(mode="after")
     def _check(self) -> OrgBalance:
@@ -920,6 +931,14 @@ class AgeStep(_Strict):
     value: int = Field(ge=0, le=10000)
 
 
+class FundingBalance(_Strict):
+    """PT-M12 (spec 7.7; ADR PT-0018): litigation funders for contingency cases."""
+
+    from_ym: tuple[int, int]  # the first month a funder offers (the US market from about 2010)
+    funded_bp: tuple[int, int]  # share of the case's WIP the funder advances, uniform
+    return_bp: tuple[int, int]  # the funder's return, bp of its advances, uniform
+
+
 class BillingBalance(_Strict):
     """PT-M3b (spec 7.7; ADR PT-0003, PT-0005)."""
 
@@ -970,6 +989,7 @@ class BillingBalance(_Strict):
     hold_fail_points: float
     padding_share: float = Field(ge=0, le=1)
     padding_points: float
+    funding: FundingBalance  # PT-M12
 
     @model_validator(mode="after")
     def _check(self) -> BillingBalance:
@@ -1411,6 +1431,17 @@ class PracticeDef(_Strict):
     short_label: str = Field(min_length=1)
     demand_cents: int = Field(gt=0)  # NY 2005 annual demand base D0 (spec 6)
     driver: str = Field(min_length=1)
+    # PT-M12: spec 6's cycle column, for the Practices screen's filter
+    cycle: Literal[
+        "pro_cyclical",
+        "counter_cyclical",
+        "steady",
+        "policy",
+        "rising",
+        "mixed",
+        "long_cycle",
+        "lumpy",
+    ]
     beta: float  # sensitivity to the driver index (spec 6)
     index: str  # PT-M7: the driver's macro_history.yaml series
     sigma: float = Field(ge=0)  # monthly LogNormal demand noise
@@ -1424,6 +1455,9 @@ class PracticeDef(_Strict):
     seasonality: tuple[float, ...] = Field(min_length=12, max_length=12)
     matter_kinds: tuple[MatterKindDef, ...] = Field(min_length=1)
     cross_sell: dict[str, float]
+    # PT-M12: the practice's own billing model mix (spec 7.7: retainers in private client,
+    # success fees in arbitration, contingency in mass torts); empty = balance.yaml's by kind
+    billing_models: dict[str, float] = Field(default_factory=dict)
 
     @model_validator(mode="after")
     def _check(self) -> PracticeDef:
@@ -1436,6 +1470,10 @@ class PracticeDef(_Strict):
             raise ValueError(f"practice {self.key}: duplicate matter kind keys")
         if any(not 0 <= v <= 1 for v in self.cross_sell.values()):
             raise ValueError(f"practice {self.key}: cross_sell affinities are 0-1")
+        if self.billing_models:
+            if bad := sorted(set(self.billing_models) - set(BILLING_MODELS)):
+                raise ValueError(f"practice {self.key}: unknown billing models {bad}")
+            _weights_positive(self.billing_models, f"practice {self.key} billing_models")
         return self
 
     def kind(self, key: str) -> MatterKindDef:
@@ -1454,6 +1492,9 @@ class PracticeMarket(_Strict):
     tasks: tuple[TaskDef, ...] = Field(min_length=1)
     kinds: dict[str, KindDef]
     flow_tasks: dict[str, float]
+    # PT-M12: practices drawn from a person's own generator (ADR-0013's order); later ones
+    # (appended) draw from a jump of it, so adding a practice never moves an existing draw
+    familiarity_main_draws: int = Field(gt=0)
 
     @model_validator(mode="after")
     def _check(self) -> PracticeMarket:
@@ -1490,6 +1531,9 @@ class SectorDef(_Strict):
     intensity: float = Field(gt=0)  # legal spend per unit of size, relative
     mix: dict[str, float]  # practice -> weight
     suffixes: tuple[str, ...] = Field(min_length=1)  # generated client names
+    # PT-M12 (spec 7.1): individuals (private clients, plaintiffs) pooled as one client per
+    # city; never an adverse party, never generated
+    pooled: bool = False
 
 
 class ClientFailureDef(_Strict):
@@ -1523,6 +1567,13 @@ class ClientsData(_Strict):
     panel_firms: tuple[PanelFirmDef, ...] = Field(min_length=1)
     real_clients: tuple[RealClientDef, ...]
     uk_clients: tuple[RealClientDef, ...] = ()  # PT-M11: London's real clients (FTSE names)
+    # PT-M12: each city's pooled individuals (a pooled sector each; "{city}" in the name is the
+    # city's label), made after the city's other clients
+    pooled_clients: tuple[RealClientDef, ...] = ()
+
+    @property
+    def pooled_sectors(self) -> frozenset[str]:
+        return frozenset(s.key for s in self.sectors if s.pooled)
 
     def sector(self, key: str) -> SectorDef:
         for s in self.sectors:
@@ -1909,8 +1960,10 @@ class GameData(_Strict):
     def interest_keys(self) -> tuple[str, ...]:
         return tuple(i.key for i in self.interests)
 
-    @property
+    @cached_property
     def practice_keys(self) -> tuple[str, ...]:
+        """In practices.yaml order; computed once (PT-M12, T12: twenty practices, read in
+        every phase)."""
         return tuple(p.key for p in self.practices)
 
     def seat(self, key: str) -> SeatDef:

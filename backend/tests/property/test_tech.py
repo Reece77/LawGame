@@ -106,7 +106,16 @@ def test_adoption_and_money_stay_in_bounds_with_technology(
         for line in e.lines
         if line.account == WIP
     )
-    assert posted == sum(r.value_cents for r in records)
+    # ADR PT-0018 (PT-M12): a contingency case's hours post nothing until its recovery
+    billing = result.new_state.billing
+
+    def contingency(matter_id: int | None) -> bool:
+        if matter_id is None:
+            return False
+        e = next((x for x in billing.engagements if x.matter_id == matter_id), None)
+        return e is not None and e.model == "contingency"
+
+    assert posted == sum(r.value_cents for r in records if not contingency(r.matter_id))
     assert all(0 <= r.substantive_tenths <= r.tenths for r in records)
     for e in result.ledger_entries:
         assert sum(line.amount for line in e.lines) == 0

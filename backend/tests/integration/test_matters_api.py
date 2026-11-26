@@ -54,8 +54,10 @@ def _client(save_dir: Path, turns: int = 4) -> TestClient:
 def test_practices_clients_and_matters(save_dir: Path) -> None:
     client = _client(save_dir)
     practices = client.get("/api/saves/mat/practices").json()
-    assert practices[0]["key"] == "corporate_ma" and len(practices) == 10
-    assert abs(sum(p["demand_base_cents"] for p in practices) * 12 - 1_235_000_000_000) < 100
+    # PT-M12: twenty practices, v1's ten first with their demand unchanged
+    assert practices[0]["key"] == "corporate_ma" and len(practices) == 20
+    v1 = practices[:10]
+    assert abs(sum(p["demand_base_cents"] for p in v1) * 12 - 1_235_000_000_000) < 100
     assert all(r["cents"] > 0 for p in practices for r in p["rates"])
     clients = client.get("/api/saves/mat/clients").json()
     assert clients and all(0 <= c["relationship"] <= 100 for c in clients)

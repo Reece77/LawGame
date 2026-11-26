@@ -68,6 +68,17 @@ ALAS large-firm book, cumulative 1983-2013 ([1] Table 3; gross loss includes def
 4. ALAS reports three working cause categories for large-firm claims: "mistakes", "conflicts of interest" and "poor client quality" ([1] p. 1312). Ames & Gough (2022) names conflicts of interest and lack of quality review as the drivers of larger claims, and business transactions, trusts and estates, corporate and securities, and real estate as the leading areas [2].
 5. For a commercial firm the ALAS table matters more than the ABA table: litigation produces most claims but corporate, securities and banking produce most of the money.
 
+## 2a. Claim weights for the v2 practices (PT-M12)
+
+PT-M12's ten new practices take a weight on the chance an escaped error becomes a claim (`risk.claims.practice_weight`; v1's ten stay at 1.0). Method [A]: the ALAS share of claims for the area (section 2's table, [1]) over the practice's share of the game's demand (`practices.yaml`, PT-M12's dossier `docs/research/practices-v2.md`), divided by the same ratio for v1's ten (81% of claims on 84.2% of demand: 0.96).
+
+| Practice | ALAS area | Claims share | Demand share | Weight | Tag |
+| --- | --- | --- | --- | --- | --- |
+| tax | Tax/ERISA | 4% | 3.1% | 1.34 | S/A |
+| private client | Trusts and estates | 7% | 1.0% | 7.3, capped at 2.0 | A: large firms' trusts work lies largely outside the game's large-firm demand |
+| international arbitration, insurance (coverage), plaintiff mass torts | Litigation | 39% | 26.8% (commercial litigation, white collar, employment) | 1.52 | S/A; the ABA Profile's plaintiff personal-injury share (15-25%, small firms) supports at least litigation's weight for mass torts |
+| antitrust, financial regulation, healthcare, energy, technology and privacy | Other | 9% | 7.9% (the five together) | 1.19 | S/A |
+
 ## 3. Severity, defence costs and time to resolution
 
 | Measure | Value | Tag | Source |

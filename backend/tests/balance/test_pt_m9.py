@@ -70,13 +70,14 @@ def test_a_100_lawyer_firm_runs_a_year_on_its_owners(data: GameData, balance: Ba
 
 @pytest.mark.nightly
 @pytest.mark.xfail(
-    strict=True,
-    reason="PT-M18 (the product manager's decision, Reece, 2026-11-24): automated steady's "
-    "delegated hiring grows the firm more slowly than steady's own growth rule, and it "
-    "dissolves more often (seeds 11-40: 4 against 2). Revenue / PEP gaps: main (PT-M11, "
-    "9e5fcaf) seeds 1-10 -34.9% / -23.8%; PT-M7c seeds 1-10 +4.2% / +31.0% (nightly on "
-    "1cd16d7: PEP +31.0%), seeds 11-40 -41.8% / -21.5% (docs/tasks/PT-M7c-firm-economics.md, "
-    "decision 22)",
+    strict=False,
+    reason="PT-M18 (the product manager's decisions, Reece, 2026-11-24 and 2026-11-25: "
+    "non-strict, seed variance under rule 4): automated steady's delegated hiring grows the "
+    "firm more slowly than steady's own growth rule. Revenue / PEP gaps, main 04efa78: seeds "
+    "1-10 -21.5% / +9.1% (fails), seeds 11-40 -18.6% / -11.5% (passes); PT-M12's twenty "
+    "practices: seeds 1-10 -34.3% / -17.7%, seeds 11-40 -31.5% / -2.1% (docs/tasks/PT-M12-"
+    "all-twenty-practices.md). Earlier: PT-M7c seeds 1-10 +4.2% / +31.0%, seeds 11-40 "
+    "-41.8% / -21.5%",
 )
 def test_steady_automated_is_within_20_percent_of_steady() -> None:
     from concurrent.futures import ProcessPoolExecutor

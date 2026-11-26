@@ -61,9 +61,11 @@ def test_skills_are_in_group_order(data: GameData) -> None:
 
 
 def test_v1_practices_and_roles(data: GameData) -> None:
-    assert data.practice_keys == V1_PRACTICES
+    # PT-M12 appends the ten v2 practices (and their roles) after v1's ten
+    assert data.practice_keys[: len(V1_PRACTICES)] == V1_PRACTICES
+    assert len(data.practice_keys) == 20
     lawyers = [r for r in data.roles if r.kind == "lawyer"]
-    assert [r.practice for r in lawyers] == list(V1_PRACTICES)
+    assert [r.practice for r in lawyers] == list(data.practice_keys)
     assert [r.key for r in data.roles if r.kind == "paralegal"] == ["paralegal"]
     assert tuple(r.key for r in data.roles if r.kind == "business_services") == BUSINESS_SERVICES
 

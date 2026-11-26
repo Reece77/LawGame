@@ -34,7 +34,10 @@ from ptk.sim.matters.staffing import staff_matter
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
 
-GOVERNMENT_PRACTICES: Final = frozenset({"white_collar"})
+# PT-M12: the regulatory practices' other side is mostly the government too
+GOVERNMENT_PRACTICES: Final = frozenset(
+    {"white_collar", "tax", "financial_regulation", "healthcare"}
+)
 LONDON_COURT: Final = "ew_commercial"  # PT-M11: courts.yaml
 OMP: Final = "office_managing_partner"  # PT-M11: seats.yaml
 LONDON_ARBITRATION: Final = "lcia"
@@ -58,9 +61,15 @@ def key_clients(market: MarketState, firm_id: int, balance: Balance) -> frozense
     return frozenset(r.client_id for r in ranked[: balance.matters.key_clients])
 
 
-def _pick_client(gen: np.random.Generator, clients: tuple[Client, ...], exclude: int) -> Client:
-    """An adverse company drawn by size from the client universe."""
-    weights = [0.0 if c.id == exclude else c.revenue_bn for c in clients]
+def _pick_client(
+    gen: np.random.Generator,
+    clients: tuple[Client, ...],
+    exclude: int,
+    pooled: frozenset[str] = frozenset(),
+) -> Client:
+    """An adverse company drawn by size from the client universe (PT-M12: never a pool of
+    individuals)."""
+    weights = [0.0 if c.id == exclude or c.sector in pooled else c.revenue_bn for c in clients]
     total = sum(weights)
     u = float(gen.random()) * total
     acc = 0.0
@@ -107,7 +116,7 @@ def new_matter(
     months = int(gen.integers(kind.months[0], kind.months[1] + 1))
     critical = float(gen.random()) < kind.critical_bp / 10000
     adverse_roll = float(gen.random())
-    adverse = _pick_client(gen, market.clients, client.id)
+    adverse = _pick_client(gen, market.clients, client.id, data.clients.pooled_sectors)
     merits = out.merits_sd * float(gen.standard_normal())
     opposing = min(
         20.0, max(1.0, out.opposing_mean + out.opposing_sd * float(gen.standard_normal()))

@@ -88,7 +88,7 @@ test('practices and clients tables keep a saved view', async ({ page }) => {
   });
   expect(made.ok()).toBeTruthy();
   await page.goto('/game/m3c-views/practices');
-  await expect(page.getByTestId('practice-row')).toHaveCount(10);
+  await expect(page.getByTestId('practice-row')).toHaveCount(20); // PT-M12: twenty practices
   await page.getByRole('button', { name: "Explain the firm's utilisation" }).click();
   await expect(page.getByTestId('explain-panel')).toContainText('Capacity this month');
   await page.keyboard.press('Escape');

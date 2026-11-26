@@ -218,8 +218,13 @@ def build_team(
     rng: RngFactory,
     data: GameData,
     balance: Balance,
+    *,
+    stream: Callable[[int], np.random.Generator] | None = None,
+    client_city: str | None = None,
 ) -> tuple[GameState, tuple[LedgerEntry, ...], tuple[LogItem, ...]]:
-    """A lateral group's or a lifted team's partners (with their books) and associates."""
+    """A lateral group's or a lifted team's partners (with their books) and associates.
+    PT-M12: `stream` (the n-th person's generator) and `client_city` (the clients' market key)
+    let a team join the home office (entering a practice, `ptk.sim.org.practices`)."""
     from ptk.sim.partnership.common import firm_partnership, put
     from ptk.sim.partnership.laterals import CLIENT_BOOK_CENTS, arrive_partner
     from ptk.sim.partnership.models import Arrival
@@ -233,9 +238,11 @@ def build_team(
     taken = {r.client_id for r in state.market.relationships if r.firm_id == firm_id}
     lost_book = 0.0
     n = 0
+    draw = stream or (lambda k: team_stream(rng, state.turn, office.id, k))
+    market_city = city if client_city is None else client_city
     for _ in range(partners):
         n += 1
-        gen = team_stream(rng, state.turn, office.id, n)
+        gen = draw(n)
         pid = state.next_id("person")
         person = generate_person(
             gen,
@@ -257,7 +264,7 @@ def build_team(
         k = max(
             1, min(8, round(book * gb.lift_book_share / CLIENT_BOOK_CENTS))
         )  # tunable-exempt: 1-8
-        clients = _book_clients(state, gen, city, practice, k, taken, data, balance)
+        clients = _book_clients(state, gen, market_city, practice, k, taken, data, balance)
         state = with_people(state, [person])
         state = _know(state, firm_id, person, rng, data, balance)
         comp = pct_of(book, lc.comp_of_book_bp)
@@ -294,7 +301,7 @@ def build_team(
             lost_book += book * (port or 0.0)
     for _ in range(associates):
         n += 1
-        gen = team_stream(rng, state.turn, office.id, n)
+        gen = draw(n)
         level = LIFT_LEVELS[int(gen.integers(len(LIFT_LEVELS)))]
         pid = state.next_id("person")
         person = generate_person(

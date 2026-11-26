@@ -115,6 +115,9 @@ export function MatterScreen() {
       )}
 
       <MatterStats m={m} slug={slug} />
+      {m.billing_model === 'contingency' && (
+        <ContingencyPanel m={m} run={run} busy={action.isPending} />
+      )}
       {m.status === 'conflicted' && <ConflictPanel m={m} run={run} busy={action.isPending} />}
       {m.settlement && (
         <Alert color="blue" title="Settlement offer" data-testid="settlement">
@@ -645,5 +648,63 @@ function BillsPanel({ m, slug }: { m: MatterDetail; slug: string }) {
         </Stack>
       )}
     </div>
+  );
+}
+
+// PT-M12 (spec 7.7; ADR PT-0018): a contingency case's terms (no fee until a recovery) and its
+// litigation funding: the terms taken, or the funder's standing offer and a button to take it.
+function ContingencyPanel({
+  m,
+  run,
+  busy,
+}: {
+  m: MatterDetail;
+  run: (a: MatterAction) => void;
+  busy: boolean;
+}) {
+  const share = m.contingency_share_bp ?? 0;
+  return (
+    <Alert color="grape" title="Contingency" data-testid="contingency">
+      <Stack gap={4}>
+        <Text size="sm">
+          The firm takes <span className="tst-num">{formatBpShort(share)}</span> of any recovery;
+          its <span className="tst-num">{formatMoneyWhole(m.contingency_wip_cents ?? 0)}</span> of
+          work so far bills nothing until then.
+        </Text>
+        {m.funded ? (
+          <Text size="sm" data-testid="funding-terms">
+            Funded: the funder carries{' '}
+            <span className="tst-num">{formatBpShort(m.funded_bp ?? 0)}</span> of the work (
+            <span className="tst-num">{formatMoneyWhole(m.funder_advances_cents ?? 0)}</span>{' '}
+            advanced, non-recourse) and is paid first from the fee, up to{' '}
+            <span className="tst-num">{((m.funder_return_bp ?? 0) / 10000).toFixed(1)}×</span> its
+            advances.
+          </Text>
+        ) : m.funding_offer_bp ? (
+          <Group justify="space-between">
+            <Text size="sm" data-testid="funding-offer">
+              A litigation funder offers to carry{' '}
+              <span className="tst-num">{formatBpShort(m.funding_offer_bp)}</span> of the work for{' '}
+              <span className="tst-num">
+                {((m.funding_offer_return_bp ?? 0) / 10000).toFixed(1)}×
+              </span>{' '}
+              its advances, paid first from the fee; a loss costs the firm only the rest.
+            </Text>
+            <Button
+              size="xs"
+              loading={busy}
+              onClick={() => run({ kind: 'funding' })}
+              data-testid="accept-funding"
+            >
+              Take the funding
+            </Button>
+          </Group>
+        ) : (
+          <Text size="sm" c="dimmed">
+            No funder offers on this case (funding arrives from 2010).
+          </Text>
+        )}
+      </Stack>
+    </Alert>
   );
 }

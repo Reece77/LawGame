@@ -174,6 +174,16 @@ def month(
                 rk = _place(rk, state.turn, "people", pb.practice, pb.band)
         state = _with(state, rk)
         named = sum(1 for p in people if p.firm_id == pid)
+        # PT-M12: the inbox lists the bands in practices the firm has lawyers in (twenty
+        # practices' floor bands are noise); a tie takes the practice first in file order
+        order = {k: i for i, k in enumerate(data.practice_keys)}
+        staff = set(state.staff_ids(pid))
+        held = {
+            data.role(p.role).practice
+            for p in state.people
+            if p.id in staff and data.role(p.role).practice
+        }
+        shown = [b for b in own_bands if b.practice in held]
         logs.append(
             inbox_item(
                 state.turn,
@@ -183,7 +193,7 @@ def month(
                 link_id=0,
                 year=str(year),
                 bands="; ".join(
-                    f"{data.practice(b.practice).short_label} band {b.band}" for b in own_bands
+                    f"{data.practice(b.practice).short_label} band {b.band}" for b in shown
                 )
                 or "no band yet",
                 people=named,
@@ -191,7 +201,7 @@ def month(
             )
         )
         if own_bands:
-            top_band = min(own_bands, key=lambda b: (b.band, b.practice))
+            top_band = min(own_bands, key=lambda b: (b.band, order[b.practice]))
             label = data.practice(top_band.practice).label
             press.append(
                 (

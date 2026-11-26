@@ -76,7 +76,7 @@ def test_practices_screen_agrees_with_the_market_view(save_dir: Path) -> None:
     client = _client(save_dir)
     rows = client.get("/api/saves/scr/practices/screen").json()
     market = {p["key"]: p for p in client.get("/api/saves/scr/practices").json()}
-    assert len(rows) == 10
+    assert len(rows) == 20  # PT-M12: twenty practices
     for row in rows:
         m = market[row["key"]]
         assert len(row["demand_trend"]) == 3

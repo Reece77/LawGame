@@ -204,7 +204,9 @@ def test_contingency_fee_comes_from_the_recovery_through_the_client_book(
     transfers = [x for x in month.entries if x.memo.startswith("Bills paid from client money")]
     assert sum(ln.amount for x in transfers for ln in x.lines if ln.account == CASH) >= fee
     premium = -sum(ln.amount for x in month.entries for ln in x.lines if ln.account == SUCCESS_FEES)
-    assert premium == fee - 1_000_000  # the fee above the WIP is a contingency premium (4100)
+    # PT-M12 (ADR PT-0018): a contingency case's WIP never posted a fee, so the whole fee is
+    # the contingency fee (4100); PT-M3b's premium was the fee above the WIP posted to 4000
+    assert premium == fee
     closed = month.state.billing.engagement(mid)
     assert closed is not None and closed.closed and closed.wip_cents == 0
 

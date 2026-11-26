@@ -80,6 +80,9 @@ class FeeEarner:
     home: str  # home practice
     capacity: int  # monthly capacity, tenths
     other: int  # non-billable tenths (partners' business development and management)
+    # PT-M12 (T12, rule 6): the person's familiarity by practice as a dict, read once a month
+    # (AttrSet's lookup scans twenty practices; staffing reads it per matter and earner)
+    fam: Mapping[str, float] = field(default_factory=dict, compare=False, repr=False)
 
     @property
     def id(self) -> int:
@@ -131,6 +134,7 @@ def fee_earners(
                 home=home_practice(person, data),
                 capacity=capacity,
                 other=other,
+                fam=person.familiarity.as_dict(),
             )
         )
     return tuple(out)
@@ -312,7 +316,7 @@ def default_team(
     others = [e for e in earners if e.home != matter.practice]
     pools = (  # PT-M7a: other practices' familiar free people before the matter slips
         pool,
-        [e for e in others if e.person.familiarity[matter.practice] >= min_fam],
+        [e for e in others if e.fam[matter.practice] >= min_fam],
     )
     for level in range(top - 1, -1, -1):
         if shares[level] <= 0:
@@ -355,12 +359,14 @@ def staff_matter(
     data: GameData,
     balance: Balance,
     earners: Sequence[FeeEarner] | None = None,
+    planned: Mapping[int, int] | None = None,
 ) -> Matter:
     """Apply the default staffing rule to a matter of the state's firm. `earners` (PT-M11, T12):
-    the firm's fee earners when the caller already holds them for this state."""
+    the firm's fee earners when the caller already holds them for this state. `planned`
+    (PT-M12, T12): `planned_load(state.market, firm)` when the caller keeps it current."""
     if earners is None:
         earners = fee_earners(state, matter.firm_id, data, balance)
-    load = planned_load(state.market, matter.firm_id)
+    load = dict(planned) if planned is not None else planned_load(state.market, matter.firm_id)
     for tm in matter.team:  # re-staffing: its own plan does not count against itself
         load[tm.person_id] = load.get(tm.person_id, 0) - tm.planned_tenths
     lead, team = default_team(
@@ -670,15 +676,9 @@ def month_hours(
         left = total
         pools = (
             [e for e in members if e.home == practice],
-            [
-                e
-                for e in members
-                if e.home != practice and e.person.familiarity[practice] >= min_fam
-            ],
+            [e for e in members if e.home != practice and e.fam[practice] >= min_fam],
             [  # PT-M7a: idle capacity takes flow before it is left unserved
-                e
-                for e in members
-                if e.home != practice and e.person.familiarity[practice] < min_fam
+                e for e in members if e.home != practice and e.fam[practice] < min_fam
             ],
             # PT-M11: then the practice's lawyers in the firm's other offices (none in v1)
             [e for e in earners if e.home == practice and e not in members]

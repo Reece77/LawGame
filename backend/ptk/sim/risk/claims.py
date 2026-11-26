@@ -2,8 +2,9 @@
 
 - **Making.** Each escaped error on the player's matters (`progress.py` records them; read here
   as the month's rise in a matter's `errors_escaped`) becomes a latent claim with chance
-  `risk.claims.from_error_bp` x the GC's term (a client with a claim open or on its way makes
-  no second one: it sues once) x lax supervision x conflict checks off; a lost
+  `risk.claims.from_error_bp` x the matter's practice weight (PT-M12) x the GC's term (a
+  client with a claim open or on its way makes no second one: it sues once) x lax
+  supervision x conflict checks off; a lost
   case with stakes of at least `grievance_min_stakes_cents` brings an aggrieved client's claim
   with chance `grievance_bp` (stream `risk_claim`). A latent claim draws a delay before it
   surfaces, a hidden merit (Beta) and size, and the demand the claimant will make. **Nothing
@@ -111,7 +112,8 @@ def make_claims(
             if p_error is None:
                 p_error = conversion(state, firm_id, balance, data)
             gen = dr.claim_draws(rng, state.turn, dr.ERROR, m.id, k)
-            if float(gen.random()) >= p_error:
+            weight = c.practice_weight.get(m.practice, 1.0)  # PT-M12: by the matter's practice
+            if float(gen.random()) >= min(1.0, p_error * weight):
                 continue
             u = [float(x) for x in gen.random(3)]
             risk = _latent(risk, state, m, "error", u, float(gen.beta(a, b)), balance)

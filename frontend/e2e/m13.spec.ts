@@ -3,7 +3,8 @@ import { advanceMonths, answerBlocking } from './helpers.js';
 
 // PT-M13: mergers and the verein, on copies of the practice save (a 60-lawyer firm in June
 // 2008; its own slugs, so the other specs' pt-2008 is untouched). The paths are the seeded
-// world's: the first firm approached declines, the second talks.
+// world's: in the merger the firms are approached in turn until one talks (PT-M12's twenty
+// practices moved which one), and in the verein the first declines and the second talks.
 
 // a firm's rival key: names can repeat among generated firms (the first in the API's order)
 async function keyOf(page: Page, slug: string, firm: string): Promise<string> {
@@ -43,18 +44,29 @@ test('merge with a generated firm through both votes and clearance', async ({ pa
   await page.goto(`/game/${slug}/mergers`);
   await expect(page.getByTestId('date')).toHaveText('Jan 2011');
 
-  await approach(page, slug, 'Murphy LLP', 'Merger');
-  await expect(page.getByTestId('past-deals')).toContainText('declined to talk');
-  await advanceMonths(page, slug, 1);
-  await answerBlocking(page, slug);
-  await page.reload();
-  await approach(page, slug, 'Murphy Cook', 'Merger');
+  // approach until a firm talks; one that declines is recorded and the next is tried next month
   const deal = page.getByTestId('deal');
+  let firm = '';
+  for (const name of ['Murphy Cook', 'Murphy LLP']) {
+    await approach(page, slug, name, 'Merger');
+    const talks = deal.getByTestId('deal-stage').filter({ hasText: 'Talks' });
+    const declined = page.getByTestId('past-deals').filter({ hasText: 'declined to talk' });
+    await expect(talks.or(declined)).toBeVisible();
+    if (await talks.isVisible()) {
+      firm = name;
+      break;
+    }
+    await advanceMonths(page, slug, 1);
+    await answerBlocking(page, slug);
+    await page.reload();
+  }
+  expect(firm).not.toBe('');
   await expect(deal.getByTestId('deal-stage')).toHaveText('Talks');
   await expect(deal.getByTestId('diligence')).toContainText('Partners'); // ranges, not values
 
   const view = await (await page.request.get(`/api/saves/${slug}/mergers`)).json();
-  const fair = view.targets.find((t: { name: string }) => t.name === 'Murphy Cook').fair_share_pct;
+  const key = await keyOf(page, slug, firm);
+  const fair = view.targets.find((t: { key: string }) => t.key === key).fair_share_pct;
   await deal.getByTestId('terms-share').fill(String(fair));
   await deal.getByTestId('put-terms').click();
   await expect(deal.getByTestId('deal-stage')).toHaveText('Terms');
@@ -68,6 +80,12 @@ test('merge with a generated firm through both votes and clearance', async ({ pa
   expect(lobbied.ok()).toBeTruthy();
   await answerBlocking(page, slug);
   await page.reload();
+  // answer the counter a little more generously than asked, so their partners' noisy count
+  // (centred on the counter's margin) passes on this world's draws
+  const open = (await (await page.request.get(`/api/saves/${slug}/mergers`)).json()).deals.find(
+    (d: { stage: string }) => d.stage === 'countered',
+  );
+  await page.getByTestId('terms-share').fill(String(open.counter_share_pct - 4));
   await page.getByTestId('put-terms').click();
   await expect(page.getByTestId('deal-stage')).toHaveText('Terms'); // saved before Continue
 
@@ -95,7 +113,7 @@ test('merge with a generated firm through both votes and clearance', async ({ pa
   await advanceMonths(page, slug, 1);
   await answerBlocking(page, slug);
   await page.reload();
-  await expect(page.getByTestId('integration')).toContainText('Integration of Murphy Cook');
+  await expect(page.getByTestId('integration')).toContainText(`Integration of ${firm}`);
   await expect(page.getByTestId('partners-lost')).toContainText('of');
 });
 

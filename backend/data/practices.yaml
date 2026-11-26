@@ -10,6 +10,13 @@
 # Demand: one region in v1, the New York home market. The ten practices carry $12.35bn of the
 # $14.0bn NY large-firm market (dossier s3-s4 [D/A]); the other 12% ($1.65bn: arbitration, tax,
 # antitrust and the rest) is unserved until PT-M12 adds those practices (dossier s4 review).
+# PT-M12 appends the ten v2 practices (docs/research/practices-v2.md, "v2 sN"): $2.20bn at the
+# top of v1's "other" range, so the twenty carry $14.55bn (+3.9% on v1's $14.0bn, v2 s1).
+
+# PT-M12: a person's familiarity with the first ten practices (v1's) is drawn from their own
+# generator in file order, as before; each later practice draws from a jump of that generator
+# (ptk.sim.people.generator.draw_familiarity), so appending a practice moves no existing draw.
+familiarity_main_draws: 10 # tunable-exempt: v1's practice count
 
 # Level -> rate band (dossier s5: junior = 1st-2nd year, mid = 3rd-5th, senior = 6th-8th).
 # Business-services levels bill nothing.
@@ -134,6 +141,7 @@ practices:
     short_label: M&A
     demand_cents: 240000000000 # $2.4bn [A] s4 row 1 (range $1.9-3.0bn): US M&A $1.1tn [S]
     driver: M&A volume
+    cycle: pro_cyclical # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: 1.4 # [spec]
     index: ma # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.10
@@ -149,12 +157,13 @@ practices:
       - { key: public_ma, label: Public M&A, kind: deal, weight: 0.35, median_cents: 120000000, sigma: 1.0, months: [6, 12], critical_bp: 1500 }
       - { key: private_ma, label: Private M&A, kind: deal, weight: 0.45, median_cents: 35000000, sigma: 0.9, months: [3, 8], critical_bp: 300 }
       - { key: governance, label: Governance advice, kind: advisory, weight: 0.20, median_cents: 12000000, sigma: 0.8, months: [2, 6], critical_bp: 200 }
-    cross_sell: { banking_finance: 0.8, private_equity: 0.6, employment: 0.6, capital_markets: 0.5, real_estate: 0.4, commercial_litigation: 0.3 }
+    cross_sell: { private_equity: 0.6, capital_markets: 0.5, banking_finance: 0.8, restructuring: 0.4, commercial_litigation: 0.3, white_collar: 0.3, ip: 0.4, employment: 0.6, real_estate: 0.4, international_arbitration: 0.3, tax: 0.7, antitrust: 0.8, financial_regulation: 0.4, healthcare: 0.5, energy: 0.6, technology_privacy: 0.5, private_client: 0.2, insurance: 0.4, mass_torts: 0.05 } # [A] v2 s5; every pair (PT-M12)
   - key: private_equity
     label: Private equity and funds
     short_label: PE
     demand_cents: 110000000000 # $1.1bn [A] s4 row 2 (range $0.8-1.5bn): record buyout fundraising $86bn [S]
     driver: PE deal and fundraising volume
+    cycle: pro_cyclical # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: 1.5
     index: pe # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.12
@@ -170,12 +179,13 @@ practices:
       - { key: buyout, label: Buyout, kind: deal, weight: 0.55, median_cents: 80000000, sigma: 0.9, months: [4, 9], critical_bp: 500 }
       - { key: fund_formation, label: Fund formation, kind: deal, weight: 0.30, median_cents: 60000000, sigma: 0.8, months: [6, 12], critical_bp: 0 }
       - { key: portfolio_advice, label: Portfolio advice, kind: advisory, weight: 0.15, median_cents: 10000000, sigma: 0.8, months: [2, 5], critical_bp: 0 }
-    cross_sell: { banking_finance: 0.8, corporate_ma: 0.7, employment: 0.4, real_estate: 0.3, restructuring: 0.3 }
+    cross_sell: { corporate_ma: 0.7, capital_markets: 0.1, banking_finance: 0.8, restructuring: 0.3, commercial_litigation: 0.1, white_collar: 0.1, ip: 0.1, employment: 0.4, real_estate: 0.3, international_arbitration: 0.1, tax: 0.7, antitrust: 0.4, financial_regulation: 0.4, healthcare: 0.4, energy: 0.4, technology_privacy: 0.3, private_client: 0.3, insurance: 0.1, mass_torts: 0.05 } # [A] v2 s5; every pair (PT-M12)
   - key: capital_markets
     label: Capital markets
     short_label: Cap mkts
     demand_cents: 130000000000 # $1.3bn [A] s4 row 3 (range $1.0-1.7bn): US underwriting $3.2tn [S]
     driver: IPO and issuance volume
+    cycle: pro_cyclical # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: 1.3
     index: issuance # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.15
@@ -191,12 +201,13 @@ practices:
       - { key: ipo, label: IPO, kind: deal, weight: 0.20, median_cents: 150000000, sigma: 0.6, months: [4, 9], critical_bp: 1500 }
       - { key: debt_offering, label: Debt offering, kind: deal, weight: 0.55, median_cents: 30000000, sigma: 0.7, months: [1, 3], critical_bp: 0 }
       - { key: securities_advice, label: Securities advice, kind: advisory, weight: 0.25, median_cents: 10000000, sigma: 0.8, months: [2, 6], critical_bp: 0 }
-    cross_sell: { corporate_ma: 0.5, banking_finance: 0.6, white_collar: 0.3 }
+    cross_sell: { corporate_ma: 0.5, private_equity: 0.1, banking_finance: 0.6, restructuring: 0.1, commercial_litigation: 0.1, white_collar: 0.3, ip: 0.1, employment: 0.1, real_estate: 0.1, international_arbitration: 0.1, tax: 0.5, antitrust: 0.1, financial_regulation: 0.6, healthcare: 0.1, energy: 0.4, technology_privacy: 0.1, private_client: 0.05, insurance: 0.3, mass_torts: 0.05 } # [A] v2 s5; every pair (PT-M12)
   - key: banking_finance
     label: Banking and finance
     short_label: Banking
     demand_cents: 110000000000 # $1.1bn [A] s4 row 4 (range $0.8-1.4bn): leveraged lending boom (volume not found)
     driver: leveraged lending volume
+    cycle: pro_cyclical # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: 1.1
     index: lending # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.10
@@ -212,12 +223,13 @@ practices:
       - { key: acquisition_finance, label: Acquisition finance, kind: deal, weight: 0.50, median_cents: 50000000, sigma: 0.8, months: [2, 5], critical_bp: 300 }
       - { key: credit_facility, label: Credit facility, kind: deal, weight: 0.35, median_cents: 20000000, sigma: 0.7, months: [1, 4], critical_bp: 0 }
       - { key: finance_advice, label: Finance advice, kind: advisory, weight: 0.15, median_cents: 8000000, sigma: 0.8, months: [2, 4], critical_bp: 0 }
-    cross_sell: { corporate_ma: 0.8, private_equity: 0.7, restructuring: 0.6, real_estate: 0.5, capital_markets: 0.5 }
+    cross_sell: { corporate_ma: 0.8, private_equity: 0.7, capital_markets: 0.5, restructuring: 0.6, commercial_litigation: 0.1, white_collar: 0.1, ip: 0.1, employment: 0.1, real_estate: 0.5, international_arbitration: 0.2, tax: 0.4, antitrust: 0.1, financial_regulation: 0.7, healthcare: 0.1, energy: 0.7, technology_privacy: 0.1, private_client: 0.05, insurance: 0.1, mass_torts: 0.05 } # [A] v2 s5; every pair (PT-M12)
   - key: restructuring
     label: Restructuring and insolvency
     short_label: Restruct
     demand_cents: 70000000000 # $0.7bn [A] s4 row 5 (range $0.5-1.0bn): SDNY 790 Chapter 11 cases in 2005 [S]
     driver: default rate and distressed debt
+    cycle: counter_cyclical # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: -0.8 # [spec] counter-cyclical (-1.2); PT-M7b tuning -1.2 -> -0.8 (T8: restructuring-heavy firms grew +40-70% in 2009 at -1.2 with beta_scale 1.3)
     index: credit # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.10
@@ -233,12 +245,13 @@ practices:
       - { key: chapter_11, label: Chapter 11, kind: restructuring, weight: 0.45, median_cents: 200000000, sigma: 1.0, months: [9, 24], critical_bp: 2500 }
       - { key: out_of_court, label: Out-of-court workout, kind: restructuring, weight: 0.35, median_cents: 50000000, sigma: 0.8, months: [3, 9], critical_bp: 500 }
       - { key: creditor_advice, label: Creditor advice, kind: advisory, weight: 0.20, median_cents: 15000000, sigma: 0.8, months: [2, 6], critical_bp: 0 }
-    cross_sell: { banking_finance: 0.6, commercial_litigation: 0.5, corporate_ma: 0.4, employment: 0.3 }
+    cross_sell: { corporate_ma: 0.4, private_equity: 0.3, capital_markets: 0.1, banking_finance: 0.6, commercial_litigation: 0.5, white_collar: 0.1, ip: 0.1, employment: 0.3, real_estate: 0.1, international_arbitration: 0.3, tax: 0.3, antitrust: 0.1, financial_regulation: 0.3, healthcare: 0.1, energy: 0.4, technology_privacy: 0.1, private_client: 0.05, insurance: 0.3, mass_torts: 0.05 } # [A] v2 s5; every pair (PT-M12)
   - key: commercial_litigation
     label: Commercial litigation
     short_label: Litigation
     demand_cents: 250000000000 # $2.5bn [A] s4 row 6 (range $2.0-3.2bn): litigation 58% of large-company spend [S]
     driver: litigation index
+    cycle: steady # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: -0.2 # [spec] steady, slightly counter-cyclical
     index: cycle # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.05
@@ -255,12 +268,13 @@ practices:
       - { key: securities_class_action, label: Securities class action, kind: case, weight: 0.20, median_cents: 150000000, sigma: 0.9, months: [18, 36], critical_bp: 2000, forums: { sdny: 0.8, edny: 0.2 } }
       - { key: arbitration, label: Commercial arbitration, kind: case, weight: 0.15, median_cents: 50000000, sigma: 0.9, months: [12, 24], critical_bp: 300, forums: { aaa: 0.6, icc: 0.4 } }
       - { key: dispute_advice, label: Dispute advice, kind: advisory, weight: 0.10, median_cents: 8000000, sigma: 0.8, months: [2, 5], critical_bp: 0 }
-    cross_sell: { white_collar: 0.7, ip: 0.4, employment: 0.4, restructuring: 0.4, corporate_ma: 0.3 }
+    cross_sell: { corporate_ma: 0.3, private_equity: 0.1, capital_markets: 0.1, banking_finance: 0.1, restructuring: 0.4, white_collar: 0.7, ip: 0.4, employment: 0.4, real_estate: 0.1, international_arbitration: 0.6, tax: 0.2, antitrust: 0.5, financial_regulation: 0.3, healthcare: 0.3, energy: 0.3, technology_privacy: 0.4, private_client: 0.3, insurance: 0.6, mass_torts: 0.2 } # [A] v2 s5; every pair (PT-M12)
   - key: white_collar
     label: White collar and investigations
     short_label: White collar
     demand_cents: 85000000000 # $0.85bn [A] s4 row 7 (range $0.6-1.2bn): post-Enron, SOX era
     driver: enforcement intensity
+    cycle: policy # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: 0.6 # [A] PT-M7: policy-driven, follows the enforcement index (was 0.0 while indices were flat)
     index: enforcement # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.08
@@ -276,12 +290,13 @@ practices:
       - { key: investigation, label: Internal investigation, kind: investigation, weight: 0.60, median_cents: 90000000, sigma: 1.0, months: [6, 18], critical_bp: 2500 }
       - { key: enforcement_defence, label: Enforcement defence, kind: case, weight: 0.25, median_cents: 120000000, sigma: 0.9, months: [12, 30], critical_bp: 2000, forums: { sdny: 0.7, edny: 0.3 } }
       - { key: compliance_review, label: Compliance review, kind: advisory, weight: 0.15, median_cents: 20000000, sigma: 0.8, months: [3, 6], critical_bp: 0 }
-    cross_sell: { commercial_litigation: 0.7, employment: 0.4, capital_markets: 0.3, corporate_ma: 0.3 }
+    cross_sell: { corporate_ma: 0.3, private_equity: 0.1, capital_markets: 0.3, banking_finance: 0.1, restructuring: 0.1, commercial_litigation: 0.7, ip: 0.1, employment: 0.4, real_estate: 0.1, international_arbitration: 0.3, tax: 0.2, antitrust: 0.4, financial_regulation: 0.6, healthcare: 0.5, energy: 0.1, technology_privacy: 0.4, private_client: 0.05, insurance: 0.2, mass_torts: 0.05 } # [A] v2 s5; every pair (PT-M12)
   - key: ip
     label: IP
     short_label: IP
     demand_cents: 85000000000 # $0.85bn [A] s4 row 9 (range $0.6-1.1bn): 2,720 patent and 5,796 copyright suits FY2005 [S]
     driver: patent filings and tech M&A
+    cycle: steady # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: 0.2
     index: ip # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.06
@@ -297,12 +312,13 @@ practices:
       - { key: patent_litigation, label: Patent litigation, kind: case, weight: 0.40, median_cents: 150000000, sigma: 1.0, months: [18, 36], critical_bp: 1500, forums: { edtex: 0.35, ddel: 0.30, ndcal: 0.15, sdny: 0.10, wdtex: 0.10 } }
       - { key: prosecution, label: Patent prosecution, kind: filing, weight: 0.35, median_cents: 6000000, sigma: 0.7, months: [6, 18], critical_bp: 0 }
       - { key: ip_transactional, label: IP transaction, kind: deal, weight: 0.25, median_cents: 15000000, sigma: 0.8, months: [2, 6], critical_bp: 0 }
-    cross_sell: { commercial_litigation: 0.4, corporate_ma: 0.4, employment: 0.2 }
+    cross_sell: { corporate_ma: 0.4, private_equity: 0.1, capital_markets: 0.1, banking_finance: 0.1, restructuring: 0.1, commercial_litigation: 0.4, white_collar: 0.1, employment: 0.2, real_estate: 0.1, international_arbitration: 0.1, tax: 0.1, antitrust: 0.4, financial_regulation: 0.1, healthcare: 0.5, energy: 0.1, technology_privacy: 0.7, private_client: 0.05, insurance: 0.1, mass_torts: 0.05 } # [A] v2 s5; every pair (PT-M12)
   - key: employment
     label: Employment and labour
     short_label: Employment
     demand_cents: 55000000000 # $0.55bn [A] s4 row 10 (range $0.4-0.8bn): 16,930 employment civil-rights suits [S]
     driver: employment level and regulation
+    cycle: counter_cyclical # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: -0.3 # [A] counter-cyclical (layoffs)
     index: cycle # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.05
@@ -318,12 +334,13 @@ practices:
       - { key: employment_litigation, label: Employment litigation, kind: case, weight: 0.40, median_cents: 30000000, sigma: 0.9, months: [9, 24], critical_bp: 500, forums: { sdny: 0.5, edny: 0.3, aaa: 0.2 } }
       - { key: exec_comp, label: Executive compensation, kind: advisory, weight: 0.35, median_cents: 8000000, sigma: 0.7, months: [1, 4], critical_bp: 0 }
       - { key: employment_class_action, label: Employment class action, kind: case, weight: 0.25, median_cents: 80000000, sigma: 0.9, months: [12, 30], critical_bp: 1000, forums: { sdny: 0.6, edny: 0.4 } }
-    cross_sell: { corporate_ma: 0.5, commercial_litigation: 0.4, white_collar: 0.3, private_equity: 0.3 }
+    cross_sell: { corporate_ma: 0.5, private_equity: 0.3, capital_markets: 0.1, banking_finance: 0.1, restructuring: 0.3, commercial_litigation: 0.4, white_collar: 0.3, ip: 0.2, real_estate: 0.1, international_arbitration: 0.1, tax: 0.4, antitrust: 0.1, financial_regulation: 0.1, healthcare: 0.3, energy: 0.1, technology_privacy: 0.3, private_client: 0.2, insurance: 0.1, mass_torts: 0.05 } # [A] v2 s5; every pair (PT-M12)
   - key: real_estate
     label: Real estate
     short_label: Real estate
     demand_cents: 100000000000 # $1.0bn [A] s4 row 8 (range $0.7-1.4bn): Manhattan's 2005 property boom
     driver: property transactions
+    cycle: pro_cyclical # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
     beta: 1.2 # [A] pro-cyclical, should fall by half in 2009
     index: real_estate # PT-M7: macro_history.yaml series (docs/research/v1-macro.md)
     sigma: 0.08
@@ -339,4 +356,238 @@ practices:
       - { key: property_acquisition, label: Property acquisition, kind: deal, weight: 0.50, median_cents: 25000000, sigma: 0.9, months: [2, 6], critical_bp: 0 }
       - { key: development, label: Development, kind: deal, weight: 0.25, median_cents: 40000000, sigma: 0.9, months: [6, 18], critical_bp: 200 }
       - { key: leasing, label: Leasing, kind: advisory, weight: 0.25, median_cents: 6000000, sigma: 0.7, months: [1, 3], critical_bp: 0 }
-    cross_sell: { banking_finance: 0.6, corporate_ma: 0.4, private_equity: 0.3 }
+    cross_sell: { corporate_ma: 0.4, private_equity: 0.3, capital_markets: 0.1, banking_finance: 0.6, restructuring: 0.1, commercial_litigation: 0.1, white_collar: 0.1, ip: 0.1, employment: 0.1, international_arbitration: 0.1, tax: 0.5, antitrust: 0.1, financial_regulation: 0.1, healthcare: 0.1, energy: 0.4, technology_privacy: 0.1, private_client: 0.5, insurance: 0.1, mass_torts: 0.05 } # [A] v2 s5; every pair (PT-M12)
+  # --- PT-M12: the ten v2 practices (docs/research/practices-v2.md; "v2 sN" is its section N).
+  # Appended: familiarity, demand and city-demand draws keep v1's order (ADR-0013); a new
+  # practice's familiarity comes from a sub-stream (familiarity_main_draws above).
+  # billing_models: the practice's own model mix (balance.yaml billing.models by kind otherwise).
+  - key: international_arbitration
+    label: International arbitration
+    short_label: Arbitration
+    demand_cents: 16000000000 # $0.16bn [A] v2 s2 row 11 (range $0.10-0.28bn)
+    driver: cross-border disputes
+    cycle: rising # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
+    beta: 0.5 # [A] v2 s4: steady, rising; its index rises in downturns
+    index: arbitration
+    sigma: 0.08
+    rates: { partner: 72500, counsel: 59500, senior: 52000, mid: 42500, junior: 27500, paralegal: 19000 } # partner $700-750 [D/A] v2 s3 (spec $700)
+    leverage: 2.5
+    margin_bp: 3500
+    realisation_bp: 9000
+    collection_bp: 9500
+    flow_share: 0.15
+    conflict_bp: 4000 # counterparties are companies and states [A] v2 s5
+    seasonality: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    billing_models: { hourly: 0.65, capped: 0.10, success: 0.25 } # [A] v2 s5 (spec 7.7: success fees in disputes)
+    matter_kinds:
+      - { key: commercial_arbitration, label: International commercial arbitration, kind: case, weight: 0.55, median_cents: 400000000, sigma: 0.9, months: [18, 36], critical_bp: 800, forums: { icc: 0.55, lcia: 0.25, aaa: 0.20 } }
+      - { key: treaty_arbitration, label: Investment treaty arbitration, kind: case, weight: 0.20, median_cents: 800000000, sigma: 0.9, months: [24, 48], critical_bp: 2000, forums: { icc: 0.6, lcia: 0.4 } }
+      - { key: arbitration_advice, label: Arbitration advice, kind: advisory, weight: 0.25, median_cents: 30000000, sigma: 0.8, months: [2, 6], critical_bp: 0 }
+    cross_sell: { corporate_ma: 0.3, private_equity: 0.1, capital_markets: 0.1, banking_finance: 0.2, restructuring: 0.3, commercial_litigation: 0.6, white_collar: 0.3, ip: 0.1, employment: 0.1, real_estate: 0.1, tax: 0.2, antitrust: 0.2, financial_regulation: 0.1, healthcare: 0.1, energy: 0.5, technology_privacy: 0.1, private_client: 0.05, insurance: 0.4, mass_torts: 0.05 } # [A] v2 s5; every pair (PT-M12)
+  - key: tax
+    label: Tax
+    short_label: Tax
+    demand_cents: 45000000000 # $0.45bn [A] v2 s2 row 12 (range $0.30-0.70bn)
+    driver: deal volume and tax reform
+    cycle: mixed # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
+    beta: 0.8 # [A] v2 s4: mixed, reform spikes (2017)
+    index: tax
+    sigma: 0.08
+    rates: { partner: 81000, counsel: 66500, senior: 58000, mid: 47500, junior: 30500, paralegal: 21500 } # partner $775-850 [D/A] v2 s3 (spec $800)
+    leverage: 2.5
+    margin_bp: 4500
+    realisation_bp: 9300
+    collection_bp: 9700
+    flow_share: 0.45
+    conflict_bp: 1000 # the IRS is the other side [A] v2 s5
+    seasonality: [0.97, 0.97, 0.97, 0.97, 0.97, 0.97, 0.97, 0.97, 0.97, 0.97, 0.97, 1.33] # year-end planning
+    billing_models: { hourly: 0.75, fixed: 0.15, retainer: 0.10 }
+    matter_kinds:
+      - { key: tax_structuring, label: Tax structuring, kind: advisory, weight: 0.45, median_cents: 60000000, sigma: 0.9, months: [2, 6], critical_bp: 300 }
+      - { key: tax_controversy, label: Tax controversy, kind: case, weight: 0.25, median_cents: 200000000, sigma: 0.9, months: [12, 30], critical_bp: 1000, forums: { sdny: 0.7, edny: 0.3 } }
+      - { key: tax_opinion, label: Tax opinion, kind: filing, weight: 0.30, median_cents: 25000000, sigma: 0.7, months: [1, 3], critical_bp: 0 }
+    cross_sell: { corporate_ma: 0.7, private_equity: 0.7, capital_markets: 0.5, banking_finance: 0.4, restructuring: 0.3, commercial_litigation: 0.2, white_collar: 0.2, ip: 0.1, employment: 0.4, real_estate: 0.5, international_arbitration: 0.2, antitrust: 0.1, financial_regulation: 0.3, healthcare: 0.1, energy: 0.4, technology_privacy: 0.1, private_client: 0.6, insurance: 0.1, mass_torts: 0.05 } # [A] v2 s5; every pair (PT-M12)
+  - key: antitrust
+    label: Antitrust and competition
+    short_label: Antitrust
+    demand_cents: 33000000000 # $0.33bn [A] v2 s2 row 13 (range $0.25-0.50bn): HSR about 1,700 filings [S/A]
+    driver: merger reviews and enforcement
+    cycle: pro_cyclical # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
+    beta: 1.0 # [A] v2 s4: follows M&A, with policy
+    index: antitrust
+    sigma: 0.08
+    rates: { partner: 79000, counsel: 65000, senior: 56500, mid: 46500, junior: 30000, paralegal: 21000 } # partner $750-825 [D/A] v2 s3 (spec $800)
+    leverage: 3.0
+    margin_bp: 4200
+    realisation_bp: 9200
+    collection_bp: 9600
+    flow_share: 0.25
+    conflict_bp: 4500 # competitors and counterparties [A] v2 s5
+    seasonality: [0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 1.22]
+    billing_models: { hourly: 0.85, capped: 0.15 }
+    matter_kinds:
+      - { key: merger_clearance, label: Merger clearance, kind: deal, weight: 0.45, median_cents: 250000000, sigma: 0.9, months: [4, 12], critical_bp: 1500 }
+      - { key: antitrust_litigation, label: Antitrust litigation, kind: case, weight: 0.30, median_cents: 600000000, sigma: 0.9, months: [18, 36], critical_bp: 1500, forums: { sdny: 0.5, ddel: 0.3, ndcal: 0.2 } }
+      - { key: cartel_investigation, label: Cartel investigation, kind: investigation, weight: 0.25, median_cents: 400000000, sigma: 1.0, months: [9, 24], critical_bp: 2500 }
+    cross_sell: { corporate_ma: 0.8, private_equity: 0.4, capital_markets: 0.1, banking_finance: 0.1, restructuring: 0.1, commercial_litigation: 0.5, white_collar: 0.4, ip: 0.4, employment: 0.1, real_estate: 0.1, international_arbitration: 0.2, tax: 0.1, financial_regulation: 0.3, healthcare: 0.4, energy: 0.3, technology_privacy: 0.4, private_client: 0.05, insurance: 0.2, mass_torts: 0.05 } # [A] v2 s5; every pair (PT-M12)
+  - key: financial_regulation
+    label: Financial services regulation
+    short_label: Fin reg
+    demand_cents: 30000000000 # $0.30bn [A] v2 s2 row 14 (range $0.20-0.45bn)
+    driver: regulation intensity
+    cycle: policy # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
+    beta: 0.6 # [A] v2 s4: policy-driven (the 2010 Dodd-Frank surge)
+    index: finreg
+    sigma: 0.07
+    rates: { partner: 76000, counsel: 62500, senior: 54500, mid: 44500, junior: 29000, paralegal: 20000 } # partner $725-800 [D/A] v2 s3 (spec $750)
+    leverage: 2.5
+    margin_bp: 4000
+    realisation_bp: 9200
+    collection_bp: 9700
+    flow_share: 0.45
+    conflict_bp: 2000 # the regulator; banks rarely adverse [A] v2 s5
+    seasonality: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    billing_models: { hourly: 0.70, retainer: 0.20, capped: 0.10 } # spec 7.7: retainers for regulatory work
+    matter_kinds:
+      - { key: regulatory_advice, label: Regulatory advice, kind: advisory, weight: 0.50, median_cents: 40000000, sigma: 0.8, months: [2, 8], critical_bp: 200 }
+      - { key: compliance_programme, label: Compliance programme, kind: filing, weight: 0.25, median_cents: 100000000, sigma: 0.8, months: [4, 12], critical_bp: 300 }
+      - { key: regulatory_enforcement, label: Regulatory enforcement, kind: investigation, weight: 0.25, median_cents: 300000000, sigma: 1.0, months: [9, 24], critical_bp: 2500 }
+    cross_sell: { corporate_ma: 0.4, private_equity: 0.4, capital_markets: 0.6, banking_finance: 0.7, restructuring: 0.3, commercial_litigation: 0.3, white_collar: 0.6, ip: 0.1, employment: 0.1, real_estate: 0.1, international_arbitration: 0.1, tax: 0.3, antitrust: 0.3, healthcare: 0.1, energy: 0.1, technology_privacy: 0.4, private_client: 0.05, insurance: 0.5, mass_torts: 0.05 } # [A] v2 s5; every pair (PT-M12)
+  - key: healthcare
+    label: Healthcare and life sciences
+    short_label: Healthcare
+    demand_cents: 18000000000 # $0.18bn [A] v2 s2 row 15 (range $0.10-0.30bn)
+    driver: healthcare deals and enforcement
+    cycle: rising # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
+    beta: 0.5 # [A] v2 s4: steady, rising
+    index: healthcare
+    sigma: 0.06
+    rates: { partner: 65000, counsel: 53500, senior: 46500, mid: 38000, junior: 24500, paralegal: 17000 } # partner $600-700 [D/A] v2 s3 (spec $650)
+    leverage: 2.5
+    margin_bp: 3500
+    realisation_bp: 9000
+    collection_bp: 9600
+    flow_share: 0.35
+    conflict_bp: 2500
+    seasonality: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    billing_models: { hourly: 0.80, capped: 0.10, retainer: 0.10 }
+    matter_kinds:
+      - { key: healthcare_transaction, label: Healthcare transaction, kind: deal, weight: 0.35, median_cents: 100000000, sigma: 0.9, months: [3, 8], critical_bp: 300 }
+      - { key: fda_regulatory, label: FDA regulatory, kind: filing, weight: 0.35, median_cents: 40000000, sigma: 0.8, months: [4, 12], critical_bp: 300 }
+      - { key: fraud_abuse, label: Fraud and abuse investigation, kind: investigation, weight: 0.30, median_cents: 250000000, sigma: 1.0, months: [9, 24], critical_bp: 2000 }
+    cross_sell: { corporate_ma: 0.5, private_equity: 0.4, capital_markets: 0.1, banking_finance: 0.1, restructuring: 0.1, commercial_litigation: 0.3, white_collar: 0.5, ip: 0.5, employment: 0.3, real_estate: 0.1, international_arbitration: 0.1, tax: 0.1, antitrust: 0.4, financial_regulation: 0.1, energy: 0.1, technology_privacy: 0.4, private_client: 0.05, insurance: 0.3, mass_torts: 0.05 } # [A] v2 s5; every pair (PT-M12)
+  - key: energy
+    label: Energy, projects and infrastructure
+    short_label: Energy
+    demand_cents: 22000000000 # $0.22bn [A] v2 s2 row 16 (range $0.15-0.35bn)
+    driver: project finance and energy transition
+    cycle: long_cycle # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
+    beta: 0.9 # [A] v2 s4: long cycles
+    index: energy
+    sigma: 0.08
+    rates: { partner: 66000, counsel: 54000, senior: 47000, mid: 38500, junior: 25000, paralegal: 17500 } # partner $625-700 [D/A] v2 s3 (spec $650)
+    leverage: 3.0
+    margin_bp: 3500
+    realisation_bp: 9100
+    collection_bp: 9600
+    flow_share: 0.30
+    conflict_bp: 3000
+    seasonality: [0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 0.98, 1.22]
+    billing_models: { hourly: 0.80, capped: 0.10, fixed: 0.10 }
+    matter_kinds:
+      - { key: project_finance, label: Project finance, kind: deal, weight: 0.45, median_cents: 150000000, sigma: 0.9, months: [6, 18], critical_bp: 500 }
+      - { key: energy_ma, label: Energy M&A, kind: deal, weight: 0.35, median_cents: 200000000, sigma: 0.9, months: [4, 10], critical_bp: 1000 }
+      - { key: energy_regulatory, label: Energy regulatory, kind: advisory, weight: 0.20, median_cents: 30000000, sigma: 0.8, months: [2, 6], critical_bp: 0 }
+    cross_sell: { corporate_ma: 0.6, private_equity: 0.4, capital_markets: 0.4, banking_finance: 0.7, restructuring: 0.4, commercial_litigation: 0.3, white_collar: 0.1, ip: 0.1, employment: 0.1, real_estate: 0.4, international_arbitration: 0.5, tax: 0.4, antitrust: 0.3, financial_regulation: 0.1, healthcare: 0.1, technology_privacy: 0.1, private_client: 0.05, insurance: 0.1, mass_torts: 0.05 } # [A] v2 s5; every pair (PT-M12)
+  - key: technology_privacy
+    label: Technology, privacy and data
+    short_label: Tech/privacy
+    demand_cents: 12000000000 # $0.12bn [A] v2 s2 row 17 (range $0.08-0.20bn)
+    driver: tech activity and privacy law
+    cycle: rising # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
+    beta: 0.6 # [A] v2 s4: rising (GDPR 2018)
+    index: privacy
+    sigma: 0.07
+    rates: { partner: 61500, counsel: 50500, senior: 44000, mid: 36000, junior: 23500, paralegal: 16500 } # partner $575-650 [D/A] v2 s3 (spec $600)
+    leverage: 2.5
+    margin_bp: 3500
+    realisation_bp: 9000
+    collection_bp: 9600
+    flow_share: 0.40
+    conflict_bp: 2000
+    seasonality: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    billing_models: { hourly: 0.70, fixed: 0.20, retainer: 0.10 }
+    matter_kinds:
+      - { key: tech_transaction, label: Technology transaction, kind: deal, weight: 0.40, median_cents: 50000000, sigma: 0.8, months: [2, 6], critical_bp: 0 }
+      - { key: privacy_compliance, label: Privacy compliance, kind: advisory, weight: 0.35, median_cents: 30000000, sigma: 0.8, months: [2, 6], critical_bp: 0 }
+      - { key: breach_response, label: Data breach response, kind: investigation, weight: 0.25, median_cents: 150000000, sigma: 1.0, months: [3, 12], critical_bp: 2000 }
+    cross_sell: { corporate_ma: 0.5, private_equity: 0.3, capital_markets: 0.1, banking_finance: 0.1, restructuring: 0.1, commercial_litigation: 0.4, white_collar: 0.4, ip: 0.7, employment: 0.3, real_estate: 0.1, international_arbitration: 0.1, tax: 0.1, antitrust: 0.4, financial_regulation: 0.4, healthcare: 0.4, energy: 0.1, private_client: 0.05, insurance: 0.3, mass_torts: 0.05 } # [A] v2 s5; every pair (PT-M12)
+  - key: private_client
+    label: Private client, trusts and estates
+    short_label: Private client
+    demand_cents: 15000000000 # $0.15bn [A] v2 s2 row 18 (range $0.10-0.25bn): individuals pooled as flow (spec 7.1)
+    driver: wealth index
+    cycle: steady # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
+    beta: 0.7 # [A] v2 s4: steady, with wealth
+    index: wealth
+    sigma: 0.05
+    rates: { partner: 60000, counsel: 49500, senior: 43000, mid: 35000, junior: 22500, paralegal: 16000 } # partner $550-650 [D/A] v2 s3 (spec $600)
+    leverage: 1.5
+    margin_bp: 3000
+    realisation_bp: 8800
+    collection_bp: 9500
+    flow_share: 0.65
+    conflict_bp: 300 # [spec] private client low
+    seasonality: [0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 1.11] # year-end gifting
+    billing_models: { retainer: 0.45, hourly: 0.40, fixed: 0.15 } # spec 7.7: retainers in private client
+    matter_kinds:
+      - { key: estate_planning, label: Estate planning, kind: advisory, weight: 0.50, median_cents: 10000000, sigma: 0.8, months: [2, 6], critical_bp: 0 }
+      - { key: trust_administration, label: Trust administration, kind: advisory, weight: 0.30, median_cents: 15000000, sigma: 0.8, months: [6, 18], critical_bp: 0 }
+      - { key: estate_litigation, label: Estate litigation, kind: case, weight: 0.20, median_cents: 60000000, sigma: 0.9, months: [12, 30], critical_bp: 300, forums: { ny_commercial: 1.0 } }
+    cross_sell: { corporate_ma: 0.2, private_equity: 0.3, capital_markets: 0.05, banking_finance: 0.05, restructuring: 0.05, commercial_litigation: 0.3, white_collar: 0.05, ip: 0.05, employment: 0.2, real_estate: 0.5, international_arbitration: 0.05, tax: 0.6, antitrust: 0.05, financial_regulation: 0.05, healthcare: 0.05, energy: 0.05, technology_privacy: 0.05, insurance: 0.05, mass_torts: 0.2 } # [A] v2 s5; every pair (PT-M12)
+  - key: insurance
+    label: Insurance and reinsurance
+    short_label: Insurance
+    demand_cents: 20000000000 # $0.20bn [A] v2 s2 row 19 (range $0.15-0.35bn)
+    driver: catastrophe and claims cycles
+    cycle: steady # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
+    beta: 0.5 # [A] v2 s4: steady, claims cycle
+    index: catastrophe
+    sigma: 0.07
+    rates: { partner: 56500, counsel: 46500, senior: 40500, mid: 33000, junior: 21500, paralegal: 15000 } # partner $525-600 [D/A] v2 s3 (spec $550)
+    leverage: 2.5
+    margin_bp: 3000
+    realisation_bp: 8900
+    collection_bp: 9500
+    flow_share: 0.35
+    conflict_bp: 3500
+    seasonality: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    billing_models: { hourly: 0.80, capped: 0.15, blended: 0.05 }
+    matter_kinds:
+      - { key: coverage_dispute, label: Coverage dispute, kind: case, weight: 0.45, median_cents: 150000000, sigma: 0.9, months: [12, 30], critical_bp: 800, forums: { sdny: 0.6, ny_commercial: 0.4 } }
+      - { key: reinsurance_arbitration, label: Reinsurance arbitration, kind: case, weight: 0.30, median_cents: 120000000, sigma: 0.9, months: [12, 24], critical_bp: 300, forums: { aaa: 0.6, lcia: 0.4 } }
+      - { key: insurance_transaction, label: Insurance transaction, kind: deal, weight: 0.25, median_cents: 100000000, sigma: 0.8, months: [3, 8], critical_bp: 300 }
+    cross_sell: { corporate_ma: 0.4, private_equity: 0.1, capital_markets: 0.3, banking_finance: 0.1, restructuring: 0.3, commercial_litigation: 0.6, white_collar: 0.2, ip: 0.1, employment: 0.1, real_estate: 0.1, international_arbitration: 0.4, tax: 0.1, antitrust: 0.2, financial_regulation: 0.5, healthcare: 0.3, energy: 0.1, technology_privacy: 0.3, private_client: 0.05, mass_torts: 0.2 } # [A] v2 s5; every pair (PT-M12)
+  - key: mass_torts
+    label: Mass torts and class actions (plaintiff)
+    short_label: Mass torts
+    demand_cents: 9000000000 # $0.09bn [A] v2 s2 row 20 (range $0.05-0.20bn): the large-firm share of plaintiff fees
+    driver: contingency settlements
+    cycle: lumpy # [spec] 6's cycle column (PT-M12: the Practices screen's filter)
+    beta: 0.6 # [A] v2 s4: lumpy
+    index: torts
+    sigma: 0.25 # [A] lumpy: settlements arrive in waves
+    rates: { partner: 56500, counsel: 46500, senior: 40500, mid: 33000, junior: 21500, paralegal: 15000 } # the WIP's standard value only [A] v2 s3: fee-petition rates about $500-700
+    leverage: 1.5
+    margin_bp: 3500 # [A] spec 6: volatile
+    realisation_bp: 9000
+    collection_bp: 9800 # paid from the client account [A] v2 s3
+    flow_share: 0.20
+    conflict_bp: 5500 # the defendants are large companies in the client universe [A] v2 s5
+    seasonality: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    billing_models: { contingency: 0.90, hourly: 0.10 } # spec 7.7: contingency in plaintiff work
+    matter_kinds:
+      - { key: mass_tort, label: Mass tort, kind: case, weight: 0.55, median_cents: 500000000, sigma: 1.0, months: [36, 72], critical_bp: 1500, forums: { sdny: 0.25, edny: 0.15, ddel: 0.15, ndcal: 0.2, edtex: 0.25 } }
+      - { key: plaintiff_class_action, label: Plaintiff class action, kind: case, weight: 0.30, median_cents: 400000000, sigma: 1.0, months: [24, 48], critical_bp: 1000, forums: { sdny: 0.5, edny: 0.2, ndcal: 0.3 } }
+      - { key: individual_claim, label: Individual claim, kind: case, weight: 0.15, median_cents: 40000000, sigma: 0.8, months: [12, 30], critical_bp: 0, forums: { sdny: 0.5, edny: 0.5 } }
+    cross_sell: { corporate_ma: 0.05, private_equity: 0.05, capital_markets: 0.05, banking_finance: 0.05, restructuring: 0.05, commercial_litigation: 0.2, white_collar: 0.05, ip: 0.05, employment: 0.05, real_estate: 0.05, international_arbitration: 0.05, tax: 0.05, antitrust: 0.05, financial_regulation: 0.05, healthcare: 0.05, energy: 0.05, technology_privacy: 0.05, private_client: 0.2, insurance: 0.2 } # [A] v2 s5; every pair (PT-M12)

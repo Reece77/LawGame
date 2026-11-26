@@ -13,84 +13,104 @@ sectors:
   - key: banking
     label: Banks and brokers
     intensity: 2.0
-    mix: { corporate_ma: 0.10, private_equity: 0.05, capital_markets: 0.25, banking_finance: 0.25, restructuring: 0.05, commercial_litigation: 0.15, white_collar: 0.10, ip: 0.0, employment: 0.03, real_estate: 0.02 }
+    mix: { corporate_ma: 0.10, private_equity: 0.05, capital_markets: 0.25, banking_finance: 0.25, restructuring: 0.05, commercial_litigation: 0.15, white_collar: 0.10, ip: 0.0, employment: 0.03, real_estate: 0.02, international_arbitration: 0.02, tax: 0.05, antitrust: 0.02, financial_regulation: 0.3, healthcare: 0.0, energy: 0.03, technology_privacy: 0.04, private_client: 0.0, insurance: 0.02, mass_torts: 0.0 }
     suffixes: [Bancorp, Financial, Capital, Trust]
   - key: insurance
     label: Insurance
     intensity: 1.0
-    mix: { corporate_ma: 0.10, private_equity: 0.0, capital_markets: 0.10, banking_finance: 0.05, restructuring: 0.05, commercial_litigation: 0.35, white_collar: 0.10, ip: 0.0, employment: 0.10, real_estate: 0.15 }
+    mix: { corporate_ma: 0.10, private_equity: 0.0, capital_markets: 0.10, banking_finance: 0.05, restructuring: 0.05, commercial_litigation: 0.35, white_collar: 0.10, ip: 0.0, employment: 0.10, real_estate: 0.15, international_arbitration: 0.03, tax: 0.05, antitrust: 0.02, financial_regulation: 0.1, healthcare: 0.03, energy: 0.0, technology_privacy: 0.03, private_client: 0.0, insurance: 0.45, mass_torts: 0.0 }
     suffixes: [Insurance, Assurance, Mutual, Re]
   - key: private_equity
     label: Private equity sponsors
     intensity: 3.0
-    mix: { corporate_ma: 0.25, private_equity: 0.45, capital_markets: 0.05, banking_finance: 0.15, restructuring: 0.05, commercial_litigation: 0.03, white_collar: 0.0, ip: 0.0, employment: 0.02, real_estate: 0.0 }
+    mix: { corporate_ma: 0.25, private_equity: 0.45, capital_markets: 0.05, banking_finance: 0.15, restructuring: 0.05, commercial_litigation: 0.03, white_collar: 0.0, ip: 0.0, employment: 0.02, real_estate: 0.0, international_arbitration: 0.01, tax: 0.12, antitrust: 0.04, financial_regulation: 0.05, healthcare: 0.02, energy: 0.04, technology_privacy: 0.01, private_client: 0.0, insurance: 0.0, mass_torts: 0.0 }
     suffixes: [Partners, Capital Partners, Equity]
   - key: technology
     label: Technology
     intensity: 1.0
-    mix: { corporate_ma: 0.20, private_equity: 0.0, capital_markets: 0.10, banking_finance: 0.03, restructuring: 0.0, commercial_litigation: 0.20, white_collar: 0.05, ip: 0.35, employment: 0.05, real_estate: 0.02 }
+    mix: { corporate_ma: 0.20, private_equity: 0.0, capital_markets: 0.10, banking_finance: 0.03, restructuring: 0.0, commercial_litigation: 0.20, white_collar: 0.05, ip: 0.35, employment: 0.05, real_estate: 0.02, international_arbitration: 0.01, tax: 0.05, antitrust: 0.08, financial_regulation: 0.01, healthcare: 0.01, energy: 0.0, technology_privacy: 0.25, private_client: 0.0, insurance: 0.01, mass_torts: 0.0 }
     suffixes: [Systems, Technologies, Software, Networks]
   - key: pharma_health
     label: Pharma and healthcare
     intensity: 1.2
-    mix: { corporate_ma: 0.20, private_equity: 0.0, capital_markets: 0.05, banking_finance: 0.03, restructuring: 0.0, commercial_litigation: 0.25, white_collar: 0.15, ip: 0.25, employment: 0.05, real_estate: 0.02 }
+    mix: { corporate_ma: 0.20, private_equity: 0.0, capital_markets: 0.05, banking_finance: 0.03, restructuring: 0.0, commercial_litigation: 0.25, white_collar: 0.15, ip: 0.25, employment: 0.05, real_estate: 0.02, international_arbitration: 0.01, tax: 0.05, antitrust: 0.06, financial_regulation: 0.0, healthcare: 0.4, energy: 0.0, technology_privacy: 0.04, private_client: 0.0, insurance: 0.01, mass_torts: 0.0 }
     suffixes: [Pharmaceuticals, Health, Therapeutics, Medical]
   - key: energy
     label: Energy and utilities
     intensity: 0.6
-    mix: { corporate_ma: 0.25, private_equity: 0.0, capital_markets: 0.10, banking_finance: 0.15, restructuring: 0.05, commercial_litigation: 0.25, white_collar: 0.10, ip: 0.0, employment: 0.05, real_estate: 0.05 }
+    mix: { corporate_ma: 0.25, private_equity: 0.0, capital_markets: 0.10, banking_finance: 0.15, restructuring: 0.05, commercial_litigation: 0.25, white_collar: 0.10, ip: 0.0, employment: 0.05, real_estate: 0.05, international_arbitration: 0.1, tax: 0.05, antitrust: 0.05, financial_regulation: 0.02, healthcare: 0.0, energy: 0.4, technology_privacy: 0.01, private_client: 0.0, insurance: 0.02, mass_torts: 0.0 }
     suffixes: [Energy, Resources, Power, Petroleum]
   - key: industrials
     label: Industrials
     intensity: 0.7
-    mix: { corporate_ma: 0.20, private_equity: 0.0, capital_markets: 0.10, banking_finance: 0.10, restructuring: 0.05, commercial_litigation: 0.25, white_collar: 0.05, ip: 0.10, employment: 0.10, real_estate: 0.05 }
+    mix: { corporate_ma: 0.20, private_equity: 0.0, capital_markets: 0.10, banking_finance: 0.10, restructuring: 0.05, commercial_litigation: 0.25, white_collar: 0.05, ip: 0.10, employment: 0.10, real_estate: 0.05, international_arbitration: 0.04, tax: 0.04, antitrust: 0.05, financial_regulation: 0.0, healthcare: 0.0, energy: 0.05, technology_privacy: 0.02, private_client: 0.0, insurance: 0.03, mass_torts: 0.0 }
     suffixes: [Industries, Manufacturing, Materials, Group]
   - key: consumer_retail
     label: Consumer and retail
     intensity: 0.6
-    mix: { corporate_ma: 0.20, private_equity: 0.0, capital_markets: 0.05, banking_finance: 0.10, restructuring: 0.05, commercial_litigation: 0.20, white_collar: 0.05, ip: 0.10, employment: 0.15, real_estate: 0.10 }
+    mix: { corporate_ma: 0.20, private_equity: 0.0, capital_markets: 0.05, banking_finance: 0.10, restructuring: 0.05, commercial_litigation: 0.20, white_collar: 0.05, ip: 0.10, employment: 0.15, real_estate: 0.10, international_arbitration: 0.01, tax: 0.03, antitrust: 0.05, financial_regulation: 0.0, healthcare: 0.01, energy: 0.0, technology_privacy: 0.05, private_client: 0.0, insurance: 0.02, mass_torts: 0.0 }
     suffixes: [Brands, Stores, Foods, Consumer]
   - key: telecom_media
     label: Telecom and media
     intensity: 1.0
-    mix: { corporate_ma: 0.25, private_equity: 0.0, capital_markets: 0.10, banking_finance: 0.10, restructuring: 0.05, commercial_litigation: 0.20, white_collar: 0.05, ip: 0.15, employment: 0.05, real_estate: 0.05 }
+    mix: { corporate_ma: 0.25, private_equity: 0.0, capital_markets: 0.10, banking_finance: 0.10, restructuring: 0.05, commercial_litigation: 0.20, white_collar: 0.05, ip: 0.15, employment: 0.05, real_estate: 0.05, international_arbitration: 0.03, tax: 0.04, antitrust: 0.08, financial_regulation: 0.0, healthcare: 0.0, energy: 0.0, technology_privacy: 0.1, private_client: 0.0, insurance: 0.01, mass_torts: 0.0 }
     suffixes: [Media, Communications, Broadcasting]
   - key: autos_transport
     label: Autos and transport
     intensity: 0.6
-    mix: { corporate_ma: 0.15, private_equity: 0.0, capital_markets: 0.05, banking_finance: 0.10, restructuring: 0.15, commercial_litigation: 0.30, white_collar: 0.05, ip: 0.05, employment: 0.10, real_estate: 0.05 }
+    mix: { corporate_ma: 0.15, private_equity: 0.0, capital_markets: 0.05, banking_finance: 0.10, restructuring: 0.15, commercial_litigation: 0.30, white_collar: 0.05, ip: 0.05, employment: 0.10, real_estate: 0.05, international_arbitration: 0.02, tax: 0.03, antitrust: 0.04, financial_regulation: 0.0, healthcare: 0.0, energy: 0.05, technology_privacy: 0.01, private_client: 0.0, insurance: 0.03, mass_torts: 0.0 }
     suffixes: [Motors, Logistics, Transport, Automotive]
   - key: real_estate
     label: Real estate and hospitality
     intensity: 1.5
-    mix: { corporate_ma: 0.10, private_equity: 0.05, capital_markets: 0.10, banking_finance: 0.20, restructuring: 0.05, commercial_litigation: 0.10, white_collar: 0.0, ip: 0.0, employment: 0.05, real_estate: 0.35 }
+    mix: { corporate_ma: 0.10, private_equity: 0.05, capital_markets: 0.10, banking_finance: 0.20, restructuring: 0.05, commercial_litigation: 0.10, white_collar: 0.0, ip: 0.0, employment: 0.05, real_estate: 0.35, international_arbitration: 0.01, tax: 0.06, antitrust: 0.01, financial_regulation: 0.01, healthcare: 0.01, energy: 0.03, technology_privacy: 0.0, private_client: 0.0, insurance: 0.02, mass_torts: 0.0 }
     suffixes: [Properties, Realty, Development, Holdings]
+  # PT-M12 (spec 7.1): individuals pooled as flow demand by city, one pooled client per sector
+  # and city (`pooled_clients` below); never generated, never an adverse party.
+  - key: private_wealth
+    label: Private individuals and families
+    intensity: 1.0
+    mix: { private_client: 1.0 }
+    suffixes: [Family]
+    pooled: true
+  - key: claimants
+    label: Plaintiff claimants
+    intensity: 1.0
+    mix: { mass_torts: 1.0 }
+    suffixes: [Claimants]
+    pooled: true
 
 # Generated clients' sector weights (stream client_gen) [A]: mid-market companies, more
 # industrials and consumer, fewer banks and sponsors.
 generated_sector_weights: { banking: 0.08, insurance: 0.06, private_equity: 0.06, technology: 0.14, pharma_health: 0.10, energy: 0.08, industrials: 0.18, consumer_retail: 0.16, telecom_media: 0.06, autos_transport: 0.04, real_estate: 0.04 }
+
+# PT-M12: each city's pooled individuals ("{city}": the city's label), made after the city's
+# companies (ids append). revenue_bn is a size proxy that makes them mid-market [A].
+pooled_clients:
+  - { name: "{city} private clients", sector: private_wealth, revenue_bn: 2.0 }
+  - { name: "{city} claimants", sector: claimants, revenue_bn: 2.0 }
 
 # Static 2005 panel firms (PT-M3a): the rivals a client's wallet is split with, each with a
 # fixed appeal (logit points) in every practice: `base`, plus `strong` in its known strengths.
 # PT-M5 replaces them with rival firms that act. Keys match docs/research/rivals-2005.md;
 # appeals are [A] from each firm's 2005 reputation (Am Law rank and RPL [S] in that dossier).
 panel_firms:
-  - { key: skadden, name: "Skadden, Arps, Slate, Meagher & Flom", base: 1.6, strong: [corporate_ma, commercial_litigation, white_collar, capital_markets] }
-  - { key: cravath, name: "Cravath, Swaine & Moore", base: 1.7, strong: [corporate_ma, capital_markets, commercial_litigation] }
-  - { key: wachtell, name: "Wachtell, Lipton, Rosen & Katz", base: 1.4, strong: [corporate_ma, restructuring] }
-  - { key: sullivan_cromwell, name: Sullivan & Cromwell, base: 1.7, strong: [corporate_ma, capital_markets, banking_finance] }
-  - { key: davis_polk, name: Davis Polk & Wardwell, base: 1.6, strong: [capital_markets, banking_finance, white_collar] }
-  - { key: simpson_thacher, name: Simpson Thacher & Bartlett, base: 1.6, strong: [private_equity, banking_finance, corporate_ma] }
-  - { key: paul_weiss, name: "Paul, Weiss, Rifkind, Wharton & Garrison", base: 1.5, strong: [commercial_litigation, real_estate, corporate_ma] }
-  - { key: cleary, name: Cleary Gottlieb Steen & Hamilton, base: 1.5, strong: [capital_markets, corporate_ma] }
-  - { key: debevoise, name: Debevoise & Plimpton, base: 1.4, strong: [private_equity, white_collar] }
-  - { key: weil, name: "Weil, Gotshal & Manges", base: 1.4, strong: [restructuring, private_equity, ip] }
-  - { key: shearman, name: Shearman & Sterling, base: 1.3, strong: [banking_finance, capital_markets] }
-  - { key: milbank, name: "Milbank, Tweed, Hadley & McCloy", base: 1.3, strong: [banking_finance, restructuring] }
+  - { key: skadden, name: "Skadden, Arps, Slate, Meagher & Flom", base: 1.6, strong: [corporate_ma, commercial_litigation, white_collar, capital_markets, tax, antitrust, insurance] }
+  - { key: cravath, name: "Cravath, Swaine & Moore", base: 1.7, strong: [corporate_ma, capital_markets, commercial_litigation, tax] }
+  - { key: wachtell, name: "Wachtell, Lipton, Rosen & Katz", base: 1.4, strong: [corporate_ma, restructuring, tax, antitrust] }
+  - { key: sullivan_cromwell, name: Sullivan & Cromwell, base: 1.7, strong: [corporate_ma, capital_markets, banking_finance, tax, financial_regulation, antitrust, private_client] }
+  - { key: davis_polk, name: Davis Polk & Wardwell, base: 1.6, strong: [capital_markets, banking_finance, white_collar, financial_regulation, tax] }
+  - { key: simpson_thacher, name: Simpson Thacher & Bartlett, base: 1.6, strong: [private_equity, banking_finance, corporate_ma, insurance, tax] }
+  - { key: paul_weiss, name: "Paul, Weiss, Rifkind, Wharton & Garrison", base: 1.5, strong: [commercial_litigation, real_estate, corporate_ma, antitrust] }
+  - { key: cleary, name: Cleary Gottlieb Steen & Hamilton, base: 1.5, strong: [capital_markets, corporate_ma, antitrust, international_arbitration, financial_regulation] }
+  - { key: debevoise, name: Debevoise & Plimpton, base: 1.4, strong: [private_equity, white_collar, international_arbitration, insurance, private_client] }
+  - { key: weil, name: "Weil, Gotshal & Manges", base: 1.4, strong: [restructuring, private_equity, ip, antitrust] }
+  - { key: shearman, name: Shearman & Sterling, base: 1.3, strong: [banking_finance, capital_markets, international_arbitration, energy, financial_regulation] }
+  - { key: milbank, name: "Milbank, Tweed, Hadley & McCloy", base: 1.3, strong: [banking_finance, restructuring, energy, private_client] }
   - { key: fried_frank, name: "Fried, Frank, Harris, Shriver & Jacobson", base: 1.2, strong: [real_estate, corporate_ma] }
-  - { key: latham, name: Latham & Watkins, base: 1.4, strong: [capital_markets, banking_finance, ip] }
+  - { key: latham, name: Latham & Watkins, base: 1.4, strong: [capital_markets, banking_finance, ip, energy, technology_privacy] }
   - { key: kirkland, name: Kirkland & Ellis, base: 1.4, strong: [private_equity, restructuring, ip] }
-  - { key: jones_day, name: Jones Day, base: 1.2, strong: [commercial_litigation, employment, ip] }
+  - { key: jones_day, name: Jones Day, base: 1.2, strong: [commercial_litigation, employment, ip, antitrust, healthcare] }
 
 # 301 real clients, 2005 (spec 7.1: Fortune 500 and FTSE 100 names, personal use). revenue_bn
 # is 2005 revenue in USD billions [A]: approximate, from memory of the 2006 Fortune 500 (FY2005)

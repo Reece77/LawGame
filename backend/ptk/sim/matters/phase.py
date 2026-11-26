@@ -26,7 +26,7 @@ from ptk.sim.matters.market import monthly_demand
 from ptk.sim.matters.pro_bono import named_intake, record_month
 from ptk.sim.matters.progress import work_month
 from ptk.sim.matters.rates import yearly_rise
-from ptk.sim.matters.staffing import fee_earners, month_hours, staff_matter
+from ptk.sim.matters.staffing import fee_earners, month_hours, planned_load, staff_matter
 from ptk.sim.people.models import WorkMonth
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
@@ -63,11 +63,18 @@ def replan(state: GameState, firm_id: int, data: GameData, balance: Balance) -> 
     # PT-M11 (T12): the fee earners once; re-planning changes teams, not people, so they change
     # only when an early case assessment's lead moves (its hours are that lead's this month)
     earners = fee_earners(state, firm_id, data, balance)
+    # PT-M12 (T12): the firm's planned load once, kept current as teams change (it was summed
+    # over every open matter for each matter re-planned)
+    load = planned_load(state.market, firm_id)
     for m in state.market.open_matters(firm_id):
         if m.auto_staff:
-            staffed = staff_matter(state, m, data, balance, earners)
+            staffed = staff_matter(state, m, data, balance, earners, load)
             if staffed != m:
                 state = replace(state, market=with_matter(state.market, staffed))
+                for tm in m.team:
+                    load[tm.person_id] = load.get(tm.person_id, 0) - tm.planned_tenths
+                for tm in staffed.team:
+                    load[tm.person_id] = load.get(tm.person_id, 0) + tm.planned_tenths
                 a = m.assessment
                 if a is not None and a.turn == state.turn and staffed.lead_id != m.lead_id:
                     earners = fee_earners(state, firm_id, data, balance)

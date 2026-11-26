@@ -349,6 +349,9 @@ templates:
     title: "Fixed-fee product retired: {kind}"
     body: "New {kind} matters return to the usual billing terms."
   # PT-M11: offices, admissions and the UK path
+  practice_entered: # PT-M12
+    title: "The firm enters {practice}"
+    body: "The firm now practises {practice}, through {how}. Its clients can instruct it there, and its partners can introduce the new team."
   office_opened:
     title: "New office in {city}"
     body: "The firm signed a lease in {city} for {seats} lawyer seats at {rent_cents} a month. Its clients' work now reaches the firm there."

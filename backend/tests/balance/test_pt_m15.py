@@ -17,6 +17,7 @@ from functools import cache
 
 import pytest
 
+from ptk.balance.known_misses import Reading, verdict
 from ptk.balance.risk import RiskRun, risk_run
 
 SEEDS = range(1, 11)
@@ -25,6 +26,13 @@ PREMIUM_BAND = (500_000, 1_000_000)  # tunable-exempt: the dossier's $5k-$10k a 
 COWBOY_SEEDS = 8  # tunable-exempt: the brief's "at least 8 of 10"
 PEP_SEEDS = 6  # tunable-exempt: the brief's "at least 6 of 10"
 WORKERS = 4  # tunable-exempt
+# PT-M18 (the product manager's decision, Reece, 2026-11-25: non-strict, main fails it on
+# seeds 11-40): readings in docs/tasks/PT-M12-all-twenty-practices.md (decision 18)
+COWBOY_PEP_REASON = (
+    "PT-M18 (product manager, 2026-11-25): cowboy's lower PEP than steady, main 04efa78 7/10 "
+    "on seeds 1-10 and 13/30 on 11-40 (fails); PT-M12's branch 5/10 and 12/30 "
+    "(docs/tasks/PT-M12-all-twenty-practices.md, decision 18)"
+)
 
 
 def _one(args: tuple[str, int]) -> RiskRun:
@@ -39,6 +47,7 @@ def _runs() -> dict[tuple[str, int], RiskRun]:
 
 
 @pytest.mark.nightly
+@pytest.mark.xdist_group("pt_m15_risk")  # one worker: the cowboy test shares `_runs()`
 def test_t14_claims_and_premiums_for_steady() -> None:
     runs = [_runs()[("steady", s)] for s in SEEDS]
     rates = [100 * r.claims_0615 / r.lawyer_years for r in runs if r.lawyer_years > 0]
@@ -52,12 +61,15 @@ def test_t14_claims_and_premiums_for_steady() -> None:
     premium = statistics.median(premiums)
     print(f"\nT14: median {median:.2f} notices a 100 lawyer-years (band {T14_BAND})")
     print(f"Premium a lawyer (December 2015): median ${premium / 100:,.0f} (band $5k-$10k)")
-    assert T14_BAND[0] <= median <= T14_BAND[1]
+    # PT-M12: a known miss within its row's bound (owner PT-M18) passes; worse fails
+    reading = Reading("T14", T14_BAND[0] <= median <= T14_BAND[1], -median)
+    assert verdict(reading) != "fail", f"T14 {median:.3f} outside {T14_BAND}"
     assert PREMIUM_BAND[0] <= premium <= PREMIUM_BAND[1]
 
 
-@pytest.mark.nightly
-def test_cowboy_pays_for_its_corners() -> None:
+def _cowboy_counts() -> tuple[int, int]:
+    """(seeds where cowboy has at least twice steady's claims and cases, seeds where its PEP is
+    lower), seeds 1-10."""
     more = lower = 0
     for seed in SEEDS:
         s, c = _runs()[("steady", seed)], _runs()[("cowboy", seed)]
@@ -73,5 +85,13 @@ def test_cowboy_pays_for_its_corners() -> None:
     print(
         f"\ncowboy: 2x on {more} of 10 (>= {COWBOY_SEEDS}); lower PEP on {lower} (>= {PEP_SEEDS})"
     )
+    return more, lower
+
+
+@pytest.mark.nightly
+@pytest.mark.xdist_group("pt_m15_risk")  # one worker: T14 and this share `_runs()`
+def test_cowboy_pays_for_its_corners() -> None:
+    more, lower = _cowboy_counts()
     assert more >= COWBOY_SEEDS
-    assert lower >= PEP_SEEDS
+    if lower < PEP_SEEDS:  # PT-M18's, non-strict (the product manager, 2026-11-25)
+        pytest.xfail(COWBOY_PEP_REASON)

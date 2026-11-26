@@ -37,6 +37,7 @@ from typing import Final
 from ptk.sim.billing import audits as au
 from ptk.sim.billing import books as bk
 from ptk.sim.billing import formulas as fx
+from ptk.sim.billing import funding
 from ptk.sim.billing.kpis import TRAILING
 from ptk.sim.billing.models import (
     BILLING_MODELS,
@@ -72,6 +73,9 @@ from ptk.sim.ledger import (
     CASH,
     DEFERRED_FEES,
     FEES,
+    FUNDED_FEES,
+    FUNDER_ADVANCES,
+    FUNDING_COSTS,
     RECEIVABLES,
     SUCCESS_FEES,
     WIP,
@@ -253,7 +257,9 @@ class _Run:
         cfg = self.cfg
         u = fx.billing_draws(self.rng, self.turn, fx.TERMS, v.matter_id)
         client = self.client(v.client_id)
-        model = _pick_model(cfg.models.get(v.kind, {"hourly": 1.0}), u[0])
+        # PT-M12: a practice's own mix (contingency in mass torts, retainers in private client)
+        own = self.data.practice(v.practice).billing_models
+        model = _pick_model(own or cfg.models.get(v.kind, {"hourly": 1.0}), u[0])
         if model == "contingency" and v.stakes_cents <= 0:
             model = "hourly"
         # PT-M14: the firm's fixed-fee product replaces hourly-type terms (hourly, blended,
@@ -760,12 +766,16 @@ class _Run:
             if r.value_cents == 0 and r.tenths == 0:
                 continue
             seen = True
-            line = (r.practice, self.office(r.client_id))
-            wip[line] = wip.get(line, 0) + r.value_cents
             worked += r.value_cents
             billable += r.tenths
-            if r.matter_id is not None and r.matter_id in self.eng:
-                acc = to_eng.setdefault(r.matter_id, [0, 0])
+            e = self.eng.get(r.matter_id) if r.matter_id is not None else None
+            if e is None or e.model != "contingency":
+                # PT-M12 (ADR PT-0018): a contingency case's WIP posts no fee until its
+                # recovery (its funder's advance is posted per case below)
+                line = (r.practice, self.office(r.client_id))
+                wip[line] = wip.get(line, 0) + r.value_cents
+            if e is not None:
+                acc = to_eng.setdefault(e.matter_id, [0, 0])
             else:
                 acc = to_flow.setdefault((r.client_id, r.practice), [0, 0])
             acc[0] += r.value_cents
@@ -777,6 +787,12 @@ class _Run:
             self.add("billable_tenths", billable)
         for mid, (cents, tenths) in to_eng.items():
             e = self.eng[mid]
+            if e.model == "contingency":
+                # a funder advances its share of the case's month of WIP (2800)
+                advance = funding.advance_cents(cents, e.funded_bp)
+                office = self.office(e.client_id)
+                self.books.move(bk.FUNDING, CASH, FUNDER_ADVANCES, advance, e.practice, office)
+                e = replace(e, advances_cents=e.advances_cents + advance)
             self.eng[mid] = replace(
                 e,
                 wip_cents=e.wip_cents + cents,
@@ -873,7 +889,9 @@ class _Run:
             v = self.views.get(mid)
             if v is None or v.status != "closed" or e.closed:
                 continue
-            if v.outcome == "disqualified":
+            if v.outcome == "disqualified" and e.model == "contingency":
+                e = self.contingency(e, v, recovered=False)
+            elif v.outcome == "disqualified":
                 self.books.move(
                     bk.CLOSINGS, FEES, WIP, e.wip_cents, e.practice, self.office(e.client_id)
                 )
@@ -912,11 +930,18 @@ class _Run:
                 e = replace(e, funds_cents=0)
             self.eng[mid] = replace(e, closed=True, closed_turn=self.turn)
 
-    def contingency(self, e: Engagement, v: MatterBillingView) -> Engagement:
+    def contingency(
+        self, e: Engagement, v: MatterBillingView, *, recovered: bool = True
+    ) -> Engagement:
         """A contingency case's fee is a share of the recovery, which arrives in the client
-        account; the fee is transferred to the firm and the rest paid out to the client."""
+        account; the fee is transferred to the firm and the rest paid out to the client.
+        PT-M12 (ADR PT-0018): its WIP never posted a fee, so a loss reverses nothing; a funded
+        case pays the funder first from the fee, and the advances a loss leaves are the
+        funder's (released to 4400)."""
         cfg = self.cfg
-        if v.outcome == "won":
+        if not recovered:
+            recovery = 0
+        elif v.outcome == "won":
             recovery = pct_of(v.stakes_cents, cfg.recovery_bp)
         elif v.outcome == "settled":
             recovery = pct_of(
@@ -926,11 +951,9 @@ class _Run:
             recovery = 0
         fee = pct_of(recovery, e.share_bp)
         if fee <= 0:
-            self.books.move(
-                bk.CLOSINGS, FEES, WIP, e.wip_cents, e.practice, self.office(e.client_id)
-            )
             self.realised(e.wip_cents, 0)
-            return replace(e, wip_cents=0, wip_tenths=0)
+            self.settle_funding(e, 0)
+            return replace(e, wip_cents=0, wip_tenths=0, advances_cents=0)
         self.client_book.receive(bk.RECOVERIES, e.client_id, recovery)
         self.hold_funds(e.client_id, recovery)
         bill = self.issue(
@@ -939,7 +962,7 @@ class _Run:
             practice=e.practice,
             model="contingency",
             kind="contingency",
-            standard=e.wip_cents,
+            standard=0,  # PT-M12: the WIP was never posted (ADR PT-0018)
             fee=fee,
             memo=bk.CLOSINGS,
             disputable=False,
@@ -950,7 +973,22 @@ class _Run:
         self.transfer(bill, bill.outstanding_cents)
         self.client_book.pay_out(bk.REFUNDS, e.client_id, recovery - fee)
         self.hold_funds(e.client_id, -(recovery - fee))
-        return replace(e, wip_cents=0, wip_tenths=0, billed_cents=e.billed_cents + fee)
+        self.settle_funding(e, fee)
+        return replace(
+            e, wip_cents=0, wip_tenths=0, billed_cents=e.billed_cents + fee, advances_cents=0
+        )
+
+    def settle_funding(self, e: Engagement, fee: int) -> None:
+        """PT-M12: the funder's waterfall at a funded case's close (ADR PT-0018)."""
+        close = funding.close_funding(e.advances_cents, fee, e.funder_return_bp)
+        office = self.office(e.client_id)
+        self.books.move(bk.FUNDING, FUNDER_ADVANCES, CASH, close.repaid_cents, e.practice, office)
+        self.books.move(bk.FUNDING, FUNDING_COSTS, CASH, close.cost_cents, e.practice, office)
+        self.books.move(
+            bk.FUNDING, FUNDER_ADVANCES, FUNDED_FEES, close.released_cents, e.practice, office
+        )
+        self.add("funder_paid_cents", close.paid_cents)
+        self.add("funded_released_cents", close.released_cents)
 
     # --- 7. disputes ------------------------------------------------------------------------
 
@@ -983,6 +1021,8 @@ class _Run:
         for mid, e in self.eng.items():
             if e.closed:
                 continue
+            if e.model == "contingency":
+                continue  # PT-M12: its WIP is not on the books (ADR PT-0018)
             v = self.views.get(mid)
             target += e.wip_cents - fx.expected_value(e, v.progress if v else 0.0, self.cfg)
         for f in self.flows.values():
@@ -1015,7 +1055,7 @@ class _Run:
         return self.finish()
 
     def finish(self) -> BillingMonth:
-        fees = -self.books.total(FEES, SUCCESS_FEES)
+        fees = -self.books.total(FEES, SUCCESS_FEES, FUNDED_FEES)
         resolved = [b for b in self.bills.values() if b.closed_turn == self.turn]
         month = MonthTotals(
             turn=self.turn,

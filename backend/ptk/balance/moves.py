@@ -387,15 +387,22 @@ def utilisation(g: Game, months: int = 3) -> float:
 
 def pitch_rfps(g: Game, n: int = 2, team_size: int = 4) -> int:
     """Pitch up to `n` open RFPs the firm is invited to and has not pitched (biggest first):
-    the best partners and lawyers in its practices, the lead first. Returns pitches made."""
+    the best partners and lawyers in its practices, the lead first. Returns pitches made.
+    PT-M12 (CLAUDE.md 9 rule 2): with twenty practices a panel review often covers practices
+    the firm does not hold; a sensible firm pitches those covering more of its own practices
+    first, and none that covers none of them."""
     made = 0
+    held = set(practices_held(g))
     rfps = sorted(
         (
             r
             for r in g.state.rivals.rfps
-            if r.status == "open" and r.player_invited and r.pitch is None
+            if r.status == "open"
+            and r.player_invited
+            and r.pitch is None
+            and held & set(r.practices)
         ),
-        key=lambda r: (r.kind != "panel", -r.matter_cents, r.id),
+        key=lambda r: (-len(held & set(r.practices)), r.kind != "panel", -r.matter_cents, r.id),
     )
     for rfp in rfps:
         if made >= n or g.energy() < g.balance.energy.cost["pitch"]:

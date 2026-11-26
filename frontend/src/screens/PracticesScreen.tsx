@@ -1,4 +1,4 @@
-import { Select, Stack, Text, Title } from '@mantine/core';
+import { Alert, Badge, Button, Group, Select, Stack, Text, Title } from '@mantine/core';
 import { createColumnHelper, useTable } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { useParams } from 'react-router';
@@ -6,7 +6,13 @@ import { DataTable } from '../components/DataTable';
 import { Explain } from '../components/Explain';
 import { Sparkline } from '../components/Sparkline';
 import { useTableViews } from '../hooks/useTableViews';
-import { usePracticesScreen, type PracticeScreenRow } from '../lib/api';
+import {
+  useEnterPractice,
+  usePeople,
+  usePracticesScreen,
+  type EnterRoute,
+  type PracticeScreenRow,
+} from '../lib/api';
 import {
   formatBpShort,
   formatHours,
@@ -29,6 +35,38 @@ const EMPTY: PracticeScreenRow[] = [];
 
 const columns = helper.columns([
   helper.accessor('label', { header: 'Practice', sortFn: 'alphanumeric' }),
+  // PT-M12: the firm's position (practised or not), the driver and cycle, the main billing model
+  helper.accessor((r) => (r.practised ? 1 : 0), {
+    id: 'practised',
+    header: 'Ours',
+    sortFn: 'basic',
+    cell: ({ row }) =>
+      row.original.practised ? (
+        <Badge size="xs" variant="light" data-testid="practice-practised">
+          practised
+        </Badge>
+      ) : (
+        <span className="tst-muted">—</span>
+      ),
+  }),
+  helper.accessor((r) => r.driver ?? '', {
+    id: 'driver',
+    header: 'Driver',
+    sortFn: 'alphanumeric',
+    cell: ({ getValue }) => <span className="tst-muted">{getValue()}</span>,
+  }),
+  helper.accessor((r) => r.cycle ?? '', {
+    id: 'cycle',
+    header: 'Cycle',
+    sortFn: 'alphanumeric',
+    cell: ({ getValue }) => <span data-testid="practice-cycle">{humanize(getValue())}</span>,
+  }),
+  helper.accessor((r) => r.billing_model ?? 'hourly', {
+    id: 'billing',
+    header: 'Billing',
+    sortFn: 'alphanumeric',
+    cell: ({ getValue }) => humanize(getValue()),
+  }),
   helper.display({
     id: 'trend',
     header: 'Demand trend',
@@ -168,7 +206,16 @@ const rateColumns = rateHelper.columns([
 export function PracticesScreen() {
   const { slug = '' } = useParams();
   const practices = usePracticesScreen(slug);
-  const data = practices.data ?? EMPTY;
+  const all = practices.data ?? EMPTY;
+  const [cycle, setCycle] = useState<string | null>(null);
+  const [driver, setDriver] = useState<string | null>(null);
+  const data = useMemo(
+    () =>
+      all.filter(
+        (p) => (cycle === null || p.cycle === cycle) && (driver === null || p.driver === driver),
+      ),
+    [all, cycle, driver],
+  );
   const views = useTableViews('practices');
   const table = useTable({
     features: gameTableFeatures,
@@ -177,6 +224,8 @@ export function PracticesScreen() {
     getRowId: (r) => r.key,
     ...views.tableProps,
   });
+  const cycles = [...new Set(all.map((p) => p.cycle ?? ''))].filter(Boolean).sort();
+  const drivers = [...new Set(all.map((p) => p.driver ?? ''))].filter(Boolean).sort();
   return (
     <Stack gap="lg">
       <Title order={2}>
@@ -187,6 +236,28 @@ export function PracticesScreen() {
         <Text c="dimmed">Loading…</Text>
       ) : (
         <>
+          <Group>
+            <Select
+              w={220}
+              clearable
+              placeholder="Any cycle"
+              aria-label="Filter by cycle"
+              data={cycles.map((c) => ({ value: c, label: humanize(c) }))}
+              value={cycle}
+              onChange={setCycle}
+              data-testid="filter-cycle"
+            />
+            <Select
+              w={320}
+              clearable
+              searchable
+              placeholder="Any driver"
+              aria-label="Filter by driver"
+              data={drivers}
+              value={driver}
+              onChange={setDriver}
+            />
+          </Group>
           <DataTable
             views={views}
             table={table}
@@ -194,6 +265,7 @@ export function PracticesScreen() {
             rowTestId="practice-row"
             empty="No practices."
           />
+          <EnterPractice slug={slug} data={all} />
           <ReputationCauses data={data} />
           <Rates data={data} />
         </>
@@ -250,6 +322,86 @@ function Rates({ data }: { data: PracticeScreenRow[] }) {
         onChange={setKey}
       />
       <DataTable table={table} label="Rates" empty="No rate card." />
+    </div>
+  );
+}
+
+const ROUTES: { value: EnterRoute; label: string }[] = [
+  { value: 'lateral', label: 'A lateral partner (a recruiter search)' },
+  { value: 'team', label: 'A lateral team (partners with books and associates)' },
+  { value: 'retrain', label: 'A partner retraining (slow familiarity)' },
+];
+
+// PT-M12: enter a practice the firm does not practise. The engine decides every rule: a
+// refusal (no cash for a team, an associate asked to retrain) comes back as its error.
+function EnterPractice({ slug, data }: { slug: string; data: PracticeScreenRow[] }) {
+  const enter = useEnterPractice(slug);
+  const people = usePeople(slug);
+  const open = data.filter((p) => !p.practised);
+  const [practice, setPractice] = useState<string | null>(null);
+  const [route, setRoute] = useState<EnterRoute>('lateral');
+  const [partner, setPartner] = useState<string | null>(null);
+  const partners = (people.data ?? []).filter(
+    (p) => p.own_firm && (p.level === 'equity_partner' || p.level === 'income_partner'),
+  );
+  return (
+    <div className="tst-panel" data-testid="enter-practice">
+      <h3 className="tst-ptitle">Enter a practice</h3>
+      {enter.error && (
+        <Alert color="red" mb="sm" withCloseButton onClose={() => enter.reset()}>
+          {enter.error.message}
+        </Alert>
+      )}
+      {enter.isSuccess && (
+        <Text size="sm" mb="sm" data-testid="enter-practice-done">
+          {route === 'lateral'
+            ? 'The recruiter is searching: candidates appear under Partnership, laterals.'
+            : 'The firm now practises it.'}
+        </Text>
+      )}
+      <Group align="end">
+        <Select
+          w={280}
+          label="Practice"
+          data={open.map((p) => ({ value: p.key, label: p.label }))}
+          value={practice}
+          onChange={setPractice}
+          data-testid="enter-practice-select"
+        />
+        <Select
+          w={360}
+          label="How"
+          data={ROUTES}
+          value={route}
+          onChange={(v) => setRoute((v as EnterRoute | null) ?? 'lateral')}
+          allowDeselect={false}
+          data-testid="enter-practice-route"
+        />
+        {route === 'retrain' && (
+          <Select
+            w={240}
+            label="Partner"
+            data={partners.map((p) => ({ value: String(p.id), label: p.name }))}
+            value={partner}
+            onChange={setPartner}
+          />
+        )}
+        <Button
+          disabled={practice === null || (route === 'retrain' && partner === null)}
+          loading={enter.isPending}
+          onClick={() =>
+            practice &&
+            enter.mutate({
+              practice,
+              route,
+              personId: route === 'retrain' && partner ? Number(partner) : undefined,
+            })
+          }
+          data-testid="enter-practice-go"
+        >
+          Enter practice
+        </Button>
+      </Group>
     </div>
   );
 }

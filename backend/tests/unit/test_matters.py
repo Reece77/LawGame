@@ -102,8 +102,9 @@ def test_client_universe_is_seeded_and_complete(data: GameData, balance: Balance
     assert c.market.clients[:300] != a.market.clients[:300]  # panels and GCs differ by seed
     assert [x.name for x in c.market.clients[:300]] == [x.name for x in a.market.clients[:300]]
     m = a.market
-    assert len(m.clients) == 301 + balance.clients.generated_count
-    assert sum(1 for x in m.clients if x.real) == 301
+    pooled = len(data.clients.pooled_clients)  # PT-M12: New York's pooled individuals, last
+    assert len(m.clients) == 301 + balance.clients.generated_count + pooled
+    assert sum(1 for x in m.clients if x.real) == 301 + pooled
     assert len({x.name for x in m.clients}) == len(m.clients)
     # PT-M5: courts with real judges (judges.yaml) seat them; the others stay generated
     real_courts = {j.court for j in data.rivals.people.judges}
@@ -152,7 +153,8 @@ def test_monthly_demand_is_seeded_and_near_the_base(data: GameData, balance: Bal
     )
     year = [monthly_demand(rng, t, state, data, balance) for t in range(12)]
     total = sum(sum(m) for m in year)
-    assert total == pytest.approx(1_235_000_000_000, rel=0.05)
+    # PT-M12: the twenty practices' base ($14.55bn; v1's ten were $12.35bn)
+    assert total == pytest.approx(sum(p.demand_cents for p in data.practices), rel=0.05)
 
 
 def test_intake_is_seeded_and_named_matters_meet_the_threshold(

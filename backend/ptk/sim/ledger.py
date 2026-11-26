@@ -45,6 +45,10 @@ BAD_DEBT_PROVISION: Final = "1210_bad_debt_provision"
 DEFERRED_FEES: Final = "2200_deferred_fees"
 SUCCESS_FEES: Final = "4100_success_fees"
 WRITE_OFFS: Final = "6700_write_offs"
+# PT-M12: litigation funding of contingency cases (ADR PT-0018).
+FUNDER_ADVANCES: Final = "2800_funder_advances"
+FUNDED_FEES: Final = "4400_funded_fees"
+FUNDING_COSTS: Final = "6750_funding_costs"
 # PT-M4: the partnership (ADR PT-0003 sections 5-6; spec 8.4).
 REVOLVER: Final = "2300_revolver"
 PARTNER_CURRENT: Final = "2700_partner_current_accounts"
@@ -87,6 +91,9 @@ ENGINE_ACCOUNTS: Final = (
     DEFERRED_FEES,
     SUCCESS_FEES,
     WRITE_OFFS,
+    FUNDER_ADVANCES,
+    FUNDED_FEES,
+    FUNDING_COSTS,
     REVOLVER,
     PARTNER_CURRENT,
     INTEREST,

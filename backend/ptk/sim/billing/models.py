@@ -59,6 +59,13 @@ class Engagement:
     advance_turn: int | None = None  # retainer: the month the last advance bill covers
     offer_bp: int | None = None  # the last settlement offer seen (cases)
     funds_cents: int = 0  # money on account in the client book for this matter
+    # PT-M12 (ADR PT-0018): a contingency case's litigation funding: the share of its WIP the
+    # funder advances, its return (bp of its advances, paid first from the fee) and the
+    # advances so far (2800); `funded_turn` the month the firm took the funding
+    funded_bp: int = 0
+    funder_return_bp: int = 0
+    advances_cents: int = 0
+    funded_turn: int | None = None
     closed: bool = False
     closed_turn: int | None = None  # the turn billing closed it (final bill)
 
@@ -154,6 +161,8 @@ class MonthTotals:
     capacity_tenths: int = 0
     crisis_writedown_cents: int = 0  # PT-M7b: write-downs the crisis's requests took off bills
     ai_cut_cents: int = 0  # PT-M14: clients' cuts on hourly bills' AI-exposed tasks
+    funder_paid_cents: int = 0  # PT-M12: paid to litigation funders at funded cases' closes
+    funded_released_cents: int = 0  # PT-M12: advances funders bore (4400)
 
 
 @dataclass(frozen=True, slots=True)

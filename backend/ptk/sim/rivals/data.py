@@ -23,6 +23,9 @@ type Personality = Literal[
     "regional_champion",
     "volume_mid_market",
     "big_four_legal",
+    "plaintiff_firm",  # PT-M12
+    "private_client_firm",  # PT-M12
+    "arbitration_firm",  # PT-M12
 ]
 type EventKind = Literal["merger", "collapse", "absorbed", "rename", "outside_merger"]
 type Standing = Literal["elite", "leading", "strong"]

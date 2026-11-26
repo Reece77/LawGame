@@ -153,13 +153,23 @@ def make_city_clients(
     lo_rev, hi_rev = balance.geo.local_client_revenue_bn
     next_id = max((c.id for c in state.market.clients), default=0) + 1
     out: list[Client] = []
-    for n in range(len(reals) + cdef.clients):
+    n_gen = len(reals) + cdef.clients
+    pooled = data.clients.pooled_clients  # PT-M12: the city's individuals, after its companies
+    for n in range(n_gen + len(pooled)):
         gen = rng.stream(0, "city_clients", ci, n)
         if n < len(reals):
             real = reals[n]
             name, sector, revenue, is_real = real.name, real.sector, real.revenue_bn, True
             if name in taken:
                 name = f"{name} ({cdef.label})"
+        elif n >= n_gen:
+            real = pooled[n - n_gen]
+            name, sector, revenue, is_real = (
+                real.name.format(city=cdef.label),
+                real.sector,
+                real.revenue_bn,
+                True,
+            )
         else:
             sector = _weighted(gen, data.clients.generated_sector_weights)
             revenue = round(dmath.exp(gen.uniform(dmath.log(lo_rev), dmath.log(hi_rev))), 3)

@@ -34,7 +34,8 @@ SCENARIO: Final = "biglaw_spinout"
 FINAL_YEAR: Final = 2015  # "year 11"
 YEAR_5: Final = 2009
 DIFFICULTY_RUNS: Final = (("steady", "easy"), ("steady", "hard"))  # T5
-VARIANT_RUNS: Final = ("lateral-rocket-heeded", "restructuring")  # T9, T8
+# T9, T8; PT-M12: the specialist and full-service strategies (ptk/balance/practices.py)
+VARIANT_RUNS: Final = ("lateral-rocket-heeded", "restructuring", "specialist", "full-service")
 # PT-M10: steady played to December 2034 (360 turns): T11 at 2020 and 2025, the 2020 shock,
 # and the 30-year steady run printed for information (PT-M18 sets 30-year targets)
 LONG_RUN: Final = "steady-30y"
@@ -304,6 +305,7 @@ def evaluate(results: Sequence[RunResult]) -> list[Row]:
         *_t12(results),
         *_shock(results),
         *_thirty(results),
+        *_pt_m12(results),
     ]
 
 
@@ -787,3 +789,93 @@ def runs_table(results: Sequence[RunResult]) -> str:
             f"{_m(last.pep_cents if last else None):>10s} {_pct(change):>9s} {r.seconds:6.0f}"
         )
     return "\n".join(lines)
+
+
+# --- PT-M12: the practice strategies ----------------------------------------------------------
+
+SPECIALIST_SURVIVES: Final = 7  # tunable-exempt: the brief's "survives on at least 7 of 10"
+
+
+def _pep_change(r: RunResult, year: int) -> float | None:
+    """December's trailing PEP over the December before's, less 1 (None: dissolved or none)."""
+    now, before = r.december(year), r.december(year - 1)
+    if r.dissolved or now is None or before is None or not before.pep_cents:
+        return None
+    if now.pep_cents is None or before.pep_cents <= 0:
+        return None
+    return now.pep_cents / before.pep_cents - 1
+
+
+def _pt_m12(results: Sequence[RunResult]) -> list[Row]:
+    """PT-M12's criteria: the specialist survives on 7 of 10 and its 2009 PEP falls less than
+    steady's; T2 with it in the field (no strategy best on more than 6 of 10); the full-service
+    strategy's T3 lawyers and revenue against steady's (printed)."""
+    spec = _runs(results, "specialist")
+    rows: list[Row] = []
+    if spec:
+        n = len(spec)
+        alive = sum(1 for r in spec if not r.dissolved)
+        need = n * SPECIALIST_SURVIVES // 10
+        rows.append(
+            Row(
+                "PT-M12.specialist",
+                "specialist (restructuring + financial regulation) survives to Dec 2015",
+                f"{alive}/{n}",
+                f">= {need}/{n}",
+                alive >= need,
+            )
+        )
+        s09 = _med(x for r in spec if (x := _pep_change(r, YEAR_5)) is not None)
+        st09 = _med(
+            x for r in _runs(results, "steady") if (x := _pep_change(r, YEAR_5)) is not None
+        )
+        rows.append(
+            Row(
+                "PT-M12.specialist_2009",
+                "2009 PEP change, specialist vs steady (medians)",
+                f"{_pct(s09)} vs {_pct(st09)}",
+                "specialist falls less",
+                s09 is not None and st09 is not None and s09 > st09,
+            )
+        )
+        field = [
+            r
+            for r in results
+            if r.difficulty == "standard"
+            and (r.strategy in STRATEGIES or r.strategy == "specialist")
+        ]
+        wins: Counter[str] = Counter()
+        for seed in sorted({r.seed for r in field}):
+            runs = sorted((r for r in field if r.seed == seed), key=lambda r: -r.score)
+            if len(runs) > 1 and runs[0].score > runs[1].score:
+                wins[runs[0].strategy] += 1
+        seeds = len({r.seed for r in field})
+        top = max(wins.values(), default=0)
+        limit = seeds * 6 // 10
+        rows.append(
+            Row(
+                "T2.specialist",
+                "T2 with the specialist in the field (wins)",
+                ", ".join(f"{s} {k}" for s, k in wins.most_common()) or "-",
+                f"<= {limit}/{seeds} each",
+                top <= limit,
+            )
+        )
+    full = _runs(results, "full-service")
+    if full:
+        steady = _runs(results, "steady")
+        rows.append(
+            Row(
+                "PT-M12.full_service",
+                "full-service vs steady: lawyers Dec 2015 and 2015 revenue (medians)",
+                (
+                    f"{_med((r.december(FINAL_YEAR) or r.months[-1]).lawyers for r in full)}"
+                    f" / {_m(_med(r.year_revenue(FINAL_YEAR) for r in full))} vs "
+                    f"{_med((r.december(FINAL_YEAR) or r.months[-1]).lawyers for r in steady)}"
+                    f" / {_m(_med(r.year_revenue(FINAL_YEAR) for r in steady))}"
+                ),
+                "printed (T3's growth from more practices)",
+                None,
+            )
+        )
+    return rows

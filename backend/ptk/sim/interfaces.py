@@ -1193,6 +1193,7 @@ def _rival_standing(state: GameState, data: GameData) -> tuple[RivalStandingView
 
     turn = state.turn
     out = []
+    defs = {d.key: d for d in data.rivals.firms.firms}  # T12: once, not per firm
     for f in state.rivals.active:
         if rival_region(data, f.hq) != "us":  # PT-M11: the US tables, reputation and press
             continue
@@ -1208,7 +1209,7 @@ def _rival_standing(state: GameState, data: GameData) -> tuple[RivalStandingView
                 revenue_12m_cents=f.revenue_12m,
                 profit_12m_cents=f.profit_12m,
                 equity_partners=f.equity_partners,
-                strong=strong_practices(f, data),
+                strong=strong_practices(f, data, defs),
                 departures=sum(n for t, n in f.departures if t == turn),
                 lost_to_player=f.lost_to_player,
                 founded_turn=f.founded_turn,

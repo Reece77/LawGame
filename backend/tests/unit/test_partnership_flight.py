@@ -211,7 +211,12 @@ def test_the_exodus_spiral(
             f"seeds, with the scripted response on {heeded.count('dissolved')} of 10"
         )
     assert ignored.count("dissolved") >= 3
-    assert heeded.count("dissolved") <= 1
+    if heeded.count("dissolved") > 1:  # PT-M18's, non-strict (the product manager, 2026-11-25)
+        pytest.xfail(
+            "PT-M18 (product manager, 2026-11-25: non-strict, seed variance under rule 4): the "
+            "heeded response dissolves on main 04efa78 1/10 (seeds 1-10) and 4/30 (11-40), on "
+            "PT-M12's branch 2/10 and 3/30 (docs/tasks/PT-M12-all-twenty-practices.md, 18)"
+        )
 
 
 def test_confidence_and_contagion_feed_flight(data: GameData, balance: Balance) -> None:

@@ -10,6 +10,18 @@
 - **Recommendation:** extract now on the two-milestone route; Plaza starts on `sim-core` 0.2, so ADR PL-0001's transplant fallback is **not** triggered. TST takes SC-3 after it closes v6 (M57), as its roadmap's deferred M56; **SC-4 is deferred** and decided later, only if a shared world (spec §19 idea 12) or a third rich consumer makes it worth TST's balance cost.
 - **Sequencing:** SC-1 runs beside PT-M18 (it touches no PT file); SC-2 runs **alone** after PT-M18 merges and **before** PT-M19's world framework writes any code, because PT-M19's multi-currency ledger belongs in `sim-core`'s ledger, not in a third copy of it.
 
+## Why a shared core, not a rewrite or a copy
+
+Reece's answer (2026-11-26): **the games will be written concurrently.** That settles the choice between three routes for Plaza:
+
+| Route | Plaza's work | Cost to the other games | Verdict |
+| --- | --- | --- | --- |
+| Rewrite from scratch | Highest: the people, hiring, org, events and founder systems, their balance and their determinism guards rebuilt | None | Rejected: it throws away tested formulas and guards |
+| Copy PT and edit (transplant) | About 60,000 lines written or adapted, 8,000 taken (Plaza's map) | A third diverging copy; every kernel bug fixed three times; drift already visible after nine days (finding 3) | Right only if the older games freeze while Plaza is built |
+| Shared `sim-core` (this plan) | About 45,000 written, 15,000 taken, after 2 milestones of SC work | Two milestones up front; one copy of the kernel and the people spine afterwards | **Chosen**: with games developed side by side, the 15,000-line saving (about three milestones at PT's pace) repays SC-1 and SC-2 on Plaza alone, and PT's v3 and every later game gain on top |
+
+Two facts tip it even before the line counts. A transplant would still have to strip PT's roughly 60 law imports from its copy (finding 1), which is most of SC-2's work done for one game only. And Plaza needs the phase registry, books, cases and governing body (section 2.4) on either route, so copying means building them in a third copy. A kernel-only share (about half a milestone) was considered as a cheaper middle route; it is the fallback if SC-2 slips past its cut line (risk 10).
+
 ## 1. What the code says (the measurements behind the plan)
 
 1. **Partner Track removed TST's industry imports but added law imports in their place.** Plaza's map (finding 1) says PT "already paid the de-tech cost". That holds for products and markets, but PT's general modules now import law modules instead. Import sites from a candidate core module into a PT domain package (not the kernel, not another core module, and not `state`, `data_models` or `interfaces`):

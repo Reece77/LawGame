@@ -47,6 +47,8 @@ Goal: a founding partner can start a firm in January 2005, staff and bill matter
 
 Foreign offices under local rules (Asia, Europe, the Gulf); ABS entities, outside capital and listing; Big Four and ALSPs as rivals; a 2010 scenario pack; dynasty mode.
 
+**Outline (2026-11-26):** `docs/v3-outline.md` (PT-M19 to PT-M32, in five phases, each followed by a balance pass), for Reece's decisions. The `sim-core` checkpoint below is now due: TST closed v5 on 2026-11-21.
+
 ## The `sim-core` checkpoint
 
 Per ADR PT-0001 §5: when TST v5 closes **and** PT-M7 has merged, the product manager writes a short plan for extracting `sim-core` from both codebases, for Reece's decision. Until then the vendoring check keeps the copies honest.

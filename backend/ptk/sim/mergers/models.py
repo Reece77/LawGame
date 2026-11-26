@@ -139,6 +139,9 @@ class Integration:
     surrender_cents: int = 0
     lawyers_at_closing: int = 0
     partners_at_closing: int = 0
+    # PT-M12: practices where each firm had at least `integration.contested_min_share` of its
+    # own lawyers before closing (subordination's flight counts only there), sorted
+    contested: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)

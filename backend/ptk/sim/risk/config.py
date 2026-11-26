@@ -58,6 +58,9 @@ class ClaimStages(_Strict):
 
 class ClaimsBalance(_Strict):
     from_error_bp: int = Field(ge=0, le=10000)
+    # PT-M12: a practice's weight on from_error_bp (1.0 when not listed; docs/research/
+    # risk-and-ethics.md section 2a)
+    practice_weight: dict[str, float] = Field(default_factory=dict)
     grievance_min_stakes_cents: int = Field(ge=0)
     grievance_bp: int = Field(ge=0, le=10000)
     delay_months: Span

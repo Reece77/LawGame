@@ -465,6 +465,32 @@ def _apply_terms(
     return put(state, fp)
 
 
+def _contested(
+    state: GameState, firm: RivalFirm, data: GameData, balance: Balance
+) -> tuple[str, ...]:
+    """PT-M12: the practices where each firm had at least `integration.contested_min_share` of
+    its own lawyers before closing (the player's by home practice, the other's by pool)."""
+    from ptk.sim.partnership.common import home_practice
+
+    floor = balance.mergers.integration.contested_min_share
+    mine: dict[str, int] = {}
+    for p in state.staff_ids(state.player.id):
+        person = state.person(p)
+        if data.role(person.role).kind == "lawyer":
+            key = home_practice(person, data)
+            mine[key] = mine.get(key, 0) + 1
+    n_mine = sum(mine.values())
+    n_theirs = firm.lawyers
+    if n_mine <= 0 or n_theirs <= 0:
+        return ()
+    theirs = {pool.practice: pool.lawyers for pool in firm.pools}
+    return tuple(
+        sorted(
+            k for k in mine if mine[k] / n_mine >= floor and theirs.get(k, 0.0) / n_theirs >= floor
+        )
+    )
+
+
 def close_merger(
     state: GameState, deal: Deal, rng: RngFactory, data: GameData, balance: Balance
 ) -> tuple[GameState, tuple[LedgerEntry, ...], tuple[LogItem, ...]]:
@@ -473,6 +499,7 @@ def close_merger(
     assert firm is not None and terms is not None
     pid = state.player.id
     ours, theirs = player_side(state, data, balance), rival_side(firm, data)
+    contested = _contested(state, firm, data, balance)  # PT-M12: before the people join
     before = state.partnership.of(pid)
     budgets_before = (
         [(p.person_id, p.budget_cents) for p in before.equity_partners] if before else []
@@ -560,6 +587,7 @@ def close_merger(
         surrender_cents=surrender,
         lawyers_at_closing=ours.lawyers + len(people),
         partners_at_closing=len(fp.equity_partners),
+        contested=contested,
     )
     deal = replace(deal, stage="closed", stage_turn=state.turn, ended_turn=state.turn)
     ms = with_integration(with_deal(state.mergers, deal), integ)

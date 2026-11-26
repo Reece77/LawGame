@@ -1589,6 +1589,17 @@ risk: # PT-M15: claims, insurance, discipline, regulators, trust accounts, audit
   enabled: true # off: no claims, policies, cases, inquiries, reconciliations or audits (tests of earlier systems)
   claims:
     from_error_bp: 800 # bp of escaped errors that become claim notices at a GC effect of 0 (steady escapes 30-70 errors a 100 lawyers a year; the dossier's ~3 notices a 100 lawyers) [A]
+    practice_weight: # PT-M12 (the product manager, 2026-11-25): x from_error_bp for a matter in the practice, 1.0 when not listed (v1's ten); ALAS's share of claims over the practice's share of demand, normalised to v1's ten (risk-and-ethics.md s2a) [S/A]
+      tax: 1.34 # ALAS tax/ERISA 4% of claims on 3.1% of demand [S/A]
+      private_client: 2.0 # ALAS trusts and estates 7% on 1.0% (7.3x), capped at 2.0: large firms' trusts work is outside the game's demand [A]
+      international_arbitration: 1.52 # ALAS litigation 39% of claims on litigation's 26.8% of demand [S/A]
+      insurance: 1.52 # coverage litigation: as litigation [S/A]
+      mass_torts: 1.52 # plaintiff personal injury: as litigation (ABA: 15-25% of small-firm claims) [S/A]
+      antitrust: 1.19 # ALAS "other" 9% of claims on the five regulatory practices' 7.9% of demand [S/A]
+      financial_regulation: 1.19 # as antitrust [S/A]
+      healthcare: 1.19 # as antitrust [S/A]
+      energy: 1.19 # as antitrust [S/A]
+      technology_privacy: 1.19 # as antitrust [S/A]
     grievance_min_stakes_cents: 500000000 # $5M: a lost case with stakes of at least this may bring the client's claim
     grievance_bp: 1500 # bp of such lost cases that bring a claim [A]
     delay_months: { lo: 2, hi: 18 } # months from the error to the notice (errors surface late) [A]
@@ -1761,6 +1772,7 @@ mergers:
     pep_fall_tolerance: 0.1 # ... by more than this share of their PEP or budget before
     subordinated_mult: 0.5 # a partner whose practice the other side dominates: flight x (1 + this) (T13: 1.0 -> 0.5)
     subordinated_share: 0.25 # their side's share of the practice's lawyers below this: subordinated
+    contested_min_share: 0.10 # PT-M12 (the product manager, 2026-11-25): subordination counts only in a practice where each firm had at least this share of its own lawyers before closing ([A] law-firm-mergers.md s4: losses fall on overlapping practices and offices)
     balk_bp: 120 # a book client's monthly chance of leaving per unit of card rise x price sensitivity / 10 (bp)
     balk_months: 12 # clients balk in the first year
     surrender_months: 6 # months of rent to surrender a home-city lease (PT-M11's close penalty)

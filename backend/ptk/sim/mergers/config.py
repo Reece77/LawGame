@@ -90,6 +90,7 @@ class IntegrationBalance(_Strict):
     pep_fall_tolerance: float = Field(ge=0, lt=1)  # a fall of more than this share counts
     subordinated_mult: float = Field(ge=0)  # ... whose practice the other side leads
     subordinated_share: float = Field(ge=0, le=1)  # their side's share of the practice below
+    contested_min_share: float = Field(ge=0, le=1)  # PT-M12: each firm's own share to contest
     balk_bp: int = Field(ge=0)  # monthly chance per unit of card rise x sensitivity / 10
     balk_months: int = Field(ge=0)
     surrender_months: int = Field(ge=0)  # rent paid to surrender a home-city lease

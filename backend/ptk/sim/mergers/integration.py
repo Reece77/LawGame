@@ -6,7 +6,8 @@ For `integration.months` after closing:
   multiplied (`flight_multiplier`) by 1 + `flight_mult` x clash for the other side's partners;
   by 1 + `pep_fall_mult` for any partner whose budgeted share is below the PEP they expected
   before (the points ratio took from them); by 1 + `subordinated_mult` for a partner whose side
-  holds less than `subordinated_share` of their practice's lawyers (the other side runs it).
+  holds less than `subordinated_share` of their practice's lawyers (the other side runs it),
+  in a practice both firms had at closing (PT-M12: `contested_min_share` of each firm's own).
   Departures then follow PT-M4's machinery (approaches, counters, clients following; the spiral
   can follow).
 - **Clients balk.** A book client facing a card rise leaves with a monthly chance `balk_bp` x
@@ -86,11 +87,11 @@ def flight_multiplier(state: GameState, person_id: int, balance: Balance, data: 
             and partner.budget_cents < before * (1.0 - cfg.pep_fall_tolerance)
         ):
             mult *= 1.0 + cfg.pep_fall_mult
-        share = their_share_by_practice(state, integ, data).get(
-            home_practice(state.person(person_id), data), 0.0
-        )
+        practice = home_practice(state.person(person_id), data)
+        share = their_share_by_practice(state, integ, data).get(practice, 0.0)
         side = share if theirs else 1.0 - share
-        if side < cfg.subordinated_share:
+        # PT-M12: only in a practice both firms had (a contested practice, at closing)
+        if practice in integ.contested and side < cfg.subordinated_share:
             mult *= 1.0 + cfg.subordinated_mult
     return mult
 

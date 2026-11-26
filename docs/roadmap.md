@@ -41,11 +41,13 @@ Goal: a founding partner can start a firm in January 2005, staff and bill matter
 | PT-M15, risk and ethics | malpractice and insurance, discipline, trust accounts, billing audits | ports TST M34's case machinery |
 | PT-M16, reputation, press and rankings | reputation, legal press, public claims, revenue tables, league tables, directories | ports TST M14b, M15b |
 | PT-M17, the founding partner's life and succession | stress (already), persona, personal account, foundation, family, succession by election | ports TST M24, M26, M36 |
-| PT-M18, v2 balance | 30-year runs, strategies, the AI era's targets | |
+| PT-M18, v2 balance | seeds 1-40, every known miss and expected failure, 30-year targets, turn time, a sharded nightly | runs alone, after PT-M12 |
 
 ## v3: the world
 
 Foreign offices under local rules (Asia, Europe, the Gulf); ABS entities, outside capital and listing; Big Four and ALSPs as rivals; a 2010 scenario pack; dynasty mode.
+
+**Outline (2026-11-26):** `docs/v3-outline.md` (PT-M19 to PT-M32, in five phases, each followed by a balance pass), for Reece's decisions. The `sim-core` checkpoint below is now due: TST closed v5 on 2026-11-21.
 
 ## The `sim-core` checkpoint
 

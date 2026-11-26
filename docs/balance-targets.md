@@ -6,7 +6,7 @@
 
 | | |
 | --- | --- |
-| Seeds | 1–10 (nightly); 11–40 for seed-luck checks (CLAUDE.md §9 rule 4) |
+| Seeds | 1–10 (nightly); 11–40 for seed-luck checks (CLAUDE.md §12). **From PT-M18 (Reece, 2026-11-25): seeds 1–40 for every target and guard, with thresholds as shares of seeds** (6 of 10 becomes 60%, 9 of 10 becomes 90%) |
 | Turns | 132 (January 2005 to December 2015) |
 | Scenario | `biglaw_spinout`: an M&A partner and a litigator found a firm in New York with two associates, $600,000 of partners' capital and a $1M revolver, books of $2.5M and $1.5M |
 | Difficulty | standard; T5 also easy and hard |

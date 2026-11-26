@@ -47,6 +47,7 @@ def _runs() -> dict[tuple[str, int], RiskRun]:
 
 
 @pytest.mark.nightly
+@pytest.mark.xdist_group("pt_m15_risk")  # one worker: the cowboy test shares `_runs()`
 def test_t14_claims_and_premiums_for_steady() -> None:
     runs = [_runs()[("steady", s)] for s in SEEDS]
     rates = [100 * r.claims_0615 / r.lawyer_years for r in runs if r.lawyer_years > 0]
@@ -88,16 +89,9 @@ def _cowboy_counts() -> tuple[int, int]:
 
 
 @pytest.mark.nightly
+@pytest.mark.xdist_group("pt_m15_risk")  # one worker: T14 and this share `_runs()`
 def test_cowboy_pays_for_its_corners() -> None:
-    more, _ = _cowboy_counts()
+    more, lower = _cowboy_counts()
     assert more >= COWBOY_SEEDS
-
-
-@pytest.mark.nightly
-@pytest.mark.xfail(
-    strict=False,
-    reason=COWBOY_PEP_REASON,
-)
-def test_cowboy_earns_less_than_steady() -> None:
-    _, lower = _cowboy_counts()
-    assert lower >= PEP_SEEDS
+    if lower < PEP_SEEDS:  # PT-M18's, non-strict (the product manager, 2026-11-25)
+        pytest.xfail(COWBOY_PEP_REASON)

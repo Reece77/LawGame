@@ -215,14 +215,14 @@ def people_bands(
 ) -> tuple[PersonBand, ...]:
     """Named individuals (spec 12.3): rivals' real notables by their standing; the player's
     partners with a public record of leading matters in their practice."""
-    from ptk.sim.interfaces import rival_key_people
+    from ptk.sim.interfaces import rival_notable_people
 
     db = balance.rankings.directory
     out: list[PersonBand] = []
     for r in rivals:
         if r.kind != "real":
             continue
-        for v in rival_key_people(state, r.firm_id, data, balance):
+        for v in rival_notable_people(state, r.firm_id, data, balance):  # PT-M18 (T12)
             if v.notable_standing is not None and v.notable_standing in db.standing_band:
                 band = db.standing_band[v.notable_standing]
                 out.append(PersonBand(year, v.practice, v.person_id, r.firm_id, band))

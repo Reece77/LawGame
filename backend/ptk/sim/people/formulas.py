@@ -97,20 +97,20 @@ def growth_delta(
     decline = band_value(growth.decline, age)
     if not in_role:
         return -decline
+    multiplier = max(0.0, 1 + noise)
+    return growth_base(age, ca, pa, professionalism, growth) * multiplier * mentoring * learn - (
+        decline
+    )
+
+
+def growth_base(
+    age: int, ca: float, pa: float, professionalism: float, growth: GrowthBalance
+) -> float:
+    """growth_delta's role-skill factors before the noise: r x a(age) x headroom x
+    professionalism / 10 (evaluated left to right, as growth_delta always has)."""
     headroom = max(0.0, pa - ca) / pa
     factor = band_value(growth.age_factor, age)
-    multiplier = max(0.0, 1 + noise)
-    return (
-        growth.rate
-        * factor
-        * headroom
-        * professionalism
-        / PROFESSIONALISM_DIVISOR
-        * multiplier
-        * mentoring
-        * learn
-        - decline
-    )
+    return growth.rate * factor * headroom * professionalism / PROFESSIONALISM_DIVISOR
 
 
 # --- Practice familiarity (spec 5.1, 5.3; ADR PT-0006 section 2) ------------------------------

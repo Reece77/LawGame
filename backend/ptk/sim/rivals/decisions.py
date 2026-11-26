@@ -74,8 +74,10 @@ def choose(
     weights = month.personality(firm).weights
     need = needs(firm, month, approach_target)
     scored: list[Choice] = []
-    for action in RIVAL_ACTIONS:  # one noise draw per action, always, in this order
-        noise = float(gen.normal(0.0, rb.noise_sd))
+    # one noise draw per action, always, in this order (PT-M18, T12: drawn as one array, the
+    # same values as one draw at a time)
+    noises = gen.normal(0.0, rb.noise_sd, size=len(RIVAL_ACTIONS)).tolist()
+    for action, noise in zip(RIVAL_ACTIONS, noises, strict=True):
         n = need[action]
         if n <= 0.0 or firm.cooldown(action) > month.turn:
             continue

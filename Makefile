@@ -21,7 +21,7 @@ check-shard:
 
 # Turn-time budgets run alone, after the parallel suite (TST's check-timing; PT-M5 T12).
 check-timing:
-	cd backend && uv run pytest -q -n 0 -m timing
+	cd backend && uv run pytest -q -n 0 -m timing -s
 
 # For local iteration only: the same without the golden seeds.
 check-fast:

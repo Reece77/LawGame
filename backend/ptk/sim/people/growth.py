@@ -16,7 +16,7 @@ from __future__ import annotations
 
 from ptk.sim.data_models import Balance, GameData, band_value
 from ptk.sim.fastcopy import replace
-from ptk.sim.people.formulas import familiarity_after, growth_delta, learn_factor
+from ptk.sim.people.formulas import familiarity_after, growth_base, learn_factor
 from ptk.sim.people.models import Person, WorkMonth, role_ability
 from ptk.sim.rng import RngFactory
 
@@ -43,23 +43,20 @@ def grow_skills(
 
     current = person.skills.as_dict()
     decline = band_value(growth.decline, age)  # growth_delta for a skill outside the role
+    # PT-M18 (T12): growth_delta's terms that do not depend on the skill, once (the same
+    # operations in the same order: identical values), and the role skills' noise as one
+    # array (the same values as one draw at a time, in skills.yaml order)
+    base = growth_base(age, ca, person.potential_ability, professionalism, growth)
+    keys = [k for k in data.skill_keys if k in in_role]
+    noises = dict(
+        zip(keys, gen.normal(0.0, growth.noise_rel_sd, size=len(keys)).tolist(), strict=True)
+    )
     changes = {}
     for key in data.skill_keys:
         if key not in in_role:
             changes[key] = current[key] - decline
             continue
-        noise = float(gen.normal(0.0, growth.noise_rel_sd))
-        delta = growth_delta(
-            in_role=True,
-            age=age,
-            ca=ca,
-            pa=person.potential_ability,
-            professionalism=professionalism,
-            growth=growth,
-            noise=noise,
-            mentoring=mentoring,
-            learn=learn,
-        )
+        delta = base * max(0.0, 1 + noises[key]) * mentoring * learn - decline
         changes[key] = current[key] + delta
     return replace(person, skills=person.skills.updated(changes))  # updated() clamps
 

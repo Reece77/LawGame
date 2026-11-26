@@ -106,6 +106,8 @@ STREAM_IDS: Final = MappingProxyType(
 )
 
 MAX_SEED: Final = 2**64 - 1
+_WORD: Final = 2**32 - 1  # a SeedSequence entropy word's largest value
+_POOL_SIZE: Final = 4  # SeedSequence's default pool size, in words
 
 
 class RngFactory:
@@ -115,7 +117,7 @@ class RngFactory:
     pass that entity's id as a key, so they do not depend on iteration order.
     """
 
-    __slots__ = ("_master_seed",)
+    __slots__ = ("_master_seed", "_pool_words")
 
     def __init__(self, master_seed: int) -> None:
         if isinstance(master_seed, bool) or not isinstance(master_seed, int):
@@ -123,6 +125,10 @@ class RngFactory:
         if not 0 <= master_seed <= MAX_SEED:
             raise InvalidSeedError(f"master seed must be in 0..2**64-1, got {master_seed}")
         self._master_seed = master_seed
+        # PT-M18 (T12): the master seed's 32-bit words, padded to SeedSequence's pool size, as
+        # SeedSequence assembles them before a spawn key (see `stream`)
+        words = [master_seed & _WORD, master_seed >> 32]
+        self._pool_words = words + [0] * (_POOL_SIZE - len(words))
 
     @property
     def master_seed(self) -> int:
@@ -136,7 +142,15 @@ class RngFactory:
         for part in key:
             if isinstance(part, bool) or not isinstance(part, int) or part < 0:
                 raise InvalidSeedError(f"stream keys must be non-negative ints, got {key!r}")
-        seq = np.random.SeedSequence(
-            entropy=self._master_seed, spawn_key=(turn, STREAM_IDS[name], *key)
-        )
+        # PT-M18 (T12): SeedSequence(entropy=seed, spawn_key=k) hashes the seed's words, padded
+        # to the pool size, followed by k's words: passing that word array as the entropy gives
+        # the same pool, so the same generator, without numpy coercing each key in Python. A
+        # key part of 32 bits or more takes the documented path.
+        ent = [*self._pool_words, turn, STREAM_IDS[name], *key]
+        if max(ent) <= _WORD:
+            seq = np.random.SeedSequence(np.array(ent, dtype=np.uint32))
+        else:
+            seq = np.random.SeedSequence(
+                entropy=self._master_seed, spawn_key=(turn, STREAM_IDS[name], *key)
+            )
         return np.random.Generator(np.random.PCG64(seq))

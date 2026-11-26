@@ -68,6 +68,12 @@ def t12_ms(
             advance_turn(state, Decisions(), rng, balance, data, balances)
             times.append(time.perf_counter() - t0)
         runs.append(statistics.median(times))
+    # PT-M18: printed beside the gate, the brief's criterion (the median of the five runs'
+    # median turns, at most 200 ms on CI's runner); the gate is unchanged
+    print(
+        f"\nT12 runs (ms): {', '.join(f'{r * 1000:.0f}' for r in runs)}; gate (minimum) "
+        f"{min(runs) * 1000:.0f}, median of five {statistics.median(runs) * 1000:.0f}"
+    )
     return min(runs) * 1000
 
 

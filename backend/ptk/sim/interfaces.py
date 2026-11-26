@@ -1284,6 +1284,20 @@ def rival_key_people(
     return tuple(out)
 
 
+def rival_notable_people(
+    state: GameState, firm_id: int, data: GameData, balance: Balance
+) -> tuple[RivalPersonView, ...]:
+    """`rival_key_people` limited to real notables (PT-M18, T12: the directory reads only
+    their standing, and building the others' views generated them)."""
+    out = []
+    for m in state.rivals.members_of(firm_id):
+        if m.kind == "partner" and m.notable is not None:
+            view = _person_view(state, m.person_id, data, balance)
+            if view is not None:
+                out.append(view)
+    return tuple(out)
+
+
 def _person_view(
     state: GameState, person_id: int, data: GameData, balance: Balance
 ) -> RivalPersonView | None:

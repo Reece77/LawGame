@@ -1,6 +1,6 @@
 # `sim-core` extraction plan (PT-M19 checkpoint)
 
-**Status: PROPOSED, for Reece's decision (2026-11-26).** This is the checkpoint set by ADR PT-0001 §5 and `docs/v3-outline.md` ("The `sim-core` checkpoint is now due"). It was written by reading TST (`Reece77/Tech_Executive_Tycoon`, read-only) at `main` `3da2f5b` (M54 merged; M55 and M52 still running; M57 not yet briefed) and Partner Track at `main` `0329497` (PT-M12's fix merged; PT-M18 not started). Plaza's accepted reuse map (PL-D0, "Plaza Reuse Map v0.1", 2026-11-26) is an input, and its §8 asks are treated as requirements. Nothing here has been built. Every line count is measured with `wc -l` or an import scan on those commits; every cost is an estimate.
+**Status: ACCEPTED by Reece (2026-11-26): every default in section 9; the repository `Reece77/sim-core` is created.** This is the checkpoint set by ADR PT-0001 §5 and `docs/v3-outline.md` ("The `sim-core` checkpoint is now due"). It was written by reading TST (`Reece77/Tech_Executive_Tycoon`, read-only) at `main` `3da2f5b` (M54 merged; M55 and M52 still running; M57 not yet briefed) and Partner Track at `main` `0329497` (PT-M12's fix merged; PT-M18 not started). Plaza's accepted reuse map (PL-D0, "Plaza Reuse Map v0.1", 2026-11-26) is an input, and its §8 asks are treated as requirements. Nothing here has been built. Every line count is measured with `wc -l` or an import scan on those commits; every cost is an estimate.
 
 ## The answer first
 
@@ -174,7 +174,7 @@ The derivation never changes: `SeedSequence(entropy=master_seed, spawn_key=(turn
 
 | Step | Milestone | Where | Runs | What | Exit test |
 | --- | --- | --- | --- | --- | --- |
-| 0 | This plan | PT docs | now | Reece's decisions (section 9); Reece creates `Reece77/sim-core` and adds it to the authorised sessions | Decisions recorded in `docs/v3-outline.md` |
+| 0 | This plan | PT docs | done (2026-11-26) | Reece accepted section 9's defaults and created `Reece77/sim-core` | Decisions recorded here and in `docs/v3-outline.md` |
 | 1 | **SC-1**, `sim-core` 0.1 | `sim-core` | beside PT-M18 (touches no PT or TST file) | Kernel from TST's newest files with PT's calendar; stream registry; `SubState` and `PhaseRegistry`; multi-book, multi-currency ledger design and code; interfaces; `simcore_db`, `simcore_llm`; `ui/`; the guard suite (section 6); the three fixture consumers, with Plaza's heat and territory providers | `make check` in `sim-core`; the determinism corpus equals TST's and PT's `RngFactory` output for a fixed grid |
 | 2 | **SC-2**, PT on `sim-core` 0.2 | PT, then `sim-core` | **alone**, after PT-M18 merges, before PT-M19's code | PT replaces its kernel, state and turn wiring with the registries (its 20 sub-states register; its 12 phases register in today's order). It lifts `people/`, `hiring/`, `org/` (with seats, authority and pitches), `actions/` and `automation/` frameworks, the `events/` framework, `founder/` and `family/` into `sim-core`, behind interfaces, and releases 0.2. The case machinery and governing body land in 0.2 from PT's `risk/` and `partnership/` | **PT's golden snapshots and `state_hashes.json` unchanged**; `make check`, `make e2e`, T12's timing gate within its budget; `VENDORED.md` reduced |
 | 3 | PT-M19 onward | PT | as planned | The world framework uses `sim-core`'s currency dimension (any ledger change is a `sim-core` minor release made in PT-M19's lane) | PT-M19's own criteria |
@@ -232,21 +232,21 @@ In each game:
 9. **Scope creep**: conversations, modes, dynasty and rivals are attractive core candidates. *Mitigation:* the rule of two; they are LATER until a second game runs them.
 10. **Plaza waits on SC-2.** If SC-2 slips past one milestone even after the cut line, Plaza's ADR PL-0001 fallback (transplant) still applies, and Plaza can transplant from `sim-core` 0.1 plus PT, which is no worse than today.
 
-## 9. Decisions for Reece (proposed defaults)
+## 9. Decisions (Reece accepted every default, 2026-11-26)
 
-1. **Extract on the two-milestone route** (SC-1 beside PT-M18, SC-2 alone before PT-M19's code), and tell Plaza that ADR PL-0001's fallback is not triggered. *Default: yes.*
-2. **A new private repository, `Reece77/sim-core`**, created by Reece, written only by sessions he names for SC milestones (Partner Track sessions keep never writing to TST). *Default: yes.*
-3. **CI access**: a fine-grained, read-only token for `sim-core` as an Actions secret in PT (later TST and Plaza), so consumers' CI can install the tagged package and `sim-core`'s CI can run their snapshots. *Default: yes.*
-4. **Base versions**: Partner Track's for people, hiring, org, automation, events, founder and family; TST's newest for `llm/`, `db/` and the UI shell; PT's calendar. *Default: yes.*
-5. **PT-M19's slot**: SC-2 runs as "PT-M19a" before the world framework, and PT-M19's multi-currency ledger is built in `sim-core`. *Default: yes.*
-6. **TST's extent**: SC-3 only (kernel and registries, no behaviour change), as TST's M56 after M57 closes v6; SC-4 deferred and decided after SC-3. *Default: yes.*
-7. **Stream policy** as in section 4 (1–19 core with TST's meanings, 17 renamed `governance` with aliases, 4/5/15/16/18 game-defined, 200–299 reserved for the core, core machinery draws on streams passed in). *Default: yes.*
-8. **No re-recording in extraction milestones**: SC-2 and SC-3 must leave golden snapshots and state caches unchanged; a move that cannot is cut to the next release. *Default: yes.*
-9. **Versioning**: SemVer, with any change to a result counted as breaking; interfaces freeze at 1.0 after Plaza's PL-M3a. *Default: yes.*
-10. **UI shell vendored from `sim-core`** (hash-checked against the pinned tag) rather than a pnpm package, until 1.0. *Default: yes.*
+1. **Extract on the two-milestone route** (SC-1 beside PT-M18, SC-2 alone before PT-M19's code), and tell Plaza that ADR PL-0001's fallback is not triggered. *Accepted.*
+2. **A new private repository, `Reece77/sim-core`**, created by Reece, written only by sessions he names for SC milestones (Partner Track sessions keep never writing to TST). *Accepted.*
+3. **CI access**: a fine-grained, read-only token for `sim-core` as an Actions secret in PT (later TST and Plaza), so consumers' CI can install the tagged package and `sim-core`'s CI can run their snapshots. *Accepted.*
+4. **Base versions**: Partner Track's for people, hiring, org, automation, events, founder and family; TST's newest for `llm/`, `db/` and the UI shell; PT's calendar. *Accepted.*
+5. **PT-M19's slot**: SC-2 runs as "PT-M19a" before the world framework, and PT-M19's multi-currency ledger is built in `sim-core`. *Accepted.*
+6. **TST's extent**: SC-3 only (kernel and registries, no behaviour change), as TST's M56 after M57 closes v6; SC-4 deferred and decided after SC-3. *Accepted.*
+7. **Stream policy** as in section 4 (1–19 core with TST's meanings, 17 renamed `governance` with aliases, 4/5/15/16/18 game-defined, 200–299 reserved for the core, core machinery draws on streams passed in). *Accepted.*
+8. **No re-recording in extraction milestones**: SC-2 and SC-3 must leave golden snapshots and state caches unchanged; a move that cannot is cut to the next release. *Accepted.*
+9. **Versioning**: SemVer, with any change to a result counted as breaking; interfaces freeze at 1.0 after Plaza's PL-M3a. *Accepted.*
+10. **UI shell vendored from `sim-core`** (hash-checked against the pinned tag) rather than a pnpm package, until 1.0. *Accepted.*
 
 ## Follow-ups (not part of this plan)
 
-- Briefs for SC-1 and SC-2 once decisions 1–5 are made; SC-1 needs a `sim-core` CLAUDE.md derived from both games'.
+- Briefs for SC-1 and SC-2 (decisions made); SC-1 needs a `sim-core` CLAUDE.md derived from both games', and a session Reece names to write `Reece77/sim-core`.
 - Report to Reece for a TST session: TST's `llm/` and `db/backup.py` have moved since `02fba2aa`. No re-copy into PT is proposed before SC-2.
 - Plaza's map should note that PT's general modules carry about 60 law imports (finding 1), so its porting estimate assumes `sim-core` 0.2, not raw PT files.

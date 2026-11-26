@@ -77,7 +77,8 @@ def grow_familiarity(person: Person, data: GameData, balance: Balance, work: Wor
     }
     familiarity = person.familiarity.updated(values)
     after = familiarity.as_dict()
-    peak = person.familiarity_peak.updated({k: max(peaks[k], after[k]) for k in data.practice_keys})
+    rises = {k: v for k, v in after.items() if v > peaks[k]}  # usually none, or the home one
+    peak = person.familiarity_peak.updated(rises) if rises else person.familiarity_peak
     return replace(person, familiarity=familiarity, familiarity_peak=peak)
 
 

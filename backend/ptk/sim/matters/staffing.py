@@ -359,12 +359,14 @@ def staff_matter(
     data: GameData,
     balance: Balance,
     earners: Sequence[FeeEarner] | None = None,
+    planned: Mapping[int, int] | None = None,
 ) -> Matter:
     """Apply the default staffing rule to a matter of the state's firm. `earners` (PT-M11, T12):
-    the firm's fee earners when the caller already holds them for this state."""
+    the firm's fee earners when the caller already holds them for this state. `planned`
+    (PT-M12, T12): `planned_load(state.market, firm)` when the caller keeps it current."""
     if earners is None:
         earners = fee_earners(state, matter.firm_id, data, balance)
-    load = planned_load(state.market, matter.firm_id)
+    load = dict(planned) if planned is not None else planned_load(state.market, matter.firm_id)
     for tm in matter.team:  # re-staffing: its own plan does not count against itself
         load[tm.person_id] = load.get(tm.person_id, 0) - tm.planned_tenths
     lead, team = default_team(

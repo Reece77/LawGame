@@ -95,6 +95,21 @@ From `pt-2008`, hire a lateral restructuring partner into a new financial regula
 
 15. **The nightly's time limit.** `make nightly` took 112 of its 120 minutes on main (PT-M15's last nightly); with twenty practices the simulation is about 30% slower a turn (decision 14), and the branch's `nightly (nightly)` job was cancelled at 120 minutes twice (runs 45708182750 and the head's) with no failure reported before the limit. The job's `timeout-minutes` is raised to 180 (`.github/workflows/nightly.yml`); no test is skipped or changed. Splitting the nightly into shards like `check` is a follow-up.
 
+16. **Earlier milestones' nightly guards on the merged branch (open: for the product manager).** The nightly on `feb3913` (run 45737170096) finished inside 180 minutes and failed five guards that pass on main. Readings, main `04efa78` against the branch (`feb3913`; seeds 11-40 on helper sessions, the exodus locally):
+
+    | Guard (owner) | band | main 1-10 | branch 1-10 | main 11-40 | branch 11-40 | verdict |
+    | --- | --- | --- | --- | --- | --- | --- |
+    | T13 partners lost within 24 months of a merger (PT-M13) | 10-20% | 12.8% (4 merged) | **28.0%** (6) | 18.8% (13) | **23.9%** (16) | real (rule 4): worse on 30 seeds |
+    | T14 claim notices a 100 lawyer-years (PT-M15) | 1.5-5.0 | 1.717 | **1.495** | 1.998 | **1.497** | real: below the floor on both ranges |
+    | cowboy lower PEP than steady (PT-M15) | >= 60% | 7/10 | 5/10 | 13/30 | 12/30 | fails on main on 11-40 too (rule 3/4) |
+    | cowboy 2x claims and cases (PT-M15) | >= 80% | 8/10 | 10/10 | 26/30 | 26/30 | passes |
+    | premium a lawyer (PT-M15) | $5k-$10k | $9,434 | $9,950 | $9,558 | $9,891 | passes |
+    | exodus spiral, heeded dissolves (PT-M4) | <= 1/10 | 1 | 2 | 4/30 | 3/30 | seed variance (rule 4) |
+    | resignations test (PT-M4) | | passes | firm dissolved in month 55 | | | fixture fixed (plays to 60 months or the end) |
+
+    T13 and T14 are worse on the branch on 30 seeds, no balance script lacks a sensible player's behaviour (rule 2's first step), and the keys that would move them are PT-M13's (`mergers.integration`) and PT-M15's (`risk.claims`), not PT-M12's. Likely causes, not yet proven: with twenty practices a merged side more often holds under 25% of a practice (PT-M13's 1.5x flight multiplier), and steady's lawyers spread into v2 practices whose matters' error and stakes profile draws fewer claims. Waiting for the product manager's decision; no row is added.
+17. **T12 on CI after the last speed-ups** (identical results: golden snapshots and the state cache replay unchanged): replan keeps the planned load current, and familiarity peaks are rebuilt only when one rises. Best of three on one machine: merger and verein 198 against main's 152 ms, base 156 against 142 ms; `check-timing` alone 198-227 ms. On CI's runner the two `check` runs of `be4c2a1` disagree (push run passed; the pull-request run read two offices 295 ms and merger and verein 316 ms). The rest of the gap is a busier world (the T12 firm opens about 2.4x main's new matters a month, which staffing, work and billing follow) and twenty practices' per-practice loops.
+
 ## Follow-ups
 
 - **PT-M18:** steady wins T2 more often on the branch on seeds 11-40 (21/30 against main's 16/30), and PT-M9's automated steady trails steady's revenue by 31-34% (main 19-22%): steady's cross-sell adds (decision 11) grow it faster than its automated form; the PT-M18 owners of both rows should read them together.

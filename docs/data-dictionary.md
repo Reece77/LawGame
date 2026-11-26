@@ -329,6 +329,8 @@ A save from before PT-M14 has no `tech` row: the firm has no technology. `billin
 
 Practices, roles and familiarities: `practices.yaml` appends the ten v2 practices, `roles.yaml` their lawyer roles (appended after the business-services roles), so a person's `familiarity` (in `person.data_json`) has twenty entries in practices.yaml order and `rate_card` entries cover the twenty; a save from before PT-M12 (ten familiarities) is not readable by PT-M12's engine. Clients: two pooled sectors (`private_wealth`, `claimants`; clients.yaml `pooled_clients`) give each city a "private clients" and a "claimants" client, appended after the city's other clients (the New York pair after the generated clients). Ledger accounts first posted in PT-M12 (ADR PT-0018): 2800 (litigation funders' advances, non-recourse), 4400 (funded fees: advances a funder bears) and 6750 (litigation funding costs: the funder's return above its advances); a contingency case's WIP no longer posts to 1100 and 4000 (its fee posts to 4100 at the recovery). `billing_month.data_json`'s `MonthTotals` gains `funder_paid_cents` and `funded_released_cents` (0 on older rows); `engagement.data_json` gains the funding fields above. `decision_log` gains the action `accept_funding`.
 
+PT-M12 also adds `contested` to a merger's integration record (`mergers.data_json` `integrations[]`: the practices, sorted, where each firm had at least `mergers.integration.contested_min_share` of its own lawyers before closing; empty in saves from before it).
+
 ## Schema v19 (`0019_risk`, PT-M15; chained after PT-M13's `0018_mergers`)
 
 | Table | Column | Type | Notes |

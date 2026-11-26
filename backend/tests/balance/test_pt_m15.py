@@ -30,7 +30,8 @@ WORKERS = 4  # tunable-exempt
 # seeds 11-40): readings in docs/tasks/PT-M12-all-twenty-practices.md (decision 18)
 COWBOY_PEP_REASON = (
     "PT-M18 (product manager, 2026-11-25): cowboy's lower PEP than steady, main 04efa78 7/10 "
-    "on seeds 1-10 and 13/30 on 11-40 (fails); PT-M12's branch: see its brief, decision 18"
+    "on seeds 1-10 and 13/30 on 11-40 (fails); PT-M12's branch 5/10 and 12/30 "
+    "(docs/tasks/PT-M12-all-twenty-practices.md, decision 18)"
 )
 
 

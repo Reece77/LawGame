@@ -92,6 +92,26 @@ KNOWN_MISSES: Final[tuple[KnownMiss, ...]] = (
         "branch and main",
     ),
     KnownMiss(
+        target="T13",  # partners lost within 24 months of a merger: 10-20% (PT-M13)
+        owner="PT-M18",
+        # score: the median share lost; known while at most 30%
+        worse_than=0.30,
+        reason="PT-M12 (authorised by the product manager, Reece, 2026-11-25): 28.0% on seeds "
+        "1-10 and 23.9% on 11-40 on PT-M12's branch (main 04efa78: 12.8% and 18.8%). The "
+        "targeted fix (subordination only in a practice both firms had, contested_min_share "
+        "10%) does not move it: no merged partner is subordinated in these runs",
+    ),
+    KnownMiss(
+        target="T14",  # steady's claim notices a 100 lawyer-years 2006-2015: 1.5-5.0 (PT-M15)
+        owner="PT-M18",
+        # score: minus the median; known while the median is at least 1.40
+        worse_than=-1.40,
+        reason="PT-M12 (authorised by the product manager, Reece, 2026-11-25): 1.495 on seeds "
+        "1-10 and 1.497 on 11-40 on PT-M12's branch (main 04efa78: 1.717 and 1.998). The v2 "
+        "practices' claim weights (risk-and-ethics.md s2a) do not move it: steady's escaped "
+        "errors fall in v1's practices; its larger firm (lawyer-years) lowers the rate",
+    ),
+    KnownMiss(
         target="T8.corporate",  # corporate-heavy firms' 2009 revenue -30% to -10% on 2008
         owner="accepted (Reece, 2026-11-22)",
         # score: the median change; known while it is at most -5% (a fall within noise of -10%)

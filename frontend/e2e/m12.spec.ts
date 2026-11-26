@@ -46,29 +46,30 @@ test('enter international arbitration with a lateral partner', async ({ page }) 
 // team, play until the firm has a contingency case, and take a litigation funder's offer on it.
 test('fund a mass-tort case', async ({ page }) => {
   test.setTimeout(600_000);
-  const made = await page.request.post('/api/practice/pt-2022');
+  // its own copy of the 2022 practice save (PT-M12), so m14 starts from an unplayed one
+  const made = await page.request.post('/api/practice/pt-2022?slug=m12-torts');
   expect([200, 409]).toContain(made.status());
-  await answerBlocking(page, 'pt-2022');
-  const entered = await page.request.post('/api/saves/pt-2022/practices/mass_torts/enter', {
+  await answerBlocking(page, 'm12-torts');
+  const entered = await page.request.post('/api/saves/m12-torts/practices/mass_torts/enter', {
     data: { route: 'team', person_id: null },
   });
   expect([200, 409, 422]).toContain(entered.status()); // a rerun finds it entered already
   let matterId: number | null = null;
   for (let i = 0; i < 24 && matterId === null; i += 1) {
-    const matters = await (await page.request.get('/api/saves/pt-2022/matters')).json();
+    const matters = await (await page.request.get('/api/saves/m12-torts/matters')).json();
     for (const m of matters as { id: number; practice: string }[]) {
       if (m.practice !== 'mass_torts') continue;
-      const detail = await (await page.request.get(`/api/saves/pt-2022/matters/${m.id}`)).json();
+      const detail = await (await page.request.get(`/api/saves/m12-torts/matters/${m.id}`)).json();
       if (detail.billing_model === 'contingency' && (detail.funding_offer_bp || detail.funded)) {
         matterId = m.id;
         break;
       }
     }
-    if (matterId === null) await advanceMonths(page, 'pt-2022', 1);
+    if (matterId === null) await advanceMonths(page, 'm12-torts', 1);
   }
   expect(matterId).not.toBeNull();
-  await answerBlocking(page, 'pt-2022');
-  await page.goto(`/game/pt-2022/matters/${matterId}`);
+  await answerBlocking(page, 'm12-torts');
+  await page.goto(`/game/m12-torts/matters/${matterId}`);
   const panel = page.getByTestId('contingency');
   await expect(panel).toBeVisible({ timeout: 60_000 });
   if (await panel.getByTestId('accept-funding').isVisible()) {

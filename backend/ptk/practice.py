@@ -361,6 +361,23 @@ def _failing(name: str, data: GameData) -> bool:
     return any(c.name == name and c.fails is not None for c in data.clients.real_clients)
 
 
+# PT-M12: a practice position is built once per process and data (deterministic, and the
+# state is immutable): later saves and copies (`slug`) start from it instead of replaying
+# from January 2005 (pt-2022 replays 216 months)
+_BUILT: dict[tuple[str, int, int], tuple[GameState, tuple[LedgerEntry, ...]]] = {}
+
+
+def _built(
+    spec: PracticeSave, data: GameData, balance: Balance
+) -> tuple[GameState, list[LedgerEntry]]:
+    key = (spec.key, id(data), id(balance))
+    if key not in _BUILT:
+        made, made_entries = build(spec, data, balance)
+        _BUILT[key] = (made, tuple(made_entries))
+    state, entries = _BUILT[key]
+    return state, list(entries)
+
+
 def create_practice_save(
     save_dir: Path, key: str, data: GameData, balance: Balance, slug: str | None = None
 ) -> Path:
@@ -369,7 +386,7 @@ def create_practice_save(
     path = save_path(save_dir, slug or spec.key)
     if path.exists():
         raise SaveExistsError(f"a save named {slug or spec.key!r} already exists")
-    state, entries = build(spec, data, balance)
+    state, entries = _built(spec, data, balance)
     book: tuple[ClientBookEntry, ...] = ()
     if spec.risk_demo:
         state, more, book = risk_demo(state, spec, data, balance, entries)

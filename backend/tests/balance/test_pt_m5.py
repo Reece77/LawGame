@@ -26,6 +26,7 @@ from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
 from ptk.sim.ledger import CASH, PARTNERS_CAPITAL, apply_entries
 from ptk.sim.rng import RngFactory
+from ptk.sim.state import GameState
 from ptk.sim.turn import advance_turn
 from tests.matters_support import grown_firm, top_up
 from tests.rivals_support import hire_away, play_until, rivals_month, start, turn_of
@@ -43,6 +44,30 @@ T12_YEAR = 2025  # PT-M10: the history pin's last year (PT-M5: 2015)
 # PT-M11: $50M ran out in month 11 (main's in month 12, one turn spare): the unmanaged firm
 # burns cash, and T12 times turns, not survival
 T12_CAPITAL = 15_000_000_000  # tunable-exempt: $150M of partners' capital for the test firm
+
+
+T12_RUNS = 5  # tunable-exempt: check-timing's measure, the median of five runs (Reece, 2026-11-25)
+
+
+def t12_median_ms(
+    turns: list[tuple[GameState, dict[tuple[int, str], int]]],
+    rng: RngFactory,
+    data: GameData,
+    balance: Balance,
+) -> float:
+    """T12's measure (docs/balance-targets.md, 2026-11-25): the last `T12_TIMED` turns of the
+    year, each replayed from its own state (the sim is pure: every run does the same work),
+    timed `T12_RUNS` times; the median of the runs' medians, in ms."""
+    assert len(turns) >= T12_TIMED, f"the firm dissolved before December {T12_YEAR}"
+    runs = []
+    for _ in range(T12_RUNS):
+        times = []
+        for state, balances in turns[-T12_TIMED:]:
+            t0 = time.perf_counter()
+            advance_turn(state, Decisions(), rng, balance, data, balances)
+            times.append(time.perf_counter() - t0)
+        runs.append(statistics.median(times))
+    return statistics.median(runs) * 1000
 
 
 def _pinned(data: GameData, year: int) -> dict[str, int]:
@@ -129,16 +154,14 @@ def test_t12_turn_time_at_december_2025(data: GameData, balance: Balance) -> Non
         (1, CASH): T12_CAPITAL,
         (1, PARTNERS_CAPITAL): -T12_CAPITAL,
     }
-    times = []
+    turns: list[tuple[GameState, dict[tuple[int, str], int]]] = []
     end = turn_of(state, T12_YEAR + 1, 1)
     while state.turn < end and not state.ended:
         before = state
-        t0 = time.perf_counter()
+        turns.append((state, dict(balances)))
         result = advance_turn(state, Decisions(), rng, balance, data, balances)
-        times.append(time.perf_counter() - t0)
         balances = dict(apply_entries(balances, result.ledger_entries))
         state = top_up(result.new_state, data, balance, before)
-    assert len(times) >= T12_TIMED, f"the firm dissolved before December {T12_YEAR}"
-    median = statistics.median(times[-T12_TIMED:]) * 1000
+    median = t12_median_ms(turns, rng, data, balance)
     print(f"\nT12: median turn {median:.0f} ms at December {T12_YEAR} ({T12_LAWYERS} lawyers)")
     assert median <= T12_MS

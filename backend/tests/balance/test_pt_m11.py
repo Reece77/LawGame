@@ -15,7 +15,6 @@
 from __future__ import annotations
 
 import statistics
-import time
 from concurrent.futures import ProcessPoolExecutor
 
 import pytest
@@ -26,8 +25,16 @@ from ptk.sim.decisions import Decisions
 from ptk.sim.geo.cities import rival_region
 from ptk.sim.ledger import CASH, PARTNERS_CAPITAL, apply_entries
 from ptk.sim.rng import RngFactory
+from ptk.sim.state import GameState
 from ptk.sim.turn import advance_turn
-from tests.balance.test_pt_m5 import T12_CAPITAL, T12_LAWYERS, T12_MS, T12_TIMED, T12_YEAR, _pinned
+from tests.balance.test_pt_m5 import (
+    T12_CAPITAL,
+    T12_LAWYERS,
+    T12_MS,
+    T12_YEAR,
+    _pinned,
+    t12_median_ms,
+)
 from tests.geo_support import open_london
 from tests.matters_support import grown_firm, top_up
 from tests.rivals_support import play_until, rivals_month, start, turn_of
@@ -127,16 +134,14 @@ def test_t12_turn_time_at_december_2025_with_two_offices(data: GameData, balance
         (1, CASH): T12_CAPITAL,
         (1, PARTNERS_CAPITAL): -T12_CAPITAL,
     }
-    times = []
+    turns: list[tuple[GameState, dict[tuple[int, str], int]]] = []
     end = turn_of(state, T12_YEAR + 1, 1)
     while state.turn < end and not state.ended:
         before = state
-        t0 = time.perf_counter()
+        turns.append((state, dict(balances)))
         result = advance_turn(state, Decisions(), rng, balance, data, balances)
-        times.append(time.perf_counter() - t0)
         balances = dict(apply_entries(balances, result.ledger_entries))
         state = top_up(result.new_state, data, balance, before)
-    assert len(times) >= T12_TIMED
-    median = statistics.median(times[-T12_TIMED:]) * 1000
+    median = t12_median_ms(turns, rng, data, balance)
     print(f"\nT12 (two offices): median turn {median:.0f} ms at December {T12_YEAR}")
     assert median <= T12_MS

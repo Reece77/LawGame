@@ -199,18 +199,40 @@ def _exodus(data: GameData, balance: Balance, seed: int, respond: bool) -> str:
     return g.state.save_meta.game_state
 
 
+_EXODUS: dict[bool, list[str]] = {}
+
+
+def _exodus_runs(data: GameData, balance: Balance, respond: bool) -> list[str]:
+    """Seeds 1-10's outcomes, once a session for each response (both tests read them)."""
+    if respond not in _EXODUS:
+        _EXODUS[respond] = [_exodus(data, balance, s, respond) for s in SEEDS]
+    return _EXODUS[respond]
+
+
 @pytest.mark.nightly  # PT-M11: over 60 s; check's runtime (product manager, 2026-11-23)
 def test_the_exodus_spiral(
     data: GameData, balance: Balance, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    ignored = [_exodus(data, balance, s, False) for s in SEEDS]
-    heeded = [_exodus(data, balance, s, True) for s in SEEDS]
+    ignored = _exodus_runs(data, balance, False)
     with capsys.disabled():
-        print(
-            f"\nexodus: dissolved without intervention on {ignored.count('dissolved')} of 10 "
-            f"seeds, with the scripted response on {heeded.count('dissolved')} of 10"
-        )
+        print(f"\nexodus: dissolved without intervention on {ignored.count('dissolved')} of 10")
     assert ignored.count("dissolved") >= 3
+
+
+@pytest.mark.nightly
+@pytest.mark.xfail(
+    strict=False,
+    reason="PT-M18 (product manager, 2026-11-25: non-strict, seed variance under rule 4): the "
+    "heeded response dissolves on main 04efa78 1/10 (seeds 1-10) and 4/30 (11-40), on PT-M12's "
+    "branch 2/10 and 3/30 (docs/tasks/PT-M12-all-twenty-practices.md, decision 18)",
+)
+def test_the_exodus_spiral_heeded(
+    data: GameData, balance: Balance, capsys: pytest.CaptureFixture[str]
+) -> None:
+    heeded = _exodus_runs(data, balance, True)
+    with capsys.disabled():
+        n = heeded.count("dissolved")
+        print(f"\nexodus: dissolved with the scripted response on {n} of 10")
     assert heeded.count("dissolved") <= 1
 
 

@@ -25,6 +25,12 @@ PREMIUM_BAND = (500_000, 1_000_000)  # tunable-exempt: the dossier's $5k-$10k a 
 COWBOY_SEEDS = 8  # tunable-exempt: the brief's "at least 8 of 10"
 PEP_SEEDS = 6  # tunable-exempt: the brief's "at least 6 of 10"
 WORKERS = 4  # tunable-exempt
+# PT-M18 (the product manager's decision, Reece, 2026-11-25: non-strict, main fails it on
+# seeds 11-40): readings in docs/tasks/PT-M12-all-twenty-practices.md (decision 18)
+COWBOY_PEP_REASON = (
+    "PT-M18 (product manager, 2026-11-25): cowboy's lower PEP than steady, main 04efa78 7/10 "
+    "on seeds 1-10 and 13/30 on 11-40 (fails); PT-M12's branch: see its brief, decision 18"
+)
 
 
 def _one(args: tuple[str, int]) -> RiskRun:
@@ -56,8 +62,9 @@ def test_t14_claims_and_premiums_for_steady() -> None:
     assert PREMIUM_BAND[0] <= premium <= PREMIUM_BAND[1]
 
 
-@pytest.mark.nightly
-def test_cowboy_pays_for_its_corners() -> None:
+def _cowboy_counts() -> tuple[int, int]:
+    """(seeds where cowboy has at least twice steady's claims and cases, seeds where its PEP is
+    lower), seeds 1-10."""
     more = lower = 0
     for seed in SEEDS:
         s, c = _runs()[("steady", seed)], _runs()[("cowboy", seed)]
@@ -73,5 +80,20 @@ def test_cowboy_pays_for_its_corners() -> None:
     print(
         f"\ncowboy: 2x on {more} of 10 (>= {COWBOY_SEEDS}); lower PEP on {lower} (>= {PEP_SEEDS})"
     )
+    return more, lower
+
+
+@pytest.mark.nightly
+def test_cowboy_pays_for_its_corners() -> None:
+    more, _ = _cowboy_counts()
     assert more >= COWBOY_SEEDS
+
+
+@pytest.mark.nightly
+@pytest.mark.xfail(
+    strict=False,
+    reason=COWBOY_PEP_REASON,
+)
+def test_cowboy_earns_less_than_steady() -> None:
+    _, lower = _cowboy_counts()
     assert lower >= PEP_SEEDS

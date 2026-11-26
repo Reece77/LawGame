@@ -14,7 +14,6 @@
 from __future__ import annotations
 
 import statistics
-import time
 from concurrent.futures import ProcessPoolExecutor
 
 import pytest
@@ -34,7 +33,14 @@ from ptk.sim.rivals.models import RivalFirm
 from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
 from ptk.sim.turn import advance_turn
-from tests.balance.test_pt_m5 import T12_CAPITAL, T12_LAWYERS, T12_MS, T12_TIMED, T12_YEAR, _pinned
+from tests.balance.test_pt_m5 import (
+    T12_CAPITAL,
+    T12_LAWYERS,
+    T12_MS,
+    T12_YEAR,
+    _pinned,
+    t12_median_ms,
+)
 from tests.conftest import DATA_DIR
 from tests.matters_support import grown_firm, top_up
 from tests.mergers_support import forced
@@ -96,17 +102,15 @@ def _median_2025(state: GameState, rng: RngFactory, data: GameData, balance: Bal
         (1, CASH): T12_CAPITAL,
         (1, PARTNERS_CAPITAL): -T12_CAPITAL,
     }
-    times = []
+    turns: list[tuple[GameState, dict[tuple[int, str], int]]] = []
     end = turn_of(state, T12_YEAR + 1, 1)
     while state.turn < end and not state.ended:
         before = state
-        t0 = time.perf_counter()
+        turns.append((state, dict(balances)))
         result = advance_turn(state, Decisions(), rng, balance, data, balances)
-        times.append(time.perf_counter() - t0)
         balances = dict(apply_entries(balances, result.ledger_entries))
         state = top_up(result.new_state, data, balance, before)
-    assert len(times) >= T12_TIMED
-    return statistics.median(times[-T12_TIMED:]) * 1000
+    return t12_median_ms(turns, rng, data, balance)
 
 
 def _lawyers(state: GameState, data: GameData) -> int:

@@ -1590,7 +1590,7 @@ geo:
 risk: # PT-M15: claims, insurance, discipline, regulators, trust accounts, audits (spec 11.3-11.6; ADR PT-0017; numbers from docs/research/risk-and-ethics.md, tags there)
   enabled: true # off: no claims, policies, cases, inquiries, reconciliations or audits (tests of earlier systems)
   claims:
-    from_error_bp: 800 # bp of escaped errors that become claim notices at a GC effect of 0 (steady escapes 30-70 errors a 100 lawyers a year; the dossier's ~3 notices a 100 lawyers) [A]
+    from_error_bp: 1070 # bp of escaped errors that become claim notices at a GC effect of 0 (steady escapes 30-70 errors a 100 lawyers a year; the dossier's ~3 notices a 100 lawyers) [A] (PT-M18: 800 -> 1070 with steady's 2.5 lawyers per equity partner: T14 1.34 -> 1.50, premium $9,686)
     practice_weight: # PT-M12 (the product manager, 2026-11-25): x from_error_bp for a matter in the practice, 1.0 when not listed (v1's ten); ALAS's share of claims over the practice's share of demand, normalised to v1's ten (risk-and-ethics.md s2a) [S/A]
       tax: 1.34 # ALAS tax/ERISA 4% of claims on 3.1% of demand [S/A]
       private_client: 2.0 # ALAS trusts and estates 7% on 1.0% (7.3x), capped at 2.0: large firms' trusts work is outside the game's demand [A]

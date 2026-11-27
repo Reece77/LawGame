@@ -31,11 +31,6 @@ PEP_SHARE = 0.6  # tunable-exempt: the brief's "at least 6 of 10", as a share (P
 WORKERS = 4  # tunable-exempt
 # PT-M18 (the product manager's decision, Reece, 2026-11-25: non-strict, main fails it on
 # seeds 11-40): readings in docs/tasks/PT-M12-all-twenty-practices.md (decision 18)
-COWBOY_PEP_REASON = (
-    "PT-M18 (product manager, 2026-11-25): cowboy's lower PEP than steady, main 04efa78 7/10 "
-    "on seeds 1-10 and 13/30 on 11-40 (fails); PT-M12's branch 5/10 and 12/30 "
-    "(docs/tasks/PT-M12-all-twenty-practices.md, decision 18)"
-)
 
 
 def _one(args: tuple[str, int]) -> RiskRun:
@@ -98,7 +93,5 @@ def _cowboy_counts() -> tuple[int, int]:
 def test_cowboy_pays_for_its_corners() -> None:
     more, lower = _cowboy_counts()
     assert more >= at_least(COWBOY_SHARE, len(SEEDS))
-    if lower < at_least(
-        PEP_SHARE, len(SEEDS)
-    ):  # PT-M18's, non-strict (the product manager, 2026-11-25)
-        pytest.xfail(COWBOY_PEP_REASON)
+    # PT-M18 (decision 11): passes on seeds 1-40 (24 of 40) and its expected failure goes
+    assert lower >= at_least(PEP_SHARE, len(SEEDS))

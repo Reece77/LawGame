@@ -116,6 +116,16 @@ Start a fresh standard game, play 2005-2008 yourself, delegate everything to the
      | **2.5 / 3.5 (chosen)** | **22** | **$1.19M** | 70.0 / $66.93M | 22.8% | ok |
 
      2.5 is the dossier's low end; steady automated and the practice strategies read the same constants. The state cache is re-recorded (steady plays differently from 2005) and the golden snapshots regenerated (CHANGELOG).
+11. **Sub-task 4, T14 after decision 10, and the cowboy's PEP.** The sixth nightly (run 46027421962 on `624da9a`, 36 minutes, every job under 35) read every T1-T18 row ok but T3.lawyers (70.0, known), T6.partners (1.9%) and T12's runner row (334 ms; the gate is `check-timing`): T2 steady 22, T2.specialist steady 20, T4 steady $1.19M, T9.heeded 4/40, T15 0 of 1,959 outside (max 13.8%), T16 1.1 a decade on 29 of 37, T17 steady 18, T18 ok. T2's and T4.steady's known-miss rows are removed. One nightly test failed: **T14** 1.342 (bound 1.495), because steady's larger equity tier lets fewer errors escape. `risk.claims.from_error_bp` (mine, rule 6) moves it, seeds 1-40 (T14 median; December 2015 premium a lawyer; cowboy lower PEP than steady):
+
+    | `from_error_bp` | T14 (1.5-5.0) | Premium ($5-10k) | Cowboy lower PEP (>= 24) |
+    | --- | --- | --- | --- |
+    | 800 (before) | 1.34 | - | - |
+    | 1000 | 1.43 | $9,538 | 24 |
+    | **1070 (chosen)** | **1.50** | **$9,686** | **24** |
+    | 1300 | 1.87 | $11,036 | - |
+
+   Both bands hold only between about 1,050 and 1,090: T14 stays at its band's edge (its known-miss row stays, bound unchanged), and the premium near its top. The cowboy's lower PEP now passes on seeds 1-40 (24 of 40): its expected failure is removed and the guard asserts. State cache re-recorded and golden snapshots regenerated (CHANGELOG).
 
 ## Follow-ups
 

@@ -68,6 +68,36 @@ Start a fresh standard game, play 2005-2008 yourself, delegate everything to the
 5. **Two crashes found by the first 40-seed nightly** (run 45921178345; its jobs took 9-27 minutes, the whole run 27):
    - **Rivals' free play (P1; the product manager chose "relative to the market", 2026-11-27).** A history-following rival's rate index carries the market's rate rises after the pin (its capacity per lawyer stays at 2005's while pinned), and from 2026 the rate elasticity read that as overpricing: demand about -50% a year on every seed, and seed 36's `steady-30y` stopped (a boutique's bias below -1). Fix: such a rival is read against its region's history-following rivals' mean index, every other firm against 1 (no change before 2026: state cache identical); the bias has a floor, `rivals.growth_bias_floor` -0.5 (a new key). Refinement of the option as worded: the mean is over history-following rivals, not every firm, because generated firms carry the rate rises in their capacity instead (US 2025 medians 0.86 generated against 1.91 real; a mean over both would leave the premium firms collapsing and would move generated firms from 2005). Seed 1, 2025-2034: real rivals' growth median 3.8% a year (min -4.0%, max 8.2%; before the fix -5.5% to 8.2%, median 3.0%, with the top US firms collapsing); history 2005-2025: 3.1-14.2% (median 6.2%; ten-year windows -0.4% to 18.3%). T15 will measure it.
    - **Discipline** (PT-M15's files, rule 8): a disbarred lawyer at a partner level who is not on the partnership's record went through partner departure and raised `PartnershipError`; such a lawyer now leaves as an employee. Regression test.
+6. **Sub-task 3, the baseline at 40 seeds** (nightly runs 45952995537 and 45957902516 on this branch: the sim is main's, `0e13dca`, plus decision 5's two fixes, which change nothing before 2026 apart from the crashes). Readings:
+
+   | Target or guard | 40-seed reading | Band | Verdict |
+   | --- | --- | --- | --- |
+   | T1 | 39/40 | >= 36/40 | ok |
+   | T2 | steady 29, pyramid 8, boutique 1, do-nothing 1, rocket 1 | <= 24/40 | known miss (0.725 within 0.9) |
+   | T2.specialist | steady 25, pyramid 8, specialist 4 | <= 24/40 | fail (printed row) |
+   | T3.lawyers | 66.5 | 100-250 | known miss |
+   | T3.revenue | $70.91M | $60-150M | **ok: row removed** |
+   | T4 steady / boutique / pyramid | $1.65M / $1.67M / $1.21M | $0.5-1.2M / $1-2.5M / $0.7-1.6M | known miss / ok / ok |
+   | T5 easy / standard / hard | 5.0% / 15.0% / 35.0% | 0-10% / 5-20% / 20-45% | ok / **ok: row removed** / ok |
+   | T6 attrition / partners | 21.9% / 1.9% | 15-25% / 8-15% | ok / fail (no row) |
+   | T7 realisation, collection, utilisation, lockup | 84.3%, 96.4%, 85.8%, 121 days | bands | ok |
+   | T8 corporate / restructuring | -12.2% (n=230) / +1.4% (n=32) | -30 to -10% / -5 to +20% | **ok: "accepted" row removed** / ok |
+   | T8.2020 | -14.2%, 29/34 back | -30 to -10%, most back | ok |
+   | T9 rocket / heeded | 20/40 / 10/40 | 12-24 / <= 4 | ok / fail |
+   | T10 ratio / steady | 11.98x / 0.7% | >= 2x / <= 5% | ok |
+   | T11 / T11.2025 | 7.7%, 0, 9 / 9.5%, 0, 8 | ±15%, 0, >= 8 | ok (every seed's T11 and UK T11 tests pass) |
+   | T12 (gate: `check-timing`) | see decision 2 | <= 250 ms | ok |
+   | T13 | 25.2% (22 of 40 merged) | 10-20% | known miss (within 28%) |
+   | T14 | 1.50; premium $9,891 | 1.5-5.0; $5-10k | on the edge (the test passes; row kept until sub-task 4 reads it to more places) |
+   | PT-M12.specialist / specialist_2009 | 29/40 / -30.6% vs -51.6% | >= 28/40 / falls less | ok |
+   | PT-M5 conditional history | 38/40 | >= 28/40 | ok |
+   | PT-M11 London lift | 39/40 within 36 months; seed 11 dissolved before 2007 (never opened) | every seed opens; >= 24/40 | fail on `all(opened)`: a question for the product manager |
+   | PT-M8 pitches | median 2.0 a quarter | 2-6 | ok |
+   | PT-M7a, PT-M16 pace, state cache, golden, real people | pass | | ok |
+   | Expected failures: PT-M9 automated steady (non-strict), PT-M8 strong leader (strict), PT-M15 cowboy PEP (non-strict), PT-M12 heeded exodus (non-strict) | still fail (xfail) | | owned by PT-M18: sub-task 4 |
+   | PT-M14.fixed_fees (`tools/tech_readings.py`) | to read in sub-task 4 | >= 70% | known miss |
+
+   The nightly took 26 and 39 minutes (every job under 120).
 
 ## Follow-ups
 

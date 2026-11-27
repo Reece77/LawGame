@@ -19,6 +19,7 @@ from pathlib import Path
 from statistics import median
 from typing import Final
 
+from ptk.balance.ai_era import AI_ERA, AiEraReading, read_seed
 from ptk.balance.game import PLAYER, Game, Month, start_game
 from ptk.balance.known_misses import known_miss, verdict
 from ptk.balance.seats import fill_seats
@@ -49,6 +50,8 @@ T15_MEDIAN: Final = (0.036, 0.092)  # tunable-exempt: history's 20-year p10-p90 
 T16_MEDIAN: Final = (0.0, 4.0)  # tunable-exempt: collapses a decade (history: 4 of 43, 0 of 38)
 T16_ANY_SHARE: Final = 0.2  # tunable-exempt: at least one collapse on 20% of seeds
 T17_SHARE: Final = 0.6  # tunable-exempt: T2's share, at year 30
+T18_SAVING: Final = (0.40, 0.70)  # tunable-exempt: T18 (a), PT-M14 criterion 2's band
+T18_RESTORED: Final = 0.5  # tunable-exempt: T18 (b), PT-M14 criterion 4's "at least half"
 T11_YEARS: Final = (2009, 2015)  # the 132-turn runs' checkpoints (top 10 at 2015)
 T11_LONG_YEARS: Final = (2009, 2015, 2020, 2025)  # the long runs' (top 10 at 2025)
 SHOCK_BAND: Final = (-0.30, -0.10)  # 2020 Q2 against Q1, a corporate-heavy firm
@@ -94,6 +97,7 @@ class RunResult:
     rival_growth: tuple[float, ...] = ()
     rival_collapses: int = 0
     rivals_2025: int = 0
+    ai_era: AiEraReading | None = None  # PT-M18 (T18): an `ai-era` pseudo-run's reading
 
     @property
     def dissolved(self) -> bool:
@@ -284,11 +288,36 @@ def run_all(
         plan += [(v, seed, "standard", turns) for v in VARIANT_RUNS for seed in seeds]
     if long_runs:  # PT-M18 (T17): every strategy to 2034, steady's first (the longest)
         plan = [(s, seed, "standard", LONG_TURNS) for s in LONG_STRATEGIES for seed in seeds] + plan
+    ai_seeds = list(seeds) if long_runs else []  # PT-M18 (T18): the AI era, a seed each
     if jobs <= 1:
-        return [play(s, seed, n, d, data_dir) for s, seed, d, n in plan]
+        return [play_ai_era(seed, data_dir) for seed in ai_seeds] + [
+            play(s, seed, n, d, data_dir) for s, seed, d, n in plan
+        ]
     with ProcessPoolExecutor(jobs) as pool:
-        futures = [pool.submit(play, s, seed, n, d, data_dir) for s, seed, d, n in plan]
+        futures = [pool.submit(play_ai_era, seed, data_dir) for seed in ai_seeds]
+        futures += [pool.submit(play, s, seed, n, d, data_dir) for s, seed, d, n in plan]
         return [f.result() for f in futures]
+
+
+def play_ai_era(seed: int, data_dir: str = "data") -> RunResult:
+    """T18's reading on one seed (`ptk.balance.ai_era`), as a pseudo-run of the shards'
+    results: the summary judges it as row T18; every other row leaves it out."""
+    started = time.perf_counter()
+    reading = read_seed(seed, data_dir)
+    return RunResult(
+        strategy=AI_ERA,
+        seed=seed,
+        difficulty="standard",
+        turns=LONG_TURNS,
+        seconds=time.perf_counter() - started,
+        game_state="reading",
+        ended_turn=None,
+        months=(),
+        class_size=0,
+        class_equity=0,
+        rivals=None,
+        ai_era=reading,
+    )
 
 
 # --- Shards (PT-M18 sub-task 2: the nightly's balance run in parallel jobs) -------------------
@@ -375,6 +404,8 @@ def winners(results: Sequence[RunResult]) -> Counter[str]:
 
 
 def evaluate(results: Sequence[RunResult]) -> list[Row]:
+    readings = [r.ai_era for r in results if r.ai_era is not None]
+    results = [r for r in results if r.ai_era is None]  # T18's pseudo-runs play no firm
     return [
         *_t1(results),
         *_t2(results),
@@ -393,6 +424,7 @@ def evaluate(results: Sequence[RunResult]) -> list[Row]:
         *_t15(results),
         *_t16(results),
         *_t17(results),
+        *_t18(readings),
         *_pt_m12(results),
     ]
 
@@ -900,6 +932,35 @@ def _t17(results: Sequence[RunResult]) -> list[Row]:
     ]
 
 
+def _t18(readings: Sequence[AiEraReading]) -> list[Row]:
+    if not readings:
+        return []
+    lo, hi = T18_SAVING
+    savings = [r.saving for r in readings]
+    losses = [r.lost for r in readings if r.cohort]
+    shares = [x for x in (r.restored for r in readings) if x is not None]
+    loss = median(losses) if losses else None
+    share = median(shares) if shares else None
+    inside = sum(1 for x in savings if lo <= x <= hi)
+    return [
+        Row(
+            "T18",
+            "the AI era: exposed tasks' saving by 2030 (range; seeds inside); the 2030 juniors' "
+            "loss without training (median) and the share training restores (median)",
+            f"{_pct(min(savings))}-{_pct(max(savings))} ({inside}/{len(savings)}); "
+            f"{'-' if loss is None else f'{loss:.3f}'}; "
+            f"{'-' if share is None else f'{share:.2f}'} over {len(shares)} seeds",
+            f"{lo:.0%}-{hi:.0%} every seed; > 0; >= {T18_RESTORED:.1f}",
+            inside == len(savings)
+            and loss is not None
+            and loss > 0
+            and share is not None
+            and share >= T18_RESTORED,
+            score=share,
+        )
+    ]
+
+
 def shock_table(results: Sequence[RunResult]) -> str:
     """PT-M10: the long runs' 2020 shock and 2034 numbers, one line a seed."""
     head = "seed  heavy  2020Q1   2020Q2   Q2/Q1   2021Q4  back  2034 lawyers  revenue      PEP"
@@ -937,6 +998,8 @@ def runs_table(results: Sequence[RunResult]) -> str:
     head = ("strategy", "seed", "diff", "state", "lawyers", "revenue 2015", "PEP", "09/08", "secs")
     lines = [" ".join(f"{h:>10s}" for h in head)]
     for r in sorted(results, key=lambda r: (r.strategy, r.difficulty, r.seed)):
+        if r.ai_era is not None:
+            continue  # T18's readings print in their row
         last = r.december(FINAL_YEAR) or (r.months[-1] if r.months else None)
         change = _change(r)
         lines.append(

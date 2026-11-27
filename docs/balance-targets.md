@@ -113,7 +113,7 @@ How `ptk/balance/report.py` reads each target (`make balance`; `tools/balance_ru
 | T15 | `steady-30y` runs that reach December 2034: every real rival with FY2025 and FY2034 records, (FY2034 / FY2025)^(1/9) - 1; each within the range, the median of all firm-seeds within the median band |
 | T16 | `steady-30y` runs that reach December 2034: real rivals with an FY2025 record still active in January 2026 that end `collapsed` or `failed` by December 2034, x 10/9; the median over runs, and the share of runs with at least one |
 | T17 | `<strategy>-30y` (every strategy, 360 turns): wins on each seed by `RunResult.score_30y`, as T2 |
-| T18 | `tests/balance/test_pt_m18.py` (nightly): `tools/tech_readings.py`'s criterion 2 (every seed) and criterion 4 (the restored share (trained - untrained) / (off - untrained) over seeds with a cohort that lost) |
+| T18 | row T18 of the balance run (`report._t18`; each nightly balance shard plays its seeds' `ptk.balance.ai_era.read_seed`, `tools/tech_readings.py`'s criterion 2 (every seed) and criterion 4 (the restored share (trained - untrained) / (off - untrained) over seeds with a cohort that lost)) |
 | 30y | printed for information: `steady-30y` at December 2034 (lawyers, revenue, PEP medians, dissolved); PT-M18 sets the 30-year targets |
 
 - **PT-M14 criterion 3 (fixed fees against hourly, 2026-2030 PEP):** a known miss owned by PT-M18 (row `PT-M14.fixed_fees`, authorised by the product manager on Reece's decision of 2026-11-23): 4 of 10 on seeds 1-10, 9 of 30 on seeds 11-40 (`tools/tech_readings.py --criterion3`).

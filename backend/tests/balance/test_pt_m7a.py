@@ -1,22 +1,25 @@
 """PT-M7a's acceptance firm (sub-task 2), printed (run with -s) and checked.
 
 PT-M3a's 50-lawyer grown firm (`tests.matters_support.grown_firm`), leavers replaced, months
-13-48 on seeds 1-5: the median of the seeds' median utilisation is in T7's band (75-90%),
-associates' burnout starts are at most 5% a year (pooled), and closed named matters take
-their planned months (median ratio at most 1.5). Before PT-M7a: utilisation medians 0.761,
-0.643, 0.605, 0.680, 0.684 (median 0.680); matters took about 11 months against 6 planned.
+13-48 on seeds 1-40 (PT-M18; PT-M7a read seeds 1-5): the median of the seeds' median
+utilisation is in T7's band (75-90%), associates' burnout starts are at most 5% a year
+(pooled), and closed named matters take their planned months (median ratio at most 1.5).
+Before PT-M7a: utilisation medians 0.761, 0.643, 0.605, 0.680, 0.684 (median 0.680); matters
+took about 11 months against 6 planned.
 """
 
 from __future__ import annotations
 
 import statistics
+from concurrent.futures import ProcessPoolExecutor
 
 import pytest
 
+from ptk.balance.seeds import SEEDS as BALANCE_SEEDS
 from ptk.sim.data_models import Balance, GameData
 from tests.matters_support import grown_firm, play, top_up
 
-SEEDS = (1, 2, 3, 4, 5)
+SEEDS = BALANCE_SEEDS  # PT-M18: seeds 1-40 (CLAUDE.md 12.1; PT-M7a read seeds 1-5)
 LAWYERS = 50
 WARM_UP = 12
 MONTHS = 48
@@ -53,9 +56,17 @@ def _seed(seed: int, data: GameData, balance: Balance) -> tuple[float, int, int,
     return statistics.median(utils), burnouts, associate_months, statistics.median(ratios)
 
 
+def _worker(seed: int) -> tuple[float, int, int, float]:
+    from ptk.loader import load_balance, load_game_data
+    from tests.conftest import DATA_DIR
+
+    return _seed(seed, load_game_data(DATA_DIR), load_balance(DATA_DIR))
+
+
 @pytest.fixture(scope="module")
-def rows(data: GameData, balance: Balance) -> dict[int, tuple[float, int, int, float]]:
-    return {seed: _seed(seed, data, balance) for seed in SEEDS}
+def rows() -> dict[int, tuple[float, int, int, float]]:
+    with ProcessPoolExecutor() as pool:  # PT-M18: forty seeds, in parallel
+        return dict(zip(SEEDS, pool.map(_worker, SEEDS), strict=True))
 
 
 @pytest.mark.nightly  # PT-M11: over 60 s; check's runtime (product manager, 2026-11-23)

@@ -77,4 +77,5 @@ addopts = "-q"
 markers = [
     "timing: turn-time budgets; run alone without xdist (`make check-timing`, PT-M5 T12)",
     "nightly: the long balance runs (docs/balance-targets.md; `make nightly`, CI's nightly.yml, PT-M7)",
+    "balance_run: the whole balance run's gates; CI runs it in nightly.yml's summary job on the shards' saved runs (PT-M18)",
 ]

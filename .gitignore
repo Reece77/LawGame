@@ -10,3 +10,5 @@ dist/
 .hypothesis/
 frontend/test-results/
 frontend/playwright-report/
+backend/balance-results/
+backend/nightly-durations/

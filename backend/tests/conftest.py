@@ -16,6 +16,9 @@ os.environ["PTK_LLM_ADAPTER"] = "mock"
 os.environ.pop("ANTHROPIC_API_KEY", None)
 os.environ.setdefault("PTK_SQLITE_SYNC", "OFF")
 
+# PT-M18 sub-task 2: `--nightly-shard K/N` and `--nightly-durations-out` (the nightly's jobs)
+pytest_plugins = ("tests.nightly_shards",)
+
 
 def pytest_addoption(parser: pytest.Parser) -> None:
     parser.addoption(

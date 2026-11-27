@@ -193,7 +193,7 @@ def _seeds(text: str) -> list[int]:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--seeds", default="1-10")
+    parser.add_argument("--seeds", default="1-40")  # PT-M18: ptk.balance.seeds.SEEDS
     parser.add_argument("--jobs", type=int, default=4)
     parser.add_argument("--criterion3", action="store_true", help="ai-hourly against ai-fixed only")
     parser.add_argument("--out", default="", help="criterion 3: a JSON-lines file of seeds read")
@@ -247,7 +247,7 @@ def main() -> None:
             f" | {f.pep_2026_30 / m:6.2f} {f.realisation_bp / 100:5.1f}% {f.rfp_won}/{f.rfp_lost} {f.products}"
             f" | {'yes' if better else 'no'}"
         )
-    print(f"ai-fixed beats ai-hourly on {wins} of {len(results)} seeds (target: at least 7 of 10)")
+    print(f"ai-fixed beats ai-hourly on {wins} of {len(results)} seeds (target: at least 70% of them)")
     print()
     print("seed | lawyers 2030 never/hourly/fixed | stage | AI cuts 2030 never/hourly/fixed ($M, trailing months) | dissolved")
     for r in results:

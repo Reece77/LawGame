@@ -188,3 +188,35 @@ def test_a_large_clients_audit_cuts_a_bill() -> None:
     cut = audit(state, RngFactory(1), 77, big, 1_000_000, 50_000, b)
     assert cut is not None and 0 < cut.cut_cents <= 50_000 and cut.finds_padding
     assert audit(state, RngFactory(1), 77, mid, 1_000_000, 0, b) is None
+
+
+def test_disbarment_of_a_partner_off_the_partnership_record_ends_their_employment() -> None:
+    """PT-M18 (a 40-seed nightly found it): a lawyer at a partner level who is not on the
+    partnership's record is let go like an employee, not sent through partner departure
+    (which raised PartnershipError and stopped the turn)."""
+    data, balance = loaded()
+    d = balance.risk.discipline
+    only = d.model_copy(
+        update={"outcomes": (d.outcomes[0].model_copy(update={"key": "disbarment", "min": 0.0}),)}
+    )
+    b = _risky(balance, discipline=only)
+    state = _clean()
+    fp = state.partnership.of(state.player.id)
+    on_record = {p.person_id for p in fp.partners} if fp is not None else set()
+    pid = next(
+        p.id
+        for p in lawyers(state, state.player.id, data)
+        if p.level.startswith("associate") and p.id not in on_record
+    )
+    state = replace(
+        state,
+        people=tuple(
+            replace(p, level="income_partner") if p.id == pid else p for p in state.people
+        ),
+    )
+    state = dc.open_case(state, pid, "court", np.random.default_rng(2), _books(state), b, data)
+    case = replace(state.risk.cases[0], culpability=1.0)
+    state = _run_case(replace(state, risk=replace(state.risk, cases=(case,))), b)
+    e = state.employment_of(pid)
+    assert state.risk.cases[0].outcome == "disbarment"
+    assert e is not None and e.status in ("notice", "ended") and e.end_reason == "fired"

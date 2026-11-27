@@ -21,7 +21,13 @@ from ptk.sim.ledger import LedgerEntry
 from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.rivals import boutiques, history, poaching, rfp, roster
 from ptk.sim.rivals.decisions import apply_simple, choose, with_cooldown
-from ptk.sim.rivals.economy import Month, book_month, january, update_demand
+from ptk.sim.rivals.economy import (
+    Month,
+    book_month,
+    january,
+    price_level,
+    update_demand,
+)
 from ptk.sim.rivals.market import appeal_table
 from ptk.sim.rivals.models import RivalFirm, RivalMove, YearRecord
 from ptk.sim.rivals.people import find_person, key_people
@@ -74,7 +80,8 @@ def decide(state: GameState, rng: RngFactory, data: GameData, balance: Balance) 
         firm = firms[firm_id]
         gen = rng.stream(month.turn, "rival_firm", *firm.rival_key)
         firm = january(firm, month)
-        firm = update_demand(firm, float(gen.standard_normal()), month)
+        # PT-M18: free play reads the firm's price against its own market level
+        firm = update_demand(firm, float(gen.standard_normal()), month, price_level(firm, month))
         target = poaching.has_target(state, firm, pool, balance, data)
         for choice in choose(firm, month, gen, target):
             firm = with_cooldown(firm, choice.action, month)

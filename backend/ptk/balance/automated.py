@@ -92,7 +92,7 @@ def steady_automated(g: Game) -> None:
     mv.answer_election(g)
     mv.comp_system(g, "modified_lockstep")  # a change to the agreement: a one-off
     if not automated(g, "development"):
-        mv.december_votes(g, st._admissions(g, 4.0))
+        mv.december_votes(g, st._admissions(g, st.STEADY_PER_EQUITY))
     mv.comp_round(g)
     held = mv.practices_held(g)
     lawyers = len(g.lawyers())
@@ -110,7 +110,7 @@ def steady_automated(g: Game) -> None:
         if len(held) < wanted and missing:
             mv.lateral_partner(g, missing[0], mv.LateralRule(min_book_cents=100_000_000))
         elif (
-            (leverage > 4.0 or st._per_equity(g) > 5.0)
+            (leverage > 4.0 or st._per_equity(g) > st.STEADY_LATERAL_PER_EQUITY)
             and mv.utilisation(g) >= 0.80
             and mv.bank_quiet(g)
         ):

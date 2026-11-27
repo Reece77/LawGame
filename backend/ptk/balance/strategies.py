@@ -40,6 +40,10 @@ PYRAMID_PAY_BP: Final = 8000
 STEADY_LAYOFF_BELOW: Final = 0.70  # three months' utilisation under this: lay off
 STEADY_LAYOFF_TARGET: Final = 0.80  # ... enough associates to bring it back toward this
 STEADY_LAYOFF_MAX: Final = 0.10  # at most this share of the associates in a month
+# PT-M18 (rule 2): a mid-size firm's 2.5-3.5 lawyers per equity partner (firm-economics.md s10);
+# the script had 4 and 5, so steady's PEP ran $1.65M against T4's $0.5-1.2M and it won T2 29/40
+STEADY_PER_EQUITY = 2.5  # December's admissions: one equity partner to this many lawyers
+STEADY_LATERAL_PER_EQUITY = 3.5  # a lateral partner while lawyers per equity partner exceed this
 CORPORATE: Final = "corporate_ma"
 LITIGATION: Final = "commercial_litigation"
 # The order steady adds practices in (one at each 30 lawyers): cross-sell from M&A first.
@@ -180,7 +184,7 @@ def steady(g: Game, adds: tuple[str, ...] = STEADY_ADDS) -> None:
     mv.answer_election(g)
     mv.comp_system(g, "modified_lockstep")
     mv.set_rates(g, None)
-    mv.december_votes(g, _admissions(g, 4.0))  # December's vote first (its energy)
+    mv.december_votes(g, _admissions(g, STEADY_PER_EQUITY))  # December's vote first (its energy)
     mv.comp_round(g)  # PT-M7b: December's comp round, the partners it would keep
     held = mv.practices_held(g)
     lawyers = len(g.lawyers())
@@ -196,7 +200,9 @@ def steady(g: Game, adds: tuple[str, ...] = STEADY_ADDS) -> None:
     if len(held) < wanted and missing:
         mv.lateral_partner(g, missing[0], mv.LateralRule(min_book_cents=100_000_000))
     elif (
-        (leverage > 4.0 or _per_equity(g) > 5.0) and mv.utilisation(g) >= 0.80 and mv.bank_quiet(g)
+        (leverage > 4.0 or _per_equity(g) > STEADY_LATERAL_PER_EQUITY)
+        and mv.utilisation(g) >= 0.80
+        and mv.bank_quiet(g)
     ):
         # partners for supervision, books and the equity (a steady firm keeps about one equity
         # partner to four or five lawyers)
@@ -245,10 +251,17 @@ def lateral_rocket(g: Game, heeded: bool = False) -> None:
                 break
     held = mv.practices_held(g)
     mv.practice_groups(g)
-    if mv.utilisation(g) >= 0.80:
+    # PT-M18 (T9, rule 2): once warned, a firm that heeds hires only with the cash to pay for
+    # it and lets idle associates go, as steady does (the warned rockets that dissolved were
+    # 3-6 lawyers at no cash for months, still hiring associates and campus classes)
+    hire = not warned or mv.bank_quiet(g)
+    if warned:
+        mv.lay_off_idle(g, STEADY_LAYOFF_BELOW, STEADY_LAYOFF_TARGET, STEADY_LAYOFF_MAX)
+    if hire and mv.utilisation(g) >= 0.80:
         for practice in _busiest(g, held)[:2]:
             mv.lateral_associates(g, practice, 1, "recruiter")
-    _campus_split(g, held, max(1, len(g.lawyers()) // 15), delegated=True)
+    if hire:
+        _campus_split(g, held, max(1, len(g.lawyers()) // 15), delegated=True)
     mv.pitch_rfps(g, 1)
 
 
@@ -311,4 +324,10 @@ VARIANTS: Final[dict[str, Script]] = {
     **__import__("ptk.balance.risk").balance.risk.RISK_VARIANTS,  # PT-M15: cowboy (risk.py)
     **__import__("ptk.balance.mergers").balance.mergers.MERGER_VARIANTS,  # PT-M13 (mergers.py)
 }
+# PT-M18 (T17, the product manager's approval of 2026-11-27): every strategy played to
+# December 2034 ("steady-30y" is PT-M10's)
+THIRTY_YEAR: Final[dict[str, Script]] = {
+    f"{name}-30y": script for name, script in STRATEGIES.items() if name != "steady"
+}
+VARIANTS.update(THIRTY_YEAR)
 PLAYABLE: Final[dict[str, Script]] = {**STRATEGIES, **VARIANTS}

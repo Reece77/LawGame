@@ -5,7 +5,7 @@
    with a digest each month and no area past its limits. Knowledge and AI is the one area that
    cannot be automated (PT-M14).
 2. `steady_automated` against steady: 2015 revenue and December 2015 PEP, the medians of
-   seeds 1-10, within 20% (printed; nightly).
+   seeds 1-40, within 20% (printed; nightly).
 """
 
 from __future__ import annotations
@@ -15,6 +15,7 @@ import statistics
 import pytest
 
 from ptk.balance.report import play
+from ptk.balance.seeds import SEEDS as BALANCE_SEEDS
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
 from ptk.sim.ledger import apply_entries
@@ -23,7 +24,7 @@ from ptk.sim.turn import advance_turn
 from tests.automation_support import approve_all, automated_firm
 from tests.seats_support import funded, steady
 
-SEEDS = tuple(range(1, 11))
+SEEDS = BALANCE_SEEDS  # PT-M18: seeds 1-40 (CLAUDE.md 12.1)
 BAND = 0.20  # tunable-exempt: the brief's "within 20%"
 FINAL_YEAR = 2015
 ACTED = ("decision", "mistake", "event")
@@ -71,13 +72,11 @@ def test_a_100_lawyer_firm_runs_a_year_on_its_owners(data: GameData, balance: Ba
 @pytest.mark.nightly
 @pytest.mark.xfail(
     strict=False,
-    reason="PT-M18 (the product manager's decisions, Reece, 2026-11-24 and 2026-11-25: "
-    "non-strict, seed variance under rule 4): automated steady's delegated hiring grows the "
-    "firm more slowly than steady's own growth rule. Revenue / PEP gaps, main 04efa78: seeds "
-    "1-10 -21.5% / +9.1% (fails), seeds 11-40 -18.6% / -11.5% (passes); PT-M12's twenty "
-    "practices: seeds 1-10 -34.3% / -17.7%, seeds 11-40 -31.5% / -2.1% (docs/tasks/PT-M12-"
-    "all-twenty-practices.md). Earlier: PT-M7c seeds 1-10 +4.2% / +31.0%, seeds 11-40 "
-    "-41.8% / -21.5%",
+    reason="PT-M23 (the product manager's decision, 2026-11-27: carried from PT-M18, "
+    "non-strict). Seeds 1-40 on PT-M18 (4d91fac): revenue -19.7% (passes), PEP +32.9% "
+    "(fails): automated steady grows more slowly and keeps a smaller equity tier. Earlier, "
+    "main 04efa78: seeds 1-10 -21.5% / +9.1%, seeds 11-40 -18.6% / -11.5%; PT-M12's twenty "
+    "practices: seeds 1-10 -34.3% / -17.7%, seeds 11-40 -31.5% / -2.1%",
 )
 def test_steady_automated_is_within_20_percent_of_steady() -> None:
     from concurrent.futures import ProcessPoolExecutor
@@ -100,7 +99,7 @@ def test_steady_automated_is_within_20_percent_of_steady() -> None:
     print(
         f"\nsteady 2015 revenue ${rev / 1e8:.2f}M, PEP ${pep / 1e8:.2f}M; steady_automated "
         f"${arev / 1e8:.2f}M ({arev / rev - 1:+.1%}), PEP ${apep / 1e8:.2f}M "
-        f"({apep / pep - 1:+.1%}) (medians, seeds 1-10)"
+        f"({apep / pep - 1:+.1%}) (medians, seeds 1-40)"
     )
     assert abs(arev / rev - 1) <= BAND
     assert abs(apep / pep - 1) <= BAND

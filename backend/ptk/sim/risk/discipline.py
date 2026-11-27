@@ -234,7 +234,11 @@ def _leave(
     e = state.employment_of(person.id)
     if e is None or e.status == "ended":
         return state
-    if is_partner(person) and state.partnership.of(e.firm_id) is not None:
+    fp = state.partnership.of(e.firm_id)
+    # PT-M18: a partner by level who is not on the partnership's record (a lateral or an
+    # admission still in hand) leaves as an employee does; departure is for the record's
+    # partners only (it raised "not a partner" and stopped the turn)
+    if is_partner(person) and fp is not None and fp.partner(person.id) is not None:
         from ptk.sim.interfaces import partner_flight
 
         res = partner_flight().depart(

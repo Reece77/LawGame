@@ -27,6 +27,8 @@ class KnownMiss:
 
 
 KNOWN_MISSES: Final[tuple[KnownMiss, ...]] = (
+    # PT-M18 sub-task 3 (2026-11-27): T3.revenue, T5.standard and T8.corporate pass on seeds 1-40
+    # (nightly run 45952995537: $70.91M, 15.0%, -12.2%) and their rows are removed.
     # Recorded by Reece's decision on PT-M7 (via the product manager, 2026-11-21) and re-owned
     # by Reece's decisions on PT-M7b's targets (2026-11-22, docs/tasks/PT-M10-history-to-2025.md
     # sub-task 0): T2 moves to PT-M18; T3 lawyers and T4 steady to PT-M16 (reputation that
@@ -34,92 +36,77 @@ KNOWN_MISSES: Final[tuple[KnownMiss, ...]] = (
     # brief's "Decisions made". PT-M7c (2026-11-23) removes T2 (steady 6, pyramid 4 on seeds 1-10)
     # and takes over T3.lawyers, T4.steady and T4.pyramid with its readings. Reece (2026-11-24,
     # after the client tiers): T1 (10/10) and T4.pyramid ($0.98M) pass and their rows go;
-    # T3.lawyers, T3.revenue and T4.steady are PT-M18's with PT-M7c's readings.
+    # T3.lawyers, T3.revenue and T4.steady are PT-M18's with PT-M7c's readings. PT-M18
+    # (decision 10, 2026-11-27): T2 passes on seeds 1-40 and its row goes; T4.steady's row
+    # returns bounded at its 40-seed reading (decision 12). The product manager (2026-11-27):
+    # T3.lawyers, T4.steady, T6.partners and T13 carried to v3 (PT-M23), each bounded at its
+    # 40-seed reading. T14 (1.4951) keeps its row (decision 15).
     KnownMiss(
         target="T3.lawyers",  # steady 100-250 lawyers in December 2015
-        owner="PT-M18",
-        # score: minus the median lawyers; known while at least 45
-        worse_than=-45.0,
-        reason="60.0 on PT-M7c's client tiers (before the tiers 46.0, main 60.0); seeds 11-40 "
-        "71.5 (before 72.5): growth to 100-250 is expected from PT-M12 (practices) and PT-M13 "
-        "(mergers) (Reece, 2026-11-24)",
-    ),
-    KnownMiss(
-        target="T3.revenue",  # steady $60-150M revenue in 2015
-        owner="PT-M18",
-        # score: minus the median revenue in $M; known while at least $40M (a new row, PT-M7c)
-        worse_than=-40.0,
-        reason="$47.21M on PT-M7c's client tiers (before the tiers $44.39M, main $70.21M); "
-        "seeds 11-40 $63.3M (before $84.9M): client tiers lower RPL to $882k; growth expected "
-        "from PT-M12 and PT-M13 (Reece, 2026-11-24)",
+        owner="PT-M23",
+        # score: minus the median lawyers; PT-M18 (CLAUDE.md 12.5): bounded at the 40-seed
+        # reading, 73.5
+        worse_than=-73.5,
+        reason="PT-M18 (the product manager's decision, 2026-11-27: carried to v3"
+        "): 73.5 on seeds 1-40 (66.5 at PT-M18's baseline; revenue "
+        "$70.6M is inside T3's band). Steady grows by its utilisation rule; growth to 100-250 "
+        "is v3's (a follow-up in docs/tasks/PT-M18-v2-balance.md). Earlier: 60.0 on PT-M7c's "
+        "client tiers (Reece, 2026-11-24)",
     ),
     KnownMiss(
         target="T4.steady",  # steady PEP $0.5-1.2M in 2015
-        owner="PT-M18",
-        # score: median PEP in $M; known while at most $5.0M
-        worse_than=5.0,
-        reason="$1.31M on PT-M7c's client tiers (before the tiers $2.72M, main $4.37M); seeds "
-        "11-40 $1.65M (before $3.09M): steady's large clients at a top-decile card "
-        "(Reece, 2026-11-24)",
+        owner="PT-M23",
+        # score: median PEP in $M; PT-M18 (CLAUDE.md 12.5): bounded at the 40-seed reading,
+        # $1.3168M
+        worse_than=1.317,
+        reason="PT-M18 (the product manager's decision, 2026-11-27: carried to v3"
+        "; T14 keeps its claim rate): seeds 1-40 $1.65M at baseline, "
+        "$1.19M with steady at the dossier's 2.5 lawyers per equity partner (decision 10), "
+        "$1.32M once risk.claims.from_error_bp 1070 brings T14 back to 1.50 (decision 11); "
+        "no key holds both (decision 12)",
     ),
     KnownMiss(
-        target="PT-M14.fixed_fees",  # ai-fixed earns more PEP 2026-2030 than ai-hourly, 7 of 10
-        owner="PT-M18",
-        # score: minus the seeds of 10 where ai-fixed wins; known while at least 3 of 10
-        worse_than=-3.0,
-        reason="4/10 on seeds 1-10 (4 of the 6 with products) and 9/30 on seeds 11-40 (9 of "
-        "the 16 with products) with price acceptance at 110% (Reece's decision, 2026-11-23); "
-        "the product manager authorised the row (tools/tech_readings.py; PT-M14's brief)",
+        target="PT-M14.fixed_fees",  # ai-fixed earns more PEP 2026-2030 than ai-hourly, 70%
+        owner="PT-M23",
+        # score: minus the share of seeds where ai-fixed wins; PT-M18 (CLAUDE.md 12.5): bounded
+        # at the 40-seed reading, 24 of 40
+        worse_than=-0.6,
+        reason="PT-M18 (the product manager, 2026-11-27: kept, bound at the reading): 24 of "
+        "seeds 1-40 on PT-M18 (4d91fac; tools/tech_readings.py --criterion3); earlier 4/10 "
+        "and 9/30 with price acceptance at 110% (Reece's decision, 2026-11-23)",
     ),
     KnownMiss(
-        target="T2",  # no strategy has the best founder's earnings on more than 6 of 10 seeds
-        owner="PT-M18",
-        # score: the most wins any strategy has on seeds 1-10; known while at most 9
-        worse_than=9.0,
-        reason="PT-M15 (authorised by the product manager, Reece, 2026-11-25): steady wins 9 "
-        "of seeds 1-10 on the branch (main 5); seeds 11-40 steady 16/30 on the branch, 19/30 "
-        "on main (a miss on main too: the cause predates PT-M15). PT-M12 (the product "
-        "manager's decision, 2026-11-25: this row covers it, bound unchanged): steady 8 of "
-        "seeds 1-10 (main 9), 21/30 on seeds 11-40 (main 16/30)",
-    ),
-    KnownMiss(
-        target="T5.standard",  # steady dissolves on 5-20% of seeds at standard difficulty
-        owner="PT-M18",
-        # score: minus the dissolution rate (too few is the miss); known while at most 0
-        worse_than=0.0,
-        reason="seed variance (rule 4; authorised by the product manager, Reece, 2026-11-25): "
-        "0 of seeds 1-10 on PT-M15's branch (main 2); 2 of seeds 11-40 (6.7%) on both the "
-        "branch and main",
-    ),
-    KnownMiss(
-        target="T13",  # partners lost within 24 months of a merger: 10-20% (PT-M13)
-        owner="PT-M18",
-        # score: the median share lost; known while at most 28% (seeds 1-10's 27.98%: bounded
-        # at the reading, CLAUDE.md 12.5)
-        worse_than=0.28,
-        reason="PT-M12 (authorised by the product manager, Reece, 2026-11-25): 28.0% on seeds "
-        "1-10 and 23.9% on 11-40 on PT-M12's branch (main 04efa78: 12.8% and 18.8%). The "
-        "targeted fix (subordination only in a practice both firms had, contested_min_share "
-        "10%) does not move it: no merged partner is subordinated in these runs",
+        target="T6.partners",  # steady's Sept 2006 class: 8-15% equity partners by Dec 2015
+        owner="PT-M23",
+        # score: minus the share; PT-M18 (CLAUDE.md 12.5): bounded at the 40-seed reading, 0%
+        worse_than=-0.0,
+        reason="PT-M18 (the product manager's decision, 2026-11-27: carried to v3"
+        "): 0.0% on seeds 1-40 (1.9% at the baseline). The class is 0-2 "
+        "people a seed and almost all leave before year 8 (22% attrition leaves about 13%); "
+        "admitting one partner every December changes nothing (decision 9)",
     ),
     KnownMiss(
         target="T14",  # steady's claim notices a 100 lawyer-years 2006-2015: 1.5-5.0 (PT-M15)
-        owner="PT-M18",
-        # score: minus the median; known while the median is at least 1.495 (seeds 1-10's
-        # 1.4951: bounded at the reading, CLAUDE.md 12.5)
+        owner="PT-M23",
+        # score: minus the median; known while the median is at least 1.495 (the bound Reece
+        # authorised on 2026-11-25; the 40-seed reading 1.4951 is within it)
         worse_than=-1.495,
-        reason="PT-M12 (authorised by the product manager, Reece, 2026-11-25): 1.495 on seeds "
-        "1-10 and 1.497 on 11-40 on PT-M12's branch (main 04efa78: 1.717 and 1.998). The v2 "
-        "practices' claim weights (risk-and-ethics.md s2a) do not move it: steady's escaped "
-        "errors fall in v1's practices; its larger firm (lawyer-years) lowers the rate",
+        reason="PT-M18 (2026-11-27): 1.4951 on seeds 1-40 with risk.claims.from_error_bp "
+        "1070 (decision 11; 800 read 1.34 once steady kept 2.5 lawyers per equity partner, "
+        "1300 1.87 with the premium over $10k). Earlier: 1.495 and 1.497 on PT-M12's branch "
+        "(authorised by the product manager, Reece, 2026-11-25)",
     ),
     KnownMiss(
-        target="T8.corporate",  # corporate-heavy firms' 2009 revenue -30% to -10% on 2008
-        owner="accepted (Reece, 2026-11-22)",
-        # score: the median change; known while it is at most -5% (a fall within noise of -10%)
-        worse_than=-0.05,
-        reason="-9.0% (PT-M7b; -11.1% at a 9500 card): accepted as noise by Reece "
-        "(2026-11-22; docs/balance-targets.md)",
+        target="T13",  # partners lost within 24 months of a merger: 10-20% (PT-M13)
+        owner="PT-M23",
+        # score: the median share lost; PT-M18 (CLAUDE.md 12.5): bounded at the 40-seed
+        # reading, 23.1%
+        worse_than=0.232,
+        reason="PT-M18 (the product manager's decision, 2026-11-27: carried to v3"
+        "): 23.1% on seeds 1-40 (23 merged); with every integration "
+        "effect at 0 it reads 21.7%, so the loss is partners' ordinary flight over 24 months, "
+        "not the merger (flight_mult 0.8 -> 0.4: 23.3%). Earlier: 28.0% and 23.9% on PT-M12's "
+        "branch (Reece, 2026-11-25)",
     ),
 )
 

@@ -20,7 +20,7 @@ from dataclasses import dataclass
 from functools import cached_property
 
 from ptk.sim import dmath
-from ptk.sim.calendar import turn_to_ym
+from ptk.sim.calendar import turn_to_ym, ym_to_turn
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.fastcopy import replace
 from ptk.sim.ledger import CASH, DRAWINGS, FEES, GENERAL_ADMIN, SALARIES, LedgerEntry, LedgerLine
@@ -76,10 +76,15 @@ class Month:
         return out
 
     def pinned(self, firm: RivalFirm) -> bool:
-        p = self.path(firm)
-        if p is None or self.ym[0] > self.balance.rivals.pin.end_year:
+        if self.ym[0] > self.balance.rivals.pin.end_year:
             return False
-        return len(p.revenue) > 1 or firm.anchor is not None  # a path, not a lone 2005 point
+        return self.follows_history(firm)
+
+    def follows_history(self, firm: RivalFirm) -> bool:
+        """The firm is pinned to its history's path until the pin ends (a path, not a lone
+        2005 point); PT-M18: so its rate index carries the market's rate rises afterwards."""
+        p = self.path(firm)
+        return p is not None and (len(p.revenue) > 1 or firm.anchor is not None)
 
     def anchor(self, firm: RivalFirm) -> tuple[float, float] | None:
         if firm.anchor is None:
@@ -94,14 +99,16 @@ class Month:
             p, "revenue", self.t if t is None else t, self.balance.rivals, self.anchor(firm)
         )
 
-    def path_lawyers(self, firm: RivalFirm) -> float | None:
+    def path_lawyers(self, firm: RivalFirm, t: float | None = None) -> float | None:
         p = self.path(firm)
         if p is None:
             return None
         lawyer_anchor = None
         if firm.anchor is not None:
             lawyer_anchor = (time_of(firm.anchor[0], self.start), firm.lawyers_anchor)
-        return path_value(p, "lawyers", self.t, self.balance.rivals, lawyer_anchor)
+        return path_value(
+            p, "lawyers", self.t if t is None else t, self.balance.rivals, lawyer_anchor
+        )
 
     def personality(self, firm: RivalFirm) -> PersonalityDef:
         return self.balance.rivals.personalities[firm.personality]
@@ -135,8 +142,10 @@ def rate_gap(firm: RivalFirm, month: Month) -> float:
     return (firm.utilisation - u) / u
 
 
-def update_demand(firm: RivalFirm, z: float, month: Month) -> RivalFirm:
-    """The month's demand (one standard normal z from the firm's rival_firm generator)."""
+def update_demand(firm: RivalFirm, z: float, month: Month, price_level: float = 1.0) -> RivalFirm:
+    """The month's demand (one standard normal z from the firm's rival_firm generator).
+    `price_level` (PT-M18): the market's rate index in the firm's own terms, against which
+    free play's rate elasticity reads its price (`price_levels`)."""
     pin = month.balance.rivals.pin
     shock = pin.noise_phi * firm.shock + pin.noise_sd * z
     rb = month.balance.rivals
@@ -148,12 +157,43 @@ def update_demand(firm: RivalFirm, z: float, month: Month) -> RivalFirm:
     pdef = month.personality(firm)
     t = month.t
     growth = market_factor(t - 1.0 / MONTHS, t, rb)
-    bias = (
-        pdef.growth_bias + firm.growth_bias - rb.rate_elasticity * max(0.0, firm.rate_index - 1.0)
+    over = max(0.0, firm.rate_index / price_level - 1.0)
+    bias = max(
+        rb.growth_bias_floor, pdef.growth_bias + firm.growth_bias - rb.rate_elasticity * over
     )
     factor = growth * dmath.pow(1.0 + bias, 1.0 / MONTHS) * dmath.exp(shock - firm.shock)
     demand = max(0.0, firm.demand_cents * factor + firm.offset_cents)
     return replace(firm, shock=shock, offset_cents=0.0, demand_cents=demand)
+
+
+def price_level(firm: RivalFirm, month: Month) -> float:
+    """PT-M18: the firm's market price level, in the terms of its own rate index, against which
+    free play's rate elasticity reads its price. A rival that followed history's path kept its
+    2005 revenue per lawyer at capacity while pinned (`january`), so its index at the pin's end
+    carries both the market's rate rises and its own premium (an elite firm's revenue per
+    lawyer outgrew the market's): its level is the index its path needed in December of the
+    pin's last year (`reference_index`), and after that its capacity rises with the market's
+    rate inflation like any free firm's. Every other firm's capacity rose with rate inflation
+    all along, so its index is already relative to the market: its level is 1 (as before
+    PT-M18). Nothing changes while the pin holds (pinned firms do not read it)."""
+    if not month.follows_history(firm):
+        return 1.0
+    return reference_index(firm, month) or 1.0
+
+
+def reference_index(firm: RivalFirm, month: Month) -> float | None:
+    """The rate index a history-following rival's path needed in December of the pin's last
+    year: the path's revenue per lawyer then over its capacity per lawyer then (its 2005 one,
+    before free play's Januaries raised it) at its personality's utilisation."""
+    rb = month.balance.rivals
+    end = rb.pin.end_year
+    t_end = time_of(ym_to_turn(end, 12, month.start), month.start)
+    revenue, lawyers = month.path_revenue(firm, t_end), month.path_lawyers(firm, t_end)
+    if not revenue or not lawyers or firm.rpl_cap_cents <= 0:
+        return None
+    januaries = max(0, month.ym[0] - end)  # `january` runs before `update_demand` each month
+    cap = firm.rpl_cap_cents / dmath.pow(1.0 + rb.rate_inflation, januaries)
+    return revenue / lawyers / (cap * month.personality(firm).utilisation)
 
 
 def january(firm: RivalFirm, month: Month) -> RivalFirm:

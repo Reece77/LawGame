@@ -25,6 +25,7 @@ from typing import Final
 from ptk.balance.game import start_game
 from ptk.balance.report import SCENARIO
 from ptk.balance.seats import fill_seats
+from ptk.balance.seeds import SEEDS
 from ptk.balance.strategies import PLAYABLE
 from ptk.loader import load_balance, load_game_data
 from ptk.sim.money import BP_DENOMINATOR
@@ -119,6 +120,6 @@ def run_seed(seed: int, strategy: str = "steady", turns: int = TURNS) -> SeedPac
     )
 
 
-def run_all(seeds: tuple[int, ...] = tuple(range(1, 11)), workers: int = 4) -> list[SeedPace]:
+def run_all(seeds: tuple[int, ...] = SEEDS, workers: int = 4) -> list[SeedPace]:  # PT-M18: 1-40
     with ProcessPoolExecutor(workers) as ex:
         return list(ex.map(run_seed, seeds))

@@ -1,8 +1,15 @@
-# Ported from .github/workflows/nightly.yml @ 121d318a (Tech Startup Tycoon); changed: two parts, no shards.
-# The long balance runs (PT-M7; TST's nightly, ported): `make balance` prints the
-# docs/balance-targets.md table (and fails on a gate: T1, T2, T11, T12), then `make nightly`
-# runs every test marked `nightly`. Every night, and on demand from the Actions tab
-# (`workflow_dispatch` on a branch, CLAUDE.md section 9 rule 7).
+# Ported from .github/workflows/nightly.yml @ 121d318a (Tech Startup Tycoon); changed: sharded jobs.
+# The long balance runs (PT-M7; TST's nightly, ported). PT-M18 sub-task 2: in parallel jobs, as
+# `check` is sharded, so the nightly finishes within its limit at 40 seeds:
+# - `balance` (BALANCE_SHARDS jobs): each plays a contiguous seed range (`make balance-shard`)
+#   and uploads its runs; `balance-summary` reads them all and prints every target over every
+#   seed and runs test_pt_m7's gates on them (`make balance-summary`), failing on a gate (T1,
+#   T2, T11, T12);
+# - `nightly` (NIGHTLY_SHARDS jobs): the tests marked `nightly`, dealt by recorded duration
+#   (`make nightly-shard`, tests/nightly_shards.py); each uploads its tests' durations and
+#   `durations` merges them (to refresh tests/nightly_durations.json).
+# Every night, and on demand from the Actions tab (`workflow_dispatch` on a branch, CLAUDE.md
+# section 9 rule 7). The job named `nightly` passes only when every shard and the summary did.
 name: nightly
 
 on:
@@ -32,30 +39,133 @@ jobs:
           echo "commits on main in the last 25 hours: $n"
           if [ "$n" -gt 0 ]; then echo "run=true" >> "$GITHUB_OUTPUT"; else echo "run=false" >> "$GITHUB_OUTPUT"; fi
 
-  nightly:
+  balance:
     needs: changed
     if: needs.changed.outputs.run == 'true'
-    name: nightly (${{ matrix.part }})
+    name: balance (shard ${{ matrix.shard }})
     runs-on: ubuntu-latest
-    timeout-minutes: 180 # PT-M12: twenty practices put `make nightly` past 2 hours (main read 112 min)
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
-        part: [balance, nightly]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
           cache-dependency-glob: backend/uv.lock
-
       - name: Install backend dependencies
         run: uv sync --project backend --locked
+      - name: make balance-shard
+        run: make balance-shard BALANCE_SHARDS=8 BALANCE_SHARD=${{ matrix.shard }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: balance-shard-${{ matrix.shard }}
+          path: backend/balance-results/
+          retention-days: 7
 
-      - name: make ${{ matrix.part }}
-        run: make ${{ matrix.part }}
+  balance-summary:
+    needs: balance
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - name: Install backend dependencies
+        run: uv sync --project backend --locked
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: balance-shard-*
+          path: backend/balance-results/
+      - name: make balance-summary (every target over every seed)
+        run: make balance-summary
+
+  nightly-tests:
+    needs: changed
+    if: needs.changed.outputs.run == 'true'
+    name: nightly (shard ${{ matrix.shard }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - name: Install backend dependencies
+        run: uv sync --project backend --locked
+      - name: Every nightly test is in one shard
+        working-directory: backend
+        run: |
+          total=$(uv run pytest -m "nightly and not balance_run" --co -q 2>/dev/null | awk -F': ' '{s+=$2} END {print s}')
+          dealt=0
+          for k in 0 1 2 3 4 5; do
+            n=$(uv run pytest -m "nightly and not balance_run" --co -q --nightly-shard $k/6 2>/dev/null | awk -F': ' '{s+=$2} END {print s+0}')
+            dealt=$((dealt + n))
+          done
+          echo "nightly tests: $total; dealt over 6 shards: $dealt"
+          test "$total" = "$dealt"
+      - name: make nightly-shard
+        run: make nightly-shard NIGHTLY_SHARDS=6 NIGHTLY_SHARD=${{ matrix.shard }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nightly-durations-${{ matrix.shard }}
+          path: backend/nightly-durations/
+          retention-days: 30
+
+  durations:
+    needs: nightly-tests
+    if: always() && needs.nightly-tests.result != 'skipped'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: nightly-durations-*
+          path: durations/
+      - name: Merge the shards' test durations (tests/nightly_durations.json)
+        run: |
+          python3 - <<'PY'
+          import json, pathlib
+          out = {}
+          for p in sorted(pathlib.Path("durations").rglob("*.json")):
+              out.update(json.loads(p.read_text()))
+          pathlib.Path("nightly_durations.json").write_text(json.dumps(dict(sorted(out.items())), indent=1))
+          print(f"{len(out)} tests, {sum(out.values()) / 60:.0f} minutes in all")
+          for k, v in sorted(out.items(), key=lambda kv: -kv[1])[:25]:
+              print(f"{v:8.0f} s  {k}")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nightly-durations
+          path: nightly_durations.json
+          retention-days: 90
+
+  nightly:
+    needs: [changed, balance, balance-summary, nightly-tests]
+    if: always() && needs.changed.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Every balance shard, the summary and every test shard succeeded
+        run: |
+          echo "balance: ${{ needs.balance.result }}, summary: ${{ needs.balance-summary.result }}, tests: ${{ needs.nightly-tests.result }}"
+          test "${{ needs.balance.result }}" = "success" && test "${{ needs.balance-summary.result }}" = "success" && test "${{ needs.nightly-tests.result }}" = "success"

@@ -19,16 +19,18 @@ from pathlib import Path
 from statistics import median
 from typing import Final
 
+from ptk.balance.ai_era import AI_ERA, AiEraReading, read_seed
 from ptk.balance.game import PLAYER, Game, Month, start_game
 from ptk.balance.known_misses import known_miss, verdict
 from ptk.balance.seats import fill_seats
+from ptk.balance.seeds import SEEDS, at_least, at_most
 from ptk.balance.strategies import PLAYABLE, STRATEGIES
 from ptk.loader import load_balance, load_game_data
 from ptk.sim.calendar import ym_to_turn
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.state import GameState
 
-SEEDS: Final = tuple(range(1, 11))
+# SEEDS: ptk.balance.seeds (PT-M18: seeds 1-40, thresholds as shares of seeds)
 TURNS: Final = 132  # January 2005 to December 2015
 SCENARIO: Final = "biglaw_spinout"
 FINAL_YEAR: Final = 2015  # "year 11"
@@ -40,6 +42,16 @@ VARIANT_RUNS: Final = ("lateral-rocket-heeded", "restructuring", "specialist", "
 # and the 30-year steady run printed for information (PT-M18 sets 30-year targets)
 LONG_RUN: Final = "steady-30y"
 LONG_TURNS: Final = 360
+# PT-M18 (T17): every strategy to December 2034, judged as T2 at year 30
+LONG_STRATEGIES: Final = tuple(f"{s}-30y" for s in STRATEGIES)
+T15_YEARS: Final = (2025, 2034)  # T15: rivals' growth after history's pin
+T15_EACH: Final = (-0.004, 0.183)  # tunable-exempt: history's 10-year range, 2005-2025 paths
+T15_MEDIAN: Final = (0.036, 0.092)  # tunable-exempt: history's 20-year p10-p90 (43 firms)
+T16_MEDIAN: Final = (0.0, 4.0)  # tunable-exempt: collapses a decade (history: 4 of 43, 0 of 38)
+T16_ANY_SHARE: Final = 0.2  # tunable-exempt: at least one collapse on 20% of seeds
+T17_SHARE: Final = 0.6  # tunable-exempt: T2's share, at year 30
+T18_SAVING: Final = (0.40, 0.70)  # tunable-exempt: T18 (a), PT-M14 criterion 2's band
+T18_RESTORED: Final = 0.5  # tunable-exempt: T18 (b), PT-M14 criterion 4's "at least half"
 T11_YEARS: Final = (2009, 2015)  # the 132-turn runs' checkpoints (top 10 at 2015)
 T11_LONG_YEARS: Final = (2009, 2015, 2020, 2025)  # the long runs' (top 10 at 2025)
 SHOCK_BAND: Final = (-0.30, -0.10)  # 2020 Q2 against Q1, a corporate-heavy firm
@@ -49,6 +61,11 @@ T8_MIN_LAWYERS: Final = (
     10  # T8 restructuring: firms this large in December 2008 (Reece, 2026-11-22)
 )
 CENTS: Final = 100
+# PT-M18 (CLAUDE.md 12.1): the targets' counts of seeds as shares (docs/balance-targets.md)
+T1_SHARE: Final = 0.9  # tunable-exempt: T1, do-nothing fails on at least 9 of 10
+T2_SHARE: Final = 0.6  # tunable-exempt: T2, no strategy best on more than 6 of 10
+T9_ROCKET: Final = (0.3, 0.6)  # tunable-exempt: T9, the rocket dissolves on 3-6 of 10
+T9_HEEDED: Final = 0.1  # tunable-exempt: T9, the heeded rocket on at most 1 of 10
 MILLION: Final = 1_000_000 * CENTS
 
 
@@ -75,6 +92,12 @@ class RunResult:
     class_equity: int  # ... of them equity partners at the end
     rivals: RivalCheck | None
     refused: dict[str, int] = field(default_factory=dict)
+    # PT-M18 (T15, T16; the long runs only): real rivals' revenue growth a year, 2025-2034, and
+    # collapses over 2026-2034 among the real rivals active in December 2025 (and their count)
+    rival_growth: tuple[float, ...] = ()
+    rival_collapses: int = 0
+    rivals_2025: int = 0
+    ai_era: AiEraReading | None = None  # PT-M18 (T18): an `ai-era` pseudo-run's reading
 
     @property
     def dissolved(self) -> bool:
@@ -93,6 +116,14 @@ class RunResult:
                 for practice, cents in m.practice_revenue:
                     out[practice] += cents
         return out
+
+    @property
+    def score_30y(self) -> float:
+        """T17: T2's score to year 30 (the founding partner's allocations 2005-2034; 0 for a
+        firm that dissolved)."""
+        if self.dissolved or self.december(2034) is None:
+            return 0.0
+        return float(sum(m.founder_comp_cents for m in self.months))
 
     @property
     def score(self) -> float:
@@ -142,6 +173,7 @@ def _result(
         for pid in klass
         if pid in state.staff_ids(PLAYER) and state.person(pid).level == "equity_partner"
     )
+    long_rivals = _long_rivals(state) if turns >= LONG_TURNS and state.turn >= turns else ((), 0, 0)
     return RunResult(
         strategy=strategy,
         seed=seed,
@@ -161,7 +193,29 @@ def _result(
             else None
         ),
         refused=dict(game.refused),
+        rival_growth=long_rivals[0],
+        rival_collapses=long_rivals[1],
+        rivals_2025=long_rivals[2],
     )
+
+
+def _long_rivals(state: GameState) -> tuple[tuple[float, ...], int, int]:
+    """T15 and T16's readings of a long run's real rivals (PT-M18)."""
+    first, last = T15_YEARS
+    start_2026 = ym_to_turn(first + 1, 1, (2005, 1))
+    growth: list[float] = []
+    alive, collapsed = 0, 0
+    for f in state.rivals.firms:
+        if f.kind != "real":
+            continue
+        a = next((h.revenue_cents for h in f.history if h.year == first), None)
+        b = next((h.revenue_cents for h in f.history if h.year == last), None)
+        if a and b and a > 0:
+            growth.append((b / a) ** (1 / (last - first)) - 1)
+        if a is not None and (f.ended_turn is None or f.ended_turn >= start_2026):
+            alive += 1
+            collapsed += f.status in ("collapsed", "failed")  # a dissolution either way
+    return tuple(growth), collapsed, alive
 
 
 def rival_check(
@@ -232,13 +286,73 @@ def run_all(
     if extra_runs:
         plan += [(s, seed, d, turns) for s, d in DIFFICULTY_RUNS for seed in seeds]
         plan += [(v, seed, "standard", turns) for v in VARIANT_RUNS for seed in seeds]
-    if long_runs:
-        plan = [(LONG_RUN, seed, "standard", LONG_TURNS) for seed in seeds] + plan
+    if long_runs:  # PT-M18 (T17): every strategy to 2034, steady's first (the longest)
+        plan = [(s, seed, "standard", LONG_TURNS) for s in LONG_STRATEGIES for seed in seeds] + plan
+    ai_seeds = list(seeds) if long_runs else []  # PT-M18 (T18): the AI era, a seed each
     if jobs <= 1:
-        return [play(s, seed, n, d, data_dir) for s, seed, d, n in plan]
+        return [play_ai_era(seed, data_dir) for seed in ai_seeds] + [
+            play(s, seed, n, d, data_dir) for s, seed, d, n in plan
+        ]
     with ProcessPoolExecutor(jobs) as pool:
-        futures = [pool.submit(play, s, seed, n, d, data_dir) for s, seed, d, n in plan]
+        futures = [pool.submit(play_ai_era, seed, data_dir) for seed in ai_seeds]
+        futures += [pool.submit(play, s, seed, n, d, data_dir) for s, seed, d, n in plan]
         return [f.result() for f in futures]
+
+
+def play_ai_era(seed: int, data_dir: str = "data") -> RunResult:
+    """T18's reading on one seed (`ptk.balance.ai_era`), as a pseudo-run of the shards'
+    results: the summary judges it as row T18; every other row leaves it out."""
+    started = time.perf_counter()
+    reading = read_seed(seed, data_dir)
+    return RunResult(
+        strategy=AI_ERA,
+        seed=seed,
+        difficulty="standard",
+        turns=LONG_TURNS,
+        seconds=time.perf_counter() - started,
+        game_state="reading",
+        ended_turn=None,
+        months=(),
+        class_size=0,
+        class_equity=0,
+        rivals=None,
+        ai_era=reading,
+    )
+
+
+# --- Shards (PT-M18 sub-task 2: the nightly's balance run in parallel jobs) -------------------
+
+
+def seed_range(seeds: Sequence[int], k: int, n: int) -> list[int]:
+    """The k-th (0-based) of n contiguous, near-equal ranges of `seeds` (sorted)."""
+    if not 0 <= k < n:
+        raise ValueError(f"shard {k} is not in 0..{n - 1}")
+    ordered = sorted(seeds)
+    size, extra = divmod(len(ordered), n)
+    start = k * size + min(k, extra)
+    return ordered[start : start + size + (1 if k < extra else 0)]
+
+
+def save_results(path: Path, results: Sequence[RunResult]) -> None:
+    """A shard's runs, for the summary job (`load_shards`)."""
+    import pickle
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(pickle.dumps(list(results)))
+
+
+def load_shards(folder: Path) -> list[RunResult]:
+    """Every shard's saved runs in `folder` (any depth), by strategy, difficulty and seed;
+    a run present in two shards is an error (the ranges overlap)."""
+    import pickle
+
+    out: list[RunResult] = []
+    for path in sorted(folder.rglob("*.pkl")):
+        out.extend(pickle.loads(path.read_bytes()))
+    keys = [(r.strategy, r.difficulty, r.seed, r.turns) for r in out]
+    if len(keys) != len(set(keys)):
+        raise ValueError("a run appears in two shards")
+    return sorted(out, key=lambda r: (r.strategy, r.difficulty, r.seed, r.turns))
 
 
 # --- Targets ---------------------------------------------------------------------------------
@@ -290,6 +404,8 @@ def winners(results: Sequence[RunResult]) -> Counter[str]:
 
 
 def evaluate(results: Sequence[RunResult]) -> list[Row]:
+    readings = [r.ai_era for r in results if r.ai_era is not None]
+    results = [r for r in results if r.ai_era is None]  # T18's pseudo-runs play no firm
     return [
         *_t1(results),
         *_t2(results),
@@ -305,6 +421,10 @@ def evaluate(results: Sequence[RunResult]) -> list[Row]:
         *_t12(results),
         *_shock(results),
         *_thirty(results),
+        *_t15(results),
+        *_t16(results),
+        *_t17(results),
+        *_t18(readings),
         *_pt_m12(results),
     ]
 
@@ -330,7 +450,7 @@ def _t1(results: Sequence[RunResult]) -> list[Row]:
 
     failed = sum(failing(r, True) for r in runs)
     nominal = sum(failing(r, False) for r in runs)
-    need = len(runs) - len(runs) // 10
+    need = at_least(T1_SHARE, len(runs))  # PT-M18: 9 of 10 as at least 90%
     return [
         Row(
             "T1",
@@ -339,7 +459,7 @@ def _t1(results: Sequence[RunResult]) -> list[Row]:
             f">= {need}/{len(runs)}",
             failed >= need,
             gate=True,
-            score=-failed,
+            score=-failed / len(runs),  # PT-M18: a share of seeds
         )
     ]
 
@@ -351,7 +471,7 @@ def _t2(results: Sequence[RunResult]) -> list[Row]:
         return []
     top = max(wins.values(), default=0)
     best = ", ".join(f"{s} {n}" for s, n in wins.most_common())
-    limit = seeds * 6 // 10
+    limit = at_most(T2_SHARE, seeds)  # PT-M18: 6 of 10 as at most 60%
     return [
         Row(
             "T2",
@@ -360,7 +480,7 @@ def _t2(results: Sequence[RunResult]) -> list[Row]:
             f"<= {limit}/{seeds} each",
             top <= limit,
             gate=True,
-            score=top,
+            score=top / seeds if seeds else None,  # PT-M18: the most wins as a share of seeds
         )
     ]
 
@@ -495,6 +615,7 @@ def _t6(results: Sequence[RunResult]) -> list[Row]:
             _pct(share),
             "8%-15%",
             _in(share, 0.08, 0.15),
+            score=None if share is None else -share,  # PT-M18: its known-miss row's measure
         ),
     ]
 
@@ -540,7 +661,7 @@ def _change(r: RunResult) -> float | None:
 def _t8(results: Sequence[RunResult]) -> list[Row]:
     corporate, restructuring = [], []
     for r in results:
-        if r.difficulty != "standard" or r.strategy == LONG_RUN:  # the long run repeats steady
+        if r.difficulty != "standard" or r.strategy in LONG_STRATEGIES:  # long runs repeat 2005-15
             continue
         mix = r.year_practice_revenue(2008)
         total = sum(mix.values())
@@ -582,27 +703,29 @@ def _t9(results: Sequence[RunResult]) -> list[Row]:
     rocket = _runs(results, "lateral-rocket")
     if rocket:
         n = sum(r.dissolved for r in rocket)
+        lo, hi = T9_ROCKET  # PT-M18: 3-6 of 10 as 30%-60%
         out.append(
             Row(
                 "T9.rocket",
                 "lateral rocket dissolves by 2015",
                 f"{n}/{len(rocket)}",
-                "3-6/10",
-                3 <= n <= 6,
-                score=float(n),  # too many dissolve: more is worse
+                f"{at_least(lo, len(rocket))}-{at_most(hi, len(rocket))}/{len(rocket)}",
+                at_least(lo, len(rocket)) <= n <= at_most(hi, len(rocket)),
+                score=n / len(rocket),  # too many dissolve: more is worse (a share)
             )
         )
     heeded = _runs(results, "lateral-rocket-heeded")
     if heeded:
         n = sum(r.dissolved for r in heeded)
+        top = at_most(T9_HEEDED, len(heeded))  # PT-M18: 1 of 10 as at most 10%
         out.append(
             Row(
                 "T9.heeded",
                 "the rocket with the CFO's warnings heeded dissolves",
                 f"{n}/{len(heeded)}",
-                "<= 1/10",
-                n <= 1,
-                score=float(n),
+                f"<= {top}/{len(heeded)}",
+                n <= top,
+                score=n / len(heeded),  # a share of seeds
             )
         )
     return out
@@ -744,6 +867,101 @@ def _thirty(results: Sequence[RunResult]) -> list[Row]:
     ]
 
 
+def _t15(results: Sequence[RunResult]) -> list[Row]:
+    runs = [r for r in _runs(results, LONG_RUN) if r.rival_growth]
+    if not runs:
+        return []
+    growth = [g for r in runs for g in r.rival_growth]
+    lo, hi = T15_EACH
+    mlo, mhi = T15_MEDIAN
+    med = median(growth)
+    outside = sum(1 for g in growth if not lo <= g <= hi)
+    return [
+        Row(
+            "T15",
+            "real rivals' revenue growth a year 2025-2034 (min, median, max; outside the range)",
+            f"{_pct(min(growth))}, {_pct(med)}, {_pct(max(growth))}; {outside}/{len(growth)}",
+            f"each {_pct(lo)}-{_pct(hi)}, median {_pct(mlo)}-{_pct(mhi)}",
+            outside == 0 and mlo <= med <= mhi,
+            score=med,
+        )
+    ]
+
+
+def _t16(results: Sequence[RunResult]) -> list[Row]:
+    runs = [r for r in _runs(results, LONG_RUN) if r.rivals_2025]
+    if not runs:
+        return []
+    decade = [r.rival_collapses * 10 / 9 for r in runs]  # 2026-2034 is nine years
+    med = median(decade)
+    anyone = sum(1 for r in runs if r.rival_collapses > 0)
+    lo, hi = T16_MEDIAN
+    need = at_least(T16_ANY_SHARE, len(runs))
+    return [
+        Row(
+            "T16",
+            "real rivals' collapses a decade, 2026-2034 (median; seeds with any)",
+            f"{med:.1f}; {anyone}/{len(runs)}",
+            f"{lo:.0f}-{hi:.0f}; >= {need}/{len(runs)}",
+            lo <= med <= hi and anyone >= need,
+            score=med,
+        )
+    ]
+
+
+def _t17(results: Sequence[RunResult]) -> list[Row]:
+    field = [r for r in results if r.strategy in LONG_STRATEGIES and r.difficulty == "standard"]
+    if len({r.strategy for r in field}) < 2:
+        return []
+    wins: Counter[str] = Counter()
+    for seed in sorted({r.seed for r in field}):
+        runs = sorted((r for r in field if r.seed == seed), key=lambda r: -r.score_30y)
+        if len(runs) > 1 and runs[0].score_30y > runs[1].score_30y:
+            wins[runs[0].strategy.removesuffix("-30y")] += 1
+    seeds = len({r.seed for r in field})
+    top = max(wins.values(), default=0)
+    limit = at_most(T17_SHARE, seeds)
+    return [
+        Row(
+            "T17",
+            "no dominant strategy at year 30 (best founder's earnings 2005-2034, wins)",
+            ", ".join(f"{s} {n}" for s, n in wins.most_common()) or "-",
+            f"<= {limit}/{seeds} each",
+            top <= limit,
+            score=top / seeds if seeds else None,
+        )
+    ]
+
+
+def _t18(readings: Sequence[AiEraReading]) -> list[Row]:
+    if not readings:
+        return []
+    lo, hi = T18_SAVING
+    savings = [r.saving for r in readings]
+    losses = [r.lost for r in readings if r.cohort]
+    shares = [x for x in (r.restored for r in readings) if x is not None]
+    loss = median(losses) if losses else None
+    share = median(shares) if shares else None
+    inside = sum(1 for x in savings if lo <= x <= hi)
+    return [
+        Row(
+            "T18",
+            "the AI era: exposed tasks' saving by 2030 (range; seeds inside); the 2030 juniors' "
+            "loss without training (median) and the share training restores (median)",
+            f"{_pct(min(savings))}-{_pct(max(savings))} ({inside}/{len(savings)}); "
+            f"{'-' if loss is None else f'{loss:.3f}'}; "
+            f"{'-' if share is None else f'{share:.2f}'} over {len(shares)} seeds",
+            f"{lo:.0%}-{hi:.0%} every seed; > 0; >= {T18_RESTORED:.1f}",
+            inside == len(savings)
+            and loss is not None
+            and loss > 0
+            and share is not None
+            and share >= T18_RESTORED,
+            score=share,
+        )
+    ]
+
+
 def shock_table(results: Sequence[RunResult]) -> str:
     """PT-M10: the long runs' 2020 shock and 2034 numbers, one line a seed."""
     head = "seed  heavy  2020Q1   2020Q2   Q2/Q1   2021Q4  back  2034 lawyers  revenue      PEP"
@@ -781,6 +999,8 @@ def runs_table(results: Sequence[RunResult]) -> str:
     head = ("strategy", "seed", "diff", "state", "lawyers", "revenue 2015", "PEP", "09/08", "secs")
     lines = [" ".join(f"{h:>10s}" for h in head)]
     for r in sorted(results, key=lambda r: (r.strategy, r.difficulty, r.seed)):
+        if r.ai_era is not None:
+            continue  # T18's readings print in their row
         last = r.december(FINAL_YEAR) or (r.months[-1] if r.months else None)
         change = _change(r)
         lines.append(
@@ -793,7 +1013,7 @@ def runs_table(results: Sequence[RunResult]) -> str:
 
 # --- PT-M12: the practice strategies ----------------------------------------------------------
 
-SPECIALIST_SURVIVES: Final = 7  # tunable-exempt: the brief's "survives on at least 7 of 10"
+SPECIALIST_SURVIVES: Final = 0.7  # tunable-exempt: PT-M12's "at least 7 of 10", as a share
 
 
 def _pep_change(r: RunResult, year: int) -> float | None:
@@ -815,7 +1035,7 @@ def _pt_m12(results: Sequence[RunResult]) -> list[Row]:
     if spec:
         n = len(spec)
         alive = sum(1 for r in spec if not r.dissolved)
-        need = n * SPECIALIST_SURVIVES // 10
+        need = at_least(SPECIALIST_SURVIVES, n)  # PT-M18: 7 of 10 as at least 70%
         rows.append(
             Row(
                 "PT-M12.specialist",
@@ -851,7 +1071,7 @@ def _pt_m12(results: Sequence[RunResult]) -> list[Row]:
                 wins[runs[0].strategy] += 1
         seeds = len({r.seed for r in field})
         top = max(wins.values(), default=0)
-        limit = seeds * 6 // 10
+        limit = at_most(T2_SHARE, seeds)
         rows.append(
             Row(
                 "T2.specialist",

@@ -1,11 +1,12 @@
 """PT-M11's acceptance runs (run with -s to see the printed readings).
 
 1. T11 extended to London: every UK rival's revenue within +-15% of its sourced path in
-   December 2009, 2015 and 2025 (the firms alive then in history), on seeds 1-10 (printed;
+   December 2009, 2015 and 2025 (the firms alive then in history), on seeds 1-40 (PT-M18; printed;
    nightly: `check`'s T11 in test_pt_m5.py checks every pinned rival, these included).
 2. A firm that opens London in January 2007 with a 10-lawyer team lift (`london-lift`) reaches
    a positive office profit (its profit since opening, lease and fit-out included) within
-   3 years on at least 6 of 10 seeds; one that opens with an organic start of one partner
+   3 years on at least 60% of seeds 1-40 whose firm is alive in January 2007 (PT-M18); one
+   that opens with an organic start of one partner
    (`london-organic`) takes longer (both printed; nightly: twenty five-year runs).
 3. T12 with two offices: the median turn of December 2025 is at most 250 ms on a firm of
    steady's size (150 lawyers) with offices in London (a team lift) and Washington (a lateral
@@ -20,6 +21,8 @@ from concurrent.futures import ProcessPoolExecutor
 import pytest
 
 from ptk.balance.offices import OfficeRun, office_run
+from ptk.balance.seeds import SEEDS as BALANCE_SEEDS
+from ptk.balance.seeds import at_least
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
 from ptk.sim.geo.cities import rival_region
@@ -39,9 +42,9 @@ from tests.geo_support import open_london
 from tests.matters_support import grown_firm, top_up
 from tests.rivals_support import play_until, rivals_month, start, turn_of
 
-SEEDS = range(1, 11)
+SEEDS = BALANCE_SEEDS  # PT-M18: seeds 1-40 (CLAUDE.md 12.1)
 UK_YEARS = (2009, 2015, 2025)
-LIFT_SEEDS = 6  # tunable-exempt: the brief's "at least 6 of 10 seeds"
+LIFT_SHARE = 0.6  # tunable-exempt: the brief's "at least 6 of 10 seeds", as a share (PT-M18)
 WITHIN_MONTHS = 36  # tunable-exempt: "within 3 years"
 LIFT_LAWYERS = 12  # tunable-exempt: T12's London team lift (3 partners, 9 associates)
 GROUP_LAWYERS = 6  # tunable-exempt: T12's Washington lateral group (2 partners, 4 associates)
@@ -88,8 +91,12 @@ def test_a_london_team_lift_pays_within_three_years_and_organic_is_slower() -> N
     jobs = [(s, h) for h in ("team_lift", "organic") for s in SEEDS]
     with ProcessPoolExecutor() as pool:
         runs = list(pool.map(_run, jobs))
-    lift = [r for r in runs if r.how == "team_lift"]
-    organic = [r for r in runs if r.how == "organic"]
+    # PT-M18 (the product manager's decision, 2026-11-27): judged on the seeds whose firm is
+    # alive in January 2007, when the office opens (steady dissolves on T5's 5-20% of seeds,
+    # seed 11 before 2007); the dissolved seeds are printed
+    gone = sorted({r.seed for r in runs if not r.reached})
+    lift = [r for r in runs if r.how == "team_lift" and r.reached]
+    organic = [r for r in runs if r.how == "organic" and r.reached]
 
     def show(rs: list[OfficeRun]) -> str:
         def m(v: int | None) -> str:
@@ -97,19 +104,20 @@ def test_a_london_team_lift_pays_within_three_years_and_organic_is_slower() -> N
 
         return ", ".join(f"s{r.seed}:{m(r.payback_months())}/{m(r.months_to_profit())}" for r in rs)
 
-    print("\nLondon 2007, months to a positive office profit since opening / over 12 months:")
+    print(f"\nseeds dissolved before January 2007 (not judged): {gone}")
+    print("London 2007, months to a positive office profit since opening / over 12 months:")
     print(f"team lift: {show(lift)}")
     print(f"organic start: {show(organic)}")
     paid = sum(1 for r in lift if (m := r.payback_months()) is not None and m <= WITHIN_MONTHS)
     lift_m = [r.payback_months() or 61 for r in lift]
     org_m = [r.payback_months() or 61 for r in organic]
     print(
-        f"team lift: {paid} of 10 within {WITHIN_MONTHS} months "
+        f"team lift: {paid} of {len(lift)} within {WITHIN_MONTHS} months "
         f"(median {statistics.median(lift_m)});"
         f" organic: median {statistics.median(org_m)} months"
     )
     assert all(r.opened for r in lift)
-    assert paid >= LIFT_SEEDS
+    assert paid >= at_least(LIFT_SHARE, len(lift))
     assert statistics.median(org_m) > statistics.median(lift_m)
 
 

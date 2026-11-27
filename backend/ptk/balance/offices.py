@@ -143,6 +143,7 @@ class OfficeRun:
     opened: bool
     monthly: tuple[int, ...]  # the London office's profit each month from opening, cents
     lawyers: int  # London's lawyers at the end
+    reached: bool = True  # PT-M18: the firm was alive in January 2007, when the office opens
 
     def payback_months(self) -> int | None:
         """Months from opening until the office's cumulative profit since opening is positive."""
@@ -169,8 +170,10 @@ def office_run(
     g = OfficeGame(**{f.name: getattr(base, f.name) for f in fields(Game)})
     script = london_lift if how == "team_lift" else london_organic
     monthly: list[int] = []
+    reached = False  # PT-M18: the firm was alive in OPEN_YM (it may dissolve before)
     last = g.state.turn + (OPEN_YM[0] - g.ym[0] + 1) * 12 + months  # tunable-exempt: months
     while not g.state.ended and len(monthly) < months and g.state.turn < last:
+        reached = reached or g.ym >= OPEN_YM
         script(g)
         g.entries = [e for e in g.entries if e.turn == g.state.turn]  # this month's actions
         g.turn()
@@ -179,4 +182,4 @@ def office_run(
             monthly.append(office_pnl(g.entries, 1, g.data).get(oid, 0))
         g.entries = []
     london = [p for p in g.lawyers() if p.city == CITY]
-    return OfficeRun(seed, how, bool(monthly), tuple(monthly), len(london))
+    return OfficeRun(seed, how, bool(monthly), tuple(monthly), len(london), reached)

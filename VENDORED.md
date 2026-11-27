@@ -199,7 +199,7 @@ PT-M7 (balance and v1 close) ported TST's balance runner framework from upstream
 - `backend/ptk/balance/report.py`: the framework (`play`, `run_all` with worker processes, `Row`, `table`, `runs_table`) as TST's; Partner Track's targets T1-T12, strategies and the T5/T8/T9 extra runs.
 - `backend/ptk/balance/known_misses.py`: TST's `KnownMiss`, `Reading` and `verdict` as they are; Partner Track's own (empty) list.
 - `tools/balance_runner.py`: Partner Track's package, 132 turns and the extra runs.
-- `.github/workflows/nightly.yml`: two parts (`make balance`, `make nightly`), no shards; the changed-main skip as TST's.
+- `.github/workflows/nightly.yml`: two parts (`make balance`, `make nightly`), no shards; the changed-main skip as TST's. PT-M18: the balance run in seed-range shards with a summary job, the nightly tests in duration-balanced shards, a `nightly` job over them all, and a 120-minute limit.
 - `backend/ptk/balance/state_cache.py` and `backend/tests/balance/test_state_cache.py`: TST M30's state cache (PT-M0 deferred it): Partner Track's strategies (steady, pyramid, boutique), 132 turns, its loader and fixture (`tests/fixtures/state_hashes.json`); the Digester and the fixture format as TST's.
 - Holiday was ported in PT-M7a (`backend/ptk/holiday.py`, TST 17.1's stop reasons; synchronous, see its brief).
 

@@ -142,7 +142,9 @@ def test_a_guarantee_is_a_floor(data: GameData, balance: Balance) -> None:
 
 # --- The scripted exodus (balance target T9's mechanism) --------------------------------------
 
-SEEDS = range(1, 11)
+SEEDS = range(1, 41)  # PT-M18 (CLAUDE.md 12.1): seeds 1-40, thresholds as shares
+IGNORED_SHARE = 0.3  # tunable-exempt: the spiral dissolves on at least 3 of 10 untended
+HEEDED_SHARE = 0.1  # tunable-exempt: ... and on at most 1 of 10 with the response
 
 
 def _exodus(data: GameData, balance: Balance, seed: int, respond: bool) -> str:
@@ -169,6 +171,8 @@ def _exodus(data: GameData, balance: Balance, seed: int, respond: bool) -> str:
     )
     warned = False
     for month in range(40):
+        if g.state.ended:  # PT-M18: a seed of 11-40 dissolves in the setup or a departure
+            break
         if month in (0, 2, 4) and g.fp.partner(corp[month // 2]) is not None:
             depart(g, corp[month // 2])
         if respond:
@@ -199,23 +203,35 @@ def _exodus(data: GameData, balance: Balance, seed: int, respond: bool) -> str:
     return g.state.save_meta.game_state
 
 
+def _exodus_seed(args: tuple[int, bool]) -> str:
+    from ptk.loader import load_balance, load_game_data
+    from tests.conftest import DATA_DIR
+
+    seed, respond = args
+    return _exodus(load_game_data(DATA_DIR), load_balance(DATA_DIR), seed, respond)
+
+
 @pytest.mark.nightly  # PT-M11: over 60 s; check's runtime (product manager, 2026-11-23)
-def test_the_exodus_spiral(
-    data: GameData, balance: Balance, capsys: pytest.CaptureFixture[str]
-) -> None:
-    ignored = [_exodus(data, balance, s, False) for s in SEEDS]
-    heeded = [_exodus(data, balance, s, True) for s in SEEDS]
+def test_the_exodus_spiral(capsys: pytest.CaptureFixture[str]) -> None:
+    from concurrent.futures import ProcessPoolExecutor
+
+    from ptk.balance.seeds import at_least, at_most
+
+    with ProcessPoolExecutor() as pool:  # PT-M18: forty seeds, in parallel
+        ignored = list(pool.map(_exodus_seed, [(s, False) for s in SEEDS]))
+        heeded = list(pool.map(_exodus_seed, [(s, True) for s in SEEDS]))
+    n = len(SEEDS)
     with capsys.disabled():
         print(
-            f"\nexodus: dissolved without intervention on {ignored.count('dissolved')} of 10 "
-            f"seeds, with the scripted response on {heeded.count('dissolved')} of 10"
+            f"\nexodus: dissolved without intervention on {ignored.count('dissolved')} of {n} "
+            f"seeds, with the scripted response on {heeded.count('dissolved')} of {n}"
         )
-    assert ignored.count("dissolved") >= 3
-    if heeded.count("dissolved") > 1:  # PT-M18's, non-strict (the product manager, 2026-11-25)
+    assert ignored.count("dissolved") >= at_least(IGNORED_SHARE, n)
+    if heeded.count("dissolved") > at_most(HEEDED_SHARE, n):  # PT-M23's, non-strict
         pytest.xfail(
-            "PT-M18 (product manager, 2026-11-25: non-strict, seed variance under rule 4): the "
-            "heeded response dissolves on main 04efa78 1/10 (seeds 1-10) and 4/30 (11-40), on "
-            "PT-M12's branch 2/10 and 3/30 (docs/tasks/PT-M12-all-twenty-practices.md, 18)"
+            "PT-M23 (the product manager's decision, 2026-11-27: carried from PT-M18, "
+            "non-strict): the heeded response dissolves on 5 of seeds 1-40 on PT-M18 (at most "
+            "4), as on main 04efa78 (1/10 and 4/30); a sized or repeated capital call reads 5 too"
         )
 
 

@@ -273,6 +273,7 @@ class CollapseBalance(_Strict):
     departed_threshold: float = Field(ge=0, le=1)  # 12-month departed share of key partners
     departed_slope_bp: float = Field(ge=0)  # hazard bp per point of share above threshold
     other_mult: float = Field(ge=0)  # hazard multiplier outside a dated window
+    free_play_bp: float = Field(ge=0)  # PT-M18: a history firm's monthly hazard after the pin
     merger_calloff_share: float = Field(ge=0, le=1)  # departed share that calls a merger off
     scatter_player_share: float = Field(ge=0, le=1)  # of a collapse's people, free agents
     free_agent_months: int = Field(ge=0)
@@ -337,6 +338,7 @@ class RivalsBalance(_Strict):
     rate_step: float = Field(gt=0)  # a rate rise or cut
     rate_need_span: float = Field(gt=0)  # RPL gap that makes the need 1
     rate_elasticity: float = Field(ge=0)  # demand lost per unit of rate above the market
+    growth_bias_floor: float = Field(gt=-1, le=0)  # PT-M18: free play's lowest growth bias
     hire_span: float = Field(gt=0)  # headcount gap (share of lawyers) that makes the need 1
     hire_max_monthly: float = Field(gt=0)  # share of lawyers hired in a month, at most
     cut_max_monthly: float = Field(gt=0)  # share laid off in a month, at most

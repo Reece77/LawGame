@@ -241,6 +241,41 @@ def run_all(
         return [f.result() for f in futures]
 
 
+# --- Shards (PT-M18 sub-task 2: the nightly's balance run in parallel jobs) -------------------
+
+
+def seed_range(seeds: Sequence[int], k: int, n: int) -> list[int]:
+    """The k-th (0-based) of n contiguous, near-equal ranges of `seeds` (sorted)."""
+    if not 0 <= k < n:
+        raise ValueError(f"shard {k} is not in 0..{n - 1}")
+    ordered = sorted(seeds)
+    size, extra = divmod(len(ordered), n)
+    start = k * size + min(k, extra)
+    return ordered[start : start + size + (1 if k < extra else 0)]
+
+
+def save_results(path: Path, results: Sequence[RunResult]) -> None:
+    """A shard's runs, for the summary job (`load_shards`)."""
+    import pickle
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(pickle.dumps(list(results)))
+
+
+def load_shards(folder: Path) -> list[RunResult]:
+    """Every shard's saved runs in `folder` (any depth), by strategy, difficulty and seed;
+    a run present in two shards is an error (the ranges overlap)."""
+    import pickle
+
+    out: list[RunResult] = []
+    for path in sorted(folder.rglob("*.pkl")):
+        out.extend(pickle.loads(path.read_bytes()))
+    keys = [(r.strategy, r.difficulty, r.seed, r.turns) for r in out]
+    if len(keys) != len(set(keys)):
+        raise ValueError("a run appears in two shards")
+    return sorted(out, key=lambda r: (r.strategy, r.difficulty, r.seed, r.turns))
+
+
 # --- Targets ---------------------------------------------------------------------------------
 
 

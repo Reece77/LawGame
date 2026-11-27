@@ -1,6 +1,6 @@
 # Root tasks. Recipes avoid shell-specific syntax so they run under sh and cmd.exe.
 
-.PHONY: check check-fast check-backend check-lint check-shard check-timing check-api check-frontend check-vendored dev gen-api golden e2e balance nightly
+.PHONY: check check-fast check-backend check-lint check-shard check-timing check-api check-frontend check-vendored dev gen-api golden e2e balance nightly balance-shard balance-summary nightly-shard
 
 check: check-vendored check-backend check-timing check-api check-frontend
 
@@ -42,6 +42,22 @@ balance:
 # The long balance tests (CI: nightly.yml; dispatch it on a branch for long runs).
 nightly:
 	cd backend && uv run pytest -q -n auto --dist loadgroup -m nightly -s
+
+# PT-M18 sub-task 2: CI's nightly in parallel jobs. The balance run by seed range (each shard
+# saves its runs; the summary reads them all and prints every target, exiting 1 on a gate) and
+# the nightly tests dealt by recorded duration (tests/nightly_shards.py).
+BALANCE_SHARDS = 8
+BALANCE_SHARD = 0
+balance-shard:
+	uv run --project backend python tools/balance_runner.py --runs --long --shard $(BALANCE_SHARD)/$(BALANCE_SHARDS) --save balance-results/shard-$(BALANCE_SHARD).pkl
+
+balance-summary:
+	uv run --project backend python tools/balance_runner.py --runs --long --summary balance-results
+
+NIGHTLY_SHARDS = 6
+NIGHTLY_SHARD = 0
+nightly-shard:
+	cd backend && uv run pytest -q -n auto --dist loadgroup -m nightly -s --nightly-shard $(NIGHTLY_SHARD)/$(NIGHTLY_SHARDS) --nightly-durations-out nightly-durations/shard-$(NIGHTLY_SHARD).json
 
 golden:
 	cd backend && uv run pytest tests/golden -q --update-golden

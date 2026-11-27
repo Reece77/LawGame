@@ -36,13 +36,38 @@ def main() -> int:
     parser.add_argument(
         "--data", default="data", help="data folder (relative to backend/): a tuning copy"
     )
+    # PT-M18 sub-task 2: the nightly's balance run in parallel jobs, by seed range
+    parser.add_argument(
+        "--shard",
+        default=None,
+        metavar="K/N",
+        help="play only the K-th of N contiguous seed ranges (0-based) and save the results",
+    )
+    parser.add_argument(
+        "--save", default=None, metavar="PATH", help="write the runs' results to PATH (pickle)"
+    )
+    parser.add_argument(
+        "--summary",
+        default=None,
+        metavar="DIR",
+        help="play nothing: read every shard's saved results in DIR and print every target",
+    )
     args = parser.parse_args()
 
     os.environ.setdefault("PTK_LLM_ADAPTER", "mock")
     os.chdir(BACKEND)
     sys.path.insert(0, str(BACKEND))
     from ptk.balance.known_misses import verdict
-    from ptk.balance.report import evaluate, run_all, runs_table, shock_table, table
+    from ptk.balance.report import (
+        evaluate,
+        load_shards,
+        run_all,
+        runs_table,
+        save_results,
+        seed_range,
+        shock_table,
+        table,
+    )
     from ptk.balance.strategies import STRATEGIES
 
     strategies = args.strategies or list(STRATEGIES)
@@ -50,16 +75,27 @@ def main() -> int:
     if unknown:
         parser.error(f"unknown strategies {sorted(unknown)}; choose from {list(STRATEGIES)}")
     started = time.perf_counter()
-    results = run_all(
-        seeds=args.seeds,
-        turns=args.turns,
-        strategies=strategies,
-        extra_runs=not args.no_extra,
-        jobs=args.jobs,
-        data_dir=args.data,
-        long_runs=args.long,
-    )
+    if args.summary is not None:
+        results = load_shards(Path(args.summary))
+    else:
+        seeds = args.seeds
+        if args.shard is not None:
+            k, n = (int(x) for x in args.shard.split("/"))
+            seeds = seed_range(seeds, k, n)
+            print(f"shard {k} of {n}: seeds {seeds}")
+        results = run_all(
+            seeds=seeds,
+            turns=args.turns,
+            strategies=strategies,
+            extra_runs=not args.no_extra,
+            jobs=args.jobs,
+            data_dir=args.data,
+            long_runs=args.long,
+        )
+        if args.save is not None:
+            save_results(Path(args.save), results)
     rows = evaluate(results)
+    print(f"seeds: {sorted({r.seed for r in results})}")
     if args.runs:
         print(runs_table(results), end="\n\n")
         if args.long:
@@ -69,6 +105,8 @@ def main() -> int:
         f"\n{len(results)} runs x {args.turns} turns in {time.perf_counter() - started:.0f} s "
         f"wall clock with {args.jobs} jobs"
     )
+    if args.shard is not None and args.summary is None:
+        return 0  # a shard's table covers its seeds only: the summary job judges every gate
     failed = [r for r in rows if verdict(r) == "fail" and (r.gate or args.strict)]
     return 1 if failed else 0
 

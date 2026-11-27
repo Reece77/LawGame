@@ -132,7 +132,7 @@ Start a fresh standard game, play 2005-2008 yourself, delegate everything to the
    - **T3.lawyers, T6.partners, T13:** known misses carried to v3, owned by PT-M23 (the next balance milestone, `docs/v3-outline.md`), each bounded at its 40-seed reading: T3.lawyers 73.5 (revenue $70.6M is inside), T6.partners 0.0% (a new row; the report's row now carries a score), T13 23.1% on the 23 seeds that merge (bound tightened from 28%). Causes in decisions 9 and 12; follow-ups below.
    - **Expected failures:** PT-M8's strong leader (utilisation gap 2.8 points against 3.0; morale gap 7.3, passes), PT-M9's automated steady (revenue -19.7%, passes; PEP +32.9% against 20%) and PT-M4's heeded exodus (5 of 40 against at most 4; main the same) are non-strict, owned by PT-M23, with both readings in each reason. PT-M8's was strict. PT-M18 now owns no expected failure.
    - **PT-M14.fixed_fees:** the row stays, owned by PT-M23, bounded at the 40-seed reading: 24 of 40 (score -0.6; the measure is a share of seeds, CLAUDE.md 12.1).
-   - T14 passes (1.50) and its row is removed.
+   - T14: see decision 15 (it reads 1.4951, not 1.50, and keeps its row).
 14. **Sub-task 7, the close: T1-T18 on seeds 1-40, before and after.** Before: decision 6's baseline (nightly runs 45952995537 and 45957902516; T15-T17 from run 46003730538, the first that read them). After: the seventh nightly (run 46039759484 on `4d91fac`; the commits since change no result). T12: `make check-timing` on CI (check run 46047551108).
 
     | Target | Before | After | Band | After's verdict |
@@ -152,7 +152,7 @@ Start a fresh standard game, play 2005-2008 yourself, delegate everything to the
     | T11 / T11.2025 | 7.7%, 0, 9 / 9.5%, 0, 8 | the same | ±15%, 0, >= 8 | ok |
     | T12 (median of five, CI) | 251 ms (the minimum on main) | 162 ms December 2025, 157 ms December 2034 | <= 200 / <= 250 | ok |
     | T13 | 25.2% | 23.1% | 10-20% | known (PT-M23) |
-    | T14 | 1.50 | 1.50 | 1.5-5.0 | ok (row removed) |
+    | T14 | 1.495 | 1.4951 | 1.5-5.0 | known (PT-M23; decision 15) |
     | T15 | -5.0%, 4.3%, 20.4%; 274/1,835 outside | 3.3%, 6.2%, 13.1%; 0/1,906 | each -0.4-18.3%, median 3.6-9.2% | ok |
     | T16 | 0.0; 0/34 | 1.1; 28/36 | 0-4; >= 20% of seeds | ok |
     | T17 | steady 25 | steady 19 | <= 24/40 | ok |
@@ -160,6 +160,7 @@ Start a fresh standard game, play 2005-2008 yourself, delegate everything to the
     | PT-M14.fixed_fees | 4/10, 9/30 | 24/40 | >= 70% | known (PT-M23) |
 
    Guards at 40 seeds: PT-M12 specialist 29/40 (>= 28), PT-M5 conditional history, PT-M7a, PT-M11 London (seeds reaching 2007), PT-M8 pitches, PT-M15 cowboy (2x on 36, lower PEP on 24 of 40), PT-M16 pace, real people, the state cache and the golden snapshots pass; PT-M8's leader, PT-M9's automated steady and PT-M4's heeded exodus are PT-M23's non-strict expected failures (decision 13). The golden snapshots were last regenerated on `4d91fac` (decision 11's claim rate) and are current: nothing since changes a result. The nightly finished within 120 minutes on every run from the fourth (35, 36 and 38 minutes on the last three).
+15. **A correction: T14 reads 1.4951, not 1.50.** The nightly on `56fa6b8` (run 46063047010) failed T14 at 1.4951 after decision 13 removed its row: my local readings printed the median rounded to two places (1.50) and I read that as inside the band. With `from_error_bp` 1070 the 40-seed median is 1.4951, just under 1.5 and within the bound Reece authorised on 2026-11-25 (1.495). Its known-miss row returns at that bound, owned by PT-M23 with the other carried misses; decision 11's choice (1070) and the cowboy guard (24 of 40) stand. So T4.steady and T14 are both known misses: the trade decision 13 settled holds T14 at its old bound rather than inside the band. For the product manager to note.
 
 ## Follow-ups
 

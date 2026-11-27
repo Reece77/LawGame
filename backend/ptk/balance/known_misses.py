@@ -40,7 +40,7 @@ KNOWN_MISSES: Final[tuple[KnownMiss, ...]] = (
     # (decision 10, 2026-11-27): T2 passes on seeds 1-40 and its row goes; T4.steady's row
     # returns bounded at its 40-seed reading (decision 12). The product manager (2026-11-27):
     # T3.lawyers, T4.steady, T6.partners and T13 carried to v3 (PT-M23), each bounded at its
-    # 40-seed reading; T14 passes and its row goes.
+    # 40-seed reading. T14 (1.4951) keeps its row (decision 15).
     KnownMiss(
         target="T3.lawyers",  # steady 100-250 lawyers in December 2015
         owner="PT-M23",
@@ -84,6 +84,17 @@ KNOWN_MISSES: Final[tuple[KnownMiss, ...]] = (
         "): 0.0% on seeds 1-40 (1.9% at the baseline). The class is 0-2 "
         "people a seed and almost all leave before year 8 (22% attrition leaves about 13%); "
         "admitting one partner every December changes nothing (decision 9)",
+    ),
+    KnownMiss(
+        target="T14",  # steady's claim notices a 100 lawyer-years 2006-2015: 1.5-5.0 (PT-M15)
+        owner="PT-M23",
+        # score: minus the median; known while the median is at least 1.495 (the bound Reece
+        # authorised on 2026-11-25; the 40-seed reading 1.4951 is within it)
+        worse_than=-1.495,
+        reason="PT-M18 (2026-11-27): 1.4951 on seeds 1-40 with risk.claims.from_error_bp "
+        "1070 (decision 11; 800 read 1.34 once steady kept 2.5 lawyers per equity partner, "
+        "1300 1.87 with the premium over $10k). Earlier: 1.495 and 1.497 on PT-M12's branch "
+        "(authorised by the product manager, Reece, 2026-11-25)",
     ),
     KnownMiss(
         target="T13",  # partners lost within 24 months of a merger: 10-20% (PT-M13)

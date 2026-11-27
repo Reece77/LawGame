@@ -36,7 +36,8 @@ KNOWN_MISSES: Final[tuple[KnownMiss, ...]] = (
     # brief's "Decisions made". PT-M7c (2026-11-23) removes T2 (steady 6, pyramid 4 on seeds 1-10)
     # and takes over T3.lawyers, T4.steady and T4.pyramid with its readings. Reece (2026-11-24,
     # after the client tiers): T1 (10/10) and T4.pyramid ($0.98M) pass and their rows go;
-    # T3.lawyers, T3.revenue and T4.steady are PT-M18's with PT-M7c's readings.
+    # T3.lawyers, T3.revenue and T4.steady are PT-M18's with PT-M7c's readings. PT-M18
+    # (decision 10, 2026-11-27): T2 and T4.steady pass on seeds 1-40 and their rows go.
     KnownMiss(
         target="T3.lawyers",  # steady 100-250 lawyers in December 2015
         owner="PT-M18",
@@ -47,15 +48,6 @@ KNOWN_MISSES: Final[tuple[KnownMiss, ...]] = (
         "(mergers) (Reece, 2026-11-24)",
     ),
     KnownMiss(
-        target="T4.steady",  # steady PEP $0.5-1.2M in 2015
-        owner="PT-M18",
-        # score: median PEP in $M; known while at most $5.0M
-        worse_than=5.0,
-        reason="$1.31M on PT-M7c's client tiers (before the tiers $2.72M, main $4.37M); seeds "
-        "11-40 $1.65M (before $3.09M): steady's large clients at a top-decile card "
-        "(Reece, 2026-11-24)",
-    ),
-    KnownMiss(
         target="PT-M14.fixed_fees",  # ai-fixed earns more PEP 2026-2030 than ai-hourly, 7 of 10
         owner="PT-M18",
         # score: minus the seeds of 10 where ai-fixed wins; known while at least 3 of 10
@@ -63,18 +55,6 @@ KNOWN_MISSES: Final[tuple[KnownMiss, ...]] = (
         reason="4/10 on seeds 1-10 (4 of the 6 with products) and 9/30 on seeds 11-40 (9 of "
         "the 16 with products) with price acceptance at 110% (Reece's decision, 2026-11-23); "
         "the product manager authorised the row (tools/tech_readings.py; PT-M14's brief)",
-    ),
-    KnownMiss(
-        target="T2",  # no strategy has the best founder's earnings on more than 6 of 10 seeds
-        owner="PT-M18",
-        # score: the most wins any strategy has, as a share of the seeds (PT-M18: 9 of 10
-        # read as 90%); known while at most 90%
-        worse_than=0.9,
-        reason="PT-M15 (authorised by the product manager, Reece, 2026-11-25): steady wins 9 "
-        "of seeds 1-10 on the branch (main 5); seeds 11-40 steady 16/30 on the branch, 19/30 "
-        "on main (a miss on main too: the cause predates PT-M15). PT-M12 (the product "
-        "manager's decision, 2026-11-25: this row covers it, bound unchanged): steady 8 of "
-        "seeds 1-10 (main 9), 21/30 on seeds 11-40 (main 16/30)",
     ),
     KnownMiss(
         target="T13",  # partners lost within 24 months of a merger: 10-20% (PT-M13)

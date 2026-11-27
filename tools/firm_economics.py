@@ -36,7 +36,7 @@ def _fmt(v: object) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser(description=(__doc__ or "").splitlines()[0])
     parser.add_argument("--strategies", nargs="+", default=["steady", "boutique", "pyramid"])
-    parser.add_argument("--seeds", type=int, nargs="+", default=list(range(1, 41))  # PT-M18: ptk.balance.seeds.SEEDS)
+    parser.add_argument("--seeds", type=int, nargs="+", default=list(range(1, 41)))  # PT-M18: ptk.balance.seeds.SEEDS
     parser.add_argument("--year", type=int, default=2015)
     parser.add_argument("--jobs", type=int, default=os.cpu_count() or 1)
     parser.add_argument("--data", default="data")

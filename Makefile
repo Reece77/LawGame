@@ -58,7 +58,7 @@ balance-summary:
 NIGHTLY_SHARDS = 6
 NIGHTLY_SHARD = 0
 nightly-shard:
-	cd backend && uv run pytest -q -n auto --dist loadgroup -m "nightly and not balance_run" -s --nightly-shard $(NIGHTLY_SHARD)/$(NIGHTLY_SHARDS) --nightly-durations-out nightly-durations/shard-$(NIGHTLY_SHARD).json
+	cd backend && uv run pytest -q -n auto --dist loadgroup -m "nightly and not balance_run" -rA --nightly-shard $(NIGHTLY_SHARD)/$(NIGHTLY_SHARDS) --nightly-durations-out nightly-durations/shard-$(NIGHTLY_SHARD).json
 
 golden:
 	cd backend && uv run pytest tests/golden -q --update-golden

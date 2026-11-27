@@ -363,7 +363,9 @@ def advance_turn(
     # PT-M18 (T12): the cyclic collector is paused for the turn. A turn builds no reference
     # cycles (frozen dataclasses and tuples), but it allocates hundreds of thousands of
     # objects, and each gen-2 collection walked the whole live game (~10% of a 2025 turn).
-    # Reference counting still frees everything; the collector resumes as it was.
+    # Reference counting still frees everything; the collector resumes as it was, with the
+    # turn's survivors moved to its oldest generation (their first young-generation pass was
+    # another ~6% of a turn, walking every object the new state holds).
     paused = gc.isenabled()
     gc.disable()
     try:
@@ -373,6 +375,9 @@ def advance_turn(
         )  # fmt: skip
     finally:
         if paused:
+            if gc.get_freeze_count() == 0:  # never undo a caller's own gc.freeze()
+                gc.freeze()  # the turn's survivors join the oldest generation without the
+                gc.unfreeze()  # young-generation pass re-enabling would start (a list splice)
             gc.enable()
 
 

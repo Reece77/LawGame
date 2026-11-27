@@ -41,6 +41,7 @@ T12_MS = 250  # tunable-exempt: the target
 T12_LAWYERS = 150  # tunable-exempt: steady's size by 2015 (T3's band is 100-250)
 T12_TIMED = 12
 T12_YEAR = 2025  # PT-M10: the history pin's last year (PT-M5: 2015)
+T12_LAST_YEAR = 2034  # PT-M18: the campaign's last year
 # PT-M11: $50M ran out in month 11 (main's in month 12, one turn spare): the unmanaged firm
 # burns cash, and T12 times turns, not survival
 T12_CAPITAL = 15_000_000_000  # tunable-exempt: $150M of partners' capital for the test firm
@@ -146,14 +147,15 @@ def test_hiring_away_a_third_brings_a_collapse_forward(data: GameData, balance: 
     assert forward >= FORWARD_SEEDS
 
 
-@pytest.mark.timing
-def test_t12_turn_time_at_december_2025(data: GameData, balance: Balance) -> None:
-    """A 150-lawyer firm's turns in 2025: the rivals' market is played to January 2025
+def _year_turns(
+    year: int, data: GameData, balance: Balance
+) -> tuple[list[tuple[GameState, dict[tuple[int, str], int]]], RngFactory]:
+    """A 150-lawyer firm's turns in `year`: the rivals' market is played to its January
     (`rivals_month`; an unmanaged firm of this size would not survive a decade, PT-M4's T1),
-    then the firm plays whole turns from there and the last 12 are timed."""
+    then the firm plays whole turns from there."""
     state = grown_firm(data, balance, T12_LAWYERS, 1)
     rng = RngFactory(1)
-    start = turn_of(state, T12_YEAR, 1)
+    start = turn_of(state, year, 1)
     while state.turn < start:
         state = rivals_month(state, rng, data, balance)
     # a firm this size holds working capital (the helper builds its people, not its books)
@@ -162,13 +164,31 @@ def test_t12_turn_time_at_december_2025(data: GameData, balance: Balance) -> Non
         (1, PARTNERS_CAPITAL): -T12_CAPITAL,
     }
     turns: list[tuple[GameState, dict[tuple[int, str], int]]] = []
-    end = turn_of(state, T12_YEAR + 1, 1)
+    end = turn_of(state, year + 1, 1)
     while state.turn < end and not state.ended:
         before = state
         turns.append((state, dict(balances)))
         result = advance_turn(state, Decisions(), rng, balance, data, balances)
         balances = dict(apply_entries(balances, result.ledger_entries))
         state = top_up(result.new_state, data, balance, before)
+    return turns, rng
+
+
+@pytest.mark.timing
+def test_t12_turn_time_at_december_2025(data: GameData, balance: Balance) -> None:
+    """A 150-lawyer firm's turns in 2025 (`_year_turns`); the last 12 are timed."""
+    turns, rng = _year_turns(T12_YEAR, data, balance)
     median = t12_ms(turns, rng, data, balance)
     print(f"\nT12: median turn {median:.0f} ms at December {T12_YEAR} ({T12_LAWYERS} lawyers)")
+    assert median <= T12_MS
+
+
+@pytest.mark.timing
+def test_t12_turn_time_at_december_2034(data: GameData, balance: Balance) -> None:
+    """PT-M18 sub-task 6: the same firm's turns in 2034, the campaign's last year (the seeded
+    world's rivals and demand nine years past history), timed as December 2025's, at the same
+    budget (PT-M18's criterion: at most 250 ms in December 2034)."""
+    turns, rng = _year_turns(T12_LAST_YEAR, data, balance)
+    median = t12_ms(turns, rng, data, balance)
+    print(f"\nT12: median turn {median:.0f} ms at December {T12_LAST_YEAR} ({T12_LAWYERS} lawyers)")
     assert median <= T12_MS

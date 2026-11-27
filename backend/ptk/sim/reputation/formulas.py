@@ -303,11 +303,28 @@ def means(
     peps = pep_percentiles(funds)
     refs = share_refs(funds, balance, data.practice_keys)
     record = record_points(state.standing.reputation)
-    return {
-        (f.firm_id, p): long_run_mean(f, p, peps.get(f.firm_id, 0.0), refs[p], record, balance)
-        for f in funds
-        for p in data.practice_keys
-    }
+    # PT-M18 (T12): long_run_mean inlined over every firm and practice (thousands a month), the
+    # same operations in the same order (test_pt_m18_speed checks it against long_run_mean)
+    rb = balance.reputation
+    w = rb.mean
+    floor, ws, wr, wp = w.floor, w.size, w.record, w.pep
+    full = math.log1p(w.size_full_lawyers)
+    strong_w, share_w, record_full = rb.rival_record.strong, rb.rival_record.share, rb.record_full
+    out: dict[tuple[int, str], float] = {}
+    for f in funds:
+        pep_q = peps.get(f.firm_id, 0.0)
+        lawyers, revenue = f.lawyers, f.practice_revenue
+        for p in data.practice_keys:
+            sz = min(1.0, math.log1p(max(0.0, lawyers.get(p, 0.0))) / full)
+            if f.is_player:
+                r = max(0.0, min(1.0, record.get(p, 0.0) / record_full))
+            else:
+                ref = refs[p]
+                share = min(1.0, revenue.get(p, 0.0) / ref) if ref > 0 else 0
+                r = strong_w * (p in f.strong) + share_w * share
+            v = floor + ws * sz + wr * r + wp * pep_q
+            out[(f.firm_id, p)] = max(0.0, min(MAX_REP, v))
+    return out
 
 
 def prestige_of(entries: Iterable[Rep], f: Fundamentals, pep_q: float, balance: Balance) -> float:

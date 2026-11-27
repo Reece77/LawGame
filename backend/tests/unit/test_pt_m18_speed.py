@@ -138,3 +138,25 @@ def test_streams_match_the_documented_seed_sequence(
     theirs = np.random.Generator(np.random.PCG64(seq))
     assert ours.integers(0, 2**62, 6).tolist() == theirs.integers(0, 2**62, 6).tolist()
     assert ours.bit_generator.state == theirs.bit_generator.state
+
+
+def test_reputation_means_match_long_run_mean(data: GameData, balance: Balance) -> None:
+    """`means` inlines `long_run_mean` for every firm and practice: the same values."""
+    from ptk.sim.reputation import formulas as fx
+    from tests.rivals_support import rivals_month, start
+
+    state = start(data, balance, 2)
+    rng = RngFactory(2)
+    for _ in range(14):  # past a year: rivals' books and the player's record fill in
+        state = rivals_month(state, rng, data, balance)
+    funds = fx.fundamentals(state, data)
+    peps = fx.pep_percentiles(funds)
+    refs = fx.share_refs(funds, balance, data.practice_keys)
+    record = fx.record_points(state.standing.reputation)
+    expected = {
+        (f.firm_id, p): fx.long_run_mean(f, p, peps.get(f.firm_id, 0.0), refs[p], record, balance)
+        for f in funds
+        for p in data.practice_keys
+    }
+    assert fx.means(state, data, balance, funds) == expected
+    assert len(expected) > 1000

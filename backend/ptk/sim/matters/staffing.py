@@ -107,6 +107,8 @@ def home_practice(person: Person, data: GameData) -> str:
 _CORE: dict[
     int, tuple[Person, object, object, tuple[int | None, str, int, Mapping[str, float]]]
 ] = {}
+# ... and the fee earner itself by (person, non-billable tenths): equal fields, one object
+_EARNERS: dict[tuple[int, int], tuple[object, object, FeeEarner]] = {}
 _CORE_KEEP = 20_000  # tunable-exempt: memoised people (a cache, not a rule)
 
 
@@ -160,11 +162,17 @@ def fee_earners(
         )
         if person.id in off:  # PT-M15: a suspended lawyer does no billable work
             other = capacity
-        out.append(
-            FeeEarner(
+        hit = _EARNERS.get((id(person), other))
+        if hit is not None and hit[0] is data and hit[1] is balance and hit[2].person is person:
+            made = hit[2]
+        else:
+            made = FeeEarner(
                 person=person, level=level, home=home, capacity=capacity, other=other, fam=fam
             )
-        )
+            if len(_EARNERS) >= _CORE_KEEP:
+                _EARNERS.clear()
+            _EARNERS[(id(person), other)] = (data, balance, made)
+        out.append(made)
     return tuple(out)
 
 

@@ -41,11 +41,11 @@ class Month:
     data: GameData
     balance: Balance
 
-    @property
+    @cached_property  # PT-M18 (T12): fixed for the month, read for every rival
     def ym(self) -> tuple[int, int]:
         return turn_to_ym(self.turn, self.start)
 
-    @property
+    @cached_property
     def t(self) -> float:
         return time_of(self.turn, self.start)
 

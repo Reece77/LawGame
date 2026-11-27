@@ -126,6 +126,7 @@ Start a fresh standard game, play 2005-2008 yourself, delegate everything to the
     | 1300 | 1.87 | $11,036 | - |
 
    Both bands hold only between about 1,050 and 1,090: T14 stays at its band's edge (its known-miss row stays, bound unchanged), and the premium near its top. The cowboy's lower PEP now passes on seeds 1-40 (24 of 40): its expected failure is removed and the guard asserts. State cache re-recorded and golden snapshots regenerated (CHANGELOG).
+12. **The seventh nightly** (run 46039759484 on `4d91fac`, 38 minutes, green): every row as decision 11 but **T4.steady $1.32M** ($0.5-1.2M): T14's claim rate lifts steady's PEP back from $1.19M. Steady is already at the dossier's lowest ratio (2.5 lawyers per equity partner), and laterals above 3.0 instead of 3.5 leave it at $1.32M (seeds 1-40: T2 steady 21, T3 67.5 lawyers / $70.12M), so my keys cannot hold T4 and T14 together. T4.steady's known-miss row returns, bounded at the 40-seed reading ($1.33M; CLAUDE.md 12.5), for the product manager. T6.partners reads 0.0% (no 2006-class member is an equity partner in December 2015).
 
 ## Follow-ups
 

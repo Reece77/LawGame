@@ -37,7 +37,8 @@ KNOWN_MISSES: Final[tuple[KnownMiss, ...]] = (
     # and takes over T3.lawyers, T4.steady and T4.pyramid with its readings. Reece (2026-11-24,
     # after the client tiers): T1 (10/10) and T4.pyramid ($0.98M) pass and their rows go;
     # T3.lawyers, T3.revenue and T4.steady are PT-M18's with PT-M7c's readings. PT-M18
-    # (decision 10, 2026-11-27): T2 and T4.steady pass on seeds 1-40 and their rows go.
+    # (decision 10, 2026-11-27): T2 passes on seeds 1-40 and its row goes; T4.steady's row
+    # returns bounded at its 40-seed reading (decision 12).
     KnownMiss(
         target="T3.lawyers",  # steady 100-250 lawyers in December 2015
         owner="PT-M18",
@@ -46,6 +47,17 @@ KNOWN_MISSES: Final[tuple[KnownMiss, ...]] = (
         reason="60.0 on PT-M7c's client tiers (before the tiers 46.0, main 60.0); seeds 11-40 "
         "71.5 (before 72.5): growth to 100-250 is expected from PT-M12 (practices) and PT-M13 "
         "(mergers) (Reece, 2026-11-24)",
+    ),
+    KnownMiss(
+        target="T4.steady",  # steady PEP $0.5-1.2M in 2015
+        owner="PT-M18",
+        # score: median PEP in $M; PT-M18 (CLAUDE.md 12.5): bounded at the 40-seed reading
+        worse_than=1.33,
+        reason="PT-M18 (for the product manager, 2026-11-27): seeds 1-40 $1.65M at baseline; "
+        "$1.19M with steady at the dossier's 2.5 lawyers per equity partner (decision 10), "
+        "$1.32M once risk.claims.from_error_bp 1070 brings T14 back to 1.50 (decision 11); "
+        "laterals above 3.0 instead of 3.5 leave it at $1.32M. Reece approved the row "
+        "(bound $5.0M) after PT-M7c's client tiers, 2026-11-24",
     ),
     KnownMiss(
         target="PT-M14.fixed_fees",  # ai-fixed earns more PEP 2026-2030 than ai-hourly, 7 of 10

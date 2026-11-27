@@ -4,13 +4,16 @@ Before 2026 rivals merge only as history did (`ptk.sim.rivals.history`). From Ja
 each quarter's first month, one uniform (stream `rival_merger`, key (1,)) below
 `mergers.rival.free_rate_bp` brings one merger: the buyer is drawn among active rivals of the
 buying personalities weighted by revenue, the target is the active rival at most
-`free_max_ratio` of its lawyers whose practices complement it most (ties by id). The target's
+`free_max_ratio` of its lawyers (PT-M18, T15: and of its last 12 months' fees, so no deal makes a
+firm more than 1.5 times its size) whose practices complement it most (ties by id). The target's
 pools, demand and key people join the buyer; its key leaves every panel for the buyer's. A
 member of the player's verein, or a firm in talks with the player, is never a target.
 """
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+from collections.abc import Set as AbstractSet
 from dataclasses import replace
 
 from ptk.sim.calendar import turn_to_ym
@@ -29,6 +32,21 @@ def _complement(buyer: RivalFirm, target: RivalFirm) -> float:
     have = {p.practice for p in buyer.pools if p.lawyers >= 2.0}  # tunable-exempt: as profile
     total = max(target.lawyers, 1e-9)
     return sum(p.lawyers for p in target.pools if p.practice not in have) / total
+
+
+def free_targets(
+    buyer: RivalFirm, active: Sequence[RivalFirm], busy: AbstractSet[str], ratio: float
+) -> list[RivalFirm]:
+    """The firms a free-play buyer may take: at most `ratio` of its lawyers and (PT-M18, T15)
+    of its last 12 months' fees, neither in the player's verein nor in talks with the player."""
+    return [
+        f
+        for f in active
+        if f.id != buyer.id
+        and f.key not in busy
+        and f.lawyers <= ratio * buyer.lawyers
+        and f.revenue_12m <= ratio * buyer.revenue_12m
+    ]
 
 
 def free_play(
@@ -56,13 +74,7 @@ def free_play(
             buyer = f
             break
         u -= w
-    targets = [
-        f
-        for f in rivals.active
-        if f.id != buyer.id
-        and f.key not in busy
-        and f.lawyers <= cfg.free_max_ratio * buyer.lawyers
-    ]
+    targets = free_targets(buyer, rivals.active, busy, cfg.free_max_ratio)
     if not targets:
         return state, ()
     target = max(targets, key=lambda f: (_complement(buyer, f), -f.id))

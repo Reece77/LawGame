@@ -40,8 +40,10 @@ PYRAMID_PAY_BP: Final = 8000
 STEADY_LAYOFF_BELOW: Final = 0.70  # three months' utilisation under this: lay off
 STEADY_LAYOFF_TARGET: Final = 0.80  # ... enough associates to bring it back toward this
 STEADY_LAYOFF_MAX: Final = 0.10  # at most this share of the associates in a month
-STEADY_PER_EQUITY = 4.0  # December's admissions: one equity partner to this many lawyers
-STEADY_LATERAL_PER_EQUITY = 5.0  # a lateral partner while lawyers per equity partner exceed this
+# PT-M18 (rule 2): a mid-size firm's 2.5-3.5 lawyers per equity partner (firm-economics.md s10);
+# the script had 4 and 5, so steady's PEP ran $1.65M against T4's $0.5-1.2M and it won T2 29/40
+STEADY_PER_EQUITY = 2.5  # December's admissions: one equity partner to this many lawyers
+STEADY_LATERAL_PER_EQUITY = 3.5  # a lateral partner while lawyers per equity partner exceed this
 CORPORATE: Final = "corporate_ma"
 LITIGATION: Final = "commercial_litigation"
 # The order steady adds practices in (one at each 30 lawyers): cross-sell from M&A first.

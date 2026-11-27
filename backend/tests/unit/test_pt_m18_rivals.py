@@ -14,10 +14,11 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from ptk.sim.data_models import Balance, GameData
 from ptk.sim.calendar import ym_to_turn
+from ptk.sim.data_models import Balance, GameData
 from ptk.sim.rivals.economy import Month, price_level, reference_index, update_demand
 from ptk.sim.rivals.history import dated_collapse_turn, hazard
+from ptk.sim.rivals.mergers import free_targets
 from ptk.sim.rivals.path import time_of
 from tests.rivals_support import start, turn_of
 
@@ -86,3 +87,21 @@ def test_a_firm_priced_at_the_market_loses_no_growth_and_the_floor_holds(
     assert ratio > 0  # no math domain error, and demand stays positive
     pdef = month.personality(firm)
     assert abs(ratio - ((1 + floor) / (1 + pdef.growth_bias)) ** (1 / 12)) < 1e-9
+
+
+def test_a_free_play_merger_takes_only_a_smaller_firm_by_fees_too(
+    data: GameData, balance: Balance
+) -> None:
+    """T15: a buyer takes at most half its lawyers and (PT-M18) half its last year's fees, so
+    no deal makes a firm more than 1.5 times its size (seed 6's DLA Piper went from $4.1bn
+    to $10.3bn in 2032 by taking a firm with half its lawyers and 1.5 times its fees)."""
+    state = start(data, balance, 1)
+    firms = sorted(state.rivals.active, key=lambda f: -f.lawyers)
+    buyer = replace(firms[0], revenue=(1_000_000,) * 12)
+    small = replace(firms[-1], revenue=(400_000,) * 12)
+    rich = replace(firms[-2], revenue=(600_000,) * 12)
+    ratio = balance.mergers.rival.free_max_ratio
+    assert rich.lawyers <= ratio * buyer.lawyers
+    picked = free_targets(buyer, [buyer, small, rich], frozenset(), ratio)
+    assert picked == [small]
+    assert free_targets(buyer, [buyer, small], frozenset({small.key}), ratio) == []

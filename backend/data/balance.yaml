@@ -1795,5 +1795,5 @@ mergers:
     absorb_offer_below_bp: 3000 # a rival bringing over 70% of the pool approaches to absorb the firm (its name and managing partner)
     cooldown_months: 24 # months between rivals' approaches to the player
     free_rate_bp: 600 # from 2026: a quarter's chance of one merger between rivals (PT-0015's seeded world) [A dossier s1: ~5 large deals a year]
-    free_max_ratio: 0.5 # the smaller firm at most this share of the larger's lawyers
+    free_max_ratio: 0.5 # the smaller firm at most this share of the larger's lawyers and (PT-M18, T15) of its last 12 months' fees
     free_personalities: [global_verein, regional_champion, performance_machine, volume_mid_market]

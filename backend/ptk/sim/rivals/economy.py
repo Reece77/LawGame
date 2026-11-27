@@ -16,6 +16,7 @@ cash stays at zero (rivals hold no reserves; ADR-0003's balance holds).
 
 from __future__ import annotations
 
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from functools import cached_property
 
@@ -76,10 +77,15 @@ class Month:
         return out
 
     def pinned(self, firm: RivalFirm) -> bool:
-        p = self.path(firm)
-        if p is None or self.ym[0] > self.balance.rivals.pin.end_year:
+        if self.ym[0] > self.balance.rivals.pin.end_year:
             return False
-        return len(p.revenue) > 1 or firm.anchor is not None  # a path, not a lone 2005 point
+        return self.follows_history(firm)
+
+    def follows_history(self, firm: RivalFirm) -> bool:
+        """The firm is pinned to its history's path until the pin ends (a path, not a lone
+        2005 point); PT-M18: so its rate index carries the market's rate rises afterwards."""
+        p = self.path(firm)
+        return p is not None and (len(p.revenue) > 1 or firm.anchor is not None)
 
     def anchor(self, firm: RivalFirm) -> tuple[float, float] | None:
         if firm.anchor is None:
@@ -135,8 +141,10 @@ def rate_gap(firm: RivalFirm, month: Month) -> float:
     return (firm.utilisation - u) / u
 
 
-def update_demand(firm: RivalFirm, z: float, month: Month) -> RivalFirm:
-    """The month's demand (one standard normal z from the firm's rival_firm generator)."""
+def update_demand(firm: RivalFirm, z: float, month: Month, price_level: float = 1.0) -> RivalFirm:
+    """The month's demand (one standard normal z from the firm's rival_firm generator).
+    `price_level` (PT-M18): the market's rate index in the firm's own terms, against which
+    free play's rate elasticity reads its price (`price_levels`)."""
     pin = month.balance.rivals.pin
     shock = pin.noise_phi * firm.shock + pin.noise_sd * z
     rb = month.balance.rivals
@@ -148,12 +156,33 @@ def update_demand(firm: RivalFirm, z: float, month: Month) -> RivalFirm:
     pdef = month.personality(firm)
     t = month.t
     growth = market_factor(t - 1.0 / MONTHS, t, rb)
-    bias = (
-        pdef.growth_bias + firm.growth_bias - rb.rate_elasticity * max(0.0, firm.rate_index - 1.0)
+    over = max(0.0, firm.rate_index / price_level - 1.0)
+    bias = max(
+        rb.growth_bias_floor, pdef.growth_bias + firm.growth_bias - rb.rate_elasticity * over
     )
     factor = growth * dmath.pow(1.0 + bias, 1.0 / MONTHS) * dmath.exp(shock - firm.shock)
     demand = max(0.0, firm.demand_cents * factor + firm.offset_cents)
     return replace(firm, shock=shock, offset_cents=0.0, demand_cents=demand)
+
+
+def price_levels(
+    firms: Sequence[RivalFirm], month: Month, region: Callable[[RivalFirm], str]
+) -> dict[int, float]:
+    """PT-M18: each firm's market price level, in the terms of its own rate index. A rival
+    that follows history's path keeps its 2005 revenue per lawyer at capacity while pinned
+    (`january`), so its index carries the market's rate rises: its level is the mean index of
+    its region's firms that follow history. Every other firm's capacity rises with rate
+    inflation, so its index is already relative to the market: its level is 1, as before
+    PT-M18 (nothing changes while the pin holds)."""
+    history = {f.id for f in firms if month.follows_history(f)}
+    sums: dict[str, list[float]] = {}
+    for f in firms:
+        if f.id in history:
+            acc = sums.setdefault(region(f), [0.0, 0.0])
+            acc[0] += f.rate_index
+            acc[1] += 1.0
+    means = {r: v[0] / v[1] for r, v in sums.items() if v[1] > 0}
+    return {f.id: means.get(region(f), 1.0) if f.id in history else 1.0 for f in firms}
 
 
 def january(firm: RivalFirm, month: Month) -> RivalFirm:

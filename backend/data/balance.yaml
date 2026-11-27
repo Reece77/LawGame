@@ -327,7 +327,8 @@ rivals: # rival firms (PT-M5; spec 10; ADR PT-0008). Money is cents a year unles
   cooldown_months: { raise_rates: 12, cut_rates: 12, hire_associates: 1, hire_lateral: 2, lift_team: 12, approach_player: 3, open_office: 24, cut_costs: 12, de_equitise: 12 }
   rate_step: 0.08 # largest rate move in one action (a year's rate card)
   rate_need_span: 0.06 # an RPL gap of 6% makes the rate need 1
-  rate_elasticity: 0.5 # free play: demand growth lost a year per unit of rate index above 1
+  rate_elasticity: 0.5 # free play: demand growth lost a year per unit of rate index above the market's price level (PT-M18: a rival that followed history's path is read against its region's such rivals' mean index; every other firm against 1)
+  growth_bias_floor: -0.5 # free play: the most demand growth a year a firm's own bias and price can take off (PT-M18: keeps 1 + bias positive; seed 36's boutique reached -1 and stopped the turn)
   hire_span: 0.05 # a headcount gap of 5% of lawyers makes the hiring need 1
   hire_max_monthly: 0.02 # at most 2% of lawyers hired in a month
   cut_max_monthly: 0.03 # at most 3% laid off in a month

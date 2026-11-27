@@ -337,6 +337,7 @@ class RivalsBalance(_Strict):
     rate_step: float = Field(gt=0)  # a rate rise or cut
     rate_need_span: float = Field(gt=0)  # RPL gap that makes the need 1
     rate_elasticity: float = Field(ge=0)  # demand lost per unit of rate above the market
+    growth_bias_floor: float = Field(gt=-1, le=0)  # PT-M18: free play's lowest growth bias
     hire_span: float = Field(gt=0)  # headcount gap (share of lawyers) that makes the need 1
     hire_max_monthly: float = Field(gt=0)  # share of lawyers hired in a month, at most
     cut_max_monthly: float = Field(gt=0)  # share laid off in a month, at most

@@ -336,11 +336,31 @@ def dated_events(
     return state, moves
 
 
+def hazard(firm: RivalFirm, rivals: RivalsState, month: Month) -> tuple[float, bool]:
+    """A firm's collapse probability this month, and whether it is a losing firm's failure."""
+    cb = month.balance.rivals.collapse
+    d = departed_share(firm, rivals, month.turn)
+    dated = dated_collapse_turn(firm, month)
+    in_window = dated is not None and 0 < dated - month.turn <= cb.window_months
+    mult = 1.0 if in_window else cb.other_mult * month.personality(firm).fragility
+    p = (
+        (cb.base_bp + cb.departed_slope_bp * 100 * max(0.0, d - cb.departed_threshold))
+        * mult
+        / 10_000
+    )
+    if not month.pinned(firm) and month.follows_history(firm):
+        # PT-M18 (T16): after the pin, history's firms carry history's own hazard
+        p += cb.free_play_bp * month.personality(firm).fragility / 10_000
+    losing = firm.kind != "real" and len(firm.profit) >= YEAR and firm.profit_12m < 0
+    if losing:  # boutiques and generated firms losing money for a year (boutiques.py)
+        p += month.balance.rivals.boutique.failure_bp / 10_000
+    return p, losing
+
+
 def collapse_hazard(
     state: GameState, rng: RngFactory, month: Month
 ) -> tuple[GameState, list[RivalMove]]:
     """Phase 9: every active firm without a dated event this month rolls its hazard."""
-    cb = month.balance.rivals.collapse
     moves: list[RivalMove] = []
     this_month = {e.firm for e in month.events if _event_turn(e, month) == month.turn}
     for firm in state.rivals.active:
@@ -349,18 +369,7 @@ def collapse_hazard(
         current = state.rivals.firm(firm.id)
         if current is None or not current.active:
             continue
-        d = departed_share(current, state.rivals, month.turn)
-        dated = dated_collapse_turn(current, month)
-        in_window = dated is not None and 0 < dated - month.turn <= cb.window_months
-        mult = 1.0 if in_window else cb.other_mult * month.personality(current).fragility
-        p = (
-            (cb.base_bp + cb.departed_slope_bp * 100 * max(0.0, d - cb.departed_threshold))
-            * mult
-            / 10_000
-        )
-        losing = current.kind != "real" and len(current.profit) >= YEAR and current.profit_12m < 0
-        if losing:  # boutiques and generated firms losing money for a year (boutiques.py)
-            p += month.balance.rivals.boutique.failure_bp / 10_000
+        p, losing = hazard(current, state.rivals, month)
         if p <= 0:
             continue  # no roll: nothing to draw for (the stream is the month's own)
         gen = streams.rival_fate(rng, month.turn, current.rival_key)

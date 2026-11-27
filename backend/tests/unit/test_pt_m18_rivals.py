@@ -1,11 +1,13 @@
 """PT-M18 (the product manager's decision, 2026-11-27): free play reads a rival's rate index
-against the market's price level in its own terms, and the growth bias has a floor.
+against the market's price level in its own terms, and the growth bias has a floor; T16: after
+the pin, history's firms carry history's own collapse hazard.
 
-A rival that followed history's path carries the market's rate rises in its index after the
-pin ends (its capacity per lawyer stayed at 2005's), so it is read against its region's
-history-following rivals' mean; every other firm against 1 (unchanged before 2026). Before
-this, every seed's big rivals lost about half their demand a year from 2026, and seed 36's
-run stopped when a boutique's bias passed -1.
+A rival that followed history's path kept its 2005 capacity per lawyer while pinned, so its
+index at the pin's end carries the market's rate rises and its own premium. Its level is the
+index its path needed in December 2025 (its capacity rises with the market afterwards); every
+other firm's is 1 (unchanged before 2026). Before this, every seed's big rivals lost about
+half their demand a year from 2026 (against 1), then the premium US firms shrank (against
+their region's mean); seed 36's run stopped when a boutique's bias passed -1.
 """
 
 from __future__ import annotations
@@ -13,8 +15,10 @@ from __future__ import annotations
 from dataclasses import replace
 
 from ptk.sim.data_models import Balance, GameData
-from ptk.sim.geo.cities import rival_region
-from ptk.sim.rivals.economy import Month, price_levels, update_demand
+from ptk.sim.calendar import ym_to_turn
+from ptk.sim.rivals.economy import Month, price_level, reference_index, update_demand
+from ptk.sim.rivals.history import dated_collapse_turn, hazard
+from ptk.sim.rivals.path import time_of
 from tests.rivals_support import start, turn_of
 
 
@@ -24,19 +28,46 @@ def _month(state, data: GameData, balance: Balance, year: int) -> Month:  # type
     )
 
 
-def test_history_followers_are_read_against_their_regions_mean(
+def test_history_followers_are_read_against_their_own_index_at_the_pins_end(
     data: GameData, balance: Balance
 ) -> None:
     state = start(data, balance, 1)
-    month = _month(state, data, balance, 2027)
-    firms = tuple(
-        replace(f, rate_index=2.0) if month.follows_history(f) else f for f in state.rivals.active
-    )
-    levels = price_levels(firms, month, lambda f: rival_region(data, f.hq))
-    for f in firms:
-        assert levels[f.id] == (2.0 if month.follows_history(f) else 1.0)
-    assert any(month.follows_history(f) for f in firms)
-    assert any(not month.follows_history(f) for f in firms)
+    m2025, m2028 = (_month(state, data, balance, y) for y in (2025, 2028))
+    rb = balance.rivals
+    followers = [f for f in state.rivals.active if m2028.follows_history(f)]
+    others = [f for f in state.rivals.active if not m2028.follows_history(f)]
+    assert followers and others
+    for f in others:
+        assert price_level(f, m2028) == 1.0
+    end = ym_to_turn(rb.pin.end_year, 12, state.save_meta.start_ym)
+    t_end = time_of(end, state.save_meta.start_ym)
+    for f in followers:
+        ref = reference_index(f, m2025)
+        assert ref is not None and ref > 0
+        rpl = m2025.path_revenue(f, t_end) / m2025.path_lawyers(f, t_end)  # type: ignore[operator]
+        assert abs(ref - rpl / (f.rpl_cap_cents * m2025.personality(f).utilisation)) < 1e-9
+        # three free-play Januaries later its capacity is 3% a year higher: the same level
+        raised = replace(f, rpl_cap_cents=f.rpl_cap_cents * (1 + rb.rate_inflation) ** 3)
+        assert abs(price_level(raised, m2028) - ref) < 1e-9
+    # a premium firm (its path's revenue per lawyer above its peers') is not read as overpriced
+    top = max(followers, key=lambda f: reference_index(f, m2025) or 0.0)
+    at_ref = replace(top, rate_index=reference_index(top, m2025) or 1.0)
+    grown = update_demand(at_ref, 0.0, m2028, price_level(at_ref, m2028))
+    assert grown.demand_cents >= at_ref.demand_cents * 0.999
+
+
+def test_history_firms_carry_a_hazard_only_after_the_pin(data: GameData, balance: Balance) -> None:
+    state = start(data, balance, 1)
+    m2020, m2028 = (_month(state, data, balance, y) for y in (2020, 2028))
+    cb = balance.rivals.collapse
+    for f in state.rivals.active:
+        if not m2028.follows_history(f) or f.departures:
+            continue
+        if dated_collapse_turn(f, m2020) is None:
+            assert hazard(f, state.rivals, m2020) == (0.0, False)
+        p, losing = hazard(f, state.rivals, m2028)
+        assert not losing
+        assert abs(p - cb.free_play_bp * m2028.personality(f).fragility / 10_000) < 1e-12
 
 
 def test_a_firm_priced_at_the_market_loses_no_growth_and_the_floor_holds(

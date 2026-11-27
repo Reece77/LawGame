@@ -362,6 +362,7 @@ rivals: # rival firms (PT-M5; spec 10; ADR PT-0008). Money is cents a year unles
     departed_threshold: 0.15 # key partners gone in 12 months, share; hazard grows above it
     departed_slope_bp: 120 # hazard bp a month per point (1%) of departed share above the threshold
     other_mult: 0.05 # other firms' hazard multiplier (healthy firms rarely collapse)
+    free_play_bp: 4.0 # PT-M18 (T16): monthly hazard bp of a firm that followed history, once the pin ends, times its personality's fragility; history's own rate (4 collapses among 43 firms, 2005-2025: 3.9 bp a firm-month)
     merger_calloff_share: 0.33 # a dated merger is called off if either side lost this share
     scatter_player_share: 0.2 # of a collapse's key people, the share who become free agents
     free_agent_months: 6

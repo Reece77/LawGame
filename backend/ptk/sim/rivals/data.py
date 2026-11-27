@@ -273,6 +273,7 @@ class CollapseBalance(_Strict):
     departed_threshold: float = Field(ge=0, le=1)  # 12-month departed share of key partners
     departed_slope_bp: float = Field(ge=0)  # hazard bp per point of share above threshold
     other_mult: float = Field(ge=0)  # hazard multiplier outside a dated window
+    free_play_bp: float = Field(ge=0)  # PT-M18: a history firm's monthly hazard after the pin
     merger_calloff_share: float = Field(ge=0, le=1)  # departed share that calls a merger off
     scatter_player_share: float = Field(ge=0, le=1)  # of a collapse's people, free agents
     free_agent_months: int = Field(ge=0)

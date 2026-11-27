@@ -46,7 +46,7 @@ def specialist(g: Game) -> None:
     mv.answer_election(g)
     mv.comp_system(g, "modified_lockstep")
     mv.set_rates(g, None)
-    mv.december_votes(g, st._admissions(g, 4.0))
+    mv.december_votes(g, st._admissions(g, st.STEADY_PER_EQUITY))
     mv.comp_round(g)
     held = mv.practices_held(g)
     lawyers = len(g.lawyers())

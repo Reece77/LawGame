@@ -40,6 +40,8 @@ PYRAMID_PAY_BP: Final = 8000
 STEADY_LAYOFF_BELOW: Final = 0.70  # three months' utilisation under this: lay off
 STEADY_LAYOFF_TARGET: Final = 0.80  # ... enough associates to bring it back toward this
 STEADY_LAYOFF_MAX: Final = 0.10  # at most this share of the associates in a month
+STEADY_PER_EQUITY = 4.0  # December's admissions: one equity partner to this many lawyers
+STEADY_LATERAL_PER_EQUITY = 5.0  # a lateral partner while lawyers per equity partner exceed this
 CORPORATE: Final = "corporate_ma"
 LITIGATION: Final = "commercial_litigation"
 # The order steady adds practices in (one at each 30 lawyers): cross-sell from M&A first.
@@ -180,7 +182,7 @@ def steady(g: Game, adds: tuple[str, ...] = STEADY_ADDS) -> None:
     mv.answer_election(g)
     mv.comp_system(g, "modified_lockstep")
     mv.set_rates(g, None)
-    mv.december_votes(g, _admissions(g, 4.0))  # December's vote first (its energy)
+    mv.december_votes(g, _admissions(g, STEADY_PER_EQUITY))  # December's vote first (its energy)
     mv.comp_round(g)  # PT-M7b: December's comp round, the partners it would keep
     held = mv.practices_held(g)
     lawyers = len(g.lawyers())
@@ -196,7 +198,9 @@ def steady(g: Game, adds: tuple[str, ...] = STEADY_ADDS) -> None:
     if len(held) < wanted and missing:
         mv.lateral_partner(g, missing[0], mv.LateralRule(min_book_cents=100_000_000))
     elif (
-        (leverage > 4.0 or _per_equity(g) > 5.0) and mv.utilisation(g) >= 0.80 and mv.bank_quiet(g)
+        (leverage > 4.0 or _per_equity(g) > STEADY_LATERAL_PER_EQUITY)
+        and mv.utilisation(g) >= 0.80
+        and mv.bank_quiet(g)
     ):
         # partners for supervision, books and the equity (a steady firm keeps about one equity
         # partner to four or five lawyers)

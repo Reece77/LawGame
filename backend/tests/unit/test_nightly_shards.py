@@ -59,6 +59,9 @@ def test_every_target_and_guard_reads_seeds_1_to_40() -> None:
                  "test_pt_m13", "test_pt_m15"):  # fmt: skip
         module = importlib.import_module(f"tests.balance.{name}")
         assert tuple(module.SEEDS) == SEEDS, name
+    from tests.unit import test_partnership_flight as flight  # PT-M4's exodus guard
+
+    assert tuple(flight.SEEDS) == SEEDS
     assert inspect.signature(pace).parameters["seeds"].default == SEEDS
     assert (at_least(0.9, 40), at_most(0.6, 40), at_least(0.7, 40), at_most(0.1, 40)) == (
         36,

@@ -35,7 +35,10 @@ CAMPUS_OPEN = 1  # January: register for the campus season
 CAMPUS_OFFERS = 8  # August: offers
 DECEMBER = 12
 TENTHS = 10  # hours are integer tenths (ADR PT-0005)
-CAPITAL_CALL_CENTS = 100_000_000  # T9's response: $1M from the partners (PT-M4's exodus test)
+CALL_MONTHS = 3  # T9's response (PT-M18): a capital call of three months' costs
+CALL_MIN_CENTS = 10_000_000  # ... at least $100k
+CALL_AGAIN_BELOW_MONTHS = 2.0  # ... called again while cash is under two months' costs
+CALL_EVERY_MONTHS = 3  # ... at most once a quarter
 JANUARY = 1
 
 
@@ -356,19 +359,31 @@ def bank_quiet(g: Game, months: int = 6, cash_months: float = 2.0) -> bool:
 
 def heed_warning(g: Game) -> bool:
     """T9's rule: when the CFO warns (PT-M7b: the forecast warning first) or a covenant breaks,
-    stop guarantees, suspend draws and repay the revolver from spare cash. Returns whether the
-    warning has come."""
+    stop guarantees, suspend draws, call capital and repay the revolver from spare cash.
+    Returns whether the warning has come. PT-M18 (rule 2): the call is sized to the firm, three
+    months of its costs (a fixed $1M was 2-3 years' capital for a five-lawyer rocket, and its
+    partners voted it down), and called again each quarter while cash stays under two months
+    of costs."""
     if not g.notes.get("warned") and any(
         t in ("cfo_forecast", "cfo_warning", "covenant_breach", "revolver_called", "insolvent")
         for t in g.templates()
     ):
         g.notes["warned"] = 1
         g.act(SetDraws(g.founder_id, True))
-        g.act(CapitalCall(g.founder_id, CAPITAL_CALL_CENTS))
+        _call_capital(g)
     if g.notes.get("warned"):
+        short = g.cash < CALL_AGAIN_BELOW_MONTHS * monthly_costs(g)
+        if short and g.state.turn - g.notes.get("called_turn", g.state.turn) >= CALL_EVERY_MONTHS:
+            _call_capital(g)
         revolver_cap(g, 0)
         return True
     return False
+
+
+def _call_capital(g: Game) -> None:
+    amount = max(CALL_MIN_CENTS, CALL_MONTHS * monthly_costs(g))
+    g.act(CapitalCall(g.founder_id, amount))
+    g.notes["called_turn"] = g.state.turn
 
 
 def associates_per_partner(g: Game) -> float:

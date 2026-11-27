@@ -245,10 +245,17 @@ def lateral_rocket(g: Game, heeded: bool = False) -> None:
                 break
     held = mv.practices_held(g)
     mv.practice_groups(g)
-    if mv.utilisation(g) >= 0.80:
+    # PT-M18 (T9, rule 2): once warned, a firm that heeds hires only with the cash to pay for
+    # it and lets idle associates go, as steady does (the warned rockets that dissolved were
+    # 3-6 lawyers at no cash for months, still hiring associates and campus classes)
+    hire = not warned or mv.bank_quiet(g)
+    if warned:
+        mv.lay_off_idle(g, STEADY_LAYOFF_BELOW, STEADY_LAYOFF_TARGET, STEADY_LAYOFF_MAX)
+    if hire and mv.utilisation(g) >= 0.80:
         for practice in _busiest(g, held)[:2]:
             mv.lateral_associates(g, practice, 1, "recruiter")
-    _campus_split(g, held, max(1, len(g.lawyers()) // 15), delegated=True)
+    if hire:
+        _campus_split(g, held, max(1, len(g.lawyers()) // 15), delegated=True)
     mv.pitch_rfps(g, 1)
 
 

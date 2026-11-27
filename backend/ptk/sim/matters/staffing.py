@@ -42,11 +42,12 @@ from __future__ import annotations
 
 import math
 from collections.abc import Callable, Mapping, Sequence
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, field
 from typing import Final
 
 from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import PARTNER_LEVELS, Balance, GameData, KindDef
+from ptk.sim.fastcopy import replace
 from ptk.sim.interfaces import (
     NO_TECH_HOURS,
     TechHoursView,
@@ -99,6 +100,41 @@ def home_practice(person: Person, data: GameData) -> str:
     return best
 
 
+# PT-M18 (T12): a fee earner's level, home practice, capacity and familiarity depend only on
+# the (immutable) person and the data, and staffing builds the fee earners once per matter it
+# staffs (each intake): memoised on the person object (the entry holds it, so its identity is
+# never reused). The familiarity dict is shared and never written.
+_CORE: dict[
+    int, tuple[Person, object, object, tuple[int | None, str, int, Mapping[str, float]]]
+] = {}
+# ... and the fee earner itself by (person, non-billable tenths): equal fields, one object
+_EARNERS: dict[tuple[int, int], tuple[object, object, FeeEarner]] = {}
+_CORE_KEEP = 20_000  # tunable-exempt: memoised people (a cache, not a rule)
+
+
+def _earner_core(
+    person: Person, data: GameData, balance: Balance
+) -> tuple[int | None, str, int, Mapping[str, float]]:
+    hit = _CORE.get(id(person))
+    if hit is not None and hit[0] is person and hit[1] is data and hit[2] is balance:
+        return hit[3]
+    level = fx.task_level(person.level, data)
+    core: tuple[int | None, str, int, Mapping[str, float]] = (
+        (level, "", 0, {})
+        if level is None
+        else (
+            level,
+            home_practice(person, data),
+            round(monthly_capacity_tenths(person, balance)),
+            person.familiarity.as_dict(),
+        )
+    )
+    if len(_CORE) >= _CORE_KEEP:
+        _CORE.clear()
+    _CORE[id(person)] = (person, data, balance, core)
+    return core
+
+
 def fee_earners(
     state: GameState, firm_id: int, data: GameData, balance: Balance
 ) -> tuple[FeeEarner, ...]:
@@ -112,7 +148,7 @@ def fee_earners(
     for person in state.people:
         if person.id not in staff:
             continue
-        level = fx.task_level(person.level, data)
+        level, home, capacity, fam = _earner_core(person, data, balance)
         if level is None:
             continue
         other = (
@@ -124,19 +160,19 @@ def fee_earners(
             + assessing.get(person.id, 0)
             + training.get(person.id, 0)
         )
-        capacity = round(monthly_capacity_tenths(person, balance))
         if person.id in off:  # PT-M15: a suspended lawyer does no billable work
             other = capacity
-        out.append(
-            FeeEarner(
-                person=person,
-                level=level,
-                home=home_practice(person, data),
-                capacity=capacity,
-                other=other,
-                fam=person.familiarity.as_dict(),
+        hit = _EARNERS.get((id(person), other))
+        if hit is not None and hit[0] is data and hit[1] is balance and hit[2].person is person:
+            made = hit[2]
+        else:
+            made = FeeEarner(
+                person=person, level=level, home=home, capacity=capacity, other=other, fam=fam
             )
-        )
+            if len(_EARNERS) >= _CORE_KEEP:
+                _EARNERS.clear()
+            _EARNERS[(id(person), other)] = (data, balance, made)
+        out.append(made)
     return tuple(out)
 
 
@@ -663,11 +699,17 @@ def month_hours(
     flow_factor = tech.factor(flow_tasks)  # PT-M14: flow's base hours x efficiency
     if flow_factor != 1.0:
         flow_tenths = {k: round(t * flow_factor) for k, t in flow_tenths.items()}
+    # PT-M18 (T12): the month's flow by practice once, in its order (it was filtered per
+    # practice and office group)
+    flow_by_practice: dict[str, list[tuple[int, int]]] = {}
+    for (cid, p), t in flow_tenths.items():
+        if t > 0:
+            flow_by_practice.setdefault(p, []).append((cid, t))
     for practice, (group, members) in ((p, g) for p in data.practice_keys for g in groups):
         demands = {
             cid: t
-            for (cid, p), t in flow_tenths.items()
-            if p == practice and t > 0 and (group is None or client_office(cid) == group)
+            for cid, t in flow_by_practice.get(practice, ())
+            if group is None or client_office(cid) == group
         }
         total = sum(demands.values())
         if total <= 0:

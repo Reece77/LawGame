@@ -16,9 +16,10 @@ only (PT-M3b bills them).
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 
 from ptk.sim.data_models import Balance, GameData
+from ptk.sim.fastcopy import replace
 from ptk.sim.log import LogItem
 from ptk.sim.matters.failures import fail_clients
 from ptk.sim.matters.intake import expire_conflicted, intake, with_matter

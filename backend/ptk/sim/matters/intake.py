@@ -16,13 +16,14 @@ flow is suspended and its new matters would be conflicts: ADR PT-0009).
 from __future__ import annotations
 
 from collections.abc import Callable
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from typing import Final
 
 import numpy as np
 
 from ptk.sim import dmath
 from ptk.sim.data_models import Balance, GameData, MatterKindDef, PracticeDef
+from ptk.sim.fastcopy import replace
 from ptk.sim.interfaces import practice_leader_effect
 from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.matters import formulas as fx

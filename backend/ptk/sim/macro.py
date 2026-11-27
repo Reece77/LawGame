@@ -146,8 +146,26 @@ def driver_shortfall(practice: PracticeDef, ym: tuple[int, int], data: GameData)
     return max(0.0, 1.0 - level(data.macro, practice.index, ym))
 
 
+_SHORTFALLS: dict[tuple[int, str, tuple[int, int]], tuple[GameData, float]] = {}
+_SHORTFALLS_KEEP = 4096  # tunable-exempt: memoised (sector, month)s (a cache, not a rule)
+
+
 def sector_shortfall(sector: str, ym: tuple[int, int], data: GameData) -> float:
-    """A client sector's mix-weighted driver shortfall (how stressed its own business is)."""
+    """A client sector's mix-weighted driver shortfall (how stressed its own business is).
+    PT-M18 (T12): memoised on (data, sector, month), a pure function of them (billing reads it
+    for every client)."""
+    key = (id(data), sector, ym)
+    hit = _SHORTFALLS.get(key)
+    if hit is not None and hit[0] is data:
+        return hit[1]
+    value = _sector_shortfall(sector, ym, data)
+    if len(_SHORTFALLS) >= _SHORTFALLS_KEEP:
+        _SHORTFALLS.clear()
+    _SHORTFALLS[key] = (data, value)
+    return value
+
+
+def _sector_shortfall(sector: str, ym: tuple[int, int], data: GameData) -> float:
     table = next((x for x in data.clients.sectors if x.key == sector), None)
     if table is None:
         return 0.0

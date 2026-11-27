@@ -12,11 +12,11 @@ hours that month. Growth is multiplied by the supervising partner's mentoring te
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import replace
 
 from ptk.sim.calendar import YearMonth, turn_to_ym
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.events.modifiers import person_factor
+from ptk.sim.fastcopy import replace
 from ptk.sim.people.growth import grow_person
 from ptk.sim.people.models import Person, RevealState, WorkMonth
 from ptk.sim.people.reveal import apply_knowledge_action

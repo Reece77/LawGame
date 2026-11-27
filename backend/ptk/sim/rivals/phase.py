@@ -13,9 +13,10 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 
 from ptk.sim.data_models import Balance, GameData
+from ptk.sim.fastcopy import replace
 from ptk.sim.ledger import LedgerEntry
 from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.rivals import boutiques, history, poaching, rfp, roster

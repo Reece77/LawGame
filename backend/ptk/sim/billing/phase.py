@@ -31,7 +31,7 @@ Relationship points from write-downs, disputes and padding go through
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from typing import Final
 
 from ptk.sim.billing import audits as au
@@ -54,6 +54,7 @@ from ptk.sim.billing.models import (
 )
 from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance, BillingBalance, GameData
+from ptk.sim.fastcopy import replace
 from ptk.sim.interfaces import (
     ClientBillingView,
     MatterBillingView,

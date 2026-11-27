@@ -25,16 +25,17 @@ Hidden conflicts (checks skipped) may surface from stream `conflict`, keyed by m
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from typing import Final
 
 from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance, GameData, KindDef
+from ptk.sim.fastcopy import replace
 from ptk.sim.interfaces import seat_effect, tech_hours
 from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.macro import docket_slowed, driver_shortfall
 from ptk.sim.matters import formulas as fx
-from ptk.sim.matters.intake import bump, with_matter, with_relationship
+from ptk.sim.matters.intake import bump, with_matter
 from ptk.sim.matters.models import (
     Appearance,
     HoursRecord,
@@ -43,6 +44,7 @@ from ptk.sim.matters.models import (
     Matter,
     Origination,
     Outcome,
+    Relationship,
     SettlementOffer,
 )
 from ptk.sim.org.formulas import span_limit
@@ -559,6 +561,7 @@ def relationships_month(
         fees[r.client_id] = fees.get(r.client_id, 0) + r.value_cents
         h, s = strain_h.get(r.client_id, (0.0, 0.0))
         strain_h[r.client_id] = (h + r.tenths, s + r.tenths * people[r.person_id].strain)
+    moved: dict[tuple[int, int], Relationship] = {}
     for rel in [r for r in market.relationships if r.firm_id == firm_id]:
         client = market.client(rel.client_id)
         drift = cfg.drift * (1.0 - 0.5 * (client.loyalty - 10.0) / 10.0)
@@ -572,16 +575,17 @@ def relationships_month(
             pts += cfg.care * (partner.skills["client_care"] - 10.0) / 10.0
         pts += min(cfg.breadth_cap, cfg.breadth * max(0, len(rel.practices) - 1))
         window = (*rel.fees, fees.get(rel.client_id, 0))[-FEE_WINDOW:]
-        market = with_relationship(
-            market,
-            replace(
-                rel,
-                score=min(100.0, max(0.0, rel.score + pts)),
-                lost_share=lost_share,
-                fees=window,
-            ),
+        moved[(rel.client_id, rel.firm_id)] = replace(
+            rel,
+            score=min(100.0, max(0.0, rel.score + pts)),
+            lost_share=lost_share,
+            fees=window,
         )
-    return market
+    # PT-M18 (T12): the month's moves applied at once, as `with_relationship` one at a time
+    # would leave them (the others in their order, every relationship sorted by its key)
+    rest = [r for r in market.relationships if (r.client_id, r.firm_id) not in moved]
+    merged = sorted([*rest, *moved.values()], key=lambda r: (r.client_id, r.firm_id))
+    return replace(market, relationships=tuple(merged))
 
 
 def credit_origination(

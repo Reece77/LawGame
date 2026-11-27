@@ -19,12 +19,12 @@ then everyone by `rivals.retire_age`) and move.
 from __future__ import annotations
 
 from collections.abc import Iterable
-from dataclasses import replace
 
 import numpy as np
 
 from ptk.sim.calendar import MONTHS_PER_YEAR, YearMonth, ym_to_turn
 from ptk.sim.data_models import Balance, GameData
+from ptk.sim.fastcopy import replace
 from ptk.sim.people.formulas import current_ability
 from ptk.sim.people.generator import _rescale_primaries, generate_person
 from ptk.sim.people.models import Person, Skills

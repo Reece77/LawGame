@@ -8,9 +8,8 @@ Seeding (`seed`): at game creation and on the first month of a save from before 
 
 from __future__ import annotations
 
-from dataclasses import replace
-
 from ptk.sim.data_models import PARTNER_LEVELS, Balance, GameData
+from ptk.sim.fastcopy import replace
 from ptk.sim.reputation import formulas as fx
 from ptk.sim.reputation.models import (
     REGION_NEW_YORK,

@@ -10,10 +10,9 @@ no W_rel morale term yet (a follow-up); a pair is dropped when either person lea
 
 from __future__ import annotations
 
-from dataclasses import replace
-
 from ptk.sim.events.data import ColleaguesBalance
 from ptk.sim.events.models import ColleaguePair, with_pairs
+from ptk.sim.fastcopy import replace
 from ptk.sim.state import GameState
 
 TEMPERAMENT = "temperament"

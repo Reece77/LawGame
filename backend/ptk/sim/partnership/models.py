@@ -13,10 +13,11 @@ Capital and current accounts are sub-ledgers: `Partner.capital_cents` and `curre
 from __future__ import annotations
 
 from collections.abc import Iterable
-from dataclasses import dataclass, fields, replace
+from dataclasses import dataclass, fields
 from typing import Literal
 
 from ptk.sim.data_models import AgreementTerms, CompSystem, VotingRule
+from ptk.sim.fastcopy import replace
 
 type PartnerClass = Literal["equity", "income"]
 type VoteKind = Literal[
@@ -59,7 +60,7 @@ class Agreement:
         return cls(**{f.name: getattr(terms, f.name) for f in fields(cls)})
 
     def with_term(self, term: str, value: Param) -> Agreement:
-        return replace(self, **{term: value})  # type: ignore[arg-type]
+        return replace(self, **{term: value})
 
 
 AGREEMENT_TERMS: tuple[str, ...] = tuple(f.name for f in fields(Agreement))

@@ -44,7 +44,14 @@ Start a fresh standard game, play 2005-2008 yourself, delegate everything to the
 
 ## Decisions made
 
-(The session records its decisions here.)
+1. **Order of the sub-tasks** (the product manager, Reece, 2026-11-26): `pt-m12-done` was never created because main's `check` read T12 at 251 ms (the minimum of five) against 250, so PT-M18 starts without waiting for it and takes the sub-tasks in the order **6, 2, 1, 3, 4, 5, 7**. Sub-task 6 goes first as its own pull request, whose merge commit carries `Milestone-Tag: pt-m12-done` (it closes PT-M12's red `check`); the milestone merges later with `Milestone-Tag: pt-m18-done`.
+2. **Sub-task 6, turn time, with identical results** (golden snapshots and the state cache replay unchanged; no balance key moved, so the matter volume is untouched). Profiled on T12's merged-firm case (py-spy and per-phase timers); each change is proportional to what changes and gives the same values:
+   - **The cyclic collector** is paused for a turn (`turn.advance_turn`): a turn builds no reference cycles (a collection after a turn frees none), but every gen-2 pass walked the whole live game. On resuming, the turn's survivors are moved to the oldest generation with `gc.freeze()` and `gc.unfreeze()` (a list splice; skipped if a caller has frozen objects), instead of a young-generation pass over everything the new state holds. A 132-turn steady run: 37 s -> 23 s, peak memory 290 -> 305 MB.
+   - **Lookups** on the state's tuples (`person`, `employment_of`, `employer_of`, `person_state`, `reveal`) are indexed on a tuple's eighth lookup, memoised on the tuple's identity (first match wins, as the scans).
+   - **`ptk.sim.fastcopy.replace`**, a cached positional `dataclasses.replace` (same `__init__` and `__post_init__`; unknown names raise), in the turn's hot modules; a test checks every sim dataclass has only init fields.
+   - **RNG streams** pass the seed's and key's 32-bit words as `SeedSequence`'s entropy, which is the pool `spawn_key` assembles (a Hypothesis test against the documented call; parts of 32 bits or more take the documented path).
+   - Staffing: a fee earner's per-person core and the fee earner itself memoised on the person; flow demand grouped by practice once. Growth: skill-independent terms once, noise as one array, one copy of the person. Rivals: action noise as one array, the month's time and each real firm's path once. Reputation: `means` inlines `long_run_mean` (a test checks equality). Relationships' monthly moves applied in one pass. Billing: a sector's shortfall memoised per month. The directory builds only notables' views. `AttrSet.updated` clamps only changed values.
+   - **Readings** (`make check-timing`, which now prints each case's five runs, the gate's minimum and the median of five; the gate is unchanged): see the table in decision 3.
 
 ## Follow-ups
 

@@ -8,8 +8,9 @@ guards. Phases not yet built are no-ops so the order never changes.
 
 from __future__ import annotations
 
+import gc
 from collections.abc import Callable, Mapping
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, field
 
 from ptk.sim.automation import digest as auto_digest
 from ptk.sim.automation import events as auto_events
@@ -24,6 +25,7 @@ from ptk.sim.errors import GameOverError
 from ptk.sim.events import colleagues, director, effects
 from ptk.sim.events import modifiers as event_modifiers
 from ptk.sim.events.models import EventRequest, TextRequest
+from ptk.sim.fastcopy import replace
 from ptk.sim.founder import phase as founder_life
 from ptk.sim.founder.models import PersonalEntry
 from ptk.sim.geo import phase as geo
@@ -358,6 +360,38 @@ def advance_turn(
         raise GameOverError(f"the game is over ({state.save_meta.game_state.replace('_', ' ')})")
     if not answer_critical:
         effects.check_continue(state)
+    # PT-M18 (T12): the cyclic collector is paused for the turn. A turn builds no reference
+    # cycles (frozen dataclasses and tuples), but it allocates hundreds of thousands of
+    # objects, and each gen-2 collection walked the whole live game (~10% of a 2025 turn).
+    # Reference counting still frees everything; the collector resumes as it was, with the
+    # turn's survivors moved to its oldest generation (their first young-generation pass was
+    # another ~6% of a turn, walking every object the new state holds).
+    paused = gc.isenabled()
+    gc.disable()
+    try:
+        return _resolve(
+            state, decisions, rng, balance, data, ledger_balances, work, hiring_hook,
+            answer_critical,
+        )  # fmt: skip
+    finally:
+        if paused:
+            if gc.get_freeze_count() == 0:  # never undo a caller's own gc.freeze()
+                gc.freeze()  # the turn's survivors join the oldest generation without the
+                gc.unfreeze()  # young-generation pass re-enabling would start (a list splice)
+            gc.enable()
+
+
+def _resolve(
+    state: GameState,
+    decisions: Decisions,
+    rng: RngFactory,
+    balance: Balance,
+    data: GameData,
+    ledger_balances: LedgerBalances,
+    work: tuple[WorkMonth, ...],
+    hiring_hook: DelegateHiringHook | None,
+    answer_critical: bool,
+) -> TurnResult:
     data = world_data(data, balance, state.save_meta.master_seed)  # PT-M10: the save's world
     ctx = TurnContext(
         state=state,

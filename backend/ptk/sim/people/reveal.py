@@ -9,12 +9,12 @@ PT-M5).
 
 from __future__ import annotations
 
-from dataclasses import replace
 from types import MappingProxyType
 from typing import Final
 
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import UnknownKnowledgeActionError
+from ptk.sim.fastcopy import replace
 from ptk.sim.people.formulas import displayed_range, narrow, narrow_pa
 from ptk.sim.people.models import (
     FAM_PREFIX,

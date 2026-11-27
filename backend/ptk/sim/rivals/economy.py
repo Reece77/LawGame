@@ -16,12 +16,13 @@ cash stays at zero (rivals hold no reserves; ADR-0003's balance holds).
 
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from functools import cached_property
 
 from ptk.sim import dmath
 from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance, GameData
+from ptk.sim.fastcopy import replace
 from ptk.sim.ledger import CASH, DRAWINGS, FEES, GENERAL_ADMIN, SALARIES, LedgerEntry, LedgerLine
 from ptk.sim.rivals.data import FirmDef, HistoryEventDef, PersonalityDef
 from ptk.sim.rivals.models import RivalFirm
@@ -40,11 +41,11 @@ class Month:
     data: GameData
     balance: Balance
 
-    @property
+    @cached_property  # PT-M18 (T12): fixed for the month, read for every rival
     def ym(self) -> tuple[int, int]:
         return turn_to_ym(self.turn, self.start)
 
-    @property
+    @cached_property
     def t(self) -> float:
         return time_of(self.turn, self.start)
 
@@ -56,12 +57,23 @@ class Month:
     def events(self) -> tuple[HistoryEventDef, ...]:
         return self.data.rivals.firms.events
 
+    @cached_property
+    def _paths(self) -> dict[str, Path | None]:
+        """PT-M18 (T12): each real firm's path once a month (`build_path` is pure in the
+        firm's definition and the events, fixed for the month; it hashed both per call)."""
+        return {}
+
     def path(self, firm: RivalFirm) -> Path | None:
-        fdef = self.defs.get(firm.key) if firm.kind == "real" else None
-        if fdef is None:
+        if firm.kind != "real":
             return None
-        p = build_path(fdef, self.events)
-        return p if p.revenue else None
+        memo = self._paths
+        if firm.key in memo:
+            return memo[firm.key]
+        fdef = self.defs.get(firm.key)
+        p = None if fdef is None else build_path(fdef, self.events)
+        out = p if p is not None and p.revenue else None
+        memo[firm.key] = out
+        return out
 
     def pinned(self, firm: RivalFirm) -> bool:
         p = self.path(firm)

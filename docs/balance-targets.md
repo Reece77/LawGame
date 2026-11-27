@@ -42,6 +42,10 @@ All strategies staff named matters by the default rule, bill monthly, accept the
 | T12 | **Turn time:** median turn ≤ 250 ms at December 2025 (PT-M10; PT-M5: 2015) on the steady save | pass/fail |
 | T14 | **Claims are believable (PT-M15, proposed for the product manager's approval):** steady's malpractice claim notices 2006-2015, per 100 lawyer-years, median of seeds 1-40 (PT-M18; before: 1-10), within 1.5-5.0 (the dossier's 2-4 notices a 100 lawyers a year, widened for a small firm's sampling); steady's premium a lawyer in December 2015 within $5k-$10k | band |
 | T13 | **Integration costs partners (PT-M13, proposed for the product manager's approval):** of the combined equity partnership at closing, 10-20% gone within 24 months (every exit), median over the `merger` strategy's mergers on seeds 1-40 (PT-M18; before: 1-10) (docs/research/law-firm-mergers.md s4: A&O Shearman ~17% in 17 months with a planned cut; ~4% before go-live; 8-12% background turnover) | band |
+| T15 | **Rivals grow as history did (PT-M18, approved by the product manager, 2026-11-27):** each real rival's revenue growth a year, FY2025 to FY2034, within history's ten-year range of the modelled rivals' sourced paths (-0.4% to +18.3%), and the median within history's twenty-year p10-p90 (3.6%-9.2%; 43 firms 2005-2025, median 6.2%) | band |
+| T16 | **Dissolutions are believable (PT-M18, approved):** collapses of the real rivals active in December 2025, 2026-2034, scaled to a decade: median 0-4, and at least one on at least 20% of seeds (history: 4 of 43 in 2005-2015, 0 of 38 in 2016-2025; docs/research/rivals-2005.md, history-2016-2025.md) | band |
+| T17 | **No dominant strategy at year 30 (PT-M18, approved):** T2's measure to December 2034 (the founding partner's allocations 2005-2034, 0 if dissolved), every strategy played to 2034: no strategy best on more than 60% of seeds | pass/fail |
+| T18 | **The AI era (PT-M18, approved; PT-M14's criteria 2 and 4):** a fully adopted firm's AI-exposed tasks take 40-70% fewer hours by December 2030 on every seed; the 2030 junior cohort's growth falls without training (median) and training restores at least half of it (median) | band |
 | T8.2020 | **The pandemic bites (PT-M10):** a corporate-heavy firm's April-June 2020 revenue falls 10-30% against January-March, recovering by Q4 2021 | band |
 
 ## Forty seeds (PT-M18 sub-task 1, 2026-11-27)
@@ -59,7 +63,7 @@ Every target and guard reads `ptk.balance.seeds.SEEDS` (1-40); counts of seeds b
 | T13, T14 | medians, seeds 1-10 (seeds 11-40 printed) | medians, seeds 1-40 (the separate 11-40 readings fold in) |
 | PT-M12.specialist | survives on ≥ 7 of 10 | on ≥ 70% |
 | PT-M5 conditional history | Howrey early on ≥ 7 of 10 | on ≥ 70% |
-| PT-M11 London lift | pays within 3 years on ≥ 6 of 10 | on ≥ 60% |
+| PT-M11 London lift | pays within 3 years on ≥ 6 of 10 | on ≥ 60% of the seeds whose firm is alive in January 2007, and opens on every such seed (the product manager's decision, 2026-11-27) |
 | PT-M15 cowboy | 2x claims on ≥ 8 of 10; lower PEP on ≥ 6 of 10 | on ≥ 80%; on ≥ 60% |
 | PT-M7a acceptance firm, PT-M8 leaders and pitches, PT-M9 automated, PT-M16 pace | medians / all over seeds 1-5 (PT-M7a) or 1-10 | the same over seeds 1-40 |
 | PT-M14 criterion 3 (`tools/tech_readings.py`) | 7 of 10 | at least 70% |
@@ -106,6 +110,10 @@ How `ptk/balance/report.py` reads each target (`make balance`; `tools/balance_ru
 | T8.2020 | `steady-30y` runs with M&A, PE, capital markets and banking at least half of 2019's revenue: the median of 2020 Q2's revenue over Q1's; recovered when most of them have Q4 2021's revenue at least Q1 2020's (PT-M10) |
 | T14 | `tests/balance/test_pt_m15.py` (nightly): claims noticed 2006-2015 over lawyer-months / 12 from 2006, per seed, the median; the premium a lawyer is the policy in force in December 2015 over lawyers on the books. PT-M15's reading: median 1.69 (seeds 1-10), premium median $7.0k |
 | T13 | `tests/balance/test_pt_m13.py` (nightly): `mergers.integration.partners_lost_share` over each `merger` run's integration (`lost_partners` / the partnership at closing, within 24 months), median; seeds 11-40 printed beside steady |
+| T15 | `steady-30y` runs that reach December 2034: every real rival with FY2025 and FY2034 records, (FY2034 / FY2025)^(1/9) - 1; each within the range, the median of all firm-seeds within the median band |
+| T16 | `steady-30y` runs that reach December 2034: real rivals with an FY2025 record still active in January 2026 that end `collapsed` or `failed` by December 2034, x 10/9; the median over runs, and the share of runs with at least one |
+| T17 | `<strategy>-30y` (every strategy, 360 turns): wins on each seed by `RunResult.score_30y`, as T2 |
+| T18 | `tests/balance/test_pt_m18.py` (nightly): `tools/tech_readings.py`'s criterion 2 (every seed) and criterion 4 (the restored share (trained - untrained) / (off - untrained) over seeds with a cohort that lost) |
 | 30y | printed for information: `steady-30y` at December 2034 (lawyers, revenue, PEP medians, dissolved); PT-M18 sets the 30-year targets |
 
 - **PT-M14 criterion 3 (fixed fees against hourly, 2026-2030 PEP):** a known miss owned by PT-M18 (row `PT-M14.fixed_fees`, authorised by the product manager on Reece's decision of 2026-11-23): 4 of 10 on seeds 1-10, 9 of 30 on seeds 11-40 (`tools/tech_readings.py --criterion3`).

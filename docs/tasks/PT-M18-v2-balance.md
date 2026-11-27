@@ -98,6 +98,7 @@ Start a fresh standard game, play 2005-2008 yourself, delegate everything to the
    | PT-M14.fixed_fees (`tools/tech_readings.py`) | to read in sub-task 4 | >= 70% | known miss |
 
    The nightly took 26 and 39 minutes (every job under 120).
+7. **The product manager's decisions of 2026-11-27:** (a) T15-T18 approved as proposed (T16 counts real rivals' collapses; T17 plays every strategy to 2034); built as rows T15-T17 of the balance run (`report._t15`, `_t16`, `_t17`; the long runs record their rivals' growth and collapses; `<strategy>-30y` variants) and T18 as `tests/balance/test_pt_m18.py` (PT-M14's criteria 2 and 4 without criterion 3's branches: the same numbers as `tools/tech_readings.py run_seed`, checked on seed 1). (b) PT-M11's London lift is judged on the seeds whose firm is alive in January 2007 (`OfficeRun.reached`); seed 11, dissolved before 2007, is printed and not judged.
 
 ## Follow-ups
 

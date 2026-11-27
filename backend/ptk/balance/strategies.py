@@ -311,4 +311,10 @@ VARIANTS: Final[dict[str, Script]] = {
     **__import__("ptk.balance.risk").balance.risk.RISK_VARIANTS,  # PT-M15: cowboy (risk.py)
     **__import__("ptk.balance.mergers").balance.mergers.MERGER_VARIANTS,  # PT-M13 (mergers.py)
 }
+# PT-M18 (T17, the product manager's approval of 2026-11-27): every strategy played to
+# December 2034 ("steady-30y" is PT-M10's)
+THIRTY_YEAR: Final[dict[str, Script]] = {
+    f"{name}-30y": script for name, script in STRATEGIES.items() if name != "steady"
+}
+VARIANTS.update(THIRTY_YEAR)
 PLAYABLE: Final[dict[str, Script]] = {**STRATEGIES, **VARIANTS}

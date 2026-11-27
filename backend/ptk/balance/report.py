@@ -41,6 +41,14 @@ VARIANT_RUNS: Final = ("lateral-rocket-heeded", "restructuring", "specialist", "
 # and the 30-year steady run printed for information (PT-M18 sets 30-year targets)
 LONG_RUN: Final = "steady-30y"
 LONG_TURNS: Final = 360
+# PT-M18 (T17): every strategy to December 2034, judged as T2 at year 30
+LONG_STRATEGIES: Final = tuple(f"{s}-30y" for s in STRATEGIES)
+T15_YEARS: Final = (2025, 2034)  # T15: rivals' growth after history's pin
+T15_EACH: Final = (-0.004, 0.183)  # tunable-exempt: history's 10-year range, 2005-2025 paths
+T15_MEDIAN: Final = (0.036, 0.092)  # tunable-exempt: history's 20-year p10-p90 (43 firms)
+T16_MEDIAN: Final = (0.0, 4.0)  # tunable-exempt: collapses a decade (history: 4 of 43, 0 of 38)
+T16_ANY_SHARE: Final = 0.2  # tunable-exempt: at least one collapse on 20% of seeds
+T17_SHARE: Final = 0.6  # tunable-exempt: T2's share, at year 30
 T11_YEARS: Final = (2009, 2015)  # the 132-turn runs' checkpoints (top 10 at 2015)
 T11_LONG_YEARS: Final = (2009, 2015, 2020, 2025)  # the long runs' (top 10 at 2025)
 SHOCK_BAND: Final = (-0.30, -0.10)  # 2020 Q2 against Q1, a corporate-heavy firm
@@ -81,6 +89,11 @@ class RunResult:
     class_equity: int  # ... of them equity partners at the end
     rivals: RivalCheck | None
     refused: dict[str, int] = field(default_factory=dict)
+    # PT-M18 (T15, T16; the long runs only): real rivals' revenue growth a year, 2025-2034, and
+    # collapses over 2026-2034 among the real rivals active in December 2025 (and their count)
+    rival_growth: tuple[float, ...] = ()
+    rival_collapses: int = 0
+    rivals_2025: int = 0
 
     @property
     def dissolved(self) -> bool:
@@ -99,6 +112,14 @@ class RunResult:
                 for practice, cents in m.practice_revenue:
                     out[practice] += cents
         return out
+
+    @property
+    def score_30y(self) -> float:
+        """T17: T2's score to year 30 (the founding partner's allocations 2005-2034; 0 for a
+        firm that dissolved)."""
+        if self.dissolved or self.december(2034) is None:
+            return 0.0
+        return float(sum(m.founder_comp_cents for m in self.months))
 
     @property
     def score(self) -> float:
@@ -148,6 +169,7 @@ def _result(
         for pid in klass
         if pid in state.staff_ids(PLAYER) and state.person(pid).level == "equity_partner"
     )
+    long_rivals = _long_rivals(state) if turns >= LONG_TURNS and state.turn >= turns else ((), 0, 0)
     return RunResult(
         strategy=strategy,
         seed=seed,
@@ -167,7 +189,29 @@ def _result(
             else None
         ),
         refused=dict(game.refused),
+        rival_growth=long_rivals[0],
+        rival_collapses=long_rivals[1],
+        rivals_2025=long_rivals[2],
     )
+
+
+def _long_rivals(state: GameState) -> tuple[tuple[float, ...], int, int]:
+    """T15 and T16's readings of a long run's real rivals (PT-M18)."""
+    first, last = T15_YEARS
+    start_2026 = ym_to_turn(first + 1, 1, (2005, 1))
+    growth: list[float] = []
+    alive, collapsed = 0, 0
+    for f in state.rivals.firms:
+        if f.kind != "real":
+            continue
+        a = next((h.revenue_cents for h in f.history if h.year == first), None)
+        b = next((h.revenue_cents for h in f.history if h.year == last), None)
+        if a and b and a > 0:
+            growth.append((b / a) ** (1 / (last - first)) - 1)
+        if a is not None and (f.ended_turn is None or f.ended_turn >= start_2026):
+            alive += 1
+            collapsed += f.status in ("collapsed", "failed")  # a dissolution either way
+    return tuple(growth), collapsed, alive
 
 
 def rival_check(
@@ -238,8 +282,8 @@ def run_all(
     if extra_runs:
         plan += [(s, seed, d, turns) for s, d in DIFFICULTY_RUNS for seed in seeds]
         plan += [(v, seed, "standard", turns) for v in VARIANT_RUNS for seed in seeds]
-    if long_runs:
-        plan = [(LONG_RUN, seed, "standard", LONG_TURNS) for seed in seeds] + plan
+    if long_runs:  # PT-M18 (T17): every strategy to 2034, steady's first (the longest)
+        plan = [(s, seed, "standard", LONG_TURNS) for s in LONG_STRATEGIES for seed in seeds] + plan
     if jobs <= 1:
         return [play(s, seed, n, d, data_dir) for s, seed, d, n in plan]
     with ProcessPoolExecutor(jobs) as pool:
@@ -346,6 +390,9 @@ def evaluate(results: Sequence[RunResult]) -> list[Row]:
         *_t12(results),
         *_shock(results),
         *_thirty(results),
+        *_t15(results),
+        *_t16(results),
+        *_t17(results),
         *_pt_m12(results),
     ]
 
@@ -581,7 +628,7 @@ def _change(r: RunResult) -> float | None:
 def _t8(results: Sequence[RunResult]) -> list[Row]:
     corporate, restructuring = [], []
     for r in results:
-        if r.difficulty != "standard" or r.strategy == LONG_RUN:  # the long run repeats steady
+        if r.difficulty != "standard" or r.strategy in LONG_STRATEGIES:  # long runs repeat 2005-15
             continue
         mix = r.year_practice_revenue(2008)
         total = sum(mix.values())
@@ -783,6 +830,72 @@ def _thirty(results: Sequence[RunResult]) -> list[Row]:
             f"{lawyers}, {_m(revenue)}, {_m(pep)}, {gone}/{len(runs)}",
             "printed (PT-M18)",
             None,
+        )
+    ]
+
+
+def _t15(results: Sequence[RunResult]) -> list[Row]:
+    runs = [r for r in _runs(results, LONG_RUN) if r.rival_growth]
+    if not runs:
+        return []
+    growth = [g for r in runs for g in r.rival_growth]
+    lo, hi = T15_EACH
+    mlo, mhi = T15_MEDIAN
+    med = median(growth)
+    outside = sum(1 for g in growth if not lo <= g <= hi)
+    return [
+        Row(
+            "T15",
+            "real rivals' revenue growth a year 2025-2034 (min, median, max; outside the range)",
+            f"{_pct(min(growth))}, {_pct(med)}, {_pct(max(growth))}; {outside}/{len(growth)}",
+            f"each {_pct(lo)}-{_pct(hi)}, median {_pct(mlo)}-{_pct(mhi)}",
+            outside == 0 and mlo <= med <= mhi,
+            score=med,
+        )
+    ]
+
+
+def _t16(results: Sequence[RunResult]) -> list[Row]:
+    runs = [r for r in _runs(results, LONG_RUN) if r.rivals_2025]
+    if not runs:
+        return []
+    decade = [r.rival_collapses * 10 / 9 for r in runs]  # 2026-2034 is nine years
+    med = median(decade)
+    anyone = sum(1 for r in runs if r.rival_collapses > 0)
+    lo, hi = T16_MEDIAN
+    need = at_least(T16_ANY_SHARE, len(runs))
+    return [
+        Row(
+            "T16",
+            "real rivals' collapses a decade, 2026-2034 (median; seeds with any)",
+            f"{med:.1f}; {anyone}/{len(runs)}",
+            f"{lo:.0f}-{hi:.0f}; >= {need}/{len(runs)}",
+            lo <= med <= hi and anyone >= need,
+            score=med,
+        )
+    ]
+
+
+def _t17(results: Sequence[RunResult]) -> list[Row]:
+    field = [r for r in results if r.strategy in LONG_STRATEGIES and r.difficulty == "standard"]
+    if len({r.strategy for r in field}) < 2:
+        return []
+    wins: Counter[str] = Counter()
+    for seed in sorted({r.seed for r in field}):
+        runs = sorted((r for r in field if r.seed == seed), key=lambda r: -r.score_30y)
+        if len(runs) > 1 and runs[0].score_30y > runs[1].score_30y:
+            wins[runs[0].strategy.removesuffix("-30y")] += 1
+    seeds = len({r.seed for r in field})
+    top = max(wins.values(), default=0)
+    limit = at_most(T17_SHARE, seeds)
+    return [
+        Row(
+            "T17",
+            "no dominant strategy at year 30 (best founder's earnings 2005-2034, wins)",
+            ", ".join(f"{s} {n}" for s, n in wins.most_common()) or "-",
+            f"<= {limit}/{seeds} each",
+            top <= limit,
+            score=top / seeds if seeds else None,
         )
     ]
 

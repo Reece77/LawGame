@@ -5,7 +5,8 @@
    nightly: `check`'s T11 in test_pt_m5.py checks every pinned rival, these included).
 2. A firm that opens London in January 2007 with a 10-lawyer team lift (`london-lift`) reaches
    a positive office profit (its profit since opening, lease and fit-out included) within
-   3 years on at least 60% of seeds 1-40; one that opens with an organic start of one partner
+   3 years on at least 60% of seeds 1-40 whose firm is alive in January 2007 (PT-M18); one
+   that opens with an organic start of one partner
    (`london-organic`) takes longer (both printed; nightly: twenty five-year runs).
 3. T12 with two offices: the median turn of December 2025 is at most 250 ms on a firm of
    steady's size (150 lawyers) with offices in London (a team lift) and Washington (a lateral
@@ -90,8 +91,12 @@ def test_a_london_team_lift_pays_within_three_years_and_organic_is_slower() -> N
     jobs = [(s, h) for h in ("team_lift", "organic") for s in SEEDS]
     with ProcessPoolExecutor() as pool:
         runs = list(pool.map(_run, jobs))
-    lift = [r for r in runs if r.how == "team_lift"]
-    organic = [r for r in runs if r.how == "organic"]
+    # PT-M18 (the product manager's decision, 2026-11-27): judged on the seeds whose firm is
+    # alive in January 2007, when the office opens (steady dissolves on T5's 5-20% of seeds,
+    # seed 11 before 2007); the dissolved seeds are printed
+    gone = sorted({r.seed for r in runs if not r.reached})
+    lift = [r for r in runs if r.how == "team_lift" and r.reached]
+    organic = [r for r in runs if r.how == "organic" and r.reached]
 
     def show(rs: list[OfficeRun]) -> str:
         def m(v: int | None) -> str:
@@ -99,7 +104,8 @@ def test_a_london_team_lift_pays_within_three_years_and_organic_is_slower() -> N
 
         return ", ".join(f"s{r.seed}:{m(r.payback_months())}/{m(r.months_to_profit())}" for r in rs)
 
-    print("\nLondon 2007, months to a positive office profit since opening / over 12 months:")
+    print(f"\nseeds dissolved before January 2007 (not judged): {gone}")
+    print("London 2007, months to a positive office profit since opening / over 12 months:")
     print(f"team lift: {show(lift)}")
     print(f"organic start: {show(organic)}")
     paid = sum(1 for r in lift if (m := r.payback_months()) is not None and m <= WITHIN_MONTHS)

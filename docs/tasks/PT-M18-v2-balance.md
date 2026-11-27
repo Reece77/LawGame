@@ -127,7 +127,18 @@ Start a fresh standard game, play 2005-2008 yourself, delegate everything to the
 
    Both bands hold only between about 1,050 and 1,090: T14 stays at its band's edge (its known-miss row stays, bound unchanged), and the premium near its top. The cowboy's lower PEP now passes on seeds 1-40 (24 of 40): its expected failure is removed and the guard asserts. State cache re-recorded and golden snapshots regenerated (CHANGELOG).
 12. **The seventh nightly** (run 46039759484 on `4d91fac`, 38 minutes, green): every row as decision 11 but **T4.steady $1.32M** ($0.5-1.2M): T14's claim rate lifts steady's PEP back from $1.19M. Steady is already at the dossier's lowest ratio (2.5 lawyers per equity partner), and laterals above 3.0 instead of 3.5 leave it at $1.32M (seeds 1-40: T2 steady 21, T3 67.5 lawyers / $70.12M), so my keys cannot hold T4 and T14 together. T4.steady's known-miss row returns, bounded at the 40-seed reading ($1.33M; CLAUDE.md 12.5), for the product manager. T6.partners reads 0.0% (no 2006-class member is an equity partner in December 2015).
+13. **The product manager's decisions on what keys and script rules cannot fix (2026-11-27, on the table of decisions 9-12; all four as recommended):**
+   - **T4.steady against T14:** T14 keeps `risk.claims.from_error_bp` 1070 (1.50, premium $9,686); T4.steady stays a known miss, bounded at its 40-seed reading ($1.3168M; baseline $1.65M).
+   - **T3.lawyers, T6.partners, T13:** known misses carried to v3, owned by PT-M23 (the next balance milestone, `docs/v3-outline.md`), each bounded at its 40-seed reading: T3.lawyers 73.5 (revenue $70.6M is inside), T6.partners 0.0% (a new row; the report's row now carries a score), T13 23.1% on the 23 seeds that merge (bound tightened from 28%). Causes in decisions 9 and 12; follow-ups below.
+   - **Expected failures:** PT-M8's strong leader (utilisation gap 2.8 points against 3.0; morale gap 7.3, passes), PT-M9's automated steady (revenue -19.7%, passes; PEP +32.9% against 20%) and PT-M4's heeded exodus (5 of 40 against at most 4; main the same) are non-strict, owned by PT-M23, with both readings in each reason. PT-M8's was strict. PT-M18 now owns no expected failure.
+   - **PT-M14.fixed_fees:** the row stays, owned by PT-M23, bounded at the 40-seed reading: 24 of 40 (score -0.6; the measure is a share of seeds, CLAUDE.md 12.1).
+   - T14 passes (1.50) and its row is removed.
 
 ## Follow-ups
 
-(The session records follow-ups here, for v3.)
+- **T3.lawyers (v3, PT-M23):** steady grows only while utilisation is at least 80% (a sixth to an eighth of its lawyers a year); a growth rule that hires ahead of demand, or the v3 world's larger markets, would carry it to 100-250.
+- **T6.partners:** the 2006 class is 0-2 people a seed. Retention of strong associates (attrition falling on the weakest), or measuring the classes of 2006-2008 together (a change of measure: Reece's), would make the share readable.
+- **T13:** partners' ordinary flight over 24 months is about 21.7% at steady's firm size; the base rate of partner flight, or measuring the loss above the firm's own rate before the merger (Reece's), decides it.
+- **T4.steady and T14** move against each other through steady's equity tier; a v3 retune of overhead per lawyer or the comp round could hold both.
+- **PT-M9:** automated steady's delegated admissions keep a smaller equity tier than steady's script (PEP +32.9%).
+- **The nightly's T12 row** reads the runner's loaded machine (334-414 ms); the gate is `make check-timing` alone.

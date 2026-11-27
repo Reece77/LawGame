@@ -111,10 +111,10 @@ def _capacity(state: GameState, people: tuple[int, ...], data: GameData, b: Bala
 
 @pytest.mark.nightly
 @pytest.mark.xfail(
-    strict=True,
-    reason="PT-M18: seed variance (the product manager's decision on PR #22, 2026-11-22). "
-    "The utilisation gap reads 2.83 on seeds 1-10 on PT-M16 (needs 3.0); on seeds 11-40 "
-    "main 2.61, PT-M16 2.58 (morale 7.29 and 7.31): below 3.0 on both, within 0.5 of main",
+    strict=False,
+    reason="PT-M23 (the product manager's decision, 2026-11-27: carried from PT-M18, non-strict). "
+    "Seeds 1-40 on PT-M18 (4d91fac): utilisation gap 2.8 points (needs 3.0); morale gap 7.3 "
+    "(passes, needs 5.0); earlier seeds 1-10 2.83 on PT-M16, seeds 11-40 main 2.61, PT-M16 2.58",
 )
 def test_a_strong_group_leader_lifts_morale_and_utilisation(
     data: GameData, balance: Balance

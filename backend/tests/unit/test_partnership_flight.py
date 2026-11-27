@@ -227,11 +227,11 @@ def test_the_exodus_spiral(capsys: pytest.CaptureFixture[str]) -> None:
             f"seeds, with the scripted response on {heeded.count('dissolved')} of {n}"
         )
     assert ignored.count("dissolved") >= at_least(IGNORED_SHARE, n)
-    if heeded.count("dissolved") > at_most(HEEDED_SHARE, n):  # PT-M18's, non-strict
+    if heeded.count("dissolved") > at_most(HEEDED_SHARE, n):  # PT-M23's, non-strict
         pytest.xfail(
-            "PT-M18 (product manager, 2026-11-25: non-strict, seed variance under rule 4): the "
-            "heeded response dissolves on main 04efa78 1/10 (seeds 1-10) and 4/30 (11-40), on "
-            "PT-M12's branch 2/10 and 3/30 (docs/tasks/PT-M12-all-twenty-practices.md, 18)"
+            "PT-M23 (the product manager's decision, 2026-11-27: carried from PT-M18, "
+            "non-strict): the heeded response dissolves on 5 of seeds 1-40 on PT-M18 (at most "
+            "4), as on main 04efa78 (1/10 and 4/30); a sized or repeated capital call reads 5 too"
         )
 
 

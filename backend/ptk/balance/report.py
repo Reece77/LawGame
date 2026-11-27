@@ -615,6 +615,7 @@ def _t6(results: Sequence[RunResult]) -> list[Row]:
             _pct(share),
             "8%-15%",
             _in(share, 0.08, 0.15),
+            score=None if share is None else -share,  # PT-M18: its known-miss row's measure
         ),
     ]
 

@@ -6,7 +6,7 @@ target (T1, T2, T11, T12) fails, or any target with --strict. A recorded known m
 Ported from tools/balance_runner.py @ 121d318a (Tech Startup Tycoon); changed: Partner Track's
 package, strategies, 132 turns and the T5/T8/T9 extra runs.
 
-    uv run --project backend python tools/balance_runner.py              # 5 x 10 x 132, + extras
+    uv run --project backend python tools/balance_runner.py              # 5 x 40 x 132, + extras
     uv run --project backend python tools/balance_runner.py --turns 24 --seeds 1 2
 """
 
@@ -23,7 +23,9 @@ BACKEND = Path(__file__).resolve().parent.parent / "backend"
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=(__doc__ or "").splitlines()[0])
-    parser.add_argument("--seeds", type=int, nargs="+", default=list(range(1, 11)))
+    parser.add_argument(  # default: ptk.balance.seeds.SEEDS (PT-M18: seeds 1-40)
+        "--seeds", type=int, nargs="+", default=None
+    )
     parser.add_argument("--turns", type=int, default=132)
     parser.add_argument("--strategies", nargs="+", default=None)
     parser.add_argument("--no-extra", action="store_true", help="skip T5's, T8's and T9's runs")
@@ -70,6 +72,10 @@ def main() -> int:
     )
     from ptk.balance.strategies import STRATEGIES
 
+    from ptk.balance.seeds import SEEDS
+
+    if args.seeds is None:
+        args.seeds = list(SEEDS)
     strategies = args.strategies or list(STRATEGIES)
     unknown = set(strategies) - set(STRATEGIES)
     if unknown:

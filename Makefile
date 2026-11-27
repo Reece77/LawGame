@@ -53,11 +53,12 @@ balance-shard:
 
 balance-summary:
 	uv run --project backend python tools/balance_runner.py --runs --long --summary balance-results
+	cd backend && PTK_BALANCE_RESULTS=balance-results uv run pytest -q -n 0 -s -m balance_run
 
 NIGHTLY_SHARDS = 6
 NIGHTLY_SHARD = 0
 nightly-shard:
-	cd backend && uv run pytest -q -n auto --dist loadgroup -m nightly -s --nightly-shard $(NIGHTLY_SHARD)/$(NIGHTLY_SHARDS) --nightly-durations-out nightly-durations/shard-$(NIGHTLY_SHARD).json
+	cd backend && uv run pytest -q -n auto --dist loadgroup -m "nightly and not balance_run" -s --nightly-shard $(NIGHTLY_SHARD)/$(NIGHTLY_SHARDS) --nightly-durations-out nightly-durations/shard-$(NIGHTLY_SHARD).json
 
 golden:
 	cd backend && uv run pytest tests/golden -q --update-golden

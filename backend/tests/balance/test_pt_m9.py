@@ -5,7 +5,7 @@
    with a digest each month and no area past its limits. Knowledge and AI is the one area that
    cannot be automated (PT-M14).
 2. `steady_automated` against steady: 2015 revenue and December 2015 PEP, the medians of
-   seeds 1-10, within 20% (printed; nightly).
+   seeds 1-40, within 20% (printed; nightly).
 """
 
 from __future__ import annotations
@@ -15,6 +15,7 @@ import statistics
 import pytest
 
 from ptk.balance.report import play
+from ptk.balance.seeds import SEEDS as BALANCE_SEEDS
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
 from ptk.sim.ledger import apply_entries
@@ -23,7 +24,7 @@ from ptk.sim.turn import advance_turn
 from tests.automation_support import approve_all, automated_firm
 from tests.seats_support import funded, steady
 
-SEEDS = tuple(range(1, 11))
+SEEDS = BALANCE_SEEDS  # PT-M18: seeds 1-40 (CLAUDE.md 12.1)
 BAND = 0.20  # tunable-exempt: the brief's "within 20%"
 FINAL_YEAR = 2015
 ACTED = ("decision", "mistake", "event")
@@ -100,7 +101,7 @@ def test_steady_automated_is_within_20_percent_of_steady() -> None:
     print(
         f"\nsteady 2015 revenue ${rev / 1e8:.2f}M, PEP ${pep / 1e8:.2f}M; steady_automated "
         f"${arev / 1e8:.2f}M ({arev / rev - 1:+.1%}), PEP ${apep / 1e8:.2f}M "
-        f"({apep / pep - 1:+.1%}) (medians, seeds 1-10)"
+        f"({apep / pep - 1:+.1%}) (medians, seeds 1-40)"
     )
     assert abs(arev / rev - 1) <= BAND
     assert abs(apep / pep - 1) <= BAND

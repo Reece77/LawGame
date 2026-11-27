@@ -6,7 +6,7 @@
 
 | | |
 | --- | --- |
-| Seeds | 1–10 (nightly); 11–40 for seed-luck checks (CLAUDE.md §12). **From PT-M18 (Reece, 2026-11-25): seeds 1–40 for every target and guard, with thresholds as shares of seeds** (6 of 10 becomes 60%, 9 of 10 becomes 90%) |
+| Seeds | **1–40 for every target and guard (PT-M18, 2026-11-27; Reece's rule of 2026-11-25, CLAUDE.md §12.1), with thresholds as shares of seeds** (6 of 10 becomes at most 60%, 9 of 10 at least 90%; a median stays a median): `ptk/balance/seeds.py`. Before PT-M18: seeds 1–10, with 11–40 for seed-luck checks |
 | Turns | 132 (January 2005 to December 2015) |
 | Scenario | `biglaw_spinout`: an M&A partner and a litigator found a firm in New York with two associates, $600,000 of partners' capital and a $1M revolver, books of $2.5M and $1.5M |
 | Difficulty | standard; T5 also easy and hard |
@@ -28,21 +28,41 @@ All strategies staff named matters by the default rule, bill monthly, accept the
 
 | # | Target | Kind |
 | --- | --- | --- |
-| T1 | **Do-nothing fails:** revenue below $3M and falling at year 5 on ≥ 9 of 10 seeds, or dissolved | pass/fail |
-| T2 | **No dominant strategy:** no strategy has the best firm score at year 11 on more than 6 of 10 seeds | pass/fail |
+| T1 | **Do-nothing fails:** revenue below $3M and falling at year 5, or dissolved, on at least 90% of seeds (PT-M18; before: ≥ 9 of 10) | pass/fail |
+| T2 | **No dominant strategy:** no strategy has the best firm score at year 11 on more than 60% of seeds (PT-M18; before: more than 6 of 10) | pass/fail |
 | T3 | **Growth is possible:** steady reaches 100–250 lawyers and $60M–$150M revenue (nominal) by December 2015, median | band |
 | T4 | **PEP is believable:** at year 11, median PEP $500k–$1.2M for steady, $1.0M–$2.5M for boutique, $0.7M–$1.6M for pyramid | band |
 | T5 | **Difficulty matters:** steady's dissolution rate easy 0–10%, standard 5–20%, hard 20–45% | band |
 | T6 | **Associate attrition** 15–25% a year (median across years and strategies); 8–15% of a September class make equity partner within 10 years in steady | band |
 | T7 | **Real ratios:** median realisation 84–92%, collection 93–98%, utilisation 75–90%, lockup 90–150 days | band |
 | T8 | **The crash bites:** 2009 revenue against 2008, a corporate-heavy firm −10% to −30%; a firm with a restructuring practice above 20% of revenue −5% to +20% | band |
-| T9 | **The spiral is real but survivable:** lateral rocket dissolves on 3–6 of 10 seeds by 2015; the same strategy with the CFO's warnings heeded (a script rule: stop guarantees and repay the revolver when the warning comes) dissolves on at most 1 | band |
+| T9 | **The spiral is real but survivable:** lateral rocket dissolves on 30–60% of seeds by 2015 (PT-M18; before: 3–6 of 10); the same strategy with the CFO's warnings heeded (a script rule: stop guarantees and repay the revolver when the warning comes) dissolves on at most 10% (before: at most 1 of 10) | band |
 | T10 | **Strain matters:** pyramid's associates burn out at least twice as often as steady's; steady's at most 5% a year | band |
 | T11 | **Rivals hold history:** each pinned rival's revenue within ±15% of its path in December 2009, 2015, 2020 and 2025 (PT-M10); the top 10 by revenue in 2015 (and in 2025 on the long runs) contains at least 8 of history's | pass/fail |
 | T12 | **Turn time:** median turn ≤ 250 ms at December 2025 (PT-M10; PT-M5: 2015) on the steady save | pass/fail |
-| T14 | **Claims are believable (PT-M15, proposed for the product manager's approval):** steady's malpractice claim notices 2006-2015, per 100 lawyer-years, median of seeds 1-10, within 1.5-5.0 (the dossier's 2-4 notices a 100 lawyers a year, widened for a small firm's sampling); steady's premium a lawyer in December 2015 within $5k-$10k | band |
-| T13 | **Integration costs partners (PT-M13, proposed for the product manager's approval):** of the combined equity partnership at closing, 10-20% gone within 24 months (every exit), median over the `merger` strategy's mergers on seeds 1-10 (docs/research/law-firm-mergers.md s4: A&O Shearman ~17% in 17 months with a planned cut; ~4% before go-live; 8-12% background turnover) | band |
+| T14 | **Claims are believable (PT-M15, proposed for the product manager's approval):** steady's malpractice claim notices 2006-2015, per 100 lawyer-years, median of seeds 1-40 (PT-M18; before: 1-10), within 1.5-5.0 (the dossier's 2-4 notices a 100 lawyers a year, widened for a small firm's sampling); steady's premium a lawyer in December 2015 within $5k-$10k | band |
+| T13 | **Integration costs partners (PT-M13, proposed for the product manager's approval):** of the combined equity partnership at closing, 10-20% gone within 24 months (every exit), median over the `merger` strategy's mergers on seeds 1-40 (PT-M18; before: 1-10) (docs/research/law-firm-mergers.md s4: A&O Shearman ~17% in 17 months with a planned cut; ~4% before go-live; 8-12% background turnover) | band |
 | T8.2020 | **The pandemic bites (PT-M10):** a corporate-heavy firm's April-June 2020 revenue falls 10-30% against January-March, recovering by Q4 2021 | band |
+
+## Forty seeds (PT-M18 sub-task 1, 2026-11-27)
+
+Every target and guard reads `ptk.balance.seeds.SEEDS` (1-40); counts of seeds become shares (`at_least`, `at_most`). The bands are unchanged; a known miss's score that counted seeds is now the same count as a share.
+
+| Target or guard | Before PT-M18 | From PT-M18 |
+| --- | --- | --- |
+| T1 | do-nothing fails on ≥ 9 of seeds 1-10 | on ≥ 90% of seeds 1-40 (36 of 40); score: minus the share |
+| T2, T2.specialist | no strategy best on more than 6 of 10 | on more than 60% (24 of 40); score: the most wins as a share (T2's known miss: 9 of 10 read as 0.9) |
+| T3, T4, T5, T6, T7, T8, T10, T8.2020, 30y | medians / rates over seeds 1-10 | the same over seeds 1-40 |
+| T9 rocket / heeded | 3-6 of 10 / at most 1 of 10 | 30-60% (12-24 of 40) / at most 10% (4 of 40); scores as shares |
+| T11 | every pinned rival on each of seeds 1-10 | on each of seeds 1-40 (seed 1 in `check`, as before) |
+| T12 | the runner's steady runs (printed) | unchanged (the gate is `check-timing`) |
+| T13, T14 | medians, seeds 1-10 (seeds 11-40 printed) | medians, seeds 1-40 (the separate 11-40 readings fold in) |
+| PT-M12.specialist | survives on ≥ 7 of 10 | on ≥ 70% |
+| PT-M5 conditional history | Howrey early on ≥ 7 of 10 | on ≥ 70% |
+| PT-M11 London lift | pays within 3 years on ≥ 6 of 10 | on ≥ 60% |
+| PT-M15 cowboy | 2x claims on ≥ 8 of 10; lower PEP on ≥ 6 of 10 | on ≥ 80%; on ≥ 60% |
+| PT-M7a acceptance firm, PT-M8 leaders and pitches, PT-M9 automated, PT-M16 pace | medians / all over seeds 1-5 (PT-M7a) or 1-10 | the same over seeds 1-40 |
+| PT-M14 criterion 3 (`tools/tech_readings.py`) | 7 of 10 | at least 70% |
 
 ## Known misses
 

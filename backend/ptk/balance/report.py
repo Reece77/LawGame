@@ -22,13 +22,14 @@ from typing import Final
 from ptk.balance.game import PLAYER, Game, Month, start_game
 from ptk.balance.known_misses import known_miss, verdict
 from ptk.balance.seats import fill_seats
+from ptk.balance.seeds import SEEDS, at_least, at_most
 from ptk.balance.strategies import PLAYABLE, STRATEGIES
 from ptk.loader import load_balance, load_game_data
 from ptk.sim.calendar import ym_to_turn
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.state import GameState
 
-SEEDS: Final = tuple(range(1, 11))
+# SEEDS: ptk.balance.seeds (PT-M18: seeds 1-40, thresholds as shares of seeds)
 TURNS: Final = 132  # January 2005 to December 2015
 SCENARIO: Final = "biglaw_spinout"
 FINAL_YEAR: Final = 2015  # "year 11"
@@ -49,6 +50,11 @@ T8_MIN_LAWYERS: Final = (
     10  # T8 restructuring: firms this large in December 2008 (Reece, 2026-11-22)
 )
 CENTS: Final = 100
+# PT-M18 (CLAUDE.md 12.1): the targets' counts of seeds as shares (docs/balance-targets.md)
+T1_SHARE: Final = 0.9  # tunable-exempt: T1, do-nothing fails on at least 9 of 10
+T2_SHARE: Final = 0.6  # tunable-exempt: T2, no strategy best on more than 6 of 10
+T9_ROCKET: Final = (0.3, 0.6)  # tunable-exempt: T9, the rocket dissolves on 3-6 of 10
+T9_HEEDED: Final = 0.1  # tunable-exempt: T9, the heeded rocket on at most 1 of 10
 MILLION: Final = 1_000_000 * CENTS
 
 
@@ -365,7 +371,7 @@ def _t1(results: Sequence[RunResult]) -> list[Row]:
 
     failed = sum(failing(r, True) for r in runs)
     nominal = sum(failing(r, False) for r in runs)
-    need = len(runs) - len(runs) // 10
+    need = at_least(T1_SHARE, len(runs))  # PT-M18: 9 of 10 as at least 90%
     return [
         Row(
             "T1",
@@ -374,7 +380,7 @@ def _t1(results: Sequence[RunResult]) -> list[Row]:
             f">= {need}/{len(runs)}",
             failed >= need,
             gate=True,
-            score=-failed,
+            score=-failed / len(runs),  # PT-M18: a share of seeds
         )
     ]
 
@@ -386,7 +392,7 @@ def _t2(results: Sequence[RunResult]) -> list[Row]:
         return []
     top = max(wins.values(), default=0)
     best = ", ".join(f"{s} {n}" for s, n in wins.most_common())
-    limit = seeds * 6 // 10
+    limit = at_most(T2_SHARE, seeds)  # PT-M18: 6 of 10 as at most 60%
     return [
         Row(
             "T2",
@@ -395,7 +401,7 @@ def _t2(results: Sequence[RunResult]) -> list[Row]:
             f"<= {limit}/{seeds} each",
             top <= limit,
             gate=True,
-            score=top,
+            score=top / seeds if seeds else None,  # PT-M18: the most wins as a share of seeds
         )
     ]
 
@@ -617,27 +623,29 @@ def _t9(results: Sequence[RunResult]) -> list[Row]:
     rocket = _runs(results, "lateral-rocket")
     if rocket:
         n = sum(r.dissolved for r in rocket)
+        lo, hi = T9_ROCKET  # PT-M18: 3-6 of 10 as 30%-60%
         out.append(
             Row(
                 "T9.rocket",
                 "lateral rocket dissolves by 2015",
                 f"{n}/{len(rocket)}",
-                "3-6/10",
-                3 <= n <= 6,
-                score=float(n),  # too many dissolve: more is worse
+                f"{at_least(lo, len(rocket))}-{at_most(hi, len(rocket))}/{len(rocket)}",
+                at_least(lo, len(rocket)) <= n <= at_most(hi, len(rocket)),
+                score=n / len(rocket),  # too many dissolve: more is worse (a share)
             )
         )
     heeded = _runs(results, "lateral-rocket-heeded")
     if heeded:
         n = sum(r.dissolved for r in heeded)
+        top = at_most(T9_HEEDED, len(heeded))  # PT-M18: 1 of 10 as at most 10%
         out.append(
             Row(
                 "T9.heeded",
                 "the rocket with the CFO's warnings heeded dissolves",
                 f"{n}/{len(heeded)}",
-                "<= 1/10",
-                n <= 1,
-                score=float(n),
+                f"<= {top}/{len(heeded)}",
+                n <= top,
+                score=n / len(heeded),  # a share of seeds
             )
         )
     return out
@@ -828,7 +836,7 @@ def runs_table(results: Sequence[RunResult]) -> str:
 
 # --- PT-M12: the practice strategies ----------------------------------------------------------
 
-SPECIALIST_SURVIVES: Final = 7  # tunable-exempt: the brief's "survives on at least 7 of 10"
+SPECIALIST_SURVIVES: Final = 0.7  # tunable-exempt: PT-M12's "at least 7 of 10", as a share
 
 
 def _pep_change(r: RunResult, year: int) -> float | None:
@@ -850,7 +858,7 @@ def _pt_m12(results: Sequence[RunResult]) -> list[Row]:
     if spec:
         n = len(spec)
         alive = sum(1 for r in spec if not r.dissolved)
-        need = n * SPECIALIST_SURVIVES // 10
+        need = at_least(SPECIALIST_SURVIVES, n)  # PT-M18: 7 of 10 as at least 70%
         rows.append(
             Row(
                 "PT-M12.specialist",
@@ -886,7 +894,7 @@ def _pt_m12(results: Sequence[RunResult]) -> list[Row]:
                 wins[runs[0].strategy] += 1
         seeds = len({r.seed for r in field})
         top = max(wins.values(), default=0)
-        limit = seeds * 6 // 10
+        limit = at_most(T2_SHARE, seeds)
         rows.append(
             Row(
                 "T2.specialist",

@@ -51,7 +51,19 @@ Start a fresh standard game, play 2005-2008 yourself, delegate everything to the
    - **`ptk.sim.fastcopy.replace`**, a cached positional `dataclasses.replace` (same `__init__` and `__post_init__`; unknown names raise), in the turn's hot modules; a test checks every sim dataclass has only init fields.
    - **RNG streams** pass the seed's and key's 32-bit words as `SeedSequence`'s entropy, which is the pool `spawn_key` assembles (a Hypothesis test against the documented call; parts of 32 bits or more take the documented path).
    - Staffing: a fee earner's per-person core and the fee earner itself memoised on the person; flow demand grouped by practice once. Growth: skill-independent terms once, noise as one array, one copy of the person. Rivals: action noise as one array, the month's time and each real firm's path once. Reputation: `means` inlines `long_run_mean` (a test checks equality). Relationships' monthly moves applied in one pass. Billing: a sector's shortfall memoised per month. The directory builds only notables' views. `AttrSet.updated` clamps only changed values.
-   - **Readings** (`make check-timing`, which now prints each case's five runs, the gate's minimum and the median of five; the gate is unchanged): see the table in decision 3.
+   - **Readings** (CI's `check` on PR #36, run 45918508384; `make check-timing` now prints each case's five runs, the gate's minimum and the median of five, and the gate is unchanged), ms:
+
+     | Case | main (gate) | gate (minimum) | median of five |
+     | --- | --- | --- | --- |
+     | two offices, December 2025 | 251 | 131 | 135 |
+     | merged firm and verein, December 2025 | 251 | 134 | 140 |
+     | 150 lawyers, December 2025 | — | 110 | 115 |
+     | 150 lawyers, **December 2034** (new case) | — | 103 | 105 |
+     | a merger closed in 2025 (reading, nightly) | — | 201 | 207 |
+
+     PR #36 merged as `0e13dca` with `Milestone-Tag: pt-m12-done`; `check` passed on main and `tag-milestone` created `pt-m12-done` on `0e13dca` (confirmed with `git ls-remote --tags origin pt-m12-done`).
+3. **Sub-task 2, the sharded nightly** (`.github/workflows/nightly.yml`): 8 `balance` jobs, each a contiguous seed range (`make balance-shard`; `tools/balance_runner.py --shard K/N --save`), then `balance-summary`, which reads every shard's runs, prints every target over every seed (`--summary`) and runs `test_pt_m7::test_balance_targets` on them (`PTK_BALANCE_RESULTS`): the same gates, no second play of the runs. 6 `nightly` test jobs (`make nightly-shard`): the tests dealt by recorded duration, longest first, each to the least loaded shard, `xdist_group`s together (`tests/nightly_shards.py`); a check that every test is in one shard; each job uploads its tests' durations and `durations` merges them for `tests/nightly_durations.json`. A job `nightly` passes only if every shard and the summary did. Every job's limit is 120 minutes (PT-M12 had 180 for the whole run). Engineering choices: 8 and 6 shards (GitHub's 20 concurrent jobs), seed ranges rather than strategies (a seed's runs cost alike), pickled results between jobs (the same code writes and reads them).
+4. **Sub-task 1, forty seeds**: `ptk/balance/seeds.py` (`SEEDS` 1-40, `at_least`, `at_most`) read by the runner, the tools and every nightly guard; old and new measures in `docs/balance-targets.md` ("Forty seeds"). Counts of seeds in scores became shares (T1, T2, T9), so T2's known miss "at most 9 of 10" reads 0.9. Guards that looped seeds one at a time (PT-M5's conditional history, PT-M7a, PT-M8) run them in a process pool. PT-M13's separate seeds 11-40 test folds into its seeds 1-40 test (it only printed what the latter now prints). PT-M7a's acceptance firm moves from seeds 1-5 to 1-40 (rule 1: every guard).
 
 ## Follow-ups
 

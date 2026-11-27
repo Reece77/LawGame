@@ -2,11 +2,11 @@
 
 1. Strong practice group leaders (seat score 16) against weak ones (6), every group's leader
    set alike: the groups' associates' morale and the groups' utilisation (pooled), averaged
-   over 24 months, on seeds 1-10. The brief asks at least 5 morale points and 3 utilisation
+   over 24 months, on seeds 1-40 (PT-M18). The brief asks at least 5 morale points and 3 utilisation
    points better (the median gap). Every group, not one, because a group already at capacity
    cannot show the diary effect and choosing the slack one would pick the answer.
 2. A 100-lawyer firm with every seat filled and given authority: pitches a quarter over a
-   year on seeds 1-10; the median is in 2-6, and no holder pitches twice in a quarter.
+   year on seeds 1-40; the median is in 2-6, and no holder pitches twice in a quarter.
 
 Both run the stage-3 led firm of `tests.seats_support` with resignations and partner flight
 off, so the arms keep the same people (the grown fixture sheds a fifth of its people a year,
@@ -16,16 +16,18 @@ on main as here).
 from __future__ import annotations
 
 import statistics
+from concurrent.futures import ProcessPoolExecutor
 
 import pytest
 
+from ptk.balance.seeds import SEEDS as BALANCE_SEEDS
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.org.authority import _members
 from ptk.sim.org.seat_models import PGL
 from ptk.sim.state import GameState
 from tests.seats_support import led_firm, run, steady, with_score
 
-SEEDS = tuple(range(1, 11))
+SEEDS = BALANCE_SEEDS  # PT-M18: seeds 1-40 (CLAUDE.md 12.1), each seed in a worker
 MONTHS = 24
 STRONG, WEAK = 16.0, 6.0  # tunable-exempt: the brief's seat scores
 MORALE_GAP, UTIL_GAP = 5.0, 3.0  # tunable-exempt: the brief's gaps (points)
@@ -67,6 +69,39 @@ def _arm(base: GameState, score: float, data: GameData, b: Balance) -> tuple[flo
     return statistics.fmean(morale), statistics.fmean(util)
 
 
+def _loaded() -> tuple[GameData, Balance]:
+    from ptk.loader import load_balance, load_game_data
+    from tests.conftest import DATA_DIR
+
+    return load_game_data(DATA_DIR), load_balance(DATA_DIR)
+
+
+def _leader_arms(seed: int) -> tuple[tuple[float, float], tuple[float, float]]:
+    """One seed (a worker process): the strong and the weak arm."""
+    data, balance = _loaded()
+    b = steady(balance)
+    base = led_firm(data, b, seed)
+    return _arm(base, STRONG, data, b), _arm(base, WEAK, data, b)
+
+
+def _pitches(seed: int) -> tuple[list[int], bool]:
+    """One seed (a worker process): pitches by quarter, and whether a holder pitched twice in a
+    quarter."""
+    data, balance = _loaded()
+    b = steady(balance)
+    state = led_firm(data, b, seed, lawyers=100)
+    after, _, _ = run(state, data, b, 12)
+    counts = [0, 0, 0, 0]
+    seen: set[tuple[int, int]] = set()
+    twice = False
+    for p in after.leadership.pitches:
+        q = p.made_turn // 3
+        twice = twice or (p.person_id, q) in seen
+        seen.add((p.person_id, q))
+        counts[q] += 1
+    return counts, twice
+
+
 def _capacity(state: GameState, people: tuple[int, ...], data: GameData, b: Balance) -> int:
     from ptk.sim.matters.staffing import fee_earners
 
@@ -84,12 +119,10 @@ def _capacity(state: GameState, people: tuple[int, ...], data: GameData, b: Bala
 def test_a_strong_group_leader_lifts_morale_and_utilisation(
     data: GameData, balance: Balance
 ) -> None:
-    b = steady(balance)
+    with ProcessPoolExecutor() as pool:
+        arms = list(pool.map(_leader_arms, SEEDS))
     gaps: list[tuple[float, float]] = []
-    for seed in SEEDS:
-        base = led_firm(data, b, seed)
-        strong = _arm(base, STRONG, data, b)
-        weak = _arm(base, WEAK, data, b)
+    for seed, (strong, weak) in zip(SEEDS, arms, strict=True):
         gaps.append((strong[0] - weak[0], strong[1] - weak[1]))
         print(
             f"seed {seed}: morale {strong[0]:.1f} vs {weak[0]:.1f}, "
@@ -106,18 +139,11 @@ def test_a_strong_group_leader_lifts_morale_and_utilisation(
 def test_a_100_lawyer_firm_sees_two_to_six_pitches_a_quarter(
     data: GameData, balance: Balance
 ) -> None:
-    b = steady(balance)
+    with ProcessPoolExecutor() as pool:
+        seeded = list(pool.map(_pitches, SEEDS))
     per_quarter: list[int] = []
-    for seed in SEEDS:
-        state = led_firm(data, b, seed, lawyers=100)
-        after, _, _ = run(state, data, b, 12)
-        counts = [0, 0, 0, 0]
-        seen: set[tuple[int, int]] = set()
-        for p in after.leadership.pitches:
-            q = p.made_turn // 3
-            assert (p.person_id, q) not in seen  # at most one a quarter per holder
-            seen.add((p.person_id, q))
-            counts[q] += 1
+    for seed, (counts, twice) in zip(SEEDS, seeded, strict=True):
+        assert not twice  # at most one a quarter per holder
         per_quarter += counts
         print(f"seed {seed}: pitches by quarter {counts}")
     median = statistics.median(per_quarter)

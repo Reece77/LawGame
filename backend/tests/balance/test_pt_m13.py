@@ -4,22 +4,24 @@
   250 ms on a firm of steady's size (150 lawyers) of which a generated firm merged in January
   2025 brought the larger part, with a London verein member, run alone (`make check-timing`).
 - T13 (nightly): the `merger` strategy's partners lost within 24 months of closing, on seeds
-  1-10, inside the band `docs/balance-targets.md` proposes (10-20% of the combined
+  1-40 (PT-M18), inside the band `docs/balance-targets.md` proposes (10-20% of the combined
   partnership at closing).
 - The `merger` strategy against steady in December 2015 (nightly, printed): lawyers and revenue
-  medians on seeds 1-10 and 11-40; rivals not merged with the firm hold T11's band at 2009 and
-  2015 on seeds 1-10.
+  medians on seeds 1-40; rivals not merged with the firm hold T11's band at 2009 and 2015 on
+  seeds 1-40.
 """
 
 from __future__ import annotations
 
 import statistics
+from collections.abc import Sequence
 from concurrent.futures import ProcessPoolExecutor
 
 import pytest
 
 from ptk.balance.game import start_game
 from ptk.balance.known_misses import Reading, verdict
+from ptk.balance.seeds import SEEDS as BALANCE_SEEDS
 from ptk.balance.strategies import PLAYABLE
 from ptk.loader import load_balance, load_game_data
 from ptk.sim.data_models import Balance, GameData
@@ -50,8 +52,7 @@ from tests.rivals_support import rivals_month, turn_of
 T13_BAND = (0.10, 0.20)  # proposed (docs/balance-targets.md T13; for the product manager)
 T13_MONTHS = 24
 OURS = 20  # tunable-exempt: the player's lawyers before the T12 merger
-SEEDS = range(1, 11)
-LUCK = range(11, 41)
+SEEDS = BALANCE_SEEDS  # PT-M18: seeds 1-40 (CLAUDE.md 12.1); seeds 11-40's own run is folded in
 END_YM = (2015, 12)
 
 
@@ -187,7 +188,7 @@ def _run(job: tuple[str, int]) -> dict[str, float]:
     return out
 
 
-def _runs(name: str, seeds: range) -> list[dict[str, float]]:
+def _runs(name: str, seeds: Sequence[int]) -> list[dict[str, float]]:
     with ProcessPoolExecutor() as pool:
         return list(pool.map(_run, [(name, s) for s in seeds]))
 
@@ -199,11 +200,11 @@ def test_t13_partners_lost_after_a_merger_and_the_merger_strategy_against_steady
     lost = [r["lost"] for r in merged if "lost" in r]
     med = lambda rs, k: statistics.median(r[k] for r in rs)  # noqa: E731
     print(
-        f"\nT13: merged on {len(lost)} of 10 seeds; partners lost within {T13_MONTHS} months"
-        f" median {statistics.median(lost) if lost else 0:.1%} {[f'{x:.0%}' for x in lost]}"
+        f"\nT13: merged on {len(lost)} of {len(merged)} seeds; partners lost within {T13_MONTHS}"
+        f" months median {statistics.median(lost) if lost else 0:.1%} {[f'{x:.0%}' for x in lost]}"
     )
     print(
-        f"merger 2015 (seeds 1-10): lawyers {med(merged, 'lawyers'):.0f}, revenue"
+        f"merger 2015 (seeds 1-40): lawyers {med(merged, 'lawyers'):.0f}, revenue"
         f" ${med(merged, 'revenue') / 1e8:.1f}M; steady: lawyers {med(steady, 'lawyers'):.0f},"
         f" revenue ${med(steady, 'revenue') / 1e8:.1f}M"
     )
@@ -214,16 +215,3 @@ def test_t13_partners_lost_after_a_merger_and_the_merger_strategy_against_steady
     reading = Reading("T13", T13_BAND[0] <= median <= T13_BAND[1], median)
     assert verdict(reading) != "fail", f"T13 {median:.1%} outside {T13_BAND}"
     assert all(r["t11_misses"] == 0 for r in merged)
-
-
-@pytest.mark.nightly
-def test_the_merger_strategy_against_steady_on_seeds_11_to_40() -> None:
-    merged = _runs("merger", LUCK)
-    steady = _runs("steady", LUCK)
-    med = lambda rs, k: statistics.median(r[k] for r in rs)  # noqa: E731
-    print(
-        f"\nmerger 2015 (seeds 11-40): lawyers {med(merged, 'lawyers'):.0f}, revenue"
-        f" ${med(merged, 'revenue') / 1e8:.1f}M; steady: lawyers {med(steady, 'lawyers'):.0f},"
-        f" revenue ${med(steady, 'revenue') / 1e8:.1f}M; merged on"
-        f" {sum(1 for r in merged if 'lost' in r)} of 30"
-    )

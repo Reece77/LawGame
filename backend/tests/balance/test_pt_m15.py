@@ -1,12 +1,13 @@
 """PT-M15's acceptance runs (run with -s to see the printed readings; nightly).
 
 1. T14 (proposed, docs/balance-targets.md): steady's claim notices per 100 lawyer-years,
-   2006-2015, median over seeds 1-10, within the band (the dossier's 2-4 notices a 100 lawyers
-   a year, widened for a small firm's sampling).
+   2006-2015, median over seeds 1-40 (PT-M18), within the band (the dossier's 2-4 notices
+   a 100 lawyers a year, widened for a small firm's sampling).
 2. Premiums: steady's premium per lawyer in December 2015, median, within the dossier's band
    ($5,000-$10,000 a lawyer a year).
 3. `cowboy` has at least twice steady's claims and disciplinary cases over 2005-2015 on at least
-   8 of 10 seeds, and lower PEP in December 2015 on at least 6 of 10.
+   80% of seeds 1-40, and lower PEP in December 2015 on at least 60% (PT-M18: the brief's
+   8 and 6 of 10, as shares).
 """
 
 from __future__ import annotations
@@ -19,12 +20,14 @@ import pytest
 
 from ptk.balance.known_misses import Reading, verdict
 from ptk.balance.risk import RiskRun, risk_run
+from ptk.balance.seeds import SEEDS as BALANCE_SEEDS
+from ptk.balance.seeds import at_least
 
-SEEDS = range(1, 11)
+SEEDS = BALANCE_SEEDS  # PT-M18: seeds 1-40 (CLAUDE.md 12.1)
 T14_BAND = (1.5, 5.0)  # tunable-exempt: T14's band, claim notices a 100 lawyer-years
 PREMIUM_BAND = (500_000, 1_000_000)  # tunable-exempt: the dossier's $5k-$10k a lawyer a year
-COWBOY_SEEDS = 8  # tunable-exempt: the brief's "at least 8 of 10"
-PEP_SEEDS = 6  # tunable-exempt: the brief's "at least 6 of 10"
+COWBOY_SHARE = 0.8  # tunable-exempt: the brief's "at least 8 of 10", as a share (PT-M18)
+PEP_SHARE = 0.6  # tunable-exempt: the brief's "at least 6 of 10", as a share (PT-M18)
 WORKERS = 4  # tunable-exempt
 # PT-M18 (the product manager's decision, Reece, 2026-11-25: non-strict, main fails it on
 # seeds 11-40): readings in docs/tasks/PT-M12-all-twenty-practices.md (decision 18)
@@ -69,7 +72,7 @@ def test_t14_claims_and_premiums_for_steady() -> None:
 
 def _cowboy_counts() -> tuple[int, int]:
     """(seeds where cowboy has at least twice steady's claims and cases, seeds where its PEP is
-    lower), seeds 1-10."""
+    lower), seeds 1-40."""
     more = lower = 0
     for seed in SEEDS:
         s, c = _runs()[("steady", seed)], _runs()[("cowboy", seed)]
@@ -82,8 +85,10 @@ def _cowboy_counts() -> tuple[int, int]:
             f"{s.claims}+{s.cases} ({'2x' if twice else 'under 2x'}); PEP "
             f"${c.pep_cents / 100:,.0f} vs ${s.pep_cents / 100:,.0f}"
         )
+    n = len(SEEDS)
     print(
-        f"\ncowboy: 2x on {more} of 10 (>= {COWBOY_SEEDS}); lower PEP on {lower} (>= {PEP_SEEDS})"
+        f"\ncowboy: 2x on {more} of {n} (>= {at_least(COWBOY_SHARE, n)}); lower PEP on {lower}"
+        f" (>= {at_least(PEP_SHARE, n)})"
     )
     return more, lower
 
@@ -92,6 +97,8 @@ def _cowboy_counts() -> tuple[int, int]:
 @pytest.mark.xdist_group("pt_m15_risk")  # one worker: T14 and this share `_runs()`
 def test_cowboy_pays_for_its_corners() -> None:
     more, lower = _cowboy_counts()
-    assert more >= COWBOY_SEEDS
-    if lower < PEP_SEEDS:  # PT-M18's, non-strict (the product manager, 2026-11-25)
+    assert more >= at_least(COWBOY_SHARE, len(SEEDS))
+    if lower < at_least(
+        PEP_SHARE, len(SEEDS)
+    ):  # PT-M18's, non-strict (the product manager, 2026-11-25)
         pytest.xfail(COWBOY_PEP_REASON)

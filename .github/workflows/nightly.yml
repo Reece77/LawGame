@@ -3,7 +3,8 @@
 # `check` is sharded, so the nightly finishes within its limit at 40 seeds:
 # - `balance` (BALANCE_SHARDS jobs): each plays a contiguous seed range (`make balance-shard`)
 #   and uploads its runs; `balance-summary` reads them all and prints every target over every
-#   seed (`make balance-summary`), failing on a gate (T1, T2, T11, T12);
+#   seed and runs test_pt_m7's gates on them (`make balance-summary`), failing on a gate (T1,
+#   T2, T11, T12);
 # - `nightly` (NIGHTLY_SHARDS jobs): the tests marked `nightly`, dealt by recorded duration
 #   (`make nightly-shard`, tests/nightly_shards.py); each uploads its tests' durations and
 #   `durations` merges them (to refresh tests/nightly_durations.json).
@@ -113,10 +114,10 @@ jobs:
       - name: Every nightly test is in one shard
         working-directory: backend
         run: |
-          total=$(uv run pytest -m nightly --co -q 2>/dev/null | awk -F': ' '{s+=$2} END {print s}')
+          total=$(uv run pytest -m "nightly and not balance_run" --co -q 2>/dev/null | awk -F': ' '{s+=$2} END {print s}')
           dealt=0
           for k in 0 1 2 3 4 5; do
-            n=$(uv run pytest -m nightly --co -q --nightly-shard $k/6 2>/dev/null | awk -F': ' '{s+=$2} END {print s+0}')
+            n=$(uv run pytest -m "nightly and not balance_run" --co -q --nightly-shard $k/6 2>/dev/null | awk -F': ' '{s+=$2} END {print s+0}')
             dealt=$((dealt + n))
           done
           echo "nightly tests: $total; dealt over 6 shards: $dealt"

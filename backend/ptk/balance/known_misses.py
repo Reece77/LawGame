@@ -74,8 +74,9 @@ KNOWN_MISSES: Final[tuple[KnownMiss, ...]] = (
     KnownMiss(
         target="T2",  # no strategy has the best founder's earnings on more than 6 of 10 seeds
         owner="PT-M18",
-        # score: the most wins any strategy has on seeds 1-10; known while at most 9
-        worse_than=9.0,
+        # score: the most wins any strategy has, as a share of the seeds (PT-M18: 9 of 10
+        # read as 90%); known while at most 90%
+        worse_than=0.9,
         reason="PT-M15 (authorised by the product manager, Reece, 2026-11-25): steady wins 9 "
         "of seeds 1-10 on the branch (main 5); seeds 11-40 steady 16/30 on the branch, 19/30 "
         "on main (a miss on main too: the cause predates PT-M15). PT-M12 (the product "

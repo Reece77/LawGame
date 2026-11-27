@@ -7,8 +7,8 @@ revenue holds at least 8 of the game's top 10, on seeds 1-10. The player's firm 
 biglaw spin-out unmanaged (no strategy scripts exist before PT-M7).
 
 Conditional history (the brief): a player who hires a third of a historically collapsing
-firm's top partners a year before its date brings the collapse forward on at least 7 of 10
-seeds (Howrey, March 2011; the hire in March 2010).
+firm's top partners a year before its date brings the collapse forward on at least 70% of
+seeds 1-40 (Howrey, March 2011; the hire in March 2010).
 
 T12: the median turn of 2025 (PT-M10; PT-M5 timed 2015) is at most 250 ms on a firm of
 steady's size (150 lawyers, its 12 turns timed, the rivals' market played to 2025 first), run
@@ -19,9 +19,12 @@ from __future__ import annotations
 
 import statistics
 import time
+from concurrent.futures import ProcessPoolExecutor
 
 import pytest
 
+from ptk.balance.seeds import SEEDS as BALANCE_SEEDS
+from ptk.balance.seeds import at_least
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
 from ptk.sim.ledger import CASH, PARTNERS_CAPITAL, apply_entries
@@ -31,12 +34,12 @@ from ptk.sim.turn import advance_turn
 from tests.matters_support import grown_firm, top_up
 from tests.rivals_support import hire_away, play_until, rivals_month, start, turn_of
 
-SEEDS = range(1, 11)
+SEEDS = BALANCE_SEEDS  # PT-M18: seeds 1-40 (CLAUDE.md 12.1)
 CHECK_YEARS = (2009, 2015, 2020, 2025)  # PT-M10: the pin runs to December 2025
 TOP_YEAR = CHECK_YEARS[-1]
 TOP = 10
 TOP_KEPT = 8  # tunable-exempt: the target
-FORWARD_SEEDS = 7  # tunable-exempt: the brief's criterion
+FORWARD_SHARE = 0.7  # tunable-exempt: the brief's "7 of 10", as a share (PT-M18)
 T12_MS = 250  # tunable-exempt: the target
 T12_LAWYERS = 150  # tunable-exempt: steady's size by 2015 (T3's band is 100-250)
 T12_TIMED = 12
@@ -128,23 +131,33 @@ def test_t11_rivals_hold_history(seed: int, data: GameData, balance: Balance) ->
     assert kept >= TOP_KEPT
 
 
+def _howrey(seed: int) -> tuple[bool, int | None]:
+    """One seed of the conditional-history test: whether Howrey collapsed early, and when."""
+    from ptk.loader import load_balance, load_game_data
+    from tests.conftest import DATA_DIR
+
+    data, balance = load_game_data(DATA_DIR), load_balance(DATA_DIR)
+    state = start(data, balance, seed)
+    due = turn_of(state, 2011, 3)
+    state, _ = play_until(state, data, balance, turn_of(state, 2010, 3), seed)
+    state = hire_away(state, "howrey", 1 / 3, data, balance)
+    state, _ = play_until(state, data, balance, due, seed)
+    howrey = state.rivals.by_key("howrey")
+    assert howrey is not None
+    return howrey.status == "collapsed" and (howrey.ended_turn or due) < due, howrey.ended_turn
+
+
 @pytest.mark.nightly  # PT-M11: over 60 s; check's runtime (product manager, 2026-11-23)
-def test_hiring_away_a_third_brings_a_collapse_forward(data: GameData, balance: Balance) -> None:
-    forward = 0
-    turns = []
-    for seed in SEEDS:
-        state = start(data, balance, seed)
-        due = turn_of(state, 2011, 3)
-        state, _ = play_until(state, data, balance, turn_of(state, 2010, 3), seed)
-        state = hire_away(state, "howrey", 1 / 3, data, balance)
-        state, _ = play_until(state, data, balance, due, seed)
-        howrey = state.rivals.by_key("howrey")
-        assert howrey is not None
-        early = howrey.status == "collapsed" and (howrey.ended_turn or due) < due
-        forward += early
-        turns.append(howrey.ended_turn)
-    print(f"\nConditional history: Howrey collapsed early on {forward} of 10 seeds {turns}")
-    assert forward >= FORWARD_SEEDS
+def test_hiring_away_a_third_brings_a_collapse_forward() -> None:
+    with ProcessPoolExecutor() as pool:  # PT-M18: forty seeds, in parallel
+        runs = list(pool.map(_howrey, SEEDS))
+    forward = sum(early for early, _ in runs)
+    need = at_least(FORWARD_SHARE, len(SEEDS))
+    print(
+        f"\nConditional history: Howrey collapsed early on {forward} of {len(SEEDS)} seeds"
+        f" (>= {need}) {[t for _, t in runs]}"
+    )
+    assert forward >= need
 
 
 def _year_turns(

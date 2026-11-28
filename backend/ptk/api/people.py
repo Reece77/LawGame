@@ -14,11 +14,11 @@ from typing import Any
 
 from fastapi import APIRouter
 from pydantic import BaseModel
+from simcore.kernel.calendar import turn_to_ym
 
 from ptk import loader
 from ptk.config import get_settings
 from ptk.db import saves
-from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import NotFoundError
 from ptk.sim.macro_seed import world_data
@@ -297,7 +297,8 @@ def _geo_fields(
     """PT-M11: the Person screen's admissions (with how and when) and office, own firm only."""
     if not own:
         return {}
-    from ptk.sim.calendar import format_turn
+    from simcore.kernel.calendar import format_turn
+
     from ptk.sim.geo.cities import work_city
 
     start = state.save_meta.start_ym

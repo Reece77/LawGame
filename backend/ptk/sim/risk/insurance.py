@@ -21,7 +21,8 @@ from __future__ import annotations
 import itertools
 from dataclasses import replace
 
-from ptk.sim.calendar import turn_to_ym
+from simcore.kernel.calendar import turn_to_ym
+
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.risk import formulas as fx
 from ptk.sim.risk.common import Books, lawyers, practice_of, with_risk

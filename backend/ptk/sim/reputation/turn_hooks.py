@@ -9,8 +9,8 @@ from ptk.sim.log import LogItem
 from ptk.sim.press import phase as press
 from ptk.sim.rankings import phase as rankings
 from ptk.sim.reputation import phase as reputation
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 
 def month(

@@ -21,8 +21,8 @@ from __future__ import annotations
 from collections.abc import Iterable
 
 import numpy as np
+from simcore.kernel.calendar import MONTHS_PER_YEAR, YearMonth, ym_to_turn
 
-from ptk.sim.calendar import MONTHS_PER_YEAR, YearMonth, ym_to_turn
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.fastcopy import replace
 from ptk.sim.people.formulas import current_ability
@@ -30,8 +30,8 @@ from ptk.sim.people.generator import _rescale_primaries, generate_person
 from ptk.sim.people.models import Person, Skills
 from ptk.sim.rivals.data import NotableDef
 from ptk.sim.rivals.models import Member, MemberKind, RivalFirm, RivalsState
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 JURISDICTION = "us_ny"  # tunable-exempt: v1's one bar (every modelled lawyer is admitted in NY)
 ASSOCIATE_LEVELS = ("associate_5", "associate_6", "associate_7", "senior_associate")

@@ -9,6 +9,7 @@ from pathlib import Path
 from sqlalchemy import delete, func, select
 from sqlalchemy.orm import Session
 
+from ptk.db.core import make_sessionmaker, shared_engine
 from ptk.db.models import (
     DecisionLogRow,
     HiringPlanRow,
@@ -17,7 +18,6 @@ from ptk.db.models import (
     OrgPersonRow,
     OrgUnitRow,
 )
-from ptk.db.session import make_sessionmaker, shared_engine
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import GameOverError
 from ptk.sim.macro_seed import world_data

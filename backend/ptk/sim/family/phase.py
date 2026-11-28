@@ -17,7 +17,8 @@ from __future__ import annotations
 from dataclasses import replace
 from typing import Final
 
-from ptk.sim.calendar import MONTHS_PER_YEAR
+from simcore.kernel.calendar import MONTHS_PER_YEAR
+
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.family.models import (
     CHILD,
@@ -50,8 +51,8 @@ from ptk.sim.founder.persona import raise_trait
 from ptk.sim.interfaces import candidate_rating, confidence_change
 from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.people.formulas import clamp_strain
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState, with_person
+from ptk.sim.streams import RngFactory
 
 SCORE_MAX: Final = 100.0  # tunable-exempt: relationship and closeness are 0-100
 EVENT_PARTNER: Final = 0  # stream family's (head_id, 0, k) life-event kinds

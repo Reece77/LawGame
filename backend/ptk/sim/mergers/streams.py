@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 
 SETUP_TURN = 0  # tunable-exempt: a firm's fixed hidden values are drawn at turn 0
 

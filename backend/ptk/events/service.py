@@ -16,14 +16,14 @@ import hashlib
 import logging
 from collections.abc import Callable
 from dataclasses import dataclass, field, replace
-from typing import cast
+
+from simcore.kernel.calendar import format_turn, turn_to_ym
+from simcore_llm.base import CallRecord, Completion, EventPrompt, LLMAdapter, TextPrompt
+from simcore_llm.settings import LLMSettings
 
 from ptk.events.context import Kpis, build_prompt, matter_context, text_prompt
 from ptk.events.drafts import real_targets, template_draft
 from ptk.events.validator import Rejection, ValidatedEvent, validate_event
-from ptk.llm.base import CallRecord, Completion, EventPrompt, LLMAdapter, TextKind, TextPrompt
-from ptk.llm.settings import LLMSettings
-from ptk.sim.calendar import format_turn, turn_to_ym
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.events.director import eligible_targets
 from ptk.sim.events.models import GameEvent, with_event, with_storyline
@@ -274,8 +274,8 @@ def write_text(
     if not fallback or not writer.live or not writer.can_spend():
         return fallback, "template"
     system, user = text_prompt(kind, facts, state.player.name)
-    # TST's TextKind (llm/base.py, AS IS) does not list Partner Track's kinds yet (follow-up).
-    prompt = TextPrompt(cast(TextKind, kind), system, user, fallback)
+    # sim-core's text kinds are each game's own strings (PT's: events.models.TextKind)
+    prompt = TextPrompt(kind, system, user, fallback)
     completion = writer.adapter.generate_text(prompt)
     text = completion.content if isinstance(completion.content, str) else None
     ok = bool(text and text.strip())

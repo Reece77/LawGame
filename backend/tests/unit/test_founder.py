@@ -8,8 +8,8 @@ from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import InvalidFounderError
 from ptk.sim.people.founder import FounderSpec, build_founder, preview_founder
 from ptk.sim.people.models import Person, current_ability
-from ptk.sim.rng import RngFactory
 from ptk.sim.setup import new_game
+from ptk.sim.streams import RngFactory
 
 
 def build(data: GameData, balance: Balance, spec: FounderSpec, seed: int = 5) -> Person:

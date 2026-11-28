@@ -35,7 +35,7 @@ from ptk.sim.partnership.actions import (
 )
 from ptk.sim.risk.actions import RespondClaim
 from ptk.sim.rivals.actions import ApproachRival
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 from ptk.sim.tech.actions import InvestInEra
 from tests.automation_support import auto_run, automate_all, give, refill
 from tests.seats_support import funded, led_firm, mp, run, steady

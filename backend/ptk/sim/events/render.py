@@ -10,9 +10,10 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
+from simcore.kernel.money import format_money
+
 from ptk.sim.data_models import GameData
 from ptk.sim.events.data import PLACEHOLDER_RE
-from ptk.sim.money import format_money
 from ptk.sim.people.models import Person
 from ptk.sim.state import GameState
 

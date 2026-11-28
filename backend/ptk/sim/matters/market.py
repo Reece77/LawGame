@@ -15,13 +15,14 @@ from dataclasses import dataclass
 from functools import lru_cache
 from typing import Final
 
-from ptk.sim import dmath
-from ptk.sim.calendar import turn_to_ym
+from simcore.kernel import dmath
+from simcore.kernel.calendar import turn_to_ym
+
 from ptk.sim.data_models import AppealWeights, Balance, GameData
 from ptk.sim.macro import demand_factor, wallet_factors
 from ptk.sim.matters.models import Client, Relationship
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 REGION_NEW_YORK: Final = 0  # v1's one region (stream `demand` key)
 MONTHS: Final = 12  # tunable-exempt: months in a year

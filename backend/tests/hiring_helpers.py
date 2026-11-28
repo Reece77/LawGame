@@ -5,16 +5,17 @@ from __future__ import annotations
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 
+from simcore.kernel.money import Cents
+
 from ptk.sim.actions import Action, apply_action
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
 from ptk.sim.ledger import LedgerEntry, apply_entries
 from ptk.sim.log import LogItem
-from ptk.sim.money import Cents
 from ptk.sim.people.models import WorkMonth
-from ptk.sim.rng import RngFactory
 from ptk.sim.setup import new_game
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 from ptk.sim.turn import advance_turn
 
 
@@ -78,7 +79,7 @@ class Game:
 
     def advance_to(self, month: int) -> None:
         """Play turns until the next turn to be played is in calendar `month`."""
-        from ptk.sim.calendar import turn_to_ym
+        from simcore.kernel.calendar import turn_to_ym
 
         while turn_to_ym(self.state.turn, self.state.save_meta.start_ym)[1] != month:
             self.advance()
@@ -94,9 +95,10 @@ class Game:
 
 def mock_events(state: GameState, balance: Balance, data: GameData) -> GameState:
     """The state with its pending events written by the mock adapter (PT-M6)."""
+    from simcore_llm.offline import MockLLMAdapter
+    from simcore_llm.settings import LLMSettings
+
     from ptk.events.service import Writer, write_pending_events
-    from ptk.llm.offline import MockLLMAdapter
-    from ptk.llm.settings import LLMSettings
 
     writer = Writer(MockLLMAdapter(), LLMSettings(), lambda: 1_000_000.0)
     return write_pending_events(state, 0, writer, balance, data)

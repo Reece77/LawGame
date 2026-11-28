@@ -5,16 +5,17 @@ from __future__ import annotations
 import math
 from dataclasses import replace
 
-from ptk.sim.calendar import ym_to_turn
+from simcore.kernel.calendar import ym_to_turn
+
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
 from ptk.sim.ledger import apply_entries
 from ptk.sim.people.models import Employment
 from ptk.sim.rivals import phase as rival_phase
 from ptk.sim.rivals.people import person_of, update_member
-from ptk.sim.rng import RngFactory
 from ptk.sim.setup import new_game
 from ptk.sim.state import GameState, with_people
+from ptk.sim.streams import RngFactory
 from ptk.sim.turn import TurnResult, advance_turn
 
 

@@ -11,7 +11,8 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 from typing import Final, Literal
 
-from ptk.sim.calendar import turn_to_ym
+from simcore.kernel.calendar import turn_to_ym
+
 from ptk.sim.data_models import Balance
 from ptk.sim.errors import InvalidActionError
 from ptk.sim.hiring.actions import Outcome, acting_firm, spend_energy

@@ -10,8 +10,9 @@ market sizes, prices and talent bonuses have no counterpart (a city's market is 
 
 from __future__ import annotations
 
+from simcore.kernel.money import BP_DENOMINATOR, Cents, pct_of
+
 from ptk.sim.geo.data import CityDef, GeoBalance
-from ptk.sim.money import BP_DENOMINATOR, Cents, pct_of
 
 
 def lease_rent_cents(seats: int, city: CityDef) -> Cents:

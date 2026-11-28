@@ -37,15 +37,9 @@ import itertools
 from collections.abc import Mapping, Sequence
 
 import numpy as np
-
-from ptk.sim.calendar import MONTHS_PER_YEAR
-from ptk.sim.data_models import PARTNER_LEVELS, Balance, GameData, Role, Tag
-from ptk.sim.errors import InvalidPersonError
-from ptk.sim.money import BP_DENOMINATOR
-from ptk.sim.people.formulas import current_ability, pa_gap_mean
-from ptk.sim.people.models import Familiarity, HiddenTraits, Person, Personality, Skills
-from ptk.sim.rng import RngFactory
-from ptk.sim.scale import (
+from simcore.kernel.calendar import MONTHS_PER_YEAR
+from simcore.kernel.money import BP_DENOMINATOR
+from simcore.kernel.scale import (
     ABILITY_MAX,
     ABILITY_PER_ATTR,
     ATTR_MAX,
@@ -55,6 +49,12 @@ from ptk.sim.scale import (
     clamp_ability,
     clamp_attr,
 )
+
+from ptk.sim.data_models import PARTNER_LEVELS, Balance, GameData, Role, Tag
+from ptk.sim.errors import InvalidPersonError
+from ptk.sim.people.formulas import current_ability, pa_gap_mean
+from ptk.sim.people.models import Familiarity, HiddenTraits, Person, Personality, Skills
+from ptk.sim.streams import RngFactory
 
 NAME_POOL = "us"  # v1's one country (names.yaml)
 

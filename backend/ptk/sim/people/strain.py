@@ -9,12 +9,13 @@ from __future__ import annotations
 
 from typing import Final
 
-from ptk.sim.calendar import MONTHS_PER_YEAR
+from simcore.kernel.calendar import MONTHS_PER_YEAR
+
 from ptk.sim.data_models import Balance
 from ptk.sim.fastcopy import replace
 from ptk.sim.people.formulas import clamp_strain, strain_delta
 from ptk.sim.people.models import Person, WorkMonth
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 
 TENTHS_PER_HOUR: Final = 10  # tunable-exempt: hours are integer tenths (ADR PT-0005)
 REAL_STRAIN_MARGIN: Final = 1.0  # tunable-exempt: a real person's strain stays below burnout

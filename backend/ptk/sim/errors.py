@@ -1,42 +1,38 @@
 """Domain errors. Each has a stable `code` that the API returns in its error body.
 
 Ported from tst/sim/errors.py @ 02fba2aa; changed: generic errors only (TST's domain errors
-dropped); Partner Track's own errors are appended by the milestone that needs them.
+dropped); Partner Track's own errors are appended by the milestone that needs them. PT-M19a
+(ADR PT-0019): the base class and the kernel's own errors are sim-core's
+(`simcore.kernel.errors`, the same `code` strings), re-exported here so PT's errors subclass
+them and a sim-core error is caught as PT's.
 """
 
 from __future__ import annotations
 
-from typing import ClassVar
-
-
-class SimError(Exception):
-    """Base class for all domain errors."""
-
-    code: ClassVar[str] = "sim_error"
-
-    def __init__(self, message: str) -> None:
-        super().__init__(message)
-        self.message = message
-
-
-class UnbalancedEntryError(SimError):
-    code = "unbalanced_entry"
-
-
-class UnknownStreamError(SimError):
-    code = "unknown_stream"
-
-
-class InvalidMoneyError(SimError):
-    code = "invalid_money"
-
-
-class InvalidDateError(SimError):
-    code = "invalid_date"
-
-
-class InvalidSeedError(SimError):
-    code = "invalid_seed"
+from simcore.kernel.errors import (
+    InvalidDataError as InvalidDataError,
+)
+from simcore.kernel.errors import (
+    InvalidDateError as InvalidDateError,
+)
+from simcore.kernel.errors import (
+    InvalidMoneyError as InvalidMoneyError,
+)
+from simcore.kernel.errors import (
+    InvalidSeedError as InvalidSeedError,
+)
+from simcore.kernel.errors import (
+    NotFoundError as NotFoundError,
+)
+from simcore.kernel.errors import (
+    SimError as SimError,
+)
+from simcore.kernel.errors import (
+    UnbalancedEntryError as UnbalancedEntryError,
+)
+from simcore.kernel.errors import (
+    UnknownStreamError as UnknownStreamError,
+)
 
 
 class UnknownScenarioError(SimError):
@@ -63,18 +59,10 @@ class SaveBusyError(SimError):
     code = "save_busy"
 
 
-class NotFoundError(SimError):
-    code = "not_found"
-
-
 class GameOverError(SimError):
     """The campaign has ended; reads still work (ADR PT-0007 section 4)."""
 
     code = "game_over"
-
-
-class InvalidDataError(SimError):
-    code = "invalid_data"
 
 
 class InvalidFounderError(SimError):

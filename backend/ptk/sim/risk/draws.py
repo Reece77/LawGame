@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 
 ERROR, GRIEVANCE = 1, 2  # risk_claim purposes
 OPENED, MONTH = 1, 2  # regulator purposes

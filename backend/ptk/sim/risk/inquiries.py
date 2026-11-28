@@ -20,14 +20,15 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from ptk.sim.calendar import turn_to_ym
+from simcore.kernel.calendar import turn_to_ym
+
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.risk import draws as dr
 from ptk.sim.risk import formulas as fx
 from ptk.sim.risk.common import FINES, PROFESSIONAL_FEES, Books, with_risk
 from ptk.sim.risk.models import Inquiry, InquiryChoice, take_id, with_firm, with_inquiry
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 MONTHS = 12  # tunable-exempt: a year
 

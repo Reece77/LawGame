@@ -8,7 +8,8 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from ptk.sim.scale import clamp_morale
+from simcore.kernel.scale import clamp_morale
+
 from ptk.sim.state import GameState, with_person_states
 
 

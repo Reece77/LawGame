@@ -17,8 +17,8 @@ from ptk.sim.press.actions import AnswerPress, answer_press
 from ptk.sim.press.config import RESTRICTED
 from ptk.sim.press.models import Claim
 from ptk.sim.reputation import formulas as fx
-from ptk.sim.rng import STREAM_IDS, RngFactory
 from ptk.sim.state import GameState, with_firm
+from ptk.sim.streams import STREAM_IDS, RngFactory
 from tests.matters_support import game, play
 
 

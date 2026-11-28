@@ -28,7 +28,8 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Final
 
-from ptk.sim.calendar import turn_to_ym
+from simcore.kernel.calendar import turn_to_ym
+
 from ptk.sim.data_models import Balance, GameData, KindDef
 from ptk.sim.fastcopy import replace
 from ptk.sim.interfaces import seat_effect, tech_hours
@@ -50,8 +51,8 @@ from ptk.sim.matters.models import (
 from ptk.sim.org.formulas import span_limit
 from ptk.sim.people.models import Person
 from ptk.sim.people.strain import burnout_effects_active
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 DRAWS: Final = 8  # tunable-exempt: uniforms per matter-month, drawn whether used or not
 U_JUDGE, U_ERROR, U_CATCH, U_DEADLINE, U_SETTLE, U_VIEW, U_SJ, U_OUTCOME = range(DRAWS)

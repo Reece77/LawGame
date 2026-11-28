@@ -16,13 +16,14 @@ from collections.abc import Sequence
 from collections.abc import Set as AbstractSet
 from dataclasses import replace
 
-from ptk.sim.calendar import turn_to_ym
+from simcore.kernel.calendar import turn_to_ym
+
 from ptk.sim.data_models import Balance
 from ptk.sim.mergers import streams
 from ptk.sim.rivals.history import _add_pools, _move, record, replace_panel_key, with_firm
 from ptk.sim.rivals.models import RivalFirm, RivalMove
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 FREE_FROM_YEAR = 2026  # tunable-exempt: ADR PT-0008 2's pin ends in December 2025
 QUARTER_MONTHS = (1, 4, 7, 10)  # tunable-exempt: calendar

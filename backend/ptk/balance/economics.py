@@ -15,12 +15,13 @@ from dataclasses import dataclass, field
 from statistics import median
 from typing import Final
 
+from simcore.kernel.calendar import turn_to_ym
+
 from ptk.balance.game import PLAYER, Game, is_associate, start_game
 from ptk.balance.report import SCENARIO, _loaded
 from ptk.balance.seats import fill_seats
 from ptk.balance.strategies import PLAYABLE
 from ptk.sim.billing.kpis import trailing
-from ptk.sim.calendar import turn_to_ym
 from ptk.sim.partnership.kpis import explain
 
 YEAR: Final = 2015

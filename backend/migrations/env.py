@@ -1,4 +1,8 @@
-"""Alembic environment. Migrations always target a single save file."""
+"""Alembic environment. Migrations always target a single save file.
+
+Ported from backend/migrations/env.py @ 02fba2aa (Tech Startup Tycoon); changed (PT-M19a, ADR
+PT-0019): the engine comes from `ptk.db.core`, PT's binding of sim-core's `simcore_db`.
+"""
 
 from __future__ import annotations
 
@@ -6,8 +10,8 @@ from pathlib import Path
 
 from alembic import context
 
+from ptk.db.core import make_engine
 from ptk.db.models import Base
-from ptk.db.session import make_engine
 
 config = context.config
 target_metadata = Base.metadata

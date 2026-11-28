@@ -11,6 +11,11 @@ from __future__ import annotations
 import gc
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
+from typing import Final, cast
+
+from simcore.kernel.money import Cents
+from simcore.turn import Phase as CorePhase
+from simcore.turn import PhaseRegistry
 
 from ptk.sim.automation import digest as auto_digest
 from ptk.sim.automation import events as auto_events
@@ -36,7 +41,6 @@ from ptk.sim.log import LogItem
 from ptk.sim.macro_seed import world_data
 from ptk.sim.matters import phase as matters
 from ptk.sim.mergers import phase as mergers
-from ptk.sim.money import Cents
 from ptk.sim.org.delegates import DelegateAction, available_hook, run_delegates
 from ptk.sim.org.phase import clear_nudges
 from ptk.sim.org.rules import growth_multipliers
@@ -49,9 +53,9 @@ from ptk.sim.reputation import turn_hooks as standing
 from ptk.sim.risk import phase as risk
 from ptk.sim.rivals import phase as rival_phase
 from ptk.sim.rivals.models import RivalMove
-from ptk.sim.rng import RngFactory
 from ptk.sim.snapshot import TurnSnapshot
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 from ptk.sim.tech import adoption as tech_adoption
 
 
@@ -312,19 +316,43 @@ def event_director_requests(ctx: TurnContext) -> TurnContext:
     return ctx.log(*batches, *pools, *month_end)
 
 
-PHASES: tuple[tuple[str, Phase], ...] = (
-    ("apply_player_decisions", apply_player_decisions),
-    ("delegate_and_rival_decisions", delegate_and_rival_decisions),
-    ("knowledge_progress", knowledge_progress),
-    ("intake_and_staffing", intake_and_staffing),
-    ("work_and_billing", work_and_billing),
-    ("payroll_and_operating_costs", payroll_and_operating_costs),
-    ("financing", financing),
-    ("people_updates", people_updates),
-    ("market_and_macro_update", market_and_macro_update),
-    ("stage_checks", stage_checks),
-    ("snapshot_and_month_end_report", snapshot_and_month_end_report),
-    ("event_director_requests", event_director_requests),
+# PT-M19a (ADR PT-0019): the phases register into sim-core's twelve slots (SC-0005), one per
+# slot, and run in the registry's frozen order, which is this list's (a test compares them).
+# sim-core 0.1's `Phase` takes its own `TurnContext`, over a `CoreState`; PT's context holds a
+# `GameState` (the move to `CoreState` is cut to 0.2), so the registry stores PT's phases as
+# opaque callables and `PHASES` casts them back.
+SLOT_OF: Final[Mapping[str, str]] = {
+    "apply_player_decisions": "decisions",
+    "delegate_and_rival_decisions": "actors",
+    "knowledge_progress": "progress",
+    "intake_and_staffing": "operations",
+    "work_and_billing": "revenue",
+    "payroll_and_operating_costs": "costs",
+    "financing": "financing",
+    "people_updates": "people",
+    "market_and_macro_update": "world",
+    "stage_checks": "checks",
+    "snapshot_and_month_end_report": "report",
+    "event_director_requests": "requests",
+}
+REGISTRY: Final = PhaseRegistry()
+for _phase in (
+    apply_player_decisions,
+    delegate_and_rival_decisions,
+    knowledge_progress,
+    intake_and_staffing,
+    work_and_billing,
+    payroll_and_operating_costs,
+    financing,
+    people_updates,
+    market_and_macro_update,
+    stage_checks,
+    snapshot_and_month_end_report,
+    event_director_requests,
+):
+    REGISTRY.register(SLOT_OF[_phase.__name__], _phase.__name__, cast(CorePhase, _phase))
+PHASES: tuple[tuple[str, Phase], ...] = tuple(
+    (spec.name, cast(Phase, spec.fn)) for spec in REGISTRY.freeze()
 )
 
 

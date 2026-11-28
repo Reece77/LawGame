@@ -8,11 +8,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Final
 
+from simcore.kernel.money import BP_DENOMINATOR
+
 from ptk.balance.game import PLAYER, Game, is_associate
 from ptk.sim.hiring.actions import Interview, LayOff, MakeOffer, OpenSearch, SetPayPolicy
 from ptk.sim.ledger import REVOLVER
 from ptk.sim.matters.actions import Introduce, SetHoursPolicy, SetMatterHours, SetRatePolicy
-from ptk.sim.money import BP_DENOMINATOR
 from ptk.sim.org.actions import CreatePlan, CreateUnit, MovePerson, SetLeader
 from ptk.sim.partnership.actions import (
     CapitalCall,

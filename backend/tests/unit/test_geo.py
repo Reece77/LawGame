@@ -34,7 +34,7 @@ from ptk.sim.ledger import (
     LedgerEntry,
     apply_entries,
 )
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 from ptk.sim.turn import advance_turn
 from tests.geo_support import london_game, open_london
 from tests.matters_support import game, solvent

@@ -19,12 +19,12 @@ from typing import Any
 
 from fastapi import APIRouter
 from pydantic import BaseModel
+from simcore.kernel.calendar import format_turn, ym_to_turn
 
 from ptk import loader
 from ptk.config import get_settings
 from ptk.db import saves
 from ptk.sim.actions import Action
-from ptk.sim.calendar import format_turn, ym_to_turn
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import NotFoundError
 from ptk.sim.interfaces import kind_task_mix, tech_billing, tech_hours, tech_rfp_gap

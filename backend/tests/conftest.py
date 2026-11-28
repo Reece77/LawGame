@@ -16,17 +16,13 @@ os.environ["PTK_LLM_ADAPTER"] = "mock"
 os.environ.pop("ANTHROPIC_API_KEY", None)
 os.environ.setdefault("PTK_SQLITE_SYNC", "OFF")
 
-# PT-M18 sub-task 2: `--nightly-shard K/N` and `--nightly-durations-out` (the nightly's jobs)
-pytest_plugins = ("tests.nightly_shards",)
+# PT-M18 sub-task 2: `--nightly-shard K/N` and `--nightly-durations-out` (the nightly's jobs).
+# PT-M19a (ADR PT-0019): `--update-golden` is sim-core's (`simcore_testing.plugin`); PT keeps
+# its own golden script and snapshot files (tests/golden).
+pytest_plugins = ("tests.nightly_shards", "simcore_testing.plugin")
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:
-    parser.addoption(
-        "--update-golden",
-        action="store_true",
-        default=False,
-        help="Regenerate tests/golden/snapshots/*.json (record the reason in CHANGELOG.md)",
-    )
     parser.addoption(
         "--update-state-cache",
         action="store_true",

@@ -11,16 +11,16 @@ from dataclasses import replace
 import pytest
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
+from simcore.kernel.calendar import ym_to_turn
 
 from ptk.sim.billing.books import WIP_POSTED
-from ptk.sim.calendar import ym_to_turn
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
 from ptk.sim.interfaces import tech_hours
 from ptk.sim.ledger import WIP
 from ptk.sim.matters.models import Matter
 from ptk.sim.matters.progress import advance_phases
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 from ptk.sim.tech import adoption as ad
 from ptk.sim.tech import efficiency as ef
 from ptk.sim.tech.models import EraAdoption, FirmTech, with_era, with_firm

@@ -6,8 +6,8 @@ from dataclasses import replace
 
 from ptk.sim.risk import claims as cl
 from ptk.sim.risk.common import Books
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 from tests.risk_support import (
     a_claim,
     busy_firm,

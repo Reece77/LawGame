@@ -12,14 +12,14 @@ from typing import Any, Literal
 
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
+from simcore.kernel.calendar import MONTH_ABBR, format_turn, turn_to_ym
 
 from ptk import loader
 from ptk.api.people import RangeOut, _row_fields
 from ptk.config import get_settings
 from ptk.db import inbox, saves
-from ptk.db.session import make_sessionmaker, shared_engine
+from ptk.db.core import make_sessionmaker, shared_engine
 from ptk.sim.actions import Action
-from ptk.sim.calendar import MONTH_ABBR, format_turn, turn_to_ym
 from ptk.sim.data_models import LATERAL_CHANNELS, SCALE_LEVELS, Balance, GameData
 from ptk.sim.errors import NotFoundError
 from ptk.sim.hiring.actions import (

@@ -19,8 +19,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from functools import cached_property
 
-from ptk.sim import dmath
-from ptk.sim.calendar import turn_to_ym, ym_to_turn
+from simcore.kernel import dmath
+from simcore.kernel.calendar import turn_to_ym, ym_to_turn
+
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.fastcopy import replace
 from ptk.sim.ledger import CASH, DRAWINGS, FEES, GENERAL_ADMIN, SALARIES, LedgerEntry, LedgerLine

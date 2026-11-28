@@ -24,8 +24,8 @@ from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.mergers import streams
 from ptk.sim.mergers.models import Integration, with_integration
 from ptk.sim.mergers.talks import put_mergers
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 _SHARES: dict[int, tuple[object, object, dict[str, float]]] = {}  # deal -> (staff, people, share)
 _KEEP = 16  # tunable-exempt: memoised integrations (a cache, not a rule)

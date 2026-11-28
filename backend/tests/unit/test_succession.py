@@ -18,8 +18,8 @@ from ptk.sim.founder.actions import NameSuccessor, PlanSuccession, ProposeRetire
 from ptk.sim.founder.models import AnnuityTerms
 from ptk.sim.interfaces import managing_partner, partner_ids, retirement_age
 from ptk.sim.ledger import ANNUITIES, CASH
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 from tests.founder_support import LifeGame, set_age, start_life
 
 

@@ -27,7 +27,8 @@ from __future__ import annotations
 from collections.abc import Iterable, Mapping
 from typing import Final
 
-from ptk.sim.calendar import turn_to_ym
+from simcore.kernel.calendar import turn_to_ym
+
 from ptk.sim.data_models import PARTNER_LEVELS, Balance, GameData
 from ptk.sim.hiring.pay import on_scale
 from ptk.sim.interfaces import RivalStandingView, rival_standing

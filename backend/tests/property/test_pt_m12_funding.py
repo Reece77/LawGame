@@ -16,6 +16,7 @@ from typing import Any
 
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
+from simcore.kernel.money import pct_of
 
 from ptk.sim.billing import books as bk
 from ptk.sim.billing.actions import AcceptFunding, apply_billing_action
@@ -32,8 +33,7 @@ from ptk.sim.ledger import (
     WIP,
     apply_entries,
 )
-from ptk.sim.money import pct_of
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 from tests.billing_support import Played
 from tests.matters_support import grown_firm
 

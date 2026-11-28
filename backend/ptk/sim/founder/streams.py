@@ -10,7 +10,7 @@ from typing import Final
 
 import numpy as np
 
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 
 RETIREMENT: Final = 1
 BAR_ELECTION: Final = 2

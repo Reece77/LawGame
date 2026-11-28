@@ -12,8 +12,10 @@ section 10). The API shows bands and labels built from them by explicit view fun
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Literal
+
+from simcore.kernel.hidden import HIDDEN_KEY, hidden_field
 
 from ptk.sim.people.models import AttrSet, Personality
 
@@ -42,7 +44,7 @@ class GeneralCounsel:
     first_name: str
     last_name: str
     birth_turn: int
-    personality: Personality  # hidden from the API
+    personality: Personality = field(metadata={HIDDEN_KEY: True})  # hidden from the API
 
 
 @dataclass(frozen=True, slots=True)
@@ -165,7 +167,9 @@ class Matter:
     flagged: bool = False
     checked: bool = True  # conflicts were checked at intake (ADR PT-0009 5)
     waiver: bool = False  # a specific waiver let it open
-    hidden_conflict: bool = False  # adverse to a current client, unseen: checks were skipped
+    hidden_conflict: bool = hidden_field(
+        default=False
+    )  # adverse to a current client, unseen: checks were skipped
     originator_id: int | None = None
     lead_id: int | None = None
     team: tuple[TeamMember, ...] = ()  # sorted by person id
@@ -183,8 +187,8 @@ class Matter:
     court: str | None = None  # courts.yaml key (case kinds)
     judge_id: int | None = None
     stakes_cents: int = 0  # cases: the amount in dispute
-    merits: float = 0.0  # hidden: logit points for our side (spec 7.6)
-    opposing_quality: float = 0.0  # hidden: opposing counsel's craft 1-20
+    merits: float = hidden_field(default=0.0)  # hidden: logit points for our side (spec 7.6)
+    opposing_quality: float = hidden_field(default=0.0)  # hidden: opposing counsel's craft 1-20
     settlement: SettlementOffer | None = None
     outcome: Outcome | None = None
     closed_turn: int | None = None
@@ -210,7 +214,7 @@ class Judge:
     court: str
     first_name: str
     last_name: str
-    traits: JudgeTraits  # hidden: procedural only
+    traits: JudgeTraits = field(metadata={HIDDEN_KEY: True})  # hidden: procedural only
     real: bool = False  # real judges arrive with PT-M5 (ADR PT-0013)
     from_turn: int = 0  # PT-M5: first turn on the bench
     until_turn: int | None = None  # PT-M5: first turn off it (None: never leaves)

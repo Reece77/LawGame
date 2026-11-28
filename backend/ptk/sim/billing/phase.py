@@ -34,6 +34,9 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Final
 
+from simcore.kernel.calendar import turn_to_ym
+from simcore.kernel.money import BP_DENOMINATOR, pct_of, round_half_even, times
+
 from ptk.sim.billing import audits as au
 from ptk.sim.billing import books as bk
 from ptk.sim.billing import formulas as fx
@@ -52,7 +55,6 @@ from ptk.sim.billing.models import (
     FlowAccount,
     MonthTotals,
 )
-from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance, BillingBalance, GameData
 from ptk.sim.fastcopy import replace
 from ptk.sim.interfaces import (
@@ -71,7 +73,9 @@ from ptk.sim.interfaces import (
 )
 from ptk.sim.ledger import (
     BAD_DEBT_PROVISION,
+    BILL_PAID,
     CASH,
+    CHART,
     DEFERRED_FEES,
     FEES,
     FUNDED_FEES,
@@ -87,11 +91,11 @@ from ptk.sim.ledger import (
 from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.macro import bankrupt_by, collections_stress, crisis_factor, crisis_stress
 from ptk.sim.matters.rates import client_indexes
-from ptk.sim.money import BP_DENOMINATOR, pct_of, round_half_even, times
 from ptk.sim.risk.models import Audit, keep_audits
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState, with_reveals
+from ptk.sim.streams import RngFactory
 
+_BILL_PAID = CHART.bridge(BILL_PAID)  # PT-M19a: client money -> the firm for a bill
 PADDER_TAG = "rule_bender"  # tags.yaml: billing padding risk (hidden until a dispute)
 # PT-M7b: stream `crisis` keys: (CRISIS_MATTER, matter id) for a matter's bill,
 # (CRISIS_FLOW + the practice's index, client id) for a client's flow bill in a practice
@@ -579,12 +583,14 @@ class _Run:
         return replace(e, funds_cents=e.funds_cents - amount)
 
     def transfer(self, bill: Bill, amount: int) -> None:
+        """The `bill_paid` bridge of PT's chart (ADR PT-0019): out of client money (the client
+        book's bank and what is owed to the client), into the firm's cash against the bill."""
         self.client_book.pay_out(bk.TRANSFERS, bill.client_id, amount)
         self.hold_funds(bill.client_id, -amount)
         self.books.move(
             bk.CLIENT_TRANSFERS,
-            CASH,
-            RECEIVABLES,
+            _BILL_PAID.to_account,
+            _BILL_PAID.to_contra,
             amount,
             bill.practice,
             self.office(bill.client_id),

@@ -18,7 +18,7 @@ from ptk.sim.org.authority import (
 from ptk.sim.org.pitches import AnswerPitch, answer_pitch, chance
 from ptk.sim.org.reports import report_requests, report_text
 from ptk.sim.partnership.actions import ProposePartner
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 from tests.seats_support import led_firm, mp, run, steady
 
 

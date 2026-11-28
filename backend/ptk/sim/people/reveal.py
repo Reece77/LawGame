@@ -12,6 +12,8 @@ from __future__ import annotations
 from types import MappingProxyType
 from typing import Final
 
+from simcore.kernel.scale import ABILITY_MAX, ABILITY_MIN, ATTR_MAX, ATTR_MIN
+
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import UnknownKnowledgeActionError
 from ptk.sim.fastcopy import replace
@@ -24,8 +26,7 @@ from ptk.sim.people.models import (
     RevealState,
     fam_key,
 )
-from ptk.sim.rng import RngFactory
-from ptk.sim.scale import ABILITY_MAX, ABILITY_MIN, ATTR_MAX, ATTR_MIN
+from ptk.sim.streams import RngFactory
 
 OFFSET_LOW = -0.5  # tunable-exempt: centre offset o ~ Uniform(-0.5, 0.5) (formulas.md 4)
 OFFSET_HIGH = 0.5  # tunable-exempt: centre offset o ~ Uniform(-0.5, 0.5) (formulas.md 4)

@@ -16,10 +16,13 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Final
 
+from simcore_llm.base import LLMAdapter
+from simcore_llm.settings import active_adapter, add_spend, load_settings, month_spend
 from sqlalchemy import delete, insert, select
 from sqlalchemy.orm import Session
 
 from ptk.config import get_settings
+from ptk.db.core import make_sessionmaker, shared_engine
 from ptk.db.models import (
     ColleaguePairRow,
     EventCountersRow,
@@ -31,10 +34,7 @@ from ptk.db.models import (
     QueuedEventRow,
     StorylineRow,
 )
-from ptk.db.session import make_sessionmaker, shared_engine
 from ptk.events.service import TEXT_TITLES, Writer, kpis_of, write_event, write_text
-from ptk.llm.base import LLMAdapter
-from ptk.llm.settings import active_adapter, add_spend, load_settings, month_spend
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.events.models import (
     ColleaguePair,

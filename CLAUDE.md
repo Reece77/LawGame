@@ -16,7 +16,7 @@ Precedence: on technical matters ADRs override the spec. Any other conflict: sto
 ## 2. The five rules that matter most
 
 1. **The simulation core is pure.** Code in `backend/ptk/sim/` never imports `ptk.db`, `ptk.api`, `ptk.llm`, `ptk.loader` or `ptk.config`; never reads the clock; never touches the network or filesystem; never uses the global `random` module or `numpy.random` module-level functions. (ADR-0002)
-2. **Randomness is seeded and derived.** Get a generator only from `RngFactory.stream(turn, name, *key)`; one stream name per call site; add new names to `STREAM_IDS` and ADR PT-0012's table. (ADR-0002, ADR-0013, ADR PT-0012)
+2. **Randomness is seeded and derived.** Get a generator only from `RngFactory.stream(turn, name, *key)` (`ptk.sim.streams`, sim-core's factory on PT's table); one stream name per call site; add new names to `OWN_ROWS` in `ptk/sim/streams.py` and ADR PT-0012's table. (ADR-0002, ADR-0013, ADR PT-0012)
 3. **Money is integer cents; hours are integer tenths.** Never floats. Every cash movement is a balanced double-entry `LedgerEntry`. Client money is a separate book and never enters a firm entry. (ADR-0003, ADR PT-0003, ADR PT-0005)
 4. **One turn = one database transaction.** A crash mid-turn leaves the save exactly as it was. (ADR-0004)
 5. **The LLM proposes, the engine disposes.** LLM output is untrusted, validated and clamped; the LLM never receives hidden true values and never writes state. (ADR-0005)

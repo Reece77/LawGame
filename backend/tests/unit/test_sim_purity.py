@@ -1,6 +1,9 @@
 """ADR-0002 purity guard: scan ptk/sim for forbidden imports and calls.
 
-Ported from tests/unit/test_sim_purity.py @ 02fba2aa; changed: the package rename.
+Ported from tests/unit/test_sim_purity.py @ 02fba2aa; changed: the package rename. PT-M19a
+(ADR PT-0019): the scanner is sim-core's (`simcore_testing.purity`), called with PT's own
+packages banned; its standard library and framework bans include every module this file
+banned before. The cases below are unchanged.
 
 The scanner is also run against throwaway fixture modules that each break one rule, to
 prove that it actually catches violations.
@@ -8,121 +11,23 @@ prove that it actually catches violations.
 
 from __future__ import annotations
 
-import ast
 from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
+from simcore_testing import purity
 
 SIM_DIR = Path(__file__).resolve().parents[2] / "ptk" / "sim"
 
-BANNED_MODULES = (
-    "random",
-    "time",
-    "os",
-    "io",
-    "pathlib",
-    "yaml",
-    "socket",
-    "subprocess",
-    "shutil",
-    "urllib",
-    "http",
-    "importlib",
-    "ptk.db",
-    "ptk.api",
-    "ptk.llm",
-    "ptk.loader",
-    "ptk.config",
-    "sqlalchemy",
-    "fastapi",
-    "anthropic",
-)
-BANNED_BUILTIN_CALLS = ("open", "__import__", "eval", "exec")
-CLOCK_ATTRS = ("now", "utcnow", "today")
-CLOCK_RECEIVERS = ("datetime", "date")
-# Only rng.py may construct generators; elsewhere numpy.random is limited to the type name.
-RNG_MODULE = "rng.py"
-NP_RANDOM_ALLOWED = ("Generator",)
-
-
-def _is_banned(module: str) -> bool:
-    return any(module == banned or module.startswith(banned + ".") for banned in BANNED_MODULES)
-
-
-def _module_name(path: Path, root: Path) -> list[str]:
-    rel = path.relative_to(root.parent.parent).with_suffix("")
-    parts = list(rel.parts)
-    if parts[-1] == "__init__":
-        parts.pop()
-    return parts
-
-
-def _resolve_from(node: ast.ImportFrom, package: list[str]) -> str:
-    if node.level == 0:
-        return node.module or ""
-    base = package[: len(package) - node.level + 1]
-    return ".".join([*base, *([node.module] if node.module else [])])
-
-
-def _dotted(node: ast.expr) -> str | None:
-    if isinstance(node, ast.Name):
-        return node.id
-    if isinstance(node, ast.Attribute):
-        inner = _dotted(node.value)
-        return f"{inner}.{node.attr}" if inner else None
-    return None
+# PT's own packages the engine may not import (sim-core's scanner bans the standard library's
+# clock, filesystem, network and process modules, sqlalchemy, alembic, fastapi and anthropic).
+BANNED_PACKAGES = ("ptk.db", "ptk.api", "ptk.llm", "ptk.loader", "ptk.config")
 
 
 def find_violations(path: Path, sim_root: Path = SIM_DIR) -> list[str]:
-    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
-    module = _module_name(path, sim_root)
-    package = module if path.name == "__init__.py" else module[:-1]
-    is_rng = path.name == RNG_MODULE
-    problems: list[str] = []
-
-    def report(node: ast.AST, msg: str) -> None:
-        problems.append(f"{path.name}:{getattr(node, 'lineno', '?')}: {msg}")
-
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Import):
-            for alias in node.names:
-                if _is_banned(alias.name):
-                    report(node, f"imports {alias.name}")
-                if alias.name.startswith("numpy.random") and not is_rng:
-                    report(node, "imports numpy.random")
-        elif isinstance(node, ast.ImportFrom):
-            source = _resolve_from(node, package)
-            targets = [source] + [f"{source}.{a.name}" for a in node.names]
-            for target in targets:
-                if _is_banned(target):
-                    report(node, f"imports {target}")
-                    break
-            if source == "numpy.random" and not is_rng:
-                for alias in node.names:
-                    if alias.name not in NP_RANDOM_ALLOWED:
-                        report(node, f"imports numpy.random.{alias.name}")
-            if source == "numpy" and any(a.name == "random" for a in node.names) and not is_rng:
-                report(node, "imports numpy.random")
-        elif isinstance(node, ast.Call):
-            func = node.func
-            if isinstance(func, ast.Name) and func.id in BANNED_BUILTIN_CALLS:
-                report(node, f"calls {func.id}()")
-            if isinstance(func, ast.Attribute) and func.attr in CLOCK_ATTRS:
-                receiver = _dotted(func.value) or ""
-                if receiver.split(".")[-1] in CLOCK_RECEIVERS:
-                    report(node, f"reads the clock via {receiver}.{func.attr}()")
-        elif isinstance(node, ast.Attribute) and not is_rng:
-            dotted = _dotted(node) or ""
-            parts = dotted.split(".")
-            if (
-                len(parts) == 3
-                and parts[0] in ("np", "numpy")
-                and parts[1] == "random"
-                and parts[2] not in NP_RANDOM_ALLOWED
-            ):
-                report(node, f"uses {dotted}")
-    return problems
+    # the package root is ptk/, so a module's dotted name starts with ptk (`from .. import llm`
+    # inside ptk/sim resolves to ptk.llm)
+    return purity.find_violations(path, sim_root.parent, BANNED_PACKAGES)
 
 
 def _sim_files() -> Iterator[Path]:

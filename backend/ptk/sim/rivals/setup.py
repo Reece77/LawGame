@@ -29,8 +29,8 @@ from ptk.sim.rivals.models import (
     RivalsState,
 )
 from ptk.sim.rivals.people import ASSOCIATE_LEVELS, STANDING_ORDER, add_members, books, new_member
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 SETUP_TURN = 0
 MONTHS = 12  # tunable-exempt: months in a year
@@ -138,7 +138,7 @@ def generated_firm(n: int, rng: RngFactory, data: GameData, balance: Balance) ->
     gb = balance.rivals.generated
     gen = streams.rival_gen(rng, SETUP_TURN, GENERATED_KEY, n)
     z = float(gen.standard_normal())
-    from ptk.sim import dmath
+    from simcore.kernel import dmath
 
     revenue = min(
         gb.revenue_cents.hi,
@@ -318,7 +318,8 @@ def bench(state: GameState, rng: RngFactory, data: GameData, balance: Balance) -
     where judges.yaml sources one; ADR PT-0013: procedural only), active from the year they
     joined to the year they left (or, with no
     year, a seeded year in 2026-2034), each followed by a generated successor."""
-    from ptk.sim.calendar import ym_to_turn
+    from simcore.kernel.calendar import ym_to_turn
+
     from ptk.sim.matters.setup import TRAIT_MEAN, TRAIT_SD
 
     start = state.save_meta.start_ym

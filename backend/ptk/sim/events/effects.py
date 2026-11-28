@@ -14,6 +14,8 @@ from __future__ import annotations
 
 from dataclasses import replace
 
+from simcore.kernel.money import exact
+
 from ptk.sim import interfaces
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import CriticalEventOpenError, EventActionError, UnknownEventError
@@ -33,7 +35,6 @@ from ptk.sim.hiring.models import PersonState
 from ptk.sim.ledger import CASH, FEES, GENERAL_ADMIN, LedgerEntry
 from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.matters.intake import bump, with_matter
-from ptk.sim.money import exact
 from ptk.sim.people.formulas import clamp_strain
 from ptk.sim.state import (
     GameState,

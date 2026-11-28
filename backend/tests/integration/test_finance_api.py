@@ -12,7 +12,7 @@ from ptk.api.app import create_app
 from ptk.config import get_settings
 from ptk.db import saves
 from ptk.db.billing_io import client_book_balances
-from ptk.db.session import make_sessionmaker, shared_engine
+from ptk.db.core import make_sessionmaker, shared_engine
 from ptk.sim.ledger import CLIENT_BANK, OWED_TO_CLIENTS
 from tests.integration.test_matters_api import FORBIDDEN
 from tests.integration.test_people_api import _schema_closure

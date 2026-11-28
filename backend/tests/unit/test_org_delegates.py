@@ -13,8 +13,8 @@ from ptk.sim.interfaces import InterviewRequest, OfferRequest, OpenSearchRequest
 from ptk.sim.org.actions import ClosePlan, CreatePlan, CreateUnit, MovePerson, SetLeader
 from ptk.sim.org.delegates import activity_text, available_hook, plan_offer_salary, run_delegates
 from ptk.sim.org.models import PlanActivity
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 from tests.org_fake_hiring import FakeHiring
 from tests.org_support import FIRM, act, founder, game, staff
 

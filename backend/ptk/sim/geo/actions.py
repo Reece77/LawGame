@@ -28,6 +28,7 @@ from dataclasses import dataclass, replace
 from typing import Literal
 
 import numpy as np
+from simcore.kernel.money import BP_DENOMINATOR, pct_of
 
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import InvalidActionError
@@ -45,11 +46,9 @@ from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.matters.intake import with_relationship
 from ptk.sim.matters.market import client_weight
 from ptk.sim.matters.models import Relationship
-from ptk.sim.money import BP_DENOMINATOR, pct_of
 from ptk.sim.people.generator import generate_person
 from ptk.sim.people.models import Employment, Person
 from ptk.sim.people.reveal import new_reveal_state
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import (
     GameState,
     with_employment,
@@ -58,6 +57,7 @@ from ptk.sim.state import (
     with_person_states,
     with_reveals,
 )
+from ptk.sim.streams import RngFactory
 
 type Draws = Callable[[], np.random.Generator]
 
@@ -188,7 +188,7 @@ def _know(
 def _hire(
     state: GameState, firm_id: int, person: Person, city: str, data: GameData, balance: Balance
 ) -> GameState:
-    from ptk.sim.calendar import turn_to_ym
+    from simcore.kernel.calendar import turn_to_ym
 
     firm = state.firm(firm_id)
     ym = turn_to_ym(state.turn, state.save_meta.start_ym)

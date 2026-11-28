@@ -10,12 +10,12 @@ from dataclasses import replace
 from typing import Any
 
 import pytest
+from simcore_llm.offline import MockLLMAdapter, TemplateAdapter
+from simcore_llm.settings import LLMSettings
 
 from ptk.events.drafts import template_draft
 from ptk.events.service import Writer, kpis_of, write_event, write_text
 from ptk.events.validator import Rejection, ValidatedEvent, validate_event
-from ptk.llm.offline import MockLLMAdapter, TemplateAdapter
-from ptk.llm.settings import LLMSettings
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.events.director import eligible_targets
 from ptk.sim.events.models import GameEvent, with_event

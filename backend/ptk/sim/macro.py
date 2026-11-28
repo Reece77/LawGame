@@ -19,7 +19,8 @@ from __future__ import annotations
 
 import bisect
 
-from ptk.sim.calendar import turn_to_ym
+from simcore.kernel.calendar import turn_to_ym
+
 from ptk.sim.data_models import Balance, ClientFailureDef, GameData, PracticeDef
 from ptk.sim.macro_data import MacroData
 from ptk.sim.matters.models import Client

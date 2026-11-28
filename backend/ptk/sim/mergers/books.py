@@ -18,8 +18,8 @@ from ptk.sim.mergers import streams
 from ptk.sim.mergers.models import BookClient, Sheet
 from ptk.sim.mergers.profile import annualised, round_pools
 from ptk.sim.rivals.models import RivalFirm
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 DAYS = 365  # tunable-exempt: days in a year
 MONTHS = 12  # tunable-exempt: months in a year

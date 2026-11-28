@@ -24,16 +24,17 @@ from __future__ import annotations
 
 from dataclasses import dataclass, replace
 
+from simcore.kernel.money import BP_DENOMINATOR
+
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.mergers import streams
 from ptk.sim.mergers.models import Deal, Terms, with_deal
 from ptk.sim.mergers.profile import Side, player_side, rival_side
 from ptk.sim.mergers.talks import bias, put_mergers, size_gap
-from ptk.sim.money import BP_DENOMINATOR
 from ptk.sim.rivals.models import RivalFirm
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 MAX_VOTERS = 60  # tunable-exempt: the other partnership's count is sampled at most this wide
 SHARE_MIN, SHARE_MAX = 500, 9500  # tunable-exempt: a share between 5% and 95%

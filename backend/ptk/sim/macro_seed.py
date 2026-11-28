@@ -39,11 +39,11 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 
 import numpy as np
+from simcore.kernel import dmath
 
-from ptk.sim import dmath
 from ptk.sim.data_models import Balance, BonusRow, GameData, SalaryScale, ScaleRow
 from ptk.sim.macro_data import SERIES, V1_SERIES, MacroData, MacroPoint, SeededBalance
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 
 MONTHS = 12  # tunable-exempt: months in a year
 JULY = 7  # tunable-exempt: the annual figure's month (macro_history.yaml's mid-year points)

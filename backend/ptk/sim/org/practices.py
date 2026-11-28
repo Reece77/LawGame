@@ -34,8 +34,8 @@ from ptk.sim.errors import OrgActionError, OrgRuleError
 from ptk.sim.hiring.actions import Outcome, acting_firm, spend_energy
 from ptk.sim.ledger import LedgerEntry
 from ptk.sim.log import LogItem, inbox_item
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState, with_person
+from ptk.sim.streams import RngFactory
 
 type EnterRoute = Literal["lateral", "team", "retrain"]
 ROUTES: tuple[EnterRoute, ...] = ("lateral", "team", "retrain")

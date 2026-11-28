@@ -27,7 +27,7 @@ from ptk.sim.mergers.terms import passes, their_answer
 from ptk.sim.partnership.common import put
 from ptk.sim.partnership.governance import count_vote, open_vote
 from ptk.sim.partnership.models import with_partner
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 from ptk.sim.turn import advance_turn
 from tests.mergers_support import forced, played, targets
 
@@ -314,7 +314,8 @@ def test_integration_raises_the_other_sides_flight(data: GameData, balance: Bala
 
 
 def test_rivals_merge_freely_only_after_2025(data: GameData, balance: Balance) -> None:
-    from ptk.sim.calendar import ym_to_turn
+    from simcore.kernel.calendar import ym_to_turn
+
     from ptk.sim.rivals.mergers import free_play
 
     state, _ = _game(data, balance)

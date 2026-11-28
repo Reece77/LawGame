@@ -9,7 +9,8 @@ margin and PEP trend instead of months of cash. Pure functions of numbers.
 
 from __future__ import annotations
 
-from ptk.sim import dmath
+from simcore.kernel import dmath
+
 from ptk.sim.rivals.data import PoachBalance
 
 

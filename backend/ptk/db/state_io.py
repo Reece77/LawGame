@@ -6,6 +6,7 @@ import json
 from collections.abc import Mapping
 from dataclasses import replace
 
+from simcore.kernel.money import Cents
 from sqlalchemy import func, insert, select
 from sqlalchemy.orm import Session
 
@@ -45,7 +46,6 @@ from ptk.sim.founder.models import PersonalEntry
 from ptk.sim.hiring.models import Candidate, Offer, PayPolicy, PersonState, Search
 from ptk.sim.ledger import LedgerEntry
 from ptk.sim.log import LogItem
-from ptk.sim.money import Cents
 from ptk.sim.people.models import (
     AttrSet,
     Employment,

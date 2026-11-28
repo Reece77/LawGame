@@ -19,13 +19,13 @@ from typing import Any
 
 from fastapi import APIRouter
 from pydantic import BaseModel
+from simcore.kernel.calendar import format_turn, turn_to_ym
 from sqlalchemy import select
 
 from ptk import loader
 from ptk.config import get_settings
 from ptk.db import saves
 from ptk.db.models import RankingEntryRow
-from ptk.sim.calendar import format_turn, turn_to_ym
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import NotFoundError
 from ptk.sim.interfaces import relationship_score, rival_name
@@ -163,7 +163,7 @@ class SubmissionIn(BaseModel):
 
 
 def _band_history(path: Path, firm_id: int) -> dict[str, list[BandHistoryOut]]:
-    from ptk.db.session import make_sessionmaker, shared_engine
+    from ptk.db.core import make_sessionmaker, shared_engine
 
     out: dict[str, list[BandHistoryOut]] = {}
     with make_sessionmaker(shared_engine(path))() as session:

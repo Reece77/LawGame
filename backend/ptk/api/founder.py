@@ -21,12 +21,12 @@ from typing import Any, Literal
 
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
+from simcore.kernel.calendar import format_turn
 
 from ptk import loader
 from ptk.config import get_settings
 from ptk.db import saves
 from ptk.sim import interfaces as ix
-from ptk.sim.calendar import format_turn
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import NotFoundError
 from ptk.sim.family import estate, succession
@@ -575,8 +575,8 @@ def family_view(state: GameState, balance: Balance, data: GameData) -> FamilyOut
 
 
 def _entries(path: Path, person_id: int | None = None) -> tuple[PersonalEntry, ...]:
+    from ptk.db.core import make_sessionmaker, shared_engine
     from ptk.db.founder_io import personal_entries
-    from ptk.db.session import make_sessionmaker, shared_engine
 
     with make_sessionmaker(shared_engine(path))() as session:
         return personal_entries(session, person_id)
@@ -779,7 +779,7 @@ def _debug_router(errors: dict[int | str, dict[str, Any]]) -> APIRouter:
         """Set the player's age (e2e: retire the founder at 65 without playing 15 years)."""
         from dataclasses import replace
 
-        from ptk.db.session import make_sessionmaker, shared_engine
+        from ptk.db.core import make_sessionmaker, shared_engine
         from ptk.db.state_io import load_state, write_people
         from ptk.sim.state import with_people
 

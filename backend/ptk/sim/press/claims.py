@@ -28,18 +28,19 @@ from __future__ import annotations
 from dataclasses import replace
 from typing import Final
 
-from ptk.sim.calendar import format_turn
+from simcore.kernel.calendar import format_turn
+from simcore.kernel.money import BP_DENOMINATOR
+
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import InvalidActionError
 from ptk.sim.hiring.pay import EQUITY_PARTNER
 from ptk.sim.interfaces import confidence_change, founder_persona_source
 from ptk.sim.log import LogItem, inbox_item
-from ptk.sim.money import BP_DENOMINATOR
 from ptk.sim.press import moments
 from ptk.sim.press.config import CLAIM_KINDS, REMINDER, TIMED
 from ptk.sim.press.models import Claim, PressState
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState, with_person_states
+from ptk.sim.streams import RngFactory
 
 MORALE_MAX: Final = 100.0  # tunable-exempt: the morale scale
 HALF: Final = 0.5  # tunable-exempt: ambition is half the target's distance, half the deadline's

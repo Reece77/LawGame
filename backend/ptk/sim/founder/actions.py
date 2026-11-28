@@ -14,6 +14,7 @@ from dataclasses import dataclass, replace
 from typing import Any, Literal
 
 import numpy as np
+from simcore.kernel.money import BP_DENOMINATOR
 
 from ptk.sim import interfaces as ix
 from ptk.sim.data_models import Balance, GameData
@@ -38,7 +39,6 @@ from ptk.sim.founder.phase import ensure_player
 from ptk.sim.founder.retirement import terms as annuity_terms
 from ptk.sim.hiring.actions import Outcome
 from ptk.sim.log import LogItem, inbox_item
-from ptk.sim.money import BP_DENOMINATOR
 from ptk.sim.people.models import Employment
 from ptk.sim.state import GameState, with_employment, with_people, with_person_states
 
@@ -547,7 +547,8 @@ def _family_action(
 def _join(state: GameState, child_id: int, balance: Balance, data: GameData) -> GameState:
     """A qualified child (law school, at the qualifying age) joins the firm as a first-year
     associate on the firm's scale (spec 2.4), if close enough to the player to want to."""
-    from ptk.sim.calendar import turn_to_ym
+    from simcore.kernel.calendar import turn_to_ym
+
     from ptk.sim.family.setup import jurisdiction
     from ptk.sim.hiring.pay import firm_pay_cents
 

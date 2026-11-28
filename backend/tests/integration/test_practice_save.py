@@ -6,11 +6,11 @@ from __future__ import annotations
 from pathlib import Path
 
 from fastapi.testclient import TestClient
+from simcore.kernel.calendar import turn_to_ym
 
 from ptk.api.app import create_app
 from ptk.db import saves
 from ptk.loader import load_balance, load_game_data
-from ptk.sim.calendar import turn_to_ym
 from ptk.sim.partnership.careers import eligible
 from tests.conftest import DATA_DIR
 

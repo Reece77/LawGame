@@ -17,6 +17,8 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 from typing import Literal
 
+from simcore.kernel.hidden import hidden_field
+
 type DealForm = Literal["merger", "verein"]
 type Initiator = Literal["player", "rival"]
 type DealStage = Literal[
@@ -43,7 +45,9 @@ class BookClient:
     score: float  # the other firm's relationship, 0-100
     practices: tuple[str, ...]  # practices.yaml order
     share: float  # its share of the book's work (the book's shares sum to 1)
-    adverse_client_id: int | None = None  # hidden until clearance: an engagement against them
+    adverse_client_id: int | None = hidden_field(
+        default=None
+    )  # hidden until clearance: an engagement against them
     kept: bool = True  # False: dropped at clearance
 
 

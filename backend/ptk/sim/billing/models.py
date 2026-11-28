@@ -11,6 +11,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Literal
 
+from simcore.kernel.hidden import hidden_field
+
 # spec 7.7's billing models
 type BillingModel = Literal[
     "hourly", "blended", "capped", "fixed", "success", "contingency", "retainer"
@@ -116,7 +118,9 @@ class Bill:
     paid_cents: int = 0
     credited_cents: int = 0  # credit notes (disputes, short payments): fee reductions
     written_off_cents: int = 0  # bad debts (bankruptcy, age): 6700
-    padding_cents: int = 0  # a padder's time in the bill (hidden until a dispute)
+    padding_cents: int = hidden_field(
+        default=0
+    )  # a padder's time in the bill (hidden until a dispute)
     short_cents: int = 0  # what the client will leave unpaid when it pays (drawn at issue)
     status: BillStatus = "open"
     dispute: Dispute | None = None
@@ -213,9 +217,12 @@ class ClientBookEntry:
 
     def __post_init__(self) -> None:
         from ptk.sim.errors import UnbalancedEntryError
+        from ptk.sim.ledger import CHART, CLIENT_BOOK
 
         if len(self.lines) < 2 or sum(line.amount for line in self.lines) != 0:
             raise UnbalancedEntryError(f"client-book entry {self.memo!r} does not balance")
         for line in self.lines:
-            if not line.account.startswith("C") or isinstance(line.amount, bool):
+            # PT-M19a: the client-money book of PT's chart (sim-core's Chart; ADR PT-0019)
+            in_book = CHART.book_of(line.account) is CLIENT_BOOK
+            if not in_book or isinstance(line.amount, bool):
                 raise UnbalancedEntryError(f"client-book entry {self.memo!r}: bad line {line}")

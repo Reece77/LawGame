@@ -16,6 +16,8 @@ from collections.abc import Iterable
 from dataclasses import dataclass, fields
 from typing import Literal
 
+from simcore.kernel.hidden import hidden_field
+
 from ptk.sim.data_models import AgreementTerms, CompSystem, VotingRule
 from ptk.sim.fastcopy import replace
 
@@ -88,8 +90,8 @@ class Partner:
     promised_cents: int = 0  # extra comp promised (a counter-offer), at the next allocation
     promised_points: float = 0.0  # extra points promised (lobbying), at the next allocation
     comp_last_cents: int = 0  # the last December allocation
-    satisfaction: float = 0.0  # hidden: -1..0.5 (spec 8.5)
-    confidence: float = 65.0  # hidden: 0-100 in the MP (ADR PT-0007 1)
+    satisfaction: float = hidden_field(default=0.0)  # hidden: -1..0.5 (spec 8.5)
+    confidence: float = hidden_field(default=65.0)  # hidden: 0-100 in the MP (ADR PT-0007 1)
     gate_steps: int = 0  # the comp round's gate (modified lockstep), this December
     adjust_bp: int = 0  # the comp round's adjustment (committee, bonus pool), this December
     working_ytd_cents: int = 0  # standard value of the partner's own hours this year

@@ -26,8 +26,8 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 
 import numpy as np
+from simcore.kernel.calendar import turn_to_ym
 
-from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import InvalidActionError
 from ptk.sim.hiring.models import Candidate, Search
@@ -39,7 +39,6 @@ from ptk.sim.rivals import formulas as f
 from ptk.sim.rivals.decisions import add_partner, remove_lawyer
 from ptk.sim.rivals.models import Approach, Member, RivalFirm, RivalsState
 from ptk.sim.rivals.people import drop_member, member_kind, new_member, person_of, update_member
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import (
     GameState,
     with_candidates,
@@ -47,6 +46,7 @@ from ptk.sim.state import (
     with_reveals,
     with_search,
 )
+from ptk.sim.streams import RngFactory
 
 ANSWER_KEY = 0  # tunable-exempt: poach stream key part of an approach's answer
 NOTICE_MONTHS = {"partner": 3, "associate": 1}  # tunable-exempt: notice periods [A]
@@ -462,8 +462,9 @@ def lateral_candidate(
     a range, the clients it comes from (drawn by wallet in their practice, never the firm's
     own), their ask and the guarantee they want. Draws, in order: the clients, the range's
     offset, the guarantee years (PT-M4's search, for a person who already exists)."""
+    from simcore.kernel.money import BP_DENOMINATOR, pct_of
+
     from ptk.sim.matters.market import client_weight
-    from ptk.sim.money import BP_DENOMINATOR, pct_of
     from ptk.sim.partnership.common import firm_partnership, put
     from ptk.sim.partnership.laterals import CLIENT_BOOK_CENTS, book_range
     from ptk.sim.partnership.models import LateralCandidate, with_lateral

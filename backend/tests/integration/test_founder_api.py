@@ -139,8 +139,8 @@ def test_founder_life_round_trips_through_the_save(save_dir: Path) -> None:
     path = saves.open_save(get_settings().resolved_save_dir(), SLUG)
     state, _ = saves.read_state(path)
     assert state.founder_life.books and state.family.family is not None
+    from ptk.db.core import make_sessionmaker, shared_engine
     from ptk.db.founder_io import personal_balances
-    from ptk.db.session import make_sessionmaker, shared_engine
 
     with make_sessionmaker(shared_engine(path))() as session:
         sums = personal_balances(session)

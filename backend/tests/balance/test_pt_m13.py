@@ -33,8 +33,8 @@ from ptk.sim.mergers.models import Terms
 from ptk.sim.mergers.profile import rival_side
 from ptk.sim.mergers.verein import join
 from ptk.sim.rivals.models import RivalFirm
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 from ptk.sim.turn import advance_turn
 from tests.balance.test_pt_m5 import (
     T12_CAPITAL,

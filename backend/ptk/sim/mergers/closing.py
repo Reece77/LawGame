@@ -17,7 +17,9 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from ptk.sim.calendar import turn_to_ym
+from simcore.kernel.calendar import turn_to_ym
+from simcore.kernel.money import BP_DENOMINATOR
+
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.ledger import (
     ANNUITIES,
@@ -40,11 +42,10 @@ from ptk.sim.mergers.models import Deal, Integration, Sheet, with_deal, with_int
 from ptk.sim.mergers.profile import Side, clash, player_side, rival_side, round_pools
 from ptk.sim.mergers.talks import put_mergers
 from ptk.sim.mergers.terms import merged_card, our_change, pool_cents, their_change
-from ptk.sim.money import BP_DENOMINATOR
 from ptk.sim.people.models import Employment, Person
 from ptk.sim.rivals.models import PLAYER_PANEL_KEY, RivalFirm
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState, with_firm
+from ptk.sim.streams import RngFactory
 
 ASSOCIATE_LEVELS = tuple(f"associate_{n}" for n in range(1, 9))  # tunable-exempt: the ladder
 EQUITY, INCOME, COUNSEL = "equity_partner", "income_partner", "counsel"

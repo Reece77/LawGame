@@ -1,7 +1,7 @@
 """Billing formulas (spec 7.7; ADR PT-0005): discounts, fees by model, days to pay, chances.
 
 Money is integer cents throughout: a share of an amount is computed exactly and rounded half
-to even once (`ptk.sim.money`).
+to even once (`simcore.kernel.money`).
 """
 
 from __future__ import annotations
@@ -11,12 +11,12 @@ from statistics import NormalDist
 from typing import Final
 
 import numpy as np
+from simcore.kernel.money import BP_DENOMINATOR, pct_of, round_half_even, times
 
 from ptk.sim.billing.models import Engagement
 from ptk.sim.data_models import BillingBalance
 from ptk.sim.interfaces import ClientBillingView
-from ptk.sim.money import BP_DENOMINATOR, pct_of, round_half_even, times
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 
 NEUTRAL: Final = 10.0  # tunable-exempt: the 1-20 scale's neutral point
 TENTHS: Final = 10  # tunable-exempt: tenths in an hour (ADR PT-0005)

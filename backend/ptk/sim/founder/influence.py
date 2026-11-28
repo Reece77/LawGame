@@ -17,12 +17,12 @@ from dataclasses import replace
 from typing import Final
 
 import numpy as np
+from simcore.kernel.calendar import MONTHS_PER_YEAR, turn_to_ym
 
-from ptk.sim.calendar import MONTHS_PER_YEAR, turn_to_ym
 from ptk.sim.data_models import Balance
 from ptk.sim.founder.models import FounderLife
 from ptk.sim.founder.streams import BAR_ELECTION, life_stream
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 
 INFLUENCE_MAX: Final = 100.0  # tunable-exempt: influence is 0-100
 CENTS_A_DOLLAR: Final = 100  # tunable-exempt: cents in a dollar

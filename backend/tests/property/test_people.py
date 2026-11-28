@@ -11,7 +11,7 @@ from ptk.sim.data_models import Balance, GameData
 from ptk.sim.people.growth import grow_person
 from ptk.sim.people.models import WorkMonth
 from ptk.sim.people.strain import strain_month
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 from tests.conftest import DATA_DIR
 from tests.unit.test_people_generation import make
 

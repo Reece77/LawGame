@@ -9,11 +9,13 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
-from typing import Literal
+from typing import Final, Literal
+
+from simcore.kernel.calendar import YearMonth
+from simcore.state import SubStateRegistry, SubStateSpec
 
 from ptk.sim.automation.models import EMPTY_AUTOMATION, AutomationState
 from ptk.sim.billing.models import EMPTY_BILLING, BillingState
-from ptk.sim.calendar import YearMonth
 from ptk.sim.events.models import EMPTY_EVENTS, EventsState
 from ptk.sim.family.models import EMPTY_FAMILY, FamilyState
 from ptk.sim.fastcopy import replace
@@ -266,6 +268,32 @@ class GameState:
         else:
             ids = (o.id for o in self.offers)
         return max(ids, default=0) + 1
+
+
+# PT-M19a (ADR PT-0019; SC-0003): GameState's sub-states, registered with sim-core. Each is a
+# frozen dataclass with an empty value, encodable by sim-core's canonical codec (its save
+# contract); tests/unit/test_core_adoption.py checks the registry against GameState's fields and
+# round-trips a played state. The runtime state stays `GameState`: holding them in a
+# `CoreState` is cut to 0.2 (it would change what the state cache hashes).
+SUB_STATES: Final = SubStateRegistry(
+    (
+        SubStateSpec("org", OrgState, EMPTY_ORG),
+        SubStateSpec("market", MarketState, EMPTY_MARKET),
+        SubStateSpec("events", EventsState, EMPTY_EVENTS),
+        SubStateSpec("billing", BillingState, EMPTY_BILLING),
+        SubStateSpec("rivals", RivalsState, EMPTY_RIVALS),
+        SubStateSpec("partnership", PartnershipState, EMPTY_PARTNERSHIP),
+        SubStateSpec("leadership", LeadershipState, EMPTY_LEADERSHIP),
+        SubStateSpec("founder_life", FounderLifeState, EMPTY_FOUNDER_LIFE),
+        SubStateSpec("family", FamilyState, EMPTY_FAMILY),
+        SubStateSpec("standing", StandingState, EMPTY_STANDING),
+        SubStateSpec("automation", AutomationState, EMPTY_AUTOMATION),
+        SubStateSpec("tech", TechState, EMPTY_TECH),
+        SubStateSpec("geo", GeoState, EMPTY_GEO),
+        SubStateSpec("risk", RiskState, EMPTY_RISK),
+        SubStateSpec("mergers", MergersState, EMPTY_MERGERS),
+    )
+).freeze()
 
 
 def _person_key(p: Person) -> int:

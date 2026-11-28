@@ -22,17 +22,17 @@ from pathlib import Path
 from typing import Final
 
 import numpy as np
+from simcore.kernel.calendar import ym_to_turn
+from simcore_llm.offline import MockLLMAdapter
+from simcore_llm.settings import LLMSettings
 
-from ptk.db import migrate
+from ptk.db import core
 from ptk.db.billing_io import write_client_book
+from ptk.db.core import make_sessionmaker, shared_engine
 from ptk.db.saves import save_path
-from ptk.db.session import make_sessionmaker, shared_engine
 from ptk.db.state_io import insert_new, write_billing
 from ptk.events.service import Writer, write_pending_events
-from ptk.llm.offline import MockLLMAdapter
-from ptk.llm.settings import LLMSettings
 from ptk.sim.billing.models import ClientBookEntry
-from ptk.sim.calendar import ym_to_turn
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
 from ptk.sim.errors import SaveExistsError
@@ -45,9 +45,9 @@ from ptk.sim.matters.models import Relationship
 from ptk.sim.people.generator import generate_person, people_gen_stream
 from ptk.sim.people.models import AttrSet, Employment
 from ptk.sim.people.reveal import new_reveal_state
-from ptk.sim.rng import RngFactory
 from ptk.sim.setup import new_game
 from ptk.sim.state import GameState, with_people, with_person_states, with_reveals
+from ptk.sim.streams import RngFactory
 from ptk.sim.turn import advance_turn
 
 MAX_CLIENT_FEES_CENTS: Final = 400_000_000  # tunable-exempt: no one client above $4M a year
@@ -394,7 +394,7 @@ def create_practice_save(
     meta = replace(state.save_meta, name=slug or spec.key)
     state = replace(state, save_meta=meta)
     save_dir.mkdir(parents=True, exist_ok=True)
-    migrate.upgrade_new(path)
+    core.upgrade_new(path)
     sessions = make_sessionmaker(shared_engine(path))
     with sessions() as session, session.begin():
         insert_new(session, state, tuple(entries))

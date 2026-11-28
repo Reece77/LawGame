@@ -14,11 +14,11 @@ from types import SimpleNamespace
 from typing import Any
 
 import pytest
+from simcore.kernel.calendar import ym_to_turn
 
 from ptk.loader import load_balance, load_game_data
-from ptk.sim.calendar import ym_to_turn
 from ptk.sim.matters.market import monthly_demand
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 from tests.pt_m12_support import DATA
 
 START = (2005, 1)

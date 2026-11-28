@@ -5,7 +5,8 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from ptk.sim.calendar import turn_to_ym
+from simcore.kernel.calendar import turn_to_ym
+
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.partnership.careers import eligible
 from ptk.sim.people.phase import advance_class_year

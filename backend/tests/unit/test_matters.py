@@ -31,8 +31,8 @@ from ptk.sim.matters.progress import assign_judge, resolve, surface_hidden_confl
 from ptk.sim.matters.setup import new_market
 from ptk.sim.matters.staffing import fee_earners, month_hours, staff_matter
 from ptk.sim.people.models import Person
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 from tests.matters_support import game, play
 
 CASES = 1000  # acceptance: printed over 1,000 seeded cases

@@ -64,8 +64,8 @@ from ptk.sim.partnership.actions import (
 from ptk.sim.press.actions import STANDING_ACTION_TYPES, StandingAction, apply_standing_action
 from ptk.sim.risk.actions import RISK_ACTION_TYPES, RiskAction, apply_risk_action
 from ptk.sim.rivals.actions import RIVAL_ACTION_TYPES, RivalAction, apply_rival_action
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 from ptk.sim.tech.actions import TECH_ACTION_TYPES, TechAction, apply_tech_action
 
 type Action = (

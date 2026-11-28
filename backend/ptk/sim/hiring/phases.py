@@ -24,8 +24,9 @@ from dataclasses import dataclass
 from typing import Final
 
 import numpy as np
+from simcore.kernel.calendar import MONTHS_PER_YEAR, YearMonth, format_turn, turn_to_ym
+from simcore.kernel.money import Cents, pct_of
 
-from ptk.sim.calendar import MONTHS_PER_YEAR, YearMonth, format_turn, turn_to_ym
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.events.modifiers import person_factor
 from ptk.sim.fastcopy import replace
@@ -96,12 +97,10 @@ from ptk.sim.ledger import (
 from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.macro import lateral_heat
 from ptk.sim.matters.pro_bono import morale_term as pro_bono_morale
-from ptk.sim.money import Cents, pct_of
 from ptk.sim.people.generator import generate_person, people_gen_stream, weighted_pick
 from ptk.sim.people.models import Employment, Person, RevealState, WorkMonth
 from ptk.sim.people.reveal import apply_knowledge_action, new_reveal_state
 from ptk.sim.people.strain import burnout_effects_active
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import (
     GameState,
     with_candidates,
@@ -112,6 +111,7 @@ from ptk.sim.state import (
     with_reveals,
     with_search,
 )
+from ptk.sim.streams import RngFactory
 
 JOB_HOPPER: Final = "job_hopper"
 LIFER: Final = "lifer"
@@ -965,7 +965,7 @@ def _office_rent(
 
 def _lifted(person: Person, keys: tuple[str, ...], points: float) -> Person:
     """A campus candidate's role skills moved by `points` (the CHRO, PT-M8), clamped 1-20."""
-    from ptk.sim.scale import clamp_attr
+    from simcore.kernel.scale import clamp_attr
 
     changes = {k: clamp_attr(person.skills[k] + points) for k in keys}
     return replace(person, skills=person.skills.updated(changes))

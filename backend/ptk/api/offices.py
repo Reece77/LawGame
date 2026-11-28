@@ -19,14 +19,14 @@ from typing import Any, Literal
 
 from fastapi import APIRouter
 from pydantic import BaseModel
+from simcore.kernel.calendar import format_turn
 from sqlalchemy import func, select
 
 from ptk import loader
 from ptk.config import get_settings
 from ptk.db import saves
+from ptk.db.core import make_sessionmaker, shared_engine
 from ptk.db.models import LedgerEntryRow, LedgerLineRow
-from ptk.db.session import make_sessionmaker, shared_engine
-from ptk.sim.calendar import format_turn
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import NotFoundError
 from ptk.sim.geo.actions import (
@@ -243,7 +243,8 @@ def offices_out(
     data: GameData,
     balance: Balance,
 ) -> OfficesOut:
-    from ptk.sim.calendar import turn_to_ym
+    from simcore.kernel.calendar import turn_to_ym
+
     from ptk.sim.org.seats import holder_of
 
     firm = state.player

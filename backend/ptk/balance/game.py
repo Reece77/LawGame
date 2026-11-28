@@ -19,11 +19,12 @@ from collections import Counter
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 
+from simcore.kernel.calendar import turn_to_ym
+from simcore_llm.offline import MockLLMAdapter
+from simcore_llm.settings import LLMSettings
+
 from ptk.events.service import Writer, write_pending_events
-from ptk.llm.offline import MockLLMAdapter
-from ptk.llm.settings import LLMSettings
 from ptk.sim.actions import Action, apply_action
-from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
 from ptk.sim.errors import SimError
@@ -33,9 +34,9 @@ from ptk.sim.log import LogItem
 from ptk.sim.macro_seed import world_data
 from ptk.sim.org.actions import OrgAction, apply_org_action
 from ptk.sim.partnership.kpis import explain
-from ptk.sim.rng import RngFactory
 from ptk.sim.setup import new_game
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 from ptk.sim.turn import advance_turn
 
 log = logging.getLogger(__name__)

@@ -13,9 +13,10 @@ from __future__ import annotations
 import math
 from typing import Literal
 
+from simcore.kernel.money import BP_DENOMINATOR
+from simcore.kernel.scale import ATTR_NEUTRAL
+
 from ptk.sim.data_models import OrgBalance
-from ptk.sim.money import BP_DENOMINATOR
-from ptk.sim.scale import ATTR_NEUTRAL
 
 LEADERSHIP_WEIGHT = 2  # Q = (2 leadership + communication + mentoring) / 4 x S (13.3)
 QUALITY_DIVISOR = LEADERSHIP_WEIGHT + 1 + 1  # weights of leadership, communication, mentoring

@@ -14,8 +14,8 @@ import math
 from dataclasses import dataclass
 
 import numpy as np
+from simcore.kernel.calendar import turn_to_ym
 
-from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import PARTNER_LEVELS, Balance, GameData
 from ptk.sim.events.data import EventsBalance
 from ptk.sim.events.formulas import above_strength, below_strength, clamp01

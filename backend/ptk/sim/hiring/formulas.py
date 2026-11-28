@@ -15,8 +15,11 @@ from __future__ import annotations
 
 from typing import Literal
 
-from ptk.sim import dmath
-from ptk.sim.calendar import MONTHS_PER_YEAR
+from simcore.kernel import dmath
+from simcore.kernel.calendar import MONTHS_PER_YEAR
+from simcore.kernel.money import BP_DENOMINATOR, Cents, pct_of, round_half_even
+from simcore.kernel.scale import ATTR_MAX, ATTR_NEUTRAL, clamp_morale
+
 from ptk.sim.data_models import (
     LEVELS,
     Balance,
@@ -26,8 +29,6 @@ from ptk.sim.data_models import (
     PayBalance,
     ResignBalance,
 )
-from ptk.sim.money import BP_DENOMINATOR, Cents, pct_of, round_half_even
-from ptk.sim.scale import ATTR_MAX, ATTR_NEUTRAL, clamp_morale
 
 type HintBand = Literal["likely", "uncertain", "unlikely"]
 

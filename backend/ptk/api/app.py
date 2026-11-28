@@ -7,6 +7,7 @@ from typing import Any, Literal
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
+from simcore.kernel.calendar import format_turn, ym_to_turn
 
 from ptk import loader
 from ptk.api import recruitment
@@ -30,7 +31,6 @@ from ptk.api.tech import make_tech_router
 from ptk.config import get_settings
 from ptk.db import saves
 from ptk.holiday import REASON_TEXT, HolidayError, run_holiday
-from ptk.sim.calendar import format_turn, ym_to_turn
 from ptk.sim.errors import (
     BillingActionError,
     CampusSeasonError,

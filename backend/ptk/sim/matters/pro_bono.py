@@ -31,8 +31,8 @@ from ptk.sim.matters import formulas as fx
 from ptk.sim.matters.intake import with_matter
 from ptk.sim.matters.models import PRO_BONO_CLIENT_ID, Matter
 from ptk.sim.matters.staffing import staff_matter
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState, with_firm, with_person_states
+from ptk.sim.streams import RngFactory
 
 HOURS_PER_YEAR_MONTHS: Final = 12  # tunable-exempt: months in a year
 

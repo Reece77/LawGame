@@ -23,8 +23,8 @@ from dataclasses import dataclass, replace
 from math import isfinite
 
 import numpy as np
+from simcore.kernel.calendar import turn_to_ym
 
-from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance
 from ptk.sim.founder.models import (
     ANNUITY,
@@ -44,7 +44,7 @@ from ptk.sim.founder.models import (
     PersonalEntry,
 )
 from ptk.sim.interfaces import PartnerAccountView
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 
 DECEMBER = 12  # tunable-exempt: the firm's year ends in December (ADR PT-0002)
 MONTHS = 12  # tunable-exempt: months a year

@@ -5,8 +5,9 @@ budget is the founders' books at the budget margin."""
 
 from __future__ import annotations
 
+from simcore.kernel.money import pct_of
+
 from ptk.sim.data_models import Balance, GameData, Scenario
-from ptk.sim.money import pct_of
 from ptk.sim.partnership import formulas as fx
 from ptk.sim.partnership.models import Agreement, FirmPartnership, Partner, PartnershipState
 from ptk.sim.state import GameState

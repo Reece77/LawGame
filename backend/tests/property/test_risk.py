@@ -11,7 +11,7 @@ from hypothesis import strategies as st
 from ptk.sim.risk import claims as cl
 from ptk.sim.risk.common import Books
 from ptk.sim.risk.formulas import split_payment
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 from tests.risk_support import (
     a_claim,
     busy_firm,

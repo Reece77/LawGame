@@ -17,7 +17,7 @@ from ptk.sim.hiring.formulas import (
 )
 from ptk.sim.hiring.phases import month_multiplier, morale_and_departures
 from ptk.sim.people.models import WorkMonth
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 from tests.hiring_helpers import Game, start
 
 

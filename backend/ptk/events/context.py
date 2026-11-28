@@ -19,6 +19,9 @@ import json
 from dataclasses import dataclass
 from typing import Any
 
+from simcore.kernel.hidden import check_public
+from simcore_llm.prompts import PublicFacts
+
 from ptk.events.validator import allowed_effects
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.events.data import EFFECT_TARGETS, MODIFIER_STATS, EventTemplate
@@ -253,6 +256,9 @@ def build_prompt(
         "this_storyline": {"title": story.title, "summary": story.summary} if story else None,
         "template_idea": {"title": template.title, "body": " ".join(template.body.split())},
     }
+    # PT-M19a (ADR PT-0019; SC-0008): sim-core's public-facts check over everything the prompt
+    # carries: a record with a hidden field (a person, a matter, a claim) is refused
+    check_public(context, where="event prompt")
     system = SYSTEM.format(
         body_words=ev.body_words, tone=LIGHT if event.tone == "light" else GROUNDED
     )
@@ -290,7 +296,11 @@ ASKS = {
 
 
 def text_prompt(kind: str, lines: list[str], firm_name: str) -> tuple[str, str]:
-    """Read-only text (16.8): the facts to write from, as plain lines."""
+    """Read-only text (16.8): the facts to write from, as plain lines (each a public fact:
+    sim-core's `PublicFacts` refuses anything but plain values and views)."""
+    facts = PublicFacts()
+    for i, line in enumerate(lines):
+        facts.add(f"line_{i}", line)
     system = (
         f"You write short professional text for {firm_name}, a law firm in a business game. "
         "Grounded, plain English. Real lawyers appear only in their professional role."

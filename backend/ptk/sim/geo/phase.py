@@ -15,8 +15,8 @@ from ptk.sim.data_models import Balance, GameData
 from ptk.sim.geo import admissions, markets, offices, uk
 from ptk.sim.ledger import LedgerEntry
 from ptk.sim.log import LogItem
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 type Step = tuple[GameState, tuple[LedgerEntry, ...], tuple[LogItem, ...]]
 

@@ -11,8 +11,8 @@ import pytest
 
 from ptk.sim.data_models import Balance
 from ptk.sim.decisions import Decisions
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 from ptk.sim.turn import advance_turn
 from tests.matters_support import game, solvent
 from tests.risk_support import loaded

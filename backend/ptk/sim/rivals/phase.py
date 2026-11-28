@@ -31,8 +31,8 @@ from ptk.sim.rivals.economy import (
 from ptk.sim.rivals.market import appeal_table
 from ptk.sim.rivals.models import RivalFirm, RivalMove, YearRecord
 from ptk.sim.rivals.people import find_person, key_people
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 DECEMBER = 12  # tunable-exempt
 MOVES_KEPT = 24  # tunable-exempt: months of moves kept in the state (the decision log keeps all)

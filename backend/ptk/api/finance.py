@@ -17,21 +17,21 @@ from typing import Any, Literal
 
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
+from simcore.kernel.calendar import format_turn, turn_to_ym
+from simcore.kernel.money import BP_DENOMINATOR, round_half_even
 
 from ptk import loader
 from ptk.config import get_settings
 from ptk.db import saves
 from ptk.db.billing_io import all_engagements, firm_entries, matter_bills
-from ptk.db.session import make_sessionmaker, shared_engine
+from ptk.db.core import make_sessionmaker, shared_engine
 from ptk.sim.billing import statements
 from ptk.sim.billing.actions import BillingAction, RespondDispute, WriteDownMatter
 from ptk.sim.billing.kpis import DAYS_PER_MONTH
 from ptk.sim.billing.models import BillingState, Engagement
-from ptk.sim.calendar import format_turn, turn_to_ym
 from ptk.sim.data_models import GameData
 from ptk.sim.errors import NotFoundError
 from ptk.sim.ledger import UNDISTRIBUTED_PROFIT
-from ptk.sim.money import BP_DENOMINATOR, round_half_even
 from ptk.sim.partnership.common import cumulative_pnl
 from ptk.sim.state import GameState
 

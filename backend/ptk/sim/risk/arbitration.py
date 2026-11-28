@@ -24,8 +24,8 @@ from ptk.sim.risk import draws as dr
 from ptk.sim.risk import formulas as fx
 from ptk.sim.risk.common import FEES, RECEIVABLES, Books, with_risk
 from ptk.sim.risk.models import Arbitration, take_id, with_arbitration
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 
 def home_rules(state: GameState, data: GameData):  # type: ignore[no-untyped-def]

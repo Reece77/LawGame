@@ -24,8 +24,8 @@ from __future__ import annotations
 from dataclasses import replace
 
 import numpy as np
+from simcore.kernel.calendar import ym_to_turn
 
-from ptk.sim.calendar import ym_to_turn
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.log import LogItem
 from ptk.sim.matters.models import MarketState
@@ -44,8 +44,8 @@ from ptk.sim.rivals.models import (
     RivalStatus,
 )
 from ptk.sim.rivals.path import build_path, path_value, time_of
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 YEAR = 12  # tunable-exempt: months
 

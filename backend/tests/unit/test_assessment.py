@@ -16,7 +16,7 @@ from ptk.sim.matters.intake import with_matter
 from ptk.sim.matters.models import Matter
 from ptk.sim.matters.staffing import fee_earners
 from ptk.sim.people.models import Person
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 from tests.hiring_helpers import Game, start
 
 

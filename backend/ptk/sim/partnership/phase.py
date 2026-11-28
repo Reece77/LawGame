@@ -29,9 +29,9 @@ from ptk.sim.partnership.kpis import explain, leverage_bp
 from ptk.sim.partnership.laterals import books_arrive
 from ptk.sim.partnership.laterals import resolve_offers as resolve_lateral_offers
 from ptk.sim.partnership.models import FirmPartnership, PnlPoint, with_approach, with_partner
-from ptk.sim.rng import RngFactory
 from ptk.sim.snapshot import FirmSnapshot
 from ptk.sim.state import GameState, with_firm
+from ptk.sim.streams import RngFactory
 
 PNL_POINTS = 13  # tunable-exempt: twelve months of differences
 

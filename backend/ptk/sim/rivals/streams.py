@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 
 
 def rival_gen(rng: RngFactory, turn: int, *key: int) -> np.random.Generator:

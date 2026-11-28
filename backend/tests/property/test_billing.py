@@ -14,6 +14,7 @@ from dataclasses import replace
 
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
+from simcore.kernel.money import round_half_even
 
 from ptk.sim.billing.kpis import receivables_cents, wip_cents
 from ptk.sim.data_models import Balance, GameData
@@ -29,7 +30,6 @@ from ptk.sim.ledger import (
 from ptk.sim.matters import formulas as fx
 from ptk.sim.matters.models import PRO_BONO_CLIENT_ID
 from ptk.sim.matters.rates import client_indexes, indexed_rate
-from ptk.sim.money import round_half_even
 from tests.billing_support import Played, played
 
 PROPERTY = settings(

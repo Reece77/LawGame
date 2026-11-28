@@ -51,10 +51,11 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Final
 
+from simcore.kernel.calendar import turn_to_ym
+
 from ptk.sim import interfaces
 from ptk.sim.automation import owners
 from ptk.sim.automation.run import AutoRun
-from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import PARTNER_LEVELS
 from ptk.sim.ledger import CASH, REVOLVER
 from ptk.sim.org.seats import managing_partner

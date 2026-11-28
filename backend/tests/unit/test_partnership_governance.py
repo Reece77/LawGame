@@ -6,8 +6,8 @@ from __future__ import annotations
 from dataclasses import replace
 
 import pytest
+from simcore.kernel.calendar import turn_to_ym
 
-from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import NotManagingPartnerError, PartnershipError
 from ptk.sim.partnership import formulas as fx

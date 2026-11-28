@@ -27,8 +27,8 @@ from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
 from ptk.sim.geo.cities import rival_region
 from ptk.sim.ledger import CASH, PARTNERS_CAPITAL, apply_entries
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 from ptk.sim.turn import advance_turn
 from tests.balance.test_pt_m5 import (
     T12_CAPITAL,

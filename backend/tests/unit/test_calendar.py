@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from ptk.sim.calendar import age_at, format_turn, turn_to_ym, ym_to_turn
+from ptk.sim.dates import age_at, format_turn, turn_to_ym, ym_to_turn
 from ptk.sim.errors import InvalidDateError
 
 

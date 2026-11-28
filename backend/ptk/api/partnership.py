@@ -19,11 +19,11 @@ from typing import Any, Literal
 
 from fastapi import APIRouter
 from pydantic import BaseModel
+from simcore.kernel.calendar import format_turn
 
 from ptk import loader
 from ptk.config import get_settings
 from ptk.db import saves
-from ptk.sim.calendar import format_turn
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import NotFoundError
 from ptk.sim.interfaces import ApproachRequest, Suitor, partner_flight
@@ -364,7 +364,7 @@ def partnership_view(
     you = state.founder_of(firm)
     cfg = balance.partnership
     turn = state.turn
-    from ptk.sim.calendar import turn_to_ym
+    from simcore.kernel.calendar import turn_to_ym
 
     december = turn_to_ym(turn, state.save_meta.start_ym)[1] == 12  # tunable-exempt
     pool = max(profit_12m(fp), 0)
@@ -741,12 +741,12 @@ def _debug_router(errors: dict[int | str, dict[str, Any]]) -> APIRouter:
     base = "/api/saves/{slug}/debug"
 
     def _apply(slug: str, body: DebugIn, kind: str) -> PartnershipOut:
+        from ptk.db.core import make_sessionmaker, shared_engine
         from ptk.db.market_io import write_market
         from ptk.db.partnership_io import write_partnership
-        from ptk.db.session import make_sessionmaker, shared_engine
         from ptk.db.state_io import ledger_balances as read_balances
         from ptk.db.state_io import load_state, write_entries, write_log, write_people
-        from ptk.sim.rng import RngFactory
+        from ptk.sim.streams import RngFactory
 
         path = _path(slug)
         balance, data = loader.balance(), loader.game_data()

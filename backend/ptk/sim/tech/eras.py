@@ -18,7 +18,7 @@ from collections import OrderedDict
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 from ptk.sim.tech.config import TASKS, EraDef, LegalEras, PathPoint, SeededTarget
 
 MONTHS = 12  # tunable-exempt

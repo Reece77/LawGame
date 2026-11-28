@@ -25,8 +25,8 @@ from ptk.sim.errors import SimError
 from ptk.sim.events.models import EventChoice, GameEvent
 from ptk.sim.ledger import LedgerEntry
 from ptk.sim.log import LogItem
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 STREAM: Final = "auto_events"
 EVENTS_AREA: Final = "events"

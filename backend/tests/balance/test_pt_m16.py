@@ -11,9 +11,9 @@ from __future__ import annotations
 import statistics
 
 import pytest
+from simcore.kernel.money import BP_DENOMINATOR
 
 from ptk.balance.seeds import SEEDS
-from ptk.sim.money import BP_DENOMINATOR
 from ptk.standing_pace import run_all
 
 pytestmark = pytest.mark.nightly

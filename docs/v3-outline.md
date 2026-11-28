@@ -1,6 +1,6 @@
 # v3 outline: the world
 
-**Status: OUTLINE for Reece's decisions (product manager, 2026-11-26).** This sets out scope, sequencing and rough milestones. Full briefs, research dossiers and formulas come milestone by milestone, starting the day v2 closes (`pt-m18-done`).
+**Status: AGREED (Reece accepted every default, 2026-11-26; recorded 2026-11-28).** This sets out scope, sequencing and rough milestones. Full briefs, research dossiers and formulas come milestone by milestone, starting the day v2 closes (`pt-m18-done`).
 
 ## What v3 is for
 
@@ -31,6 +31,7 @@ By the end of v2, Partner Track plays thirty years of a US firm with offices in 
 
 | # | Milestone | Phase / lane | Ports from TST | Notes |
 | --- | --- | --- | --- | --- |
+| PT-M19a, PT-M19b | `sim-core` 0.1 adopted (done), then the 0.2 lift | 0, alone | — | Golden snapshots unchanged (plan decision 8) |
 | PT-M19 | The world framework: jurisdictions, currencies and FX, local rules, local markets | 0, alone | `geo/`, `geopolitics/rules` (by analogy) | Multi-currency ledger (integer minor units per currency, office functional currencies, USD consolidation, a translation reserve) with a new ADR; FX history 2005-2025 then seeded; PT-M11's London rebuilt as the first instance |
 | PT-M20 | Europe: Paris, Frankfurt, Brussels | 1, lane A | — | EU competition work in Brussels; local champions; Brexit 2016-2020 (the Irish roll, passporting); French and German ownership rules |
 | PT-M21 | Asia-Pacific: Hong Kong, Singapore, Tokyo, Beijing and Shanghai, Sydney | 1, lane B | — | PRC law closed to foreign firms (representative offices, associations, the 2014 free-trade-zone joint ventures); Singapore's qualifying foreign firm licences; Japan's gaiben rules; Australia's listing and ABS rules |
@@ -58,9 +59,9 @@ Each needs a dossier source before its band is set.
 
 ## The `sim-core` checkpoint is now due
 
-ADR PT-0001 §5 set two conditions for planning the extraction of a shared `sim-core`: TST v5 closes and Partner Track's PT-M7 has merged. Both are met: TST closed v5 on 2026-11-21. v3 would port four more TST modules (`markets_public/`, `talks/`, `modes/`, `dynasty/`), which makes vendored copies larger and drift more likely. **The product manager will write the extraction plan as a short decision document during PT-M19.** Extraction also needs changes in TST's repository, so it needs a TST session that Reece authorises; no Partner Track session writes there.
+ADR PT-0001 §5 set two conditions for planning the extraction of a shared `sim-core`: TST v5 closes and Partner Track's PT-M7 has merged. Both are met: TST closed v5 on 2026-11-21. v3 would port four more TST modules (`markets_public/`, `talks/`, `modes/`, `dynasty/`), which makes vendored copies larger and drift more likely. **Done:** the plan is `docs/sim-core-plan.md` (Reece accepted its defaults, 2026-11-26); `sim-core` 0.1 was released and adopted in PT-M19a (ADR PT-0019). PT-M19b lifts Partner Track's general modules into `sim-core` 0.2 before PT-M19, and PT-M19's currency work ships as `sim-core` 0.3. Extraction also needs changes in TST's repository, so it needs a TST session that Reece authorises; no Partner Track session writes there.
 
-## Decisions for Reece (proposed defaults)
+## Decisions (Reece accepted every default, 2026-11-26)
 
 1. **Regions:** the ten cities above, plus Sydney as Australia's way into listing. *Default: yes.*
 2. **Conversations in v3:** port TST v6's conversations as PT-M28. *Default: yes.*

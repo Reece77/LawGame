@@ -15,9 +15,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Final
 
+from simcore.kernel.calendar import format_turn
+
 from ptk.sim.automation import owners
 from ptk.sim.automation.models import AreaDecision, AreaOwner
-from ptk.sim.calendar import format_turn
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.state import GameState

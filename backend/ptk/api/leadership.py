@@ -20,12 +20,12 @@ from typing import Any, Literal
 
 from fastapi import APIRouter
 from pydantic import BaseModel
+from simcore.kernel.calendar import format_turn
 
 from ptk import loader
 from ptk.config import get_settings
 from ptk.db import saves
 from ptk.sim.actions import Action
-from ptk.sim.calendar import format_turn
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import NotFoundError
 from ptk.sim.org.pitches import CASE_UNIT, MODIFIABLE, AnswerPitch, record
@@ -388,11 +388,11 @@ def make_leadership_router(errors: dict[int | str, dict[str, Any]]) -> APIRouter
         )
         def debug_pitch(slug: str) -> LeadershipOut:
             """Every holder with authority pitches now (the draw forced), as phase 2 would."""
+            from ptk.db.core import make_sessionmaker, shared_engine
             from ptk.db.leadership_io import write_leadership
-            from ptk.db.session import make_sessionmaker, shared_engine
             from ptk.db.state_io import load_state, write_log
             from ptk.sim.org.pitches import draw_pitches
-            from ptk.sim.rng import RngFactory
+            from ptk.sim.streams import RngFactory
 
             path = _path(slug)
             balance, data = loader.balance(), loader.game_data()

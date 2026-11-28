@@ -17,7 +17,7 @@ from ptk.sim.people.strain import (
     monthly_capacity_tenths,
     strain_month,
 )
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 from tests.unit.test_founder import build
 from tests.unit.test_people_generation import make
 

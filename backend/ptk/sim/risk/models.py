@@ -8,8 +8,10 @@ cause and outcome.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from typing import Literal
+
+from simcore.kernel.hidden import HIDDEN_KEY
 
 type ClaimSource = Literal["error", "grievance"]
 type ClaimStage = Literal[
@@ -49,8 +51,9 @@ class Claim:
     source: ClaimSource
     created_turn: int  # the error (or the lost case) behind it
     surfaces_turn: int  # the notice arrives this month
-    merit: float  # hidden: the claimant's true chance at trial, 0-1
-    size_cents: int  # hidden: the damages a court would award
+    # hidden: the claimant's true chance at trial, 0-1
+    merit: float = field(metadata={HIDDEN_KEY: True})
+    size_cents: int = field(metadata={HIDDEN_KEY: True})  # hidden: the damages a court would award
     demand_cents: int  # what the claimant asks (shown from notice)
     blamed_id: int | None = None  # the lawyer blamed (never a person flagged real)
     stage: ClaimStage = "latent"
@@ -125,7 +128,7 @@ class DisciplinaryCase:
     cause: CaseCause
     jurisdiction: str  # bar_rules.yaml key
     opened_turn: int
-    culpability: float  # hidden, 0-1
+    culpability: float = field(metadata={HIDDEN_KEY: True})  # hidden, 0-1
     stage: CaseStage = "complaint"
     stage_until: int | None = None
     choice: CaseChoice | None = None

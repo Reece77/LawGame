@@ -32,8 +32,8 @@ from ptk.sim.risk import draws as dr
 from ptk.sim.risk import formulas as fx
 from ptk.sim.risk.common import CLAIMS, Books, blame, capital_call, gc_effect, lax, with_risk
 from ptk.sim.risk.models import Claim, ClaimChoice, RiskState, take_id, with_claim
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 CASE_KINDS = frozenset({"case", "investigation"})
 U_EVENT, U_STAGE, U_OFFER, U_TRIAL, U_RANGE = range(5)

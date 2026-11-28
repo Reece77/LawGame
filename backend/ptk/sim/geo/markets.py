@@ -22,9 +22,10 @@ from dataclasses import replace
 from typing import Final
 
 import numpy as np
+from simcore.kernel import dmath
+from simcore.kernel.calendar import MONTHS_PER_YEAR, turn_to_ym
+from simcore.kernel.scale import ATTR_MAX, ATTR_MIN
 
-from ptk.sim import dmath
-from ptk.sim.calendar import MONTHS_PER_YEAR, turn_to_ym
 from ptk.sim.data_models import Balance, GameData, PracticeDef
 from ptk.sim.geo.cities import city_def, region_of_city, rival_region
 from ptk.sim.geo.data import CityDef
@@ -32,9 +33,8 @@ from ptk.sim.macro import demand_factor
 from ptk.sim.macro_data import MacroData
 from ptk.sim.matters.models import Client, GeneralCounsel, SizeClass
 from ptk.sim.people.models import Personality
-from ptk.sim.rng import RngFactory
-from ptk.sim.scale import ATTR_MAX, ATTR_MIN
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 TRAIT_MEAN: Final = 10.0  # tunable-exempt: the 1-20 scale's centre (as matters.setup)
 TRAIT_SD: Final = 3.5  # tunable-exempt: generated traits' spread (as matters.setup)

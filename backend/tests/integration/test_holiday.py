@@ -10,7 +10,7 @@ from fastapi.testclient import TestClient
 
 from ptk.api.app import create_app
 from ptk.db import saves
-from ptk.db.session import make_sessionmaker, shared_engine
+from ptk.db.core import make_sessionmaker, shared_engine
 from ptk.db.state_io import load_state, write_turn
 from ptk.holiday import run_holiday, stop_reason
 from ptk.sim.data_models import Balance, GameData

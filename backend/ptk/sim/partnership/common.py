@@ -6,7 +6,8 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import replace
 
-from ptk.sim.calendar import turn_to_ym
+from simcore.kernel.calendar import turn_to_ym
+
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import NotManagingPartnerError, PartnershipError
 from ptk.sim.ledger import CASH, AccountCode

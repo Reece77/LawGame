@@ -15,7 +15,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Final
 
-from ptk.sim.calendar import turn_to_ym
+from simcore.kernel.calendar import turn_to_ym
+
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.matters.models import PRO_BONO_CLIENT_ID
 from ptk.sim.partnership.careers import eligible

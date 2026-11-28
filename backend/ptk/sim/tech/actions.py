@@ -26,8 +26,8 @@ from ptk.sim.errors import TechActionError
 from ptk.sim.hiring.actions import Outcome, acting_firm
 from ptk.sim.ledger import CASH, LedgerEntry
 from ptk.sim.log import inbox_item
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 from ptk.sim.tech import efficiency as ef
 from ptk.sim.tech.adoption import BP, PPE, rollout_vote
 from ptk.sim.tech.models import EraAdoption, FirmTech, Product, with_era, with_firm

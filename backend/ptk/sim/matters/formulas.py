@@ -1,6 +1,6 @@
 """Pure formulas for clients and matters (spec 6-7; docs/formulas.md PT-M3a section).
 
-Every transcendental goes through `ptk.sim.dmath`, so results are the same on every platform.
+Every transcendental goes through `simcore.kernel.dmath`, so results are the same on every platform.
 """
 
 from __future__ import annotations
@@ -9,7 +9,8 @@ from collections.abc import Mapping
 from functools import lru_cache
 from typing import Final
 
-from ptk.sim import dmath
+from simcore.kernel import dmath
+
 from ptk.sim.data_models import (
     BAND_TASK_LEVEL,
     Balance,

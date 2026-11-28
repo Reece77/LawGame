@@ -6,8 +6,8 @@ from ptk.sim.actions import apply_action
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.geo.actions import OpenOffice
 from ptk.sim.hiring.actions import Outcome
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 from tests.matters_support import game
 
 

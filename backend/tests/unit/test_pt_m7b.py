@@ -6,6 +6,7 @@ from __future__ import annotations
 from dataclasses import replace
 
 import pytest
+from simcore.kernel.money import BP_DENOMINATOR
 
 from ptk.sim.billing.phase import billing_month
 from ptk.sim.data_models import Balance, GameData
@@ -24,12 +25,11 @@ from ptk.sim.matters.rates import (
     yearly_rise,
 )
 from ptk.sim.matters.staffing import FeeEarner, fee_earners, policy_fill
-from ptk.sim.money import BP_DENOMINATOR
 from ptk.sim.partnership import formulas as pfx
 from ptk.sim.partnership.models import PnlPoint
-from ptk.sim.rng import STREAM_IDS, RngFactory
 from ptk.sim.setup import new_game
 from ptk.sim.state import GameState, with_firm
+from ptk.sim.streams import STREAM_IDS, RngFactory
 from tests.hiring_helpers import start
 from tests.matters_support import game, play
 

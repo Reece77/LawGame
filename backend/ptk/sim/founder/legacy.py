@@ -13,7 +13,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Final
 
-from ptk.sim import dmath
+from simcore.kernel import dmath
+
 from ptk.sim.data_models import Balance
 from ptk.sim.family.models import CHILD
 from ptk.sim.founder import influence

@@ -6,7 +6,7 @@ practice familiarity (fam_factor, gain and decay) and strain (spec 5.6); the sal
 expectation (TST 2.8) waits for PT-M1b's salary scale.
 
 No randomness here: callers draw noise from their own stream (ADR-0013) and add it.
-Every number comes from `Balance` or from the scale definitions in `ptk.sim.scale`.
+Every number comes from `Balance` or from the scale definitions in `simcore.kernel.scale`.
 """
 
 from __future__ import annotations
@@ -15,6 +15,15 @@ import math
 from collections.abc import Mapping, Sequence
 from typing import Final
 
+from simcore.kernel.scale import (
+    ABILITY_PER_ATTR,
+    ATTR_MAX,
+    ATTR_MIN,
+    PRIMARY_WEIGHT,
+    PROFESSIONALISM_DIVISOR,
+    SECONDARY_WEIGHT,
+)
+
 from ptk.sim.data_models import (
     FamiliarityBalance,
     GrowthBalance,
@@ -22,14 +31,6 @@ from ptk.sim.data_models import (
     RevealBalance,
     StrainBalance,
     band_value,
-)
-from ptk.sim.scale import (
-    ABILITY_PER_ATTR,
-    ATTR_MAX,
-    ATTR_MIN,
-    PRIMARY_WEIGHT,
-    PROFESSIONALISM_DIVISOR,
-    SECONDARY_WEIGHT,
 )
 
 # Below half an attribute point the range collapses to the rounded true value (section 4).

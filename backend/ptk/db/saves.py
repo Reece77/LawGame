@@ -8,11 +8,14 @@ import secrets
 from dataclasses import dataclass
 from pathlib import Path
 
+from simcore.kernel.calendar import format_turn
+from simcore_llm.base import LLMAdapter
 from sqlalchemy import func, select
 
-from ptk.db import backup, migrate
+from ptk.db import core
 from ptk.db.automation_io import write_area_decisions, write_automation
 from ptk.db.billing_io import write_billing
+from ptk.db.core import make_sessionmaker, shared_engine
 from ptk.db.events_io import add_text_requests, write_events, write_pending
 from ptk.db.founder_io import write_founder_life
 from ptk.db.geo_io import write_geo
@@ -24,7 +27,6 @@ from ptk.db.org_io import write_delegate_actions, write_org
 from ptk.db.partnership_io import write_partnership
 from ptk.db.risk_io import write_risk
 from ptk.db.rivals_io import write_panels, write_rival_moves, write_rivals
-from ptk.db.session import make_sessionmaker, shared_engine
 from ptk.db.standing_io import write_standing
 from ptk.db.state_io import (
     META_ID,
@@ -38,18 +40,16 @@ from ptk.db.state_io import (
     write_turn,
 )
 from ptk.db.tech_io import write_tech
-from ptk.llm.base import LLMAdapter
 from ptk.sim.actions import Action, action_payload, apply_action
-from ptk.sim.calendar import format_turn
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
 from ptk.sim.errors import InvalidSaveNameError, SaveExistsError, SaveNotFoundError
 from ptk.sim.family.setup import FamilySpec
 from ptk.sim.hiring.actions import Outcome
 from ptk.sim.people.founder import FounderSpec
-from ptk.sim.rng import MAX_SEED, RngFactory
 from ptk.sim.setup import new_game
 from ptk.sim.state import GameState
+from ptk.sim.streams import MAX_SEED, RngFactory
 from ptk.sim.turn import TurnResult, advance_turn
 
 _SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]{0,62}$")
@@ -70,7 +70,7 @@ def save_path(save_dir: Path, slug: str) -> Path:
         raise InvalidSaveNameError(
             f"save names use lower-case letters, digits and hyphens, got {slug!r}"
         )
-    return save_dir / f"{slug}{backup.SAVE_SUFFIX}"
+    return save_dir / f"{slug}{core.SAVE_SUFFIX}"
 
 
 def create_save(
@@ -104,7 +104,7 @@ def create_save(
         family=family,
     )
     save_dir.mkdir(parents=True, exist_ok=True)
-    migrate.upgrade_new(path)
+    core.upgrade_new(path)
     sessions = make_sessionmaker(shared_engine(path))
     with sessions() as session, session.begin():
         insert_new(session, game.state, game.ledger_entries)
@@ -115,8 +115,8 @@ def open_save(save_dir: Path, slug: str) -> Path:
     path = save_path(save_dir, slug)
     if not path.is_file():
         raise SaveNotFoundError(f"no save named {slug!r}")
-    backup.wait(path)
-    migrate.ensure_current(path)
+    core.wait(path)
+    core.ensure_current(path)
     return path
 
 
@@ -169,7 +169,7 @@ def run_turn(
         add_text_requests(session, result.text_requests)
     write_pending(path, balance, data, adapter=adapter)
     if result.new_state.turn % balance.backups.every_turns == 0:
-        backup.periodic_backup_in_background(
+        core.periodic_backup_in_background(
             path, result.new_state.turn, balance.backups.keep_periodic
         )
     return result
@@ -228,7 +228,7 @@ def list_saves(save_dir: Path) -> list[SaveSummary]:
     out: list[SaveSummary] = []
     if not save_dir.is_dir():
         return out
-    for path in sorted(save_dir.glob(f"*{backup.SAVE_SUFFIX}")):
+    for path in sorted(save_dir.glob(f"*{core.SAVE_SUFFIX}")):
         sessions = make_sessionmaker(shared_engine(path))
         with sessions() as session:
             meta = session.get(SaveMetaRow, META_ID)
@@ -238,7 +238,7 @@ def list_saves(save_dir: Path) -> list[SaveSummary]:
             start = (meta.start_year, meta.start_month)
             out.append(
                 SaveSummary(
-                    slug=backup.slug_of(path),
+                    slug=core.slug_of(path),
                     name=meta.name,
                     firm_name=firm.name,
                     turn=meta.current_turn,

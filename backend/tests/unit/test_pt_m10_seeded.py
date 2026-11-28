@@ -15,7 +15,7 @@ from ptk.sim.hiring.actions import LayOff
 from ptk.sim.macro import level, market_rise
 from ptk.sim.macro_data import SERIES
 from ptk.sim.macro_seed import fit_series, recessions, world_data
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 from tests.conftest import DATA_DIR
 
 MONTHS = [(y, m) for y in range(2005, 2035) for m in range(1, 13)]

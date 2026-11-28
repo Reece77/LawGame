@@ -10,6 +10,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, replace
 
+from simcore.kernel.money import BP_DENOMINATOR, pct_of
+
 from ptk.sim.data_models import Balance, GameData, Scenario
 from ptk.sim.errors import UnknownDifficultyError, UnknownScenarioError
 from ptk.sim.family.setup import FamilySpec, start_family
@@ -18,7 +20,6 @@ from ptk.sim.ledger import CASH, PARTNERS_CAPITAL, LedgerEntry
 from ptk.sim.macro_seed import world_data
 from ptk.sim.matters.rates import starting_card
 from ptk.sim.matters.setup import new_market
-from ptk.sim.money import BP_DENOMINATOR, pct_of
 from ptk.sim.partnership.setup import founding_partnership
 from ptk.sim.people.founder import FounderSpec, build_founder
 from ptk.sim.people.generator import generate_person, people_gen_stream
@@ -27,8 +28,8 @@ from ptk.sim.people.reveal import apply_knowledge_action, new_reveal_state
 from ptk.sim.people.strain import initial_strain
 from ptk.sim.reputation.phase import seed as seed_reputation
 from ptk.sim.rivals.setup import new_rivals
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import FirmState, GameState, SaveMeta
+from ptk.sim.streams import RngFactory
 
 PLAYER_FIRM_ID = 1
 STARTING_STAFF_SEARCH = 0  # people_gen key: search 0 is a scenario's starting staff

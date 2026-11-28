@@ -26,11 +26,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass, replace
 
-from ptk.sim.calendar import turn_to_ym
+from simcore.kernel.calendar import turn_to_ym
+from simcore.kernel.money import BP_DENOMINATOR
+
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.macro import market_rise
-from ptk.sim.money import BP_DENOMINATOR
 from ptk.sim.state import FirmState, GameState, with_firm
 
 

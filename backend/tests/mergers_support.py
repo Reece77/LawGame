@@ -13,9 +13,9 @@ from ptk.sim.mergers.profile import rival_side
 from ptk.sim.mergers.talks import open_deal, put_mergers
 from ptk.sim.mergers.terms import is_absorption
 from ptk.sim.rivals.models import RivalFirm
-from ptk.sim.rng import RngFactory
 from ptk.sim.setup import new_game
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 from ptk.sim.turn import advance_turn
 
 Balances = dict[tuple[int, str], int]

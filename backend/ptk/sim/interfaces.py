@@ -40,14 +40,14 @@ from typing import TYPE_CHECKING, Final, Literal, Protocol
 
 if TYPE_CHECKING:
     import numpy as np
+    from simcore.kernel.money import Cents
 
     from ptk.sim.data_models import Balance, GameData, KindDef
     from ptk.sim.ledger import AccountCode, LedgerEntry
     from ptk.sim.log import LogItem
     from ptk.sim.matters.models import HoursRecord
-    from ptk.sim.money import Cents
-    from ptk.sim.rng import RngFactory
     from ptk.sim.state import GameState
+    from ptk.sim.streams import RngFactory
 
 # Spec 5.7: campus (summer programme, offers in August, start the September after), and the
 # lateral channels of TST 7 renamed: a recruiter search (20-25% fee on hire), a job post, a

@@ -10,8 +10,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from simcore.kernel.money import BP_DENOMINATOR
+
 from ptk.sim.billing.kpis import collection_bp, realisation_bp, trailing
-from ptk.sim.money import BP_DENOMINATOR
 from ptk.sim.partnership import formulas as fx
 from ptk.sim.partnership.common import profit_12m, revenue_12m
 from ptk.sim.partnership.models import FirmPartnership

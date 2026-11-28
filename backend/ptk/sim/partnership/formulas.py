@@ -14,6 +14,8 @@ import math
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 
+from simcore.kernel.money import BP_DENOMINATOR, pct_of, round_half_even
+
 from ptk.sim.data_models import (
     ConfidenceBalance,
     FlightBalance,
@@ -21,7 +23,6 @@ from ptk.sim.data_models import (
     PartnershipBalance,
     RevolverBalance,
 )
-from ptk.sim.money import BP_DENOMINATOR, pct_of, round_half_even
 from ptk.sim.partnership.models import Forecast, PnlPoint
 
 MONTHS_PER_YEAR = 12  # tunable-exempt: the calendar

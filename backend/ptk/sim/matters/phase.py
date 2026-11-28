@@ -29,8 +29,8 @@ from ptk.sim.matters.progress import work_month
 from ptk.sim.matters.rates import yearly_rise
 from ptk.sim.matters.staffing import fee_earners, month_hours, planned_load, staff_matter
 from ptk.sim.people.models import WorkMonth
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 
 @dataclass(frozen=True, slots=True)

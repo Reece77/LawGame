@@ -16,8 +16,8 @@ from ptk.sim.risk import trust
 from ptk.sim.risk.arbitration import after_hold, awards_month
 from ptk.sim.risk.common import Books, lawyers
 from ptk.sim.risk.models import EMPTY_RISK
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 from tests.risk_support import busy_firm, loaded
 
 

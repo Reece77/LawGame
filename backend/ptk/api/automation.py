@@ -20,6 +20,7 @@ from typing import Any
 
 from fastapi import APIRouter
 from pydantic import BaseModel
+from simcore.kernel.calendar import format_turn
 
 from ptk import loader
 from ptk.config import get_settings
@@ -29,7 +30,6 @@ from ptk.sim.automation import owners
 from ptk.sim.automation.actions import AnswerProposal, GiveArea, SetAreaSettings, TakeOverArea
 from ptk.sim.automation.digest import area_months, kpis, owner_note
 from ptk.sim.automation.models import AreaDecision, AreaOwner, AutoProposal
-from ptk.sim.calendar import format_turn
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import NotFoundError
 from ptk.sim.ledger import CASH

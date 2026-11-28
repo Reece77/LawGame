@@ -13,8 +13,9 @@ from __future__ import annotations
 
 from typing import Final
 
+from simcore.kernel.money import BP_DENOMINATOR, round_half_even
+
 from ptk.sim.billing.models import BillingState, MonthTotals
-from ptk.sim.money import BP_DENOMINATOR, round_half_even
 from ptk.sim.snapshot import FirmSnapshot
 
 DAYS_PER_MONTH: Final = 30.4  # tunable-exempt: an average month's days (lockup's unit)

@@ -20,8 +20,9 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from functools import lru_cache
 
-from ptk.sim import dmath
-from ptk.sim.calendar import MONTHS_PER_YEAR, YearMonth, turn_to_ym
+from simcore.kernel import dmath
+from simcore.kernel.calendar import MONTHS_PER_YEAR, YearMonth, turn_to_ym
+
 from ptk.sim.rivals.data import FirmDef, HistoryEventDef, RivalsBalance
 
 HALF_YEAR = 0.5  # tunable-exempt: a fiscal year's point sits mid-year

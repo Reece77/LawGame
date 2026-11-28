@@ -18,7 +18,7 @@ from ptk.sim.data_models import Balance, GameData, band_value
 from ptk.sim.fastcopy import replace
 from ptk.sim.people.formulas import familiarity_after, growth_base, learn_factor
 from ptk.sim.people.models import Familiarity, Person, Skills, WorkMonth, role_ability
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 
 
 def grow_skills(

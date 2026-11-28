@@ -20,8 +20,8 @@ from dataclasses import dataclass
 from typing import Final
 
 import numpy as np
+from simcore.kernel import dmath
 
-from ptk.sim import dmath
 from ptk.sim.data_models import Balance, GameData, MatterKindDef, PracticeDef
 from ptk.sim.fastcopy import replace
 from ptk.sim.interfaces import practice_leader_effect
@@ -32,8 +32,8 @@ from ptk.sim.matters.market import Wallets, firm_reputation, player_share, walle
 from ptk.sim.matters.models import Client, MarketState, Matter, Relationship
 from ptk.sim.matters.rates import client_indexes, market_index
 from ptk.sim.matters.staffing import staff_matter
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 # PT-M12: the regulatory practices' other side is mostly the government too
 GOVERNMENT_PRACTICES: Final = frozenset(

@@ -11,7 +11,7 @@ from ptk.sim.people.formulas import fam_factor, familiarity_after, growth_delta,
 from ptk.sim.people.growth import grow_person
 from ptk.sim.people.models import WorkMonth, current_ability
 from ptk.sim.people.phase import advance_class_year
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 from tests.unit.test_people_generation import make
 
 H = 10  # tenths per hour

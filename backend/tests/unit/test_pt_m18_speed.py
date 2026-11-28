@@ -23,8 +23,8 @@ from ptk.sim import state as state_mod
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.fastcopy import replace
 from ptk.sim.people.models import Employment
-from ptk.sim.rng import STREAM_IDS, RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import STREAM_IDS, RngFactory
 from tests.matters_support import grown_firm
 
 
@@ -123,7 +123,9 @@ def test_memoised_lookups_match_the_scans(firm: GameState) -> None:
 @settings(max_examples=300, deadline=None)
 @given(
     st.integers(0, 2**64 - 1),
-    st.integers(0, 2**33),
+    # PT-M19a (ADR PT-0019; Reece's decision): sim-core's turn domain, 0..2**32 - 1 (2**32 and up
+    # are reserved for negative turns, TST ADR-0024); PT plays turns 0-359
+    st.integers(0, 2**32 - 1),
     st.sampled_from(sorted(STREAM_IDS)),
     st.lists(st.integers(0, 2**34), max_size=4),
 )

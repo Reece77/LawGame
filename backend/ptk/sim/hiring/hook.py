@@ -11,6 +11,7 @@ from collections.abc import Callable, Mapping
 from dataclasses import replace
 
 import numpy as np
+from simcore.kernel.money import Cents
 
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.hiring.actions import (
@@ -39,7 +40,6 @@ from ptk.sim.interfaces import (
     SearchView,
 )
 from ptk.sim.ledger import AccountCode
-from ptk.sim.money import Cents
 from ptk.sim.state import GameState, with_person_states
 
 

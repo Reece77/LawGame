@@ -10,10 +10,11 @@ from __future__ import annotations
 
 from typing import Final
 
-from ptk.sim.calendar import YearMonth
+from simcore.kernel.calendar import YearMonth
+from simcore.kernel.money import Cents, pct_of, round_half_even
+
 from ptk.sim.data_models import SCALE_LEVELS, Balance, GameData
 from ptk.sim.hiring.models import PayPolicy
-from ptk.sim.money import Cents, pct_of, round_half_even
 
 EQUITY_PARTNER: Final = "equity_partner"
 SENIOR_CLASS_INDEX: Final = 7  # tunable-exempt: senior associates are paid as class 8

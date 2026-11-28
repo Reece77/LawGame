@@ -3,14 +3,14 @@
 from __future__ import annotations
 
 import pytest
+from simcore.kernel.scale import ATTR_MAX, ATTR_MIN
 
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import InvalidPersonError
 from ptk.sim.people.formulas import current_ability
 from ptk.sim.people.generator import generate_person, people_gen_stream
 from ptk.sim.people.models import Person
-from ptk.sim.rng import RngFactory
-from ptk.sim.scale import ATTR_MAX, ATTR_MIN
+from ptk.sim.streams import RngFactory
 
 
 def make(

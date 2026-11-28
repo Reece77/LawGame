@@ -16,6 +16,8 @@ from __future__ import annotations
 from collections.abc import Iterable, Mapping
 from dataclasses import replace
 
+from simcore.kernel.money import Cents
+
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.geo import formulas as gf
 from ptk.sim.geo.cities import person_office_id
@@ -31,7 +33,6 @@ from ptk.sim.ledger import (
     LedgerEntry,
     LedgerLine,
 )
-from ptk.sim.money import Cents
 from ptk.sim.state import GameState
 
 PNL_TYPES = frozenset({"income", "expense"})

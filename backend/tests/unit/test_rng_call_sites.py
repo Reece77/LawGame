@@ -1,7 +1,11 @@
 """ADR-0013: one stream name per call site in ptk/sim.
 
 Ported from tests/unit/test_rng_call_sites.py @ 02fba2aa; changed: the known-names set is a
-parameter, so the fixtures do not depend on which streams exist yet.
+parameter, so the fixtures do not depend on which streams exist yet. PT-M19a (ADR PT-0019):
+the scanner is sim-core's (`simcore_testing.call_sites`). A name that is not a literal is
+refused unless it is a parameter of the enclosing function (SC-0002 rule 4): the one such site
+in ptk/sim is `ptk.sim.streams.RngFactory.stream`, which forwards its caller's name to
+sim-core's factory.
 
 Two call sites drawing from the same (turn, name, key) would reuse identical numbers, so
 every `.stream(turn, "<name>", ...)` call must use a literal name no other call site uses.
@@ -9,51 +13,40 @@ every `.stream(turn, "<name>", ...)` call must use a literal name no other call 
 
 from __future__ import annotations
 
-import ast
 from pathlib import Path
 
 import pytest
+from simcore_testing import call_sites
 
-from ptk.sim.rng import STREAM_IDS
+from ptk.sim.streams import STREAM_IDS
 
 SIM_DIR = Path(__file__).resolve().parents[2] / "ptk" / "sim"
 
 
 def stream_calls(path: Path, root: Path = SIM_DIR) -> list[tuple[str | None, str]]:
-    """(stream name or None if not a literal, "file:line") for each .stream(...) call."""
-    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
-    found: list[tuple[str | None, str]] = []
-    for node in ast.walk(tree):
-        if (
-            isinstance(node, ast.Call)
-            and isinstance(node.func, ast.Attribute)
-            and node.func.attr == "stream"
-        ):
-            arg = node.args[1] if len(node.args) > 1 else None
-            name = (
-                arg.value if isinstance(arg, ast.Constant) and isinstance(arg.value, str) else None
-            )
-            found.append((name, f"{path.relative_to(root).as_posix()}:{node.lineno}"))
-    return found
+    """(stream name, PASSED_IN for a forwarded parameter, or None, "file:line") per call."""
+    return call_sites.stream_calls(path, root)
 
 
 def check_call_sites(
     files: list[Path], root: Path = SIM_DIR, known: frozenset[str] | None = None
 ) -> list[str]:
     names = frozenset(STREAM_IDS) if known is None else known
-    problems: list[str] = []
-    seen: dict[str, str] = {}
-    for path in files:
-        for name, where in stream_calls(path, root):
-            if name is None:
-                problems.append(f"{where}: stream name must be a string literal")
-            elif name not in names:
-                problems.append(f"{where}: unknown stream {name!r}")
-            elif name in seen:
-                problems.append(f"{where}: stream {name!r} already used at {seen[name]}")
-            else:
-                seen[name] = where
-    return problems
+    problems = call_sites.check_call_sites(files, root, names)
+    # sim-core's wording for a non-literal name; PT's cases below keep PT's message
+    return [
+        p.replace("must be a literal or a parameter", "must be a string literal") for p in problems
+    ]
+
+
+def test_only_the_factory_forwards_a_stream_name() -> None:
+    forwarded = [
+        where
+        for path in sorted(SIM_DIR.rglob("*.py"))
+        for name, where in stream_calls(path)
+        if name == call_sites.PASSED_IN
+    ]
+    assert [w.split(":")[0] for w in forwarded] == ["streams.py"]
 
 
 def test_each_stream_name_has_one_call_site() -> None:

@@ -1,39 +1,31 @@
-"""Derived, seeded random streams (ADR-0002, ADR-0013, ADR PT-0012).
+"""Partner Track's stream table (ADR PT-0012, ADR PT-0019; SC-0002).
 
-Ported from tst/sim/rng.py @ 02fba2aa; changed: Partner Track's own STREAM_IDS table.
+Ids 1-19 are sim-core's core streams with TST's names and meanings (`simcore.kernel.rng`):
+PT draws on people_gen 1, hiring 2, morale 3, events 6, founder 7, growth 8, reveal 9, tags 10,
+resign 11, actions 13, delegate 14 and poach 19 with the meanings ADR PT-0012 gives them, and
+names core stream 17 (`governance`) `partnership`, as TST names it `board`. 99 `misc` is for
+tests. PT's own rows below are registered with `StreamTable.build`; the table is append-only:
+never renumber or reuse an id, it is part of every draw. A stream is added by the milestone
+that first draws on it, here and in ADR PT-0012's table.
 
-Each save stores one 64-bit master seed. A generator for a given turn and subsystem is
-derived from it on demand, so no generator state is ever persisted, and adding a stream
-never changes the draws of an existing one.
+`RngFactory` is sim-core's, bound to PT's table. PT keeps refusing negative turns and keys at
+its own boundary (sim-core accepts them for TST ADR-0024; PT has no month before turn 0).
 """
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from types import MappingProxyType
 from typing import Final
 
 import numpy as np
+from simcore.kernel import rng as core_rng
+from simcore.kernel.errors import InvalidSeedError
+from simcore.kernel.rng import StreamTable
 
-from ptk.sim.errors import InvalidSeedError, UnknownStreamError
-
-# Append-only. Never renumber or reuse an id: that would change every save's outcomes.
-# Ids 1-19 keep Tech Startup Tycoon's meanings for ported systems (ADR PT-0012); 20-98 are
-# Partner Track's own; 99 is for tests. A stream is added by the milestone that first draws.
-STREAM_IDS: Final = MappingProxyType(
+# name -> id: Partner Track's own rows (20-98, 100-199), with the key each draw passes.
+OWN_ROWS: Final[Mapping[str, int]] = MappingProxyType(
     {
-        "people_gen": 1,  # (search_id, n): generated people; search 0 = a scenario's staff
-        "hiring": 2,  # (offer_id,): an offer's acceptance draw (PT-M1b)
-        "morale": 3,  # (person_id,): monthly morale noise (PT-M1b)
-        "events": 6,  # (): the event director's month: count, matter draws, picks, tones (PT-M6)
-        "founder": 7,  # (founder_index,): a founding partner's build; 0 = the player's
-        "growth": 8,  # (person_id,): monthly growth noise
-        "reveal": 9,  # (observer_firm_id, person_id): reveal record offsets
-        "tags": 10,  # (person_id,): monthly tag reveals of employees (PT-M1b)
-        "resign": 11,  # (person_id,): the monthly resignation roll (PT-M1b)
-        "actions": 13,  # (seq,): randomness inside a player action (ADR-0014; PT-M1b)
-        "delegate": 14,  # (person_id, n): a delegate's nth hiring request this turn (PT-M2)
-        "partnership": 17,  # (purpose, id): up or out, the comp round (PT-M4; TST's board)
-        "poach": 19,  # (person_id,): a partner's month: approach, decision, clients (PT-M4)
         "demand": 20,  # (region, practice_index): monthly legal demand noise (PT-M3a)
         "intake": 21,  # (client_id,): a client's new instructions this month (PT-M3a)
         "matter": 22,  # (matter_id,): a matter's month: judge, progress, errors, outcome (PT-M3a)
@@ -101,56 +93,29 @@ STREAM_IDS: Final = MappingProxyType(
         "integration": 135,  # (deal_id, client_id): a book client's balk at the merged card
         "rival_merger": 136,  # (0,) a month's approach to the player; (1,) a free-play merger
         "verein": 137,  # (verein_id, member_firm_id): a member's quarterly introduction
-        "misc": 99,  # tests only
     }
 )
 
-MAX_SEED: Final = 2**64 - 1
-_WORD: Final = 2**32 - 1  # a SeedSequence entropy word's largest value
-_POOL_SIZE: Final = 4  # SeedSequence's default pool size, in words
+ALIASES: Final[Mapping[str, str]] = MappingProxyType({"partnership": "governance"})
+
+TABLE: Final = StreamTable.build(OWN_ROWS, aliases=ALIASES)
+# Every name PT's factory accepts (core rows, PT's rows, the alias), by id.
+STREAM_IDS: Final = TABLE.ids
+MAX_SEED: Final = core_rng.MAX_SEED
 
 
-class RngFactory:
-    """Hands out independent generators keyed by (turn, stream name, *entity keys).
+class RngFactory(core_rng.RngFactory):
+    """sim-core's factory with Partner Track's table; turns and keys from 0 only."""
 
-    ADR-0013: every call site uses its own stream name, and draws that belong to one entity
-    pass that entity's id as a key, so they do not depend on iteration order.
-    """
-
-    __slots__ = ("_master_seed", "_pool_words")
+    __slots__ = ()
 
     def __init__(self, master_seed: int) -> None:
-        if isinstance(master_seed, bool) or not isinstance(master_seed, int):
-            raise InvalidSeedError(f"master seed must be an int, got {type(master_seed).__name__}")
-        if not 0 <= master_seed <= MAX_SEED:
-            raise InvalidSeedError(f"master seed must be in 0..2**64-1, got {master_seed}")
-        self._master_seed = master_seed
-        # PT-M18 (T12): the master seed's 32-bit words, padded to SeedSequence's pool size, as
-        # SeedSequence assembles them before a spawn key (see `stream`)
-        words = [master_seed & _WORD, master_seed >> 32]
-        self._pool_words = words + [0] * (_POOL_SIZE - len(words))
-
-    @property
-    def master_seed(self) -> int:
-        return self._master_seed
+        super().__init__(master_seed, TABLE)
 
     def stream(self, turn: int, name: str, *key: int) -> np.random.Generator:
-        if name not in STREAM_IDS:
-            raise UnknownStreamError(f"unknown RNG stream {name!r}; add it to STREAM_IDS")
         if turn < 0:
             raise InvalidSeedError(f"turn must be >= 0 for an RNG stream, got {turn}")
         for part in key:
             if isinstance(part, bool) or not isinstance(part, int) or part < 0:
                 raise InvalidSeedError(f"stream keys must be non-negative ints, got {key!r}")
-        # PT-M18 (T12): SeedSequence(entropy=seed, spawn_key=k) hashes the seed's words, padded
-        # to the pool size, followed by k's words: passing that word array as the entropy gives
-        # the same pool, so the same generator, without numpy coercing each key in Python. A
-        # key part of 32 bits or more takes the documented path.
-        ent = [*self._pool_words, turn, STREAM_IDS[name], *key]
-        if max(ent) <= _WORD:
-            seq = np.random.SeedSequence(np.array(ent, dtype=np.uint32))
-        else:
-            seq = np.random.SeedSequence(
-                entropy=self._master_seed, spawn_key=(turn, STREAM_IDS[name], *key)
-            )
-        return np.random.Generator(np.random.PCG64(seq))
+        return super().stream(turn, name, *key)

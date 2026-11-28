@@ -17,6 +17,7 @@ from __future__ import annotations
 from dataclasses import replace
 
 import numpy as np
+from simcore.kernel.money import BP_DENOMINATOR
 
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.ledger import CASH, DRAWINGS, GENERAL_ADMIN, LedgerEntry
@@ -26,10 +27,9 @@ from ptk.sim.mergers import streams
 from ptk.sim.mergers.models import Deal, Verein, with_deal, with_verein
 from ptk.sim.mergers.profile import annualised
 from ptk.sim.mergers.talks import put_mergers
-from ptk.sim.money import BP_DENOMINATOR
 from ptk.sim.rivals.models import RivalFirm
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 MONTHS = 12  # tunable-exempt
 _CLIENTS: dict[int, tuple[object, frozenset[str], frozenset[int]]] = {}

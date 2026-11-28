@@ -5,3 +5,4 @@ openapi.json
 src/api
 test-results
 playwright-report
+src/core

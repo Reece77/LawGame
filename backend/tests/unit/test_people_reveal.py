@@ -16,7 +16,7 @@ from ptk.sim.people.reveal import (
     reveal_keys,
     revealed_range,
 )
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 from tests.unit.test_people_generation import make
 
 

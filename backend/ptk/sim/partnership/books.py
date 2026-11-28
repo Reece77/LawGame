@@ -22,6 +22,8 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass, replace
 
+from simcore.kernel.money import pct_of, round_half_even
+
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.ledger import (
     BAD_DEBT_PROVISION,
@@ -41,7 +43,6 @@ from ptk.sim.ledger import (
     apply_entries,
 )
 from ptk.sim.log import LinkKind, LogItem, inbox_item
-from ptk.sim.money import pct_of, round_half_even
 from ptk.sim.partnership import formulas as fx
 from ptk.sim.partnership.common import (
     cash,

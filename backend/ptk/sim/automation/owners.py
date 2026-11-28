@@ -12,9 +12,10 @@ an owner decides and are never shown: the player sees fit bands from displayed r
 
 from __future__ import annotations
 
+from simcore.kernel.money import BP_DENOMINATOR, Cents
+
 from ptk.sim.automation.config import AreaDef
 from ptk.sim.data_models import PARTNER_LEVELS, Balance, GameData
-from ptk.sim.money import BP_DENOMINATOR, Cents
 from ptk.sim.org.seat_models import EXCO, PGL
 from ptk.sim.org.seats import (
     FitBand,

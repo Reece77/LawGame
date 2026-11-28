@@ -14,8 +14,8 @@ import contextlib
 
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
+from simcore.kernel.calendar import turn_to_ym
 
-from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import SimError
 from ptk.sim.partnership.actions import CapitalCall, RepayRevolver, SetDraws

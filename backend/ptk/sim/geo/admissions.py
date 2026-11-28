@@ -19,7 +19,8 @@ from collections.abc import Callable
 from dataclasses import replace
 from typing import Final
 
-from ptk.sim.calendar import MONTHS_PER_YEAR, turn_to_ym
+from simcore.kernel.calendar import MONTHS_PER_YEAR, turn_to_ym
+
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.geo.cities import matter_office_id, office_jurisdiction, person_office_id
 from ptk.sim.geo.models import AdmissionRecord, Exam, ProHacVice, with_admission
@@ -27,8 +28,8 @@ from ptk.sim.ledger import CASH, PROFESSIONAL_FEES, LedgerEntry, LedgerLine
 from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.matters.models import Matter
 from ptk.sim.people.models import Person
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState, with_person
+from ptk.sim.streams import RngFactory
 
 CONTENTIOUS: Final = frozenset({"case", "investigation"})
 SOLICITOR: Final = "ew"

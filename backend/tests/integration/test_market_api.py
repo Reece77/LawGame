@@ -12,12 +12,12 @@ from sqlalchemy import select
 
 from ptk.api.app import create_app
 from ptk.db import saves
+from ptk.db.core import make_sessionmaker, shared_engine
 from ptk.db.models import DecisionLogRow
 from ptk.db.rivals_io import _CACHE
-from ptk.db.session import make_sessionmaker, shared_engine
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 from ptk.sim.turn import advance_turn
 from tests.integration.test_people_api import _keys, _schema_closure
 

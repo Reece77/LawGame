@@ -22,8 +22,8 @@ from ptk.sim.matters.conflicts import open_conflicts
 from ptk.sim.matters.intake import with_relationship
 from ptk.sim.matters.models import Relationship
 from ptk.sim.matters.phase import intake_and_staffing
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 from ptk.sim.turn import advance_turn
 from tests.conftest import DATA_DIR
 from tests.matters_support import game, grown_firm, solvent

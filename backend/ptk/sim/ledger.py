@@ -4,6 +4,13 @@ every entry sums to 0.
 Ported from tst/sim/ledger.py @ 02fba2aa; changed: Partner Track's chart of accounts;
 reporting dimensions are practice and office; client money (C-prefixed accounts) is a
 separate book and can never appear in a firm entry.
+
+PT-M19a (ADR PT-0019): the books are declared with sim-core's types (`simcore.kernel.ledger`):
+`CHART` holds the firm's book (""), the founder's personal book ("9") and the client-money book
+("C"), with the `bill_paid` bridge a paid bill crosses from client money to the firm. A firm
+entry is refused when a line belongs to another book of `CHART`. The entry and balance types
+stay PT's in 0.1 (`firm_id`, practice and office as fields, balances keyed by firm and
+account): moving them is cut to sim-core 0.2 (ADR PT-0019, "Cuts").
 """
 
 from __future__ import annotations
@@ -12,8 +19,10 @@ from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from typing import Final
 
+from simcore.kernel.ledger import Book, BookBridge, Chart
+from simcore.kernel.money import Cents
+
 from ptk.sim.errors import UnbalancedEntryError
-from ptk.sim.money import Cents
 
 type AccountCode = str
 # (firm_id, account) -> balance (ADR-0012).
@@ -70,6 +79,25 @@ FINES: Final = "6970_fines"
 # The client-money book's accounts (never in a firm entry).
 CLIENT_BANK: Final = "C1000_client_bank"
 OWED_TO_CLIENTS: Final = "C2000_owed_to_clients"
+# The three books (ADR PT-0003 section 7) and the one declared way money crosses between them.
+FIRM_BOOK: Final = Book("firm", "")
+PERSONAL_BOOK: Final = Book("personal", PERSONAL_DIGIT, "person")
+CLIENT_BOOK: Final = Book("client_money", CLIENT_PREFIX, "third_party")
+BILL_PAID: Final = "bill_paid"  # money on account pays a bill: out of client money, into cash
+CHART: Final = Chart(
+    books=(FIRM_BOOK, PERSONAL_BOOK, CLIENT_BOOK),
+    bridges=(
+        BookBridge(
+            BILL_PAID,
+            from_book=CLIENT_BOOK.code,
+            to_book=FIRM_BOOK.code,
+            from_account=CLIENT_BANK,
+            from_contra=OWED_TO_CLIENTS,
+            to_account=CASH,
+            to_contra=RECEIVABLES,
+        ),
+    ),
+)
 ENGINE_ACCOUNTS: Final = (
     CASH,
     WIP,
@@ -134,7 +162,7 @@ class LedgerEntry:
                 raise UnbalancedEntryError(
                     f"entry {self.memo!r}: amount for {line.account} must be int cents"
                 )
-            if line.account[0] in (PERSONAL_DIGIT, CLIENT_PREFIX):
+            if CHART.book_of(line.account) is not FIRM_BOOK:
                 # The founder's personal book and the client-money book are separate books
                 # (ADR PT-0003 section 7): never in a firm entry.
                 raise UnbalancedEntryError(

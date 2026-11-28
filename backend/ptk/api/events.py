@@ -13,15 +13,15 @@ from typing import Any, Literal
 
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
+from simcore.kernel.calendar import format_turn
+from simcore_llm.settings import load_settings, month_key, month_spend, reset_date, save_settings
 from sqlalchemy import select
 
 from ptk import loader
 from ptk.config import get_settings
 from ptk.db import saves
+from ptk.db.core import make_sessionmaker, shared_engine
 from ptk.db.models import LLMTextRow
-from ptk.db.session import make_sessionmaker, shared_engine
-from ptk.llm.settings import load_settings, month_key, month_spend, reset_date, save_settings
-from ptk.sim.calendar import format_turn
 from ptk.sim.errors import UnknownEventError
 from ptk.sim.events.actions import ChooseEvent
 from ptk.sim.events.describe import choice_texts

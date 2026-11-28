@@ -14,14 +14,15 @@ from __future__ import annotations
 from collections.abc import Iterable
 from dataclasses import replace
 
-from ptk.sim.calendar import turn_to_ym
+from simcore.kernel.calendar import turn_to_ym
+
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.hiring.pay import market_scale_cents
 from ptk.sim.interfaces import rival_moves_in, rival_name
 from ptk.sim.log import LogItem
 from ptk.sim.press import characters, claims, moments
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 FIRST_YEAR = "associate_1"  # tunable-exempt: the scale's first-year step names the scale's moves
 

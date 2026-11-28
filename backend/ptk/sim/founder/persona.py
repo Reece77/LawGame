@@ -13,7 +13,8 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from ptk.sim.calendar import turn_to_ym
+from simcore.kernel.calendar import turn_to_ym
+
 from ptk.sim.data_models import Balance
 from ptk.sim.founder.config import SOURCES, TRAITS
 from ptk.sim.founder.models import FounderLife

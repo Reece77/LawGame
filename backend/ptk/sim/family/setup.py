@@ -26,8 +26,8 @@ from ptk.sim.family.models import (
 from ptk.sim.family.people import add_member_person, family_stream, generate_child, generate_partner
 from ptk.sim.founder.config import SETTINGS
 from ptk.sim.people.models import Person
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 MIN_PARENT_AGE: Final = 18  # tunable-exempt: a parent is at least this much older than a child
 

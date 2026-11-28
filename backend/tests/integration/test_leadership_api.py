@@ -13,11 +13,11 @@ from sqlalchemy import select
 
 from ptk.api.app import create_app
 from ptk.db import saves
+from ptk.db.core import make_sessionmaker, shared_engine
 from ptk.db.models import DecisionLogRow
-from ptk.db.session import make_sessionmaker, shared_engine
 from ptk.loader import load_balance, load_game_data
 from ptk.sim.decisions import Decisions
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 from ptk.sim.turn import advance_turn
 from tests.conftest import DATA_DIR
 

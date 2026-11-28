@@ -9,8 +9,8 @@ from ptk.sim.automation import owners
 from ptk.sim.automation.actions import AnswerProposal, GiveArea, apply_automation_action
 from ptk.sim.automation.run import AutoRun, area_gen
 from ptk.sim.data_models import Balance, GameData
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState, with_person_states
+from ptk.sim.streams import RngFactory
 from tests.seats_support import funded, led_firm, mp
 
 CASH = 5_000_000_000  # funded()'s $50M

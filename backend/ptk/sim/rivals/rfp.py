@@ -32,8 +32,8 @@ from dataclasses import replace
 from typing import Final
 
 import numpy as np
+from simcore.kernel.calendar import turn_to_ym
 
-from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import InvalidActionError
 from ptk.sim.interfaces import seat_effect, tech_rfp_gap
@@ -41,8 +41,8 @@ from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.matters.models import Client, Relationship
 from ptk.sim.rivals import streams
 from ptk.sim.rivals.models import PLAYER_PANEL_KEY, Pitch, Rfp, RfpKind, RivalsState
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 CLAIMS: Final = (  # tunable-exempt: claim keys
     "references",

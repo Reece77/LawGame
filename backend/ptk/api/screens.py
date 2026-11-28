@@ -20,6 +20,8 @@ from typing import Any, Final, Literal
 
 from fastapi import APIRouter
 from pydantic import BaseModel
+from simcore.kernel.calendar import format_turn
+from simcore.kernel.money import BP_DENOMINATOR
 from sqlalchemy import select
 
 from ptk import loader
@@ -27,9 +29,8 @@ from ptk.api.finance import MatterMoneyOut, matter_money_view
 from ptk.api.tech import practice_ai_cut_bp
 from ptk.config import get_settings
 from ptk.db import saves
+from ptk.db.core import make_sessionmaker, shared_engine
 from ptk.db.models import InboxItemRow
-from ptk.db.session import make_sessionmaker, shared_engine
-from ptk.sim.calendar import format_turn
 from ptk.sim.data_models import PARTNER_LEVELS, Balance, GameData
 from ptk.sim.errors import NotFoundError
 from ptk.sim.matters import formulas as fx
@@ -45,13 +46,12 @@ from ptk.sim.matters.rates import (
     start_card_bp,
 )
 from ptk.sim.matters.staffing import fee_earners, planned_load
-from ptk.sim.money import BP_DENOMINATOR
 from ptk.sim.people.formulas import fam_factor
 from ptk.sim.people.models import Person, fam_key
 from ptk.sim.people.reveal import revealed_range
 from ptk.sim.reputation.formulas import card_progress, market_quantile, reputation
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 TENTHS: Final = fx.TENTHS
 TREND_MONTHS: Final = 12  # tunable-exempt: the Practices screen's demand trend, months

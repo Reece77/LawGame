@@ -15,8 +15,8 @@ from ptk.sim.family.phase import family_month, head_active
 from ptk.sim.family.setup import FamilySpec, start_family
 from ptk.sim.founder.actions import ChooseEducation, JoinFirm, SetFamilyTime
 from ptk.sim.founder.models import INVESTMENTS, PERSONAL_CASH, PersonalBook, PersonalEntry
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import with_people
+from ptk.sim.streams import RngFactory
 from tests.founder_support import set_age, start_life
 
 KIDS = FamilySpec("children", (11, 17, 24))

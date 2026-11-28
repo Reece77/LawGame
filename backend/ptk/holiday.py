@@ -22,9 +22,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Final, Literal
 
+from simcore.kernel.calendar import turn_to_ym
+from simcore_llm.base import LLMAdapter
+
 from ptk.db import saves
-from ptk.llm.base import LLMAdapter
-from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import SimError
 from ptk.sim.events.effects import check_continue, critical_open

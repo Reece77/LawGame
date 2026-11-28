@@ -10,8 +10,8 @@ from ptk.sim.decisions import Decisions
 from ptk.sim.org.actions import CreateUnit, MovePerson, SetLeader
 from ptk.sim.org.rules import growth_multipliers, manager_terms, org_view
 from ptk.sim.people.models import WorkMonth, role_ability
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 from ptk.sim.turn import advance_turn
 from tests.matters_support import solvent
 from tests.org_support import FIRM, act, founder, game, staff, with_skills, with_tags

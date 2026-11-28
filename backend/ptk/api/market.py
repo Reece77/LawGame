@@ -17,11 +17,11 @@ from typing import Any, Literal
 
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
+from simcore.kernel.calendar import format_turn
 
 from ptk import loader
 from ptk.config import get_settings
 from ptk.db import saves
-from ptk.sim.calendar import format_turn
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import NotFoundError
 from ptk.sim.macro_seed import world_data

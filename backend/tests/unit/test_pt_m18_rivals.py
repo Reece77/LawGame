@@ -14,7 +14,8 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from ptk.sim.calendar import ym_to_turn
+from simcore.kernel.calendar import ym_to_turn
+
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.rivals.economy import Month, price_level, reference_index, update_demand
 from ptk.sim.rivals.history import dated_collapse_turn, hazard

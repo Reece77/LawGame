@@ -38,7 +38,7 @@ from ptk.sim.mergers.models import Terms, Verein, with_deal, with_verein
 from ptk.sim.mergers.profile import annualised
 from ptk.sim.mergers.talks import put_mergers
 from ptk.sim.mergers.verein import costs
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 from tests.mergers_support import forced, played, targets
 
 PROPERTY = settings(

@@ -28,8 +28,8 @@ from ptk.sim.partnership.models import (
     with_capital_return,
     with_partner,
 )
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState, with_employment, with_people
+from ptk.sim.streams import RngFactory
 
 EQUITY = "equity_partner"
 INCOME = "income_partner"

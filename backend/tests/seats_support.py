@@ -5,7 +5,8 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from ptk.sim.calendar import turn_to_ym
+from simcore.kernel.calendar import turn_to_ym
+
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.hiring.models import PersonState
 from ptk.sim.hiring.pay import firm_pay_cents
@@ -14,8 +15,8 @@ from ptk.sim.org.seats import AppointSeat, SetAuthority, apply_seat_action
 from ptk.sim.partnership.effects import admit
 from ptk.sim.people.generator import generate_person, people_gen_stream
 from ptk.sim.people.models import Employment
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState, with_firm, with_people, with_person_states
+from ptk.sim.streams import RngFactory
 from tests.matters_support import grown_firm
 
 BS_SEARCH = 9_100  # people_gen search id for test business-services people

@@ -25,8 +25,8 @@ from ptk.sim.partnership.models import (
     with_moving_on,
     with_sponsor,
 )
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState, with_employment
+from ptk.sim.streams import RngFactory
 
 SENIOR = "senior_associate"
 COUNSEL = "counsel"

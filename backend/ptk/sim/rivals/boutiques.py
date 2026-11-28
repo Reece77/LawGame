@@ -24,8 +24,8 @@ from ptk.sim.rivals.history import record, with_firm
 from ptk.sim.rivals.models import BOUTIQUE_KEY, RivalFirm, RivalMove
 from ptk.sim.rivals.people import find_person, move_member
 from ptk.sim.rivals.setup import BOUTIQUE_ID_OFFSET, build_firm
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 # PT-M12: arbitration, insurance and mass-tort groups found litigation boutiques too
 LITIGATION = frozenset(

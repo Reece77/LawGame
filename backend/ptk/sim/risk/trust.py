@@ -33,8 +33,8 @@ from ptk.sim.risk.common import (
     with_risk,
 )
 from ptk.sim.risk.models import Reconciliation
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 SHORTFALL = "C1900_shortfall"  # the client book's claim on whoever took or lost the money
 KEPT = 12  # tunable-exempt: reconciliations kept a firm (the screen's year)

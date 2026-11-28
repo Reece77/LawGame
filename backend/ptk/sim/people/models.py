@@ -14,13 +14,15 @@ True values live here and are used by the sim. What an observer firm knows is a 
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Final, Literal, Self
 
-from ptk.sim.calendar import age_at
+from simcore.kernel.calendar import age_at
+from simcore.kernel.hidden import HIDDEN_KEY, hidden_field
+from simcore.kernel.scale import ATTR_MAX, ATTR_MIN
+
 from ptk.sim.data_models import GameData, Role
 from ptk.sim.people.formulas import current_ability as _ca
-from ptk.sim.scale import ATTR_MAX, ATTR_MIN
 
 PA_KEY: Final = "potential_ability"  # reveal record key for potential ability
 FAM_PREFIX: Final = "fam:"  # reveal record keys for familiarity: "fam:<practice>"
@@ -116,13 +118,18 @@ class Person:
     level: str  # balance people.levels key
     skills: Skills
     personality: Personality
-    hidden: HiddenTraits  # never in the API or a prompt (ADR PT-0006 section 5)
-    potential_ability: float  # hidden, 10-200, never changes
+    # PT-M19a (ADR PT-0019; SC-0008): hidden true values are marked for sim-core's views and
+    # prompt facts: `hidden_field(default=...)`, or `field(metadata={HIDDEN_KEY: True})` for a
+    # field with no default (mypy reads only `field()` as leaving a field without one).
+    # never in the API or a prompt (ADR PT-0006 section 5)
+    hidden: HiddenTraits = field(metadata={HIDDEN_KEY: True})
+    potential_ability: float = field(metadata={HIDDEN_KEY: True})  # hidden, 10-200, never changes
     familiarity: Familiarity
     familiarity_peak: Familiarity  # highest reached: decay stops 3 below it (spec 5.3)
     interests: tuple[str, ...]
     work_style: str
-    tags: tuple[str, ...]  # true behavior tags (hidden until revealed per observer)
+    # true behavior tags (hidden until revealed per observer)
+    tags: tuple[str, ...] = field(metadata={HIDDEN_KEY: True})
     school_tier: str | None  # lawyers only
     bar_admissions: tuple[str, ...]  # jurisdiction keys, sorted
     city: str
@@ -130,7 +137,9 @@ class Person:
     burnout_since: int | None = None  # turn the current burnout began; None = not burnt out
     last_burnout_turn: int | None = None  # start of the latest burnout (its 6-month effects)
     book_cents: int = 0  # a partner's book of business a year, 2005 USD (used from PT-M3a)
-    portability_bp: int | None = None  # hidden: share of the book that follows them (PT-M4)
+    portability_bp: int | None = hidden_field(
+        default=None
+    )  # hidden: share of the book that follows them (PT-M4)
     is_founder: bool = False  # the player's own founding partner
     founding_partner: bool = False  # any partner who founded the firm (spec 2.1)
     background: str | None = None  # backgrounds.yaml key, founding partners only

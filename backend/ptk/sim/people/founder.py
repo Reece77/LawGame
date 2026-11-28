@@ -34,7 +34,8 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass
 
-from ptk.sim.calendar import MONTHS_PER_YEAR
+from simcore.kernel.calendar import MONTHS_PER_YEAR
+
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import InvalidFounderError
 from ptk.sim.people.generator import (
@@ -49,7 +50,7 @@ from ptk.sim.people.generator import (
     potential_ability,
 )
 from ptk.sim.people.models import HiddenTraits, Person, Personality, Skills, role_ability
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 
 NAME_MAX = 40  # tunable-exempt: column width of person names
 FOUNDER_LEVEL = "equity_partner"  # a founding partner's level (spec 2.1)

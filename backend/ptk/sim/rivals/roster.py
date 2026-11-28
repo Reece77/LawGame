@@ -19,7 +19,8 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from ptk.sim.calendar import turn_to_ym
+from simcore.kernel.calendar import turn_to_ym
+
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.rivals.decisions import add_partner, remove_lawyer
 from ptk.sim.rivals.economy import Month
@@ -35,8 +36,8 @@ from ptk.sim.rivals.people import (
     person_of,
     update_member,
 )
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState, with_people
+from ptk.sim.streams import RngFactory
 
 JANUARY = 1  # tunable-exempt
 PARTNER_AFTER_YEARS = 3  # tunable-exempt: years a key senior associate waits for partnership [A]

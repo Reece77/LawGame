@@ -10,14 +10,14 @@ from dataclasses import replace
 
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
+from simcore.kernel.money import BP_DENOMINATOR
 
 from ptk.sim.billing.phase import billing_month
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.matters.rates import card_target_bp
 from ptk.sim.matters.staffing import fee_earners, policy_fill
-from ptk.sim.money import BP_DENOMINATOR
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import with_firm
+from ptk.sim.streams import RngFactory
 from tests.matters_support import game, play
 
 PROPERTY = settings(

@@ -90,10 +90,11 @@ class RiskRun:
 
 
 def risk_run(strategy: str, seed: int, turns: int = 132, data_dir: str = "data") -> RiskRun:
+    from simcore.kernel.calendar import turn_to_ym
+
     from ptk.balance.report import SCENARIO, _loaded
     from ptk.balance.seats import fill_seats
     from ptk.balance.strategies import PLAYABLE
-    from ptk.sim.calendar import turn_to_ym
 
     data, balance = _loaded(data_dir)
     g = start_game(data, balance, seed, SCENARIO, "standard")

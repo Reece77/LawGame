@@ -198,7 +198,7 @@ def test_cfo_pricing_and_coo_effects(data: GameData, balance: Balance) -> None:
     from ptk.sim.billing.phase import _Run
     from ptk.sim.hiring.formulas import rent_cents
     from ptk.sim.hiring.phases import _office_rent
-    from ptk.sim.rng import RngFactory
+    from ptk.sim.streams import RngFactory
 
     state = staged(data, balance, stage=3)
     firm = state.player.id

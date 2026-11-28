@@ -7,9 +7,10 @@ from pathlib import Path
 import pytest
 from sqlalchemy import select
 
-from ptk.db import backup, saves, state_io
+from ptk.db import core as backup
+from ptk.db import saves, state_io
+from ptk.db.core import make_sessionmaker, shared_engine
 from ptk.db.models import LedgerLineRow
-from ptk.db.session import make_sessionmaker, shared_engine
 from ptk.loader import load_balance
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import GameOverError, SaveExistsError
@@ -131,8 +132,8 @@ def test_people_round_trip_through_the_save(save_dir: Path, data: GameData) -> N
 def test_hiring_round_trips_and_replays(save_dir: Path, data: GameData, balance: Balance) -> None:
     """PT-M1b: actions in their own transactions plus turns, reloaded cold each time, give
     the same state as the same actions and turns played in memory (ADR-0014 replay)."""
+    from ptk.db.core import make_sessionmaker, shared_engine
     from ptk.db.models import DecisionLogRow, InboxItemRow
-    from ptk.db.session import make_sessionmaker, shared_engine
     from ptk.sim.hiring.actions import Interview, MakeOffer, OpenSearch
     from tests.hiring_helpers import start
     from tests.matters_support import solvent

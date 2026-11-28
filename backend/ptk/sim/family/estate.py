@@ -13,7 +13,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, replace
 
-from ptk.sim.calendar import turn_to_ym
+from simcore.kernel.calendar import turn_to_ym
+
 from ptk.sim.data_models import Balance
 from ptk.sim.errors import FamilyError
 from ptk.sim.family.models import CHILD, FamilyState, note, with_family_record

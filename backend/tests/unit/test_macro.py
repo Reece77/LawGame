@@ -7,8 +7,8 @@ from dataclasses import replace
 import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
+from simcore.kernel.calendar import ym_to_turn
 
-from ptk.sim.calendar import ym_to_turn
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.macro import (
     bankrupt_by,
@@ -25,8 +25,8 @@ from ptk.sim.matters.intake import with_relationship
 from ptk.sim.matters.market import monthly_demand, wallets
 from ptk.sim.matters.models import Relationship
 from ptk.sim.matters.rates import market_index
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 from tests.matters_support import game, play
 
 START = (2005, 1)

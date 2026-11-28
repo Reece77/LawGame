@@ -19,6 +19,8 @@ from pathlib import Path
 from statistics import median
 from typing import Final
 
+from simcore.kernel.calendar import ym_to_turn
+
 from ptk.balance.ai_era import AI_ERA, AiEraReading, read_seed
 from ptk.balance.game import PLAYER, Game, Month, start_game
 from ptk.balance.known_misses import known_miss, verdict
@@ -26,7 +28,6 @@ from ptk.balance.seats import fill_seats
 from ptk.balance.seeds import SEEDS, at_least, at_most
 from ptk.balance.strategies import PLAYABLE, STRATEGIES
 from ptk.loader import load_balance, load_game_data
-from ptk.sim.calendar import ym_to_turn
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.state import GameState
 

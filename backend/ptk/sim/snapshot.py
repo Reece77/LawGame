@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ptk.sim.money import Cents
+from simcore.kernel.money import Cents
 
 
 @dataclass(frozen=True, slots=True)

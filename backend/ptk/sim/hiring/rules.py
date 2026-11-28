@@ -12,7 +12,8 @@ import math
 from dataclasses import dataclass
 from fractions import Fraction
 
-from ptk.sim.calendar import turn_to_ym
+from simcore.kernel.calendar import turn_to_ym
+
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.hiring.formulas import HintBand, hint_band, is_lowball, offer_score, pitch
 from ptk.sim.hiring.models import Candidate

@@ -28,8 +28,8 @@ from ptk.balance.seeds import at_least
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.decisions import Decisions
 from ptk.sim.ledger import CASH, PARTNERS_CAPITAL, apply_entries
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 from ptk.sim.turn import advance_turn
 from tests.matters_support import grown_firm, top_up
 from tests.rivals_support import hire_away, play_until, rivals_month, start, turn_of

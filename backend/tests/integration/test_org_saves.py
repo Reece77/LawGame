@@ -9,9 +9,9 @@ import pytest
 from sqlalchemy import select
 
 from ptk.db import saves
+from ptk.db.core import make_sessionmaker, shared_engine
 from ptk.db.models import DecisionLogRow
 from ptk.db.org_io import action_from_payload, run_org_action
-from ptk.db.session import make_sessionmaker, shared_engine
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import OrgRuleError, SimError
 from ptk.sim.org.actions import CreateUnit, MovePerson, Promote, SetLeader

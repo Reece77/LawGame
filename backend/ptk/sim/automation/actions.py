@@ -40,8 +40,8 @@ from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.org.models import MoraleNudge
 from ptk.sim.org.seat_models import SeatAuthority
 from ptk.sim.org.seats import managing_partner, with_authority
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState, with_person_states
+from ptk.sim.streams import RngFactory
 
 
 @dataclass(frozen=True, slots=True)

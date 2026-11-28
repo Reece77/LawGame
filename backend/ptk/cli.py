@@ -5,12 +5,13 @@ from __future__ import annotations
 from collections.abc import Callable
 
 import typer
+from simcore.kernel.calendar import format_turn
+from simcore.kernel.money import cents, format_money
 
 from ptk import loader
 from ptk.config import get_settings
 from ptk.db import saves
 from ptk.sim.actions import Action
-from ptk.sim.calendar import format_turn
 from ptk.sim.errors import SimError
 from ptk.sim.events.actions import ChooseEvent
 from ptk.sim.events.effects import critical_open
@@ -32,7 +33,6 @@ from ptk.sim.matters.actions import (
     SetMatterHours,
     SetMatterLead,
 )
-from ptk.sim.money import cents, format_money
 from ptk.sim.people.founder import FounderSpec
 
 app = typer.Typer(no_args_is_help=True, add_completion=False)
@@ -74,8 +74,9 @@ def holiday(
     until: str | None = typer.Option(None, help="Continue until this month, YYYY-MM"),
 ) -> None:
     """PT-M7a: Holiday or continue until a month; stops for what needs you (spec 4.2)."""
+    from simcore.kernel.calendar import ym_to_turn
+
     from ptk.holiday import REASON_TEXT, run_holiday
-    from ptk.sim.calendar import ym_to_turn
 
     path = saves.open_save(get_settings().resolved_save_dir(), save)
     start = saves.read_state(path)[0].save_meta.start_ym

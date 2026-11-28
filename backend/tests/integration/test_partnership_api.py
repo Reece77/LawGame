@@ -13,8 +13,8 @@ from fastapi.testclient import TestClient
 from ptk.api.app import create_app
 from ptk.config import get_settings
 from ptk.db import saves
+from ptk.db.core import make_sessionmaker, shared_engine
 from ptk.db.partnership_io import write_partnership
-from ptk.db.session import make_sessionmaker, shared_engine
 from ptk.loader import balance as load_balance
 from ptk.loader import game_data
 from ptk.sim.partnership.governance import base_utility

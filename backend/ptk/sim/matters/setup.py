@@ -19,9 +19,10 @@ from collections.abc import Sequence
 from typing import Final
 
 import numpy as np
+from simcore.kernel import dmath
+from simcore.kernel.calendar import MONTHS_PER_YEAR
+from simcore.kernel.scale import ATTR_MAX, ATTR_MIN
 
-from ptk.sim import dmath
-from ptk.sim.calendar import MONTHS_PER_YEAR
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.matters.market import base_monthly_demand, firm_reputation, player_share, wallets
 from ptk.sim.matters.models import (
@@ -34,9 +35,8 @@ from ptk.sim.matters.models import (
     SizeClass,
 )
 from ptk.sim.people.models import Person, Personality
-from ptk.sim.rng import RngFactory
-from ptk.sim.scale import ATTR_MAX, ATTR_MIN
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 SETUP_TURN: Final = 0
 HOME_CITY_LABEL: Final = "New York"  # PT-M12: the home market's pooled clients' names

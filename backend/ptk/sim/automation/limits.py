@@ -24,11 +24,12 @@ from __future__ import annotations
 
 from typing import Any
 
+from simcore.kernel.calendar import turn_to_ym
+from simcore.kernel.money import BP_DENOMINATOR
+
 from ptk.sim.automation.config import ONE_OFF_KINDS
-from ptk.sim.calendar import turn_to_ym
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.matters.intake import key_clients
-from ptk.sim.money import BP_DENOMINATOR
 from ptk.sim.state import GameState
 
 MONTHS_PER_YEAR = 12  # tunable-exempt: calendar

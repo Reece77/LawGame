@@ -37,8 +37,8 @@ from ptk.sim.interfaces import (
 from ptk.sim.log import LogItem
 from ptk.sim.press import moments
 from ptk.sim.press.models import Feud, PressState, Statement
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 SPOKEN_MOVES: Final = frozenset({"hire_lateral", "lift_team", "open_office", "merged"})
 STATEMENT_WORDS: Final[dict[str, str]] = {

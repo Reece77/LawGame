@@ -15,8 +15,8 @@ from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import BillingActionError, UnknownBillError
 from ptk.sim.interfaces import ClientBillingView
 from ptk.sim.ledger import CASH, CLIENT_BANK, DEFERRED_FEES, OWED_TO_CLIENTS, SUCCESS_FEES
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 from tests.billing_support import played
 
 

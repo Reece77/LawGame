@@ -15,8 +15,8 @@ from ptk.sim.errors import CriticalEventOpenError
 from ptk.sim.events.data import REAL_RESTRICTED_EFFECTS, TRIGGERS
 from ptk.sim.events.director import queue_engine_event
 from ptk.sim.events.effects import choose, critical_open
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState, with_people
+from ptk.sim.streams import RngFactory
 from ptk.sim.turn import advance_turn
 from tests.events_support import played
 from tests.hiring_helpers import mock_events

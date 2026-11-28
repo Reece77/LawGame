@@ -22,13 +22,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Final
 
+from simcore.kernel.money import BP_DENOMINATOR
+
 from ptk.balance.game import start_game
 from ptk.balance.report import SCENARIO
 from ptk.balance.seats import fill_seats
 from ptk.balance.seeds import SEEDS
 from ptk.balance.strategies import PLAYABLE
 from ptk.loader import load_balance, load_game_data
-from ptk.sim.money import BP_DENOMINATOR
 
 TURNS: Final = 132
 FIRST_YEAR: Final = 2005
@@ -72,7 +73,8 @@ class SeedPace:
 
 
 def run_seed(seed: int, strategy: str = "steady", turns: int = TURNS) -> SeedPace:
-    from ptk.sim.calendar import turn_to_ym
+    from simcore.kernel.calendar import turn_to_ym
+
     from ptk.sim.reputation.formulas import market_quantile, player_lawyers
 
     data, balance = load_game_data(DATA), load_balance(DATA)

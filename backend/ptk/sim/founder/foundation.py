@@ -14,8 +14,10 @@ from __future__ import annotations
 from dataclasses import replace
 from typing import Final
 
-from ptk.sim import dmath
-from ptk.sim.calendar import turn_to_ym
+from simcore.kernel import dmath
+from simcore.kernel.calendar import turn_to_ym
+from simcore.kernel.money import times
+
 from ptk.sim.data_models import Balance
 from ptk.sim.errors import FounderLifeError
 from ptk.sim.founder.config import CAUSES
@@ -31,7 +33,6 @@ from ptk.sim.founder.models import (
     with_life,
 )
 from ptk.sim.founder.persona import raise_trait
-from ptk.sim.money import times
 
 DECEMBER: Final = 12  # tunable-exempt: calendar
 CENTS_A_DOLLAR: Final = 100  # tunable-exempt: cents in a dollar

@@ -10,8 +10,8 @@ from fastapi.testclient import TestClient
 
 from ptk.api.app import create_app
 from ptk.db import saves
+from ptk.db.core import make_sessionmaker, shared_engine
 from ptk.db.risk_io import write_risk
-from ptk.db.session import make_sessionmaker, shared_engine
 from ptk.sim.risk.models import Claim, DisciplinaryCase, with_case, with_claim
 from tests.integration.test_people_api import _keys, _schema_closure
 

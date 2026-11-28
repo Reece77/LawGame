@@ -18,8 +18,8 @@ from ptk.sim.geo.offices import closing_entries, month_entries, office_pnl, sign
 from ptk.sim.ledger import LEASES, PPE, RIGHT_OF_USE, apply_entries
 from ptk.sim.matters.models import Matter
 from ptk.sim.matters.staffing import staff_matter
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState, with_people
+from ptk.sim.streams import RngFactory
 from ptk.sim.turn import advance_turn
 from tests.conftest import DATA_DIR
 from tests.geo_support import london_game

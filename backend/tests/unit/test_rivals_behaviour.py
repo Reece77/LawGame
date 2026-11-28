@@ -14,7 +14,7 @@ from ptk.sim.rivals.actions import ApproachRival, CounterApproach, PitchRfp, app
 from ptk.sim.rivals.decisions import choose
 from ptk.sim.rivals.economy import Month
 from ptk.sim.rivals.models import PLAYER_PANEL_KEY, Approach, Rfp
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 from tests.rivals_support import hire_away, play_until, start, turn_of
 
 

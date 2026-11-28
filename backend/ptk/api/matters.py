@@ -16,12 +16,12 @@ from typing import Any, Literal
 
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
+from simcore.kernel.calendar import format_turn, turn_to_ym
 
 from ptk import loader
 from ptk.api.tech import matter_ai_fields
 from ptk.config import get_settings
 from ptk.db import saves
-from ptk.sim.calendar import format_turn, turn_to_ym
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import NotFoundError
 from ptk.sim.macro_seed import world_data
@@ -524,7 +524,7 @@ def matter_view(state: GameState, matter_id: int, data: GameData, balance: Balan
 def _billing_fields(state: GameState, m: Matter, balance: Balance) -> dict[str, Any]:
     """PT-M12: the engagement's model, a contingency case's terms and its funding."""
     from ptk.sim.billing.funding import funding_offer
-    from ptk.sim.rng import RngFactory
+    from ptk.sim.streams import RngFactory
 
     e = state.billing.engagement(m.id)
     if e is None:

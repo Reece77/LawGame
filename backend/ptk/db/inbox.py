@@ -12,13 +12,13 @@ from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from typing import Any
 
+from simcore.kernel.money import format_money
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
 from ptk.db.models import InboxItemRow
 from ptk.sim.data_models import InboxTemplate
 from ptk.sim.log import LogItem
-from ptk.sim.money import format_money
 
 MONEY_SUFFIX = "_cents"
 ARTICLE_SPEC = "a"  # "{role:a}" renders "a Corporate lawyer" or "an IP lawyer"

@@ -6,8 +6,8 @@ from __future__ import annotations
 from dataclasses import replace
 
 import pytest
+from simcore.kernel import dmath
 
-from ptk.sim import dmath
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import FounderLifeError
 from ptk.sim.founder import foundation, influence, legacy, persona
@@ -20,7 +20,7 @@ from ptk.sim.founder.actions import (
 from ptk.sim.founder.config import SOURCES, TRAITS
 from ptk.sim.founder.models import ENDOWMENT, with_life
 from ptk.sim.interfaces import founder_recruiting_term, founder_resign_mult
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 from tests.founder_support import start_life
 
 

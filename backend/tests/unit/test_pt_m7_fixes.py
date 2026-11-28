@@ -10,7 +10,7 @@ from ptk.sim.data_models import Balance, GameData
 from ptk.sim.partnership.common import firm_partnership, put
 from ptk.sim.partnership.governance import resolve_votes
 from ptk.sim.partnership.models import Vote, with_vote
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 from tests.matters_support import game
 
 SIM = Path(__file__).resolve().parents[2] / "ptk" / "sim"

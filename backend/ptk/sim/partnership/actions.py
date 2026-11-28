@@ -32,8 +32,8 @@ from ptk.sim.partnership.models import (
     with_sponsor,
     with_vote,
 )
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState, with_people, with_person_states
+from ptk.sim.streams import RngFactory
 
 type Draws = Callable[[], np.random.Generator]
 DECEMBER = 12  # tunable-exempt: the December vote (spec 5.5)

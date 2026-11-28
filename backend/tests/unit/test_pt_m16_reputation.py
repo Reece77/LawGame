@@ -6,13 +6,13 @@ from __future__ import annotations
 from dataclasses import replace
 
 import pytest
+from simcore.kernel.money import BP_DENOMINATOR
 
 from ptk.sim import interfaces
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.geo.cities import rival_region
 from ptk.sim.matters.market import firm_reputation
 from ptk.sim.matters.rates import card_target_bp, start_card_bp
-from ptk.sim.money import BP_DENOMINATOR
 from ptk.sim.rankings import lists
 from ptk.sim.reputation import formulas as fx
 from ptk.sim.reputation import phase

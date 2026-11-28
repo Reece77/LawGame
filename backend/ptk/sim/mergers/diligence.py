@@ -14,6 +14,8 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass, replace
 
+from simcore.kernel.money import BP_DENOMINATOR
+
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import InvalidActionError
 from ptk.sim.hiring.actions import Outcome
@@ -23,10 +25,9 @@ from ptk.sim.mergers.books import hidden, sheet
 from ptk.sim.mergers.models import Deal, with_deal
 from ptk.sim.mergers.profile import annualised, rival_side
 from ptk.sim.mergers.talks import put_mergers
-from ptk.sim.money import BP_DENOMINATOR
 from ptk.sim.rivals.models import RivalFirm
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 QUALITY, ANNUITIES, LEASES, CONFLICTS = 0, 1, 2, 3  # tunable-exempt: the offsets' order
 

@@ -27,8 +27,8 @@ from ptk.sim.hiring.actions import Outcome, acting_firm, spend_energy
 from ptk.sim.interfaces import bump_relationship, relationship_score
 from ptk.sim.ledger import CASH, FEES, FUNDER_ADVANCES, RECEIVABLES, LedgerEntry, LedgerLine
 from ptk.sim.log import LogItem
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import GameState
+from ptk.sim.streams import RngFactory
 
 type Draws = Callable[[], np.random.Generator]
 

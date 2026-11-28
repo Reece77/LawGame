@@ -21,6 +21,7 @@ from dataclasses import dataclass, replace
 from typing import Literal
 
 import numpy as np
+from simcore.kernel.scale import clamp_morale
 
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.errors import (
@@ -44,7 +45,6 @@ from ptk.sim.ledger import CASH, LedgerBalances, LedgerEntry, LedgerLine, accoun
 from ptk.sim.log import LogItem, inbox_item
 from ptk.sim.people.models import Person
 from ptk.sim.people.reveal import apply_knowledge_action
-from ptk.sim.scale import clamp_morale
 from ptk.sim.state import (
     GameState,
     with_candidates,

@@ -63,7 +63,7 @@ def test_book_reconciles_with_the_partnership(data: GameData, balance: Balance, 
     # the book balances: debits = credits
     assert sum(v for _, v in book.balances) == 0
     # each month's draws and true-up are what the partnership paid
-    from ptk.sim.calendar import turn_to_ym
+    from simcore.kernel.calendar import turn_to_ym
 
     total_draws = total_true_up = 0
     for turn, before, after in g.accounts:

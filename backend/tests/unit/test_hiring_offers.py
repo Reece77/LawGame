@@ -26,8 +26,8 @@ from ptk.sim.hiring.actions import (
 from ptk.sim.hiring.formulas import acceptance_probability, offer_score, recruiter_fee_cents
 from ptk.sim.hiring.phases import resolve_offers
 from ptk.sim.hiring.rules import offer_preview
-from ptk.sim.rng import RngFactory
 from ptk.sim.state import with_person_states
+from ptk.sim.streams import RngFactory
 from tests.hiring_helpers import Game, start
 
 

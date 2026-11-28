@@ -45,7 +45,9 @@ from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Final
 
-from ptk.sim.calendar import turn_to_ym
+from simcore.kernel.calendar import turn_to_ym
+from simcore.kernel.money import round_half_even
+
 from ptk.sim.data_models import PARTNER_LEVELS, Balance, GameData, KindDef
 from ptk.sim.fastcopy import replace
 from ptk.sim.interfaces import (
@@ -66,7 +68,6 @@ from ptk.sim.matters.models import (
     TeamRole,
 )
 from ptk.sim.matters.rates import client_indexes, indexed_rate
-from ptk.sim.money import round_half_even
 from ptk.sim.people.models import Person, WorkMonth
 from ptk.sim.people.strain import monthly_capacity_tenths
 from ptk.sim.state import GameState

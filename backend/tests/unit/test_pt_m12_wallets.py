@@ -16,7 +16,7 @@ from ptk.balance.game import start_game
 from ptk.loader import load_balance, load_game_data
 from ptk.sim.geo.markets import city_demand, make_city_clients
 from ptk.sim.matters.market import wallets
-from ptk.sim.rng import RngFactory
+from ptk.sim.streams import RngFactory
 from tests.pt_m12_support import DATA
 
 

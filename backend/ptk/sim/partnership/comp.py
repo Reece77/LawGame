@@ -11,9 +11,10 @@ from __future__ import annotations
 
 from dataclasses import replace
 
+from simcore.kernel.money import pct_of
+
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.macro import lateral_heat
-from ptk.sim.money import pct_of
 from ptk.sim.partnership import formulas as fx
 from ptk.sim.partnership.common import book_cents, ym
 from ptk.sim.partnership.models import FirmPartnership, Partner, with_partner

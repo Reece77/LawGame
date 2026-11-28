@@ -17,16 +17,16 @@ from dataclasses import replace
 from typing import Final
 
 import numpy as np
+from simcore.kernel.calendar import MONTHS_PER_YEAR
+from simcore.kernel.scale import ABILITY_PER_ATTR, ATTR_MAX, ATTR_MIN
 
-from ptk.sim.calendar import MONTHS_PER_YEAR
 from ptk.sim.data_models import Balance, GameData
 from ptk.sim.family.models import FamilyMember
 from ptk.sim.people.generator import generate_person
 from ptk.sim.people.models import PA_KEY, Person, RevealRecord, Skills
 from ptk.sim.people.reveal import new_reveal_state
-from ptk.sim.rng import RngFactory
-from ptk.sim.scale import ABILITY_PER_ATTR, ATTR_MAX, ATTR_MIN
 from ptk.sim.state import GameState, with_person, with_reveals
+from ptk.sim.streams import RngFactory
 
 DEV_KEY: Final = 1  # stream family's (person_id, 1): a child's development noise
 MIN_ADULT: Final = 21  # tunable-exempt: a partner's youngest age

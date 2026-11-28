@@ -74,3 +74,13 @@ Lanes: PT-M12 A (owns `ptk/balance/` and re-reads for every lane), PT-M13 B, PT-
 | [PT-M18-v2-balance.md](PT-M18-v2-balance.md) | v2 balance: seeds 1-40, every known miss, 30-year targets, turn time, a sharded nightly | PT-M12 (runs alone) |
 
 From 2026-11-25, sessions settle seed variance and inherited misses themselves under CLAUDE.md §12, and stop only on real regressions.
+
+## v3, phase 0 (2026-11-28)
+
+| Brief | Milestone | Depends on |
+| --- | --- | --- |
+| [PT-M19a-adopt-sim-core.md](PT-M19a-adopt-sim-core.md) | sim-core 0.1 adopted (done) | PT-M18 |
+| [PT-M19b-sim-core-0-2.md](PT-M19b-sim-core-0-2.md) | sim-core 0.2: the lift (SC-2b), in sim-core and Partner Track | PT-M19a (runs alone) |
+| [PT-M19-world-framework.md](PT-M19-world-framework.md) | The world framework: jurisdictions, currencies and FX; sim-core 0.3 | PT-M19b (runs alone) |
+
+RNG ids: PT-M19 160-169. ADRs reserved: PT-0020 (currencies), PT-0021 (jurisdictions).
